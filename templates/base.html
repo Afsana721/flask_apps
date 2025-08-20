@@ -75,7 +75,7 @@
         <button @click="open = !open" @click.away="open = false" class="hover:text-blue-600 focus:outline-none">MyQuantify ▾</button>
         <div x-show="open" x-transition class="absolute mt-2 flex flex-col bg-[#EBEBF1] border-8 shadow-lg p-3 w-80 h-80 right-0 text-sm z-50 rounded-lg">
           <a href="/login" class="flex items-center gap-2 p-2 hover:bg-gray-100 rounded" target="_blank">
-            <img src="{{ url_for('static', filename='assets/videos/icon_login.gif') }}" alt="Login Icon" class="w-32 h-32">
+            <img src="{{ url_for('static', filename='icon_login.gif') }}" alt="Login Icon" class="w-32 h-32">
             <div>
               <p class="text-sm font-semibold text-gray-800">Login to MyQuantify</p>
               <p class="text-xs text-gray-500">Access your account</p>
