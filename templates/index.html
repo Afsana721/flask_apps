@@ -1,0 +1,161 @@
+
+{% extends "base.html" %}
+{% block title %}Home | OpenQQuantify{% endblock %}
+{% block content %}
+<header>
+  <h1 class="text-3xl font-bold text-center text-[#320E69] mt-10 mb-4">Welcome to OpenQQuantify Gemstone Marketplace</h1>
+  <!-- Auto-looping MP4 video section -->
+<div class="w-full ">
+ <video autoplay loop muted playsinline class="w-full h-[500px] object-cover rounded shadow-lg">
+  <source src="{{ url_for('static', filename='assets/videos/index1.mp4') }}" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+</div>
+</header>
+<main>
+    <!-- Main Section: Gemstone Popularity Reasons -->
+<section class="px-6 py-12 bg-white text-[#2c2c54]">
+  <!-- Moved Explore Products button here -->
+<div class="text-center mt-16 mb-36">
+  <a href="{{ url_for('list_products') }}" class="bg-[#00D4FF] text-[#261033] 
+    font-semibold text-lg px-8 py-4 rounded-full shadow-lg hover:bg-[#35B9D4] 
+    transition duration-300 transform hover:scale-105">
+    Explore Products
+  </a>
+</div>
+
+  <!-- Section 1: Style & Uniqueness -->
+ <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center p-8 mb-44 ">
+  <!-- Left side: video box -->
+  <div class="w-full">
+    <video autoplay muted loop class="rounded-lg shadow-lg w-full h-80 object-cover border-4 border-gray-300">
+      <source src="{{ url_for('static', filename='assets/videos/Paul1.mp4') }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Right side: text -->
+  <div class="space-y-4">
+    <h2 class="text-3xl font-extrabold text-gray-900">OpenQQuantify — A Trusted Gemstone Platform</h2>
+    <p class="text-sm text-gray-700">
+      OpenQQuantify is building a gemstone marketplace that goes beyond buying and selling. 
+      It’s a trusted space where people from around the world can connect, trade, and learn with confidence.
+    </p>
+    <p class="text-sm text-gray-700">
+      Every gemstone is carefully authenticated to protect buyers and empower sellers, ensuring transparency and fairness. 
+      Our vision is to create a community-driven platform that celebrates the beauty of gemstones, supports local artisans and traders, and opens global opportunities for everyone.
+    </p>
+    <p class="text-sm text-gray-700">
+      By blending tradition with innovation, OpenQQuantify is shaping a sustainable future where the story and value of every stone can truly shine.
+    </p>
+  </div>
+</section>
+
+
+  <!-- Section 2: Wellness & Heritage -->
+<!-- Section: Bridging Communities — text left, video right -->
+<section class="max-w-7xl mx-auto px-4 py-14 animate-fade-in-up  mb-20">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+    <!-- Left: Text -->
+    <div class="space-y-5">
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">
+        Bridging Communities Through Gemstone Networks
+      </h2>
+
+      <p class="text-sm text-gray-700">
+        In today’s interconnected world, gemstones should not just travel through hidden supply chains — they should connect communities.
+        By communicating directly across different sources, miners, artisans, and traders can share transparent stories of origin.
+        When these voices meet, communities gain trust and buyers gain confidence.
+      </p>
+
+      <p class="text-sm text-gray-700">
+        This approach not only ensures authenticity but also creates opportunities. Local miners can reach international markets,
+        artisans can find recognition for their craftsmanship, and entrepreneurs can start businesses with real, trusted supply lines.
+      </p>
+
+      <p class="text-sm text-gray-700">
+        Through open communication and shared benefit, gemstones become more than luxury items — they become bridges of trust
+        between people and communities worldwide.
+      </p>
+    </div>
+
+    <!-- Right: Video -->
+  <!-- Left side: video box -->
+  <div class="w-full">
+    <video autoplay muted loop class="rounded-lg shadow-lg w-full h-80 object-cover border-4 border-gray-300">
+      <source src="{{ url_for('static', filename='assets/videos/Paul2.mp4') }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+  </div>
+</section>
+
+
+<!-- Optional Tailwind Animation -->
+<style>
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up {
+    animation: fade-in-up 1s ease-out both;
+  }
+</style>
+
+<!-- Current Trends Section -->
+<section class="px-6 py-16 bg-[#f4f4fc] text-[#2c2c54] mb-44">
+  <h2 class="text-3xl font-extrabold mb-4 tracking-wide text-center animate-pulse">Discover Genuine Stones</h2>
+  <p class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">
+   Our mission is to connect communities with authentic stones from trusted sources worldwide
+  </p>
+
+  <!-- Trend Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+
+    <!-- Trend Item -->
+    <div class="bg-gradient-to-br from-purple-100 to-indigo-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image1.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Gemstone Rings">
+      <p class="font-semibold text-lg">Gemstone Real</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-pink-100 to-red-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image2.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Emerald Sets">
+      <p class="font-semibold text-lg">Gemstone setting</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-yellow-100 to-orange-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image3.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Gemstone Bracelets">
+      <p class="font-semibold text-lg">Gemsone shape</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image4.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Ruby Watch">
+      <p class="font-semibold text-lg">Gemstone Raw</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-100 to-blue-300 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image5.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Sapphire Pendants">
+      <p class="font-semibold text-lg">Sapphire Pendants</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-teal-100 to-cyan-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image6.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Opal Charms">
+      <p class="font-semibold text-lg">Opal Charms</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-indigo-100 to-purple-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image7.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Custom Jewelry">
+      <p class="font-semibold text-lg">Custom Jewelry</p>
+    </div>
+
+    <div class="bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
+      <img src="{{ url_for('static', filename='assets/index/image8.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Stone Sculptures">
+      <p class="font-semibold text-lg">Stone Sculptures</p>
+    </div>
+
+  </div>
+</section>
+
+</main>
+{% endblock %}
+
