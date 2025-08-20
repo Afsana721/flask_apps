@@ -2,7 +2,8 @@ import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
+
 
 # Use the Railway DATABASE_URL
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
