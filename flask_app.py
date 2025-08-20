@@ -17,7 +17,8 @@ class User(db.Model):
 
 @app.route("/")
 def home():
-    return "Hello, Flask app with PostgreSQL on Railway!"
+    return render_template("index.html")
+
 
 
 if __name__ == "__main__":
