@@ -1,158 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AptiCraft - Forge Aptitude</title>
+    <!-- Load Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configure the 'Inter' font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        :root {
+            /* SILVER LINE / GRAY BACK THEME - UPDATED WITH VIBRANT AQUA ACCENT */
+            --bg-color: #1F2937; /* Dark Slate Gray */
+            --primary-text: #F3F4F6; /* Near White */
+            --accent-color: #00FFFF; /* VIBRANT AQUA */
+            --card-bg: rgba(31, 41, 55, 0.7); /* Translucent Dark Gray for cards */
+            font-family: 'Inter', sans-serif;
+        }
 
-{% extends "base.html" %}
-{% block title %}Home | OpenQQuantify{% endblock %}
-{% block content %}
-<header>
-  <h1 class="text-3xl font-bold text-center text-[#320E69] mt-10 mb-4">Welcome to OpenQQuantify Gemstone Marketplace</h1>
-  <!-- Auto-looping MP4 video section -->
-<div class="w-full ">
- <video autoplay loop muted playsinline class="w-full h-[500px] object-cover rounded shadow-lg">
-  <source src="{{ url_for('static', filename='index1.mp4') }}" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-</div>
-</header>
-<main>
-    <!-- Main Section: Gemstone Popularity Reasons -->
-<section class="px-6 py-12 bg-white text-[#2c2c54]">
-  <!-- Moved Explore Products button here -->
-<div class="text-center mt-16 mb-36">
-    Explore Products
+        body {
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
 
-</div>
+        /* --- Custom Animated Background --- */
+        .animated-bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1; /* Subtle transparency */
+            pointer-events: none;
+        }
 
-  <!-- Section 1: Style & Uniqueness -->
- <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center p-8 mb-44 ">
-  <!-- Left side: video box -->
-  <div class="w-full">
-    <video autoplay muted loop class="rounded-lg shadow-lg w-full h-80 object-cover border-4 border-gray-300">
-      <source src="{{ url_for('static', filename='Paul1.mp4') }}" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
+        .animated-bg {
+            /* Subtle radial glow combined with moving grid to simulate digital flow */
+            background: 
+                radial-gradient(circle at 50% 50%, var(--accent-color) 0%, transparent 10%),
+                repeating-linear-gradient(0deg, transparent, transparent 38px, var(--accent-color) 39px, var(--accent-color) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 38px, var(--accent-color) 39px, var(--accent-color) 40px);
+            background-size: 80px 80px;
+            width: 200vw;
+            height: 200vh;
+            position: absolute;
+            top: -50vh;
+            left: -50vw;
+            animation: moveGrid 30s linear infinite;
+        }
 
-  <!-- Right side: text -->
-  <div class="space-y-4">
-    <h2 class="text-3xl font-extrabold text-gray-900">OpenQQuantify — A Trusted Gemstone Platform</h2>
-    <p class="text-sm text-gray-700">
-      OpenQQuantify is building a gemstone marketplace that goes beyond buying and selling. 
-      It’s a trusted space where people from around the world can connect, trade, and learn with confidence.
-    </p>
-    <p class="text-sm text-gray-700">
-      Every gemstone is carefully authenticated to protect buyers and empower sellers, ensuring transparency and fairness. 
-      Our vision is to create a community-driven platform that celebrates the beauty of gemstones, supports local artisans and traders, and opens global opportunities for everyone.
-    </p>
-    <p class="text-sm text-gray-700">
-      By blending tradition with innovation, OpenQQuantify is shaping a sustainable future where the story and value of every stone can truly shine.
-    </p>
-  </div>
-</section>
+        @keyframes moveGrid {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: 800px 800px;
+            }
+        }
+        
+        /* Utility for the floating effect on the main logo */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* New: Pulsing Glow Animation for the logo's accent color */
+        @keyframes pulseGlow {
+            0%, 100% {
+                text-shadow: 0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(0, 255, 255, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 10px rgba(0, 255, 255, 1), 0 0 20px rgba(0, 255, 255, 0.5);
+            }
+        }
+        .logo-glow-animation {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        /* New: Shadowed Text for "Apti" - Simulates Dark Black on Dark Background */
+        .shadowed-text {
+            color: #111827; /* Very dark gray, almost black */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), -1px -1px 2px rgba(255, 255, 255, 0.05);
+            /* Make it feel deep and heavy */
+            opacity: 0.9;
+        }
 
+        /* Card styles for glass/blurred effect */
+        .glass-card {
+            background-color: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 255, 0.3); /* Aqua border */
+            transition: all 0.3s ease;
+        }
 
-  <!-- Section 2: Wellness & Heritage -->
-<!-- Section: Bridging Communities — text left, video right -->
-<section class="max-w-7xl mx-auto px-4 py-14 animate-fade-in-up  mb-20">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-    <!-- Left: Text -->
-    <div class="space-y-5">
-      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">
-        Bridging Communities Through Gemstone Networks
-      </h2>
+        .glass-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Bright Aqua glow on hover */
+            transform: translateY(-4px);
+        }
+        
+        /* --- Brain Schematic Animation CSS --- */
+        .neuron-line {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawLine 3s linear infinite;
+            opacity: 0.8;
+            stroke-linecap: round;
+        }
 
-      <p class="text-sm text-gray-700">
-        In today’s interconnected world, gemstones should not just travel through hidden supply chains — they should connect communities.
-        By communicating directly across different sources, miners, artisans, and traders can share transparent stories of origin.
-        When these voices meet, communities gain trust and buyers gain confidence.
-      </p>
+        /* Stagger animation for lines */
+        .neuron-line:nth-child(2) { animation-delay: 0.3s; }
+        .neuron-line:nth-child(3) { animation-delay: 0.6s; }
+        .neuron-line:nth-child(4) { animation-delay: 0.9s; }
+        .neuron-line:nth-child(5) { animation-delay: 1.2s; }
 
-      <p class="text-sm text-gray-700">
-        This approach not only ensures authenticity but also creates opportunities. Local miners can reach international markets,
-        artisans can find recognition for their craftsmanship, and entrepreneurs can start businesses with real, trusted supply lines.
-      </p>
+        @keyframes drawLine {
+            0% {
+                stroke-dashoffset: 100;
+                opacity: 0.2;
+            }
+            30% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+            }
+            70% {
+                stroke-dashoffset: 0;
+                opacity: 1;
+            }
+            100% {
+                stroke-dashoffset: -100;
+                opacity: 0.2;
+            }
+        }
 
-      <p class="text-sm text-gray-700">
-        Through open communication and shared benefit, gemstones become more than luxury items — they become bridges of trust
-        between people and communities worldwide.
-      </p>
+        .neuron-dot {
+            transform-origin: center;
+            animation: dotPulse 3s ease-in-out infinite;
+        }
+
+        /* Stagger animation for dots */
+        .neuron-dot:nth-child(6) { animation-delay: 0.2s; }
+        .neuron-dot:nth-child(7) { animation-delay: 1.2s; }
+        .neuron-dot:nth-child(8) { animation-delay: 2.2s; }
+
+        @keyframes dotPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.6);
+                opacity: 0.3;
+            }
+        }
+        
+    </style>
+</head>
+<body class="selection:bg-cyan-600 selection:text-white">
+
+    <!-- 1. Animated Background Layout -->
+    <div class="animated-bg-container">
+        <div class="animated-bg"></div>
     </div>
 
-    <!-- Right: Video -->
-  <!-- Left side: video box -->
-  <div class="w-full">
-    <video autoplay muted loop class="rounded-lg shadow-lg w-full h-80 object-cover border-4 border-gray-300">
-      <source src="{{ url_for('static', filename='Paul2.mp4') }}" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-  </div>
-  </div>
-</section>
+    <div class="relative min-h-screen flex flex-col items-center p-4 sm:p-8">
 
+        <!-- Header / Logo Section -->
+        <header class="text-center py-10 w-full max-w-4xl">
+            <h1 class="text-6xl sm:text-7xl font-extrabold tracking-tighter float-animation">
+                <!-- APTI: Styled with shadowed-text for "Dark Black" effect on dark background -->
+                <span class="shadowed-text">Apti</span>
+                <!-- CRAFT: Vibrant Aqua Glow -->
+                <span class="text-[var(--accent-color)] logo-glow-animation">Craft</span>
+            </h1>
+            <p class="mt-4 text-xl sm:text-2xl text-gray-400 font-light max-w-xl mx-auto">
+                Forge Aptitude. Craft Understanding.
+            </p>
 
-<!-- Optional Tailwind Animation -->
-<style>
-  @keyframes fade-in-up {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-in-up {
-    animation: fade-in-up 1s ease-out both;
-  }
-</style>
+            <!-- Human Brain Animation Schematic (Added Here) -->
+            <div id="brain-animation" class="mt-6 mx-auto w-28 h-28">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <!-- Main Brain Outline -->
+                    <path id="brain-outline" d="M15 50 C 15 20, 85 20, 85 50 C 85 80, 50 90, 15 50 Z" 
+                          fill="none" stroke="var(--primary-text)" stroke-width="2" />
+                    
+                    <!-- Internal Network Lines (Animated) -->
+                    <line class="neuron-line" x1="25" y1="35" x2="50" y2="45" stroke="var(--accent-color)" stroke-width="1.5" />
+                    <line class="neuron-line" x1="75" y1="35" x2="50" y2="45" stroke="var(--accent-color)" stroke-width="1.5" />
+                    <line class="neuron-line" x1="50" y1="45" x2="50" y2="70" stroke="var(--accent-color)" stroke-width="1.5" />
+                    <line class="neuron-line" x1="50" y1="70" x2="30" y2="80" stroke="var(--accent-color)" stroke-width="1.5" />
+                    <line class="neuron-line" x1="50" y1="70" x2="70" y2="80" stroke="var(--accent-color)" stroke-width="1.5" />
 
-<!-- Current Trends Section -->
-<section class="px-6 py-16 bg-[#f4f4fc] text-[#2c2c54] mb-44">
-  <h2 class="text-3xl font-extrabold mb-4 tracking-wide text-center animate-pulse">Discover Genuine Stones</h2>
-  <p class="text-center text-gray-700 mb-12 max-w-3xl mx-auto">
-   Our mission is to connect communities with authentic stones from trusted sources worldwide
-  </p>
+                    <!-- Neuron Dots (Pulsing) -->
+                    <circle class="neuron-dot" cx="25" cy="35" r="2" fill="var(--accent-color)" />
+                    <circle class="neuron-dot" cx="75" cy="35" r="2" fill="var(--accent-color)" />
+                    <circle class="neuron-dot" cx="50" cy="70" r="2" fill="var(--accent-color)" />
+                </svg>
+            </div>
+        </header>
 
-  <!-- Trend Grid -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <!-- Main Content Grid -->
+        <main class="w-full max-w-6xl flex-grow pt-4 pb-12">
+            
+            <h2 class="text-2xl font-semibold mb-6 text-gray-300 border-b border-gray-600 pb-2">
+                Learning Domains
+            </h2>
 
-    <!-- Trend Item -->
-    <div class="bg-gradient-to-br from-purple-100 to-indigo-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image1.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Gemstone Rings">
-      <p class="font-semibold text-lg">Gemstone Real</p>
+            <!-- Grid for the main focus areas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Domain Card 1: Cognitive Engines -->
+                <div class="glass-card p-6 rounded-xl shadow-lg transform hover:scale-[1.02]">
+                    <div class="text-[var(--accent-color)] text-4xl mb-4">🧠</div>
+                    <h3 class="text-xl font-bold mb-2">Cognitive Engines</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Harness the power of digital intelligence.
+                    </p>
+                    <ul class="space-y-1 text-sm text-gray-300">
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Informational Synthesis</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Research Methodologies</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">AI & LLM Training</li>
+                    </ul>
+                </div>
+
+                <!-- Domain Card 2: Dimensional Worlds -->
+                <div class="glass-card p-6 rounded-xl shadow-lg transform hover:scale-[1.02]">
+                    <div class="text-[var(--accent-color)] text-4xl mb-4">🪐</div>
+                    <h3 class="text-xl font-bold mb-2">Dimensional Worlds</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Build and interact with realistic digital environments.
+                    </p>
+                    <ul class="space-y-1 text-sm text-gray-300">
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">3D Visualization (three.js)</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Physics & Simulation (cannon.js)</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Virtual Prototyping</li>
+                    </ul>
+                </div>
+                
+                <!-- Domain Card 3: Physical Systems -->
+                <div class="glass-card p-6 rounded-xl shadow-lg transform hover:scale-[1.02]">
+                    <div class="text-[var(--accent-color)] text-4xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold mb-2">Physical Systems</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Engineer and understand tangible mechanics and logic.
+                    </p>
+                    <ul class="space-y-1 text-sm text-gray-300">
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Robotics Principles</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Circuit Engine Logic</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Systems Integration</li>
+                    </ul>
+                </div>
+
+                <!-- Domain Card 4: Biological Fabric -->
+                <div class="glass-card p-6 rounded-xl shadow-lg transform hover:scale-[1.02]">
+                    <div class="text-[var(--accent-color)] text-4xl mb-4">🧬</div>
+                    <h3 class="text-xl font-bold mb-2">Biological Fabric</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Explore the intricate systems of human and life sciences.
+                    </p>
+                    <ul class="space-y-1 text-sm text-gray-300">
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Human Anatomy & Physiology</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Ecosystems & Life Cycles</li>
+                        <li class="hover:text-[var(--accent-color)] transition duration-150 cursor-pointer">Bio-simulation</li>
+                    </ul>
+                </div>
+
+            </div>
+            
+            <!-- Call to Action Footer -->
+            <div class="mt-12 text-center p-6 rounded-lg bg-gray-800/50 border border-gray-600">
+                <p class="text-gray-400 text-lg">
+                    Ready to turn hardship into insight?
+                </p>
+                <button class="mt-4 px-8 py-3 bg-[var(--accent-color)] text-gray-900 font-bold rounded-full text-lg shadow-lg hover:shadow-[0_0_25px_rgba(0,255,255,0.7)] transition duration-300">
+                    Start Your First Craft
+                </button>
+            </div>
+
+        </main>
+        
     </div>
 
-    <div class="bg-gradient-to-br from-pink-100 to-red-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image2.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Emerald Sets">
-      <p class="font-semibold text-lg">Gemstone setting</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-yellow-100 to-orange-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image3.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Gemstone Bracelets">
-      <p class="font-semibold text-lg">Gemsone shape</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-green-100 to-emerald-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image4.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Ruby Watch">
-      <p class="font-semibold text-lg">Gemstone Raw</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-blue-100 to-blue-300 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image5.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Sapphire Pendants">
-      <p class="font-semibold text-lg">Sapphire Pendants</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-teal-100 to-cyan-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image6.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Opal Charms">
-      <p class="font-semibold text-lg">Opal Charms</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-indigo-100 to-purple-200 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image7.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Custom Jewelry">
-      <p class="font-semibold text-lg">Custom Jewelry</p>
-    </div>
-
-    <div class="bg-gradient-to-br from-gray-100 to-gray-300 rounded-xl p-4 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out text-center">
-      <img src="{{ url_for('static', filename='image8.png') }}" class="w-full h-40 object-cover rounded-md mb-2" alt="Stone Sculptures">
-      <p class="font-semibold text-lg">Stone Sculptures</p>
-    </div>
-
-  </div>
-</section>
-
-</main>
-{% endblock %}
-
+</body>
+</html>
