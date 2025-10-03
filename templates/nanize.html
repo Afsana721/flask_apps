@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanize Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark {
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+
+        /* Nano Orbit Effect */
+        .card-glow {
+            box-shadow: 0 0 50px rgba(118, 169, 255, 0.2), 0 0 10px rgba(118, 169, 255, 0.1);
+        }
+
+        .dark .card-glow {
+            box-shadow: 0 0 50px rgba(118, 169, 255, 0.2), 0 0 10px rgba(118, 169, 255, 0.1);
+        }
+
+        /* Custom scrollbar for chatbot */
+        #chat-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-log::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .dark #chat-log::-webkit-scrollbar-thumb {
+            background-color: #3b82f6;
+            border-radius: 4px;
+        }
+
+        .dark .bg-user-bubble {
+            background-color: #2d3748;
+            color: #f7fafc;
+        }
+
+        .dark .bg-bot-bubble {
+            background-color: #3b82f6;
+            color: #f7fafc;
+        }
+
+        /* New animation classes */
+        .message-anim-enter {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .message-anim-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        /* Typing indicator animation */
+        .dot {
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Fade-out animation for questions */
+        .fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+            pointer-events: none;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+    </style>
+</head>
+
+<body class="dark">
+    <header>
+        <image src="{{ url_for('static', filename='nanize/nanizeLogo .png') }}" alt="Nanize Logo" class="h-12 w-auto mx-auto mt-6">
+    </header>
+    <section class="flex justify-center items-center py-6 mt-12 mb-4">
+        <div class="bg-gray-900 p-2 rounded-lg w-5/6 max-w-3xl h-98">
+            <video class="w-full  rounded-lg " autoplay muted loop playsinline preload="auto" controls>
+                <source src="{{ url_for('static', filename='nanize/nanize.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </section>
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="relative w-full max-w-6xl h-[95vh] bg-gray-800 rounded-3xl shadow-2xl overflow-hidden card-glow flex">
+            <!-- Left Pane: Chatbot -->
+            <div class="flex-1 flex flex-col p-4 relative">
+                <!-- Header -->
+                <div class="flex items-center space-x-2">
+                    <img src="{{ url_for('static', filename='nanize/nanizeLogo .png') }}" alt="Nanize Logo" class="h-8 w-auto">
+                    <h1 class="text-xl font-bold text-gray-200">Nanize Chatbot</h1>
+                </div>
+
+                <!-- Chat Log -->
+                <div id="chat-log" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-4">
+                    <div class="chat-bubble bot-bubble max-w-[80%] p-3 rounded-xl self-start">
+                        Hi there! I can answer some questions about Nanize. What would you like to know?
+                    </div>
+                </div>
+
+                <!-- Questions Area -->
+                <div class="p-4 border-t border-gray-700 bg-gray-700">
+                    <div id="questions-container" class="grid grid-cols-1 gap-2 text-sm">
+                        <!-- Questions will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane: 3D Animation -->
+            <div class="flex-1 bg-black rounded-r-3xl relative overflow-hidden">
+                <canvas id="three-canvas" class="w-full h-full"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- graphs: with text -->
+<div class="card reveal text-center py-8">
+  <h2 class="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent animate-pulse mb-2">
+    Polysilazane Coatings
+  </h2>
+  <div class="subtitle text-lg font-medium text-gray-300 mb-4">
+    PFAS-free, durable, and engineered for modern manufacturing
+  </div>
+  <p class="text-base leading-relaxed text-gray-200 animate-fadeIn">
+    At Nanize, we specialize in the development of polysilazane-based coatings,<br>
+    setting a new standard in surface protection technology.<br><br>
+    Our unique approach combines nano-particles with polysilazane<br>
+    to create coatings that are not only highly durable<br>
+    but also environmentally friendly.
+  </p>
+</div>
+   <canvas id="ftir" style="display:block;margin:24px auto;border-radius:12px;width:min(960px,92vw);height:420px;background:#111827"></canvas>
+<script>
+        const chatLog = document.getElementById('chat-log');
+        const questionsContainer = document.getElementById('questions-container');
+        const canvas = document.getElementById('three-canvas');
+
+        // Three.js Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 5;
+        controls.maxDistance = 50;
+        let autoRotate = true;
+
+        let mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        const gridHelper = new THREE.GridHelper(20, 20, 0x5a5a5a, 0x333333);
+        scene.add(gridHelper);
+
+        const axesHelper = new THREE.AxesHelper(10);
+        scene.add(axesHelper);
+
+        camera.position.set(0, 10, 20);
+        controls.update();
+
+        // Function to create and manage the 3D scene based on the question
+        function update3DScene(sceneType) {
+            // Clear existing scene elements
+            while (mainGroup.children.length > 0) {
+                mainGroup.remove(mainGroup.children[0]);
+            }
+
+            if (sceneType === "whoAreNanize") {
+                // Scene for "Who are Nanize?" - a core group with orbiting particles
+                const coreGeometry = new THREE.SphereGeometry(2, 32, 32);
+                const coreMaterial = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
+                const core = new THREE.Mesh(coreGeometry, coreMaterial);
+                mainGroup.add(core);
+
+                const particleCount = 50;
+                const particleGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0xc9d1d9 });
+                const particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.set(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5);
+                    particles.push(particle);
+                    mainGroup.add(particle);
+                }
+                mainGroup.userData.particles = particles;
+                mainGroup.userData.type = "whoAreNanize";
+            } else if (sceneType === "whatDoesNanizeMake") {
+                // Scene for "What does Nanize make?" - a more complex structure of connected particles
+                const particleCount = 100;
+                const particleGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+                const particles = [];
+                const colors = [0x22c55e, 0xf59e0b, 0x3b82f6];
+                for (let i = 0; i < particleCount; i++) {
+                    const material = new THREE.MeshBasicMaterial({ color: colors[Math.floor(Math.random() * colors.length)] });
+                    const particle = new THREE.Mesh(particleGeometry, material);
+                    particle.position.set(Math.random() * 15 - 7.5, Math.random() * 15 - 7.5, Math.random() * 15 - 7.5);
+                    particles.push(particle);
+                    mainGroup.add(particle);
+                }
+                mainGroup.userData.particles = particles;
+                mainGroup.userData.type = "whatDoesNanizeMake";
+            } else if (sceneType === "performanceGains") {
+                // Scene for "Performance gains" - dynamic, moving particles
+                const particleCount = 200;
+                const particleGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+                const particles = [];
+                const colors = [0x06b6d4, 0x8b5cf6, 0x64748b];
+                for (let i = 0; i < particleCount; i++) {
+                    const material = new THREE.MeshBasicMaterial({ color: colors[Math.floor(Math.random() * colors.length)] });
+                    const particle = new THREE.Mesh(particleGeometry, material);
+                    particle.position.set(Math.random() * 20 - 10, Math.random() * 20 - 10, Math.random() * 20 - 10);
+                    particles.push(particle);
+                    mainGroup.add(particle);
+                }
+                mainGroup.userData.particles = particles;
+                mainGroup.userData.type = "performanceGains";
+            } else if (sceneType === "nanizeTechnologies") {
+                // Scene for "What does Nanize's technologies?" - a dynamic graph scene
+                const pointsCount = 100;
+                const curve1 = new THREE.CurvePath();
+                curve1.add(new THREE.CubicBezierCurve3(
+                    new THREE.Vector3(-10, 0, 0),
+                    new THREE.Vector3(-5, 5, 5),
+                    new THREE.Vector3(5, -5, -5),
+                    new THREE.Vector3(10, 0, 0)
+                ));
+
+                const curve2 = new THREE.CurvePath();
+                curve2.add(new THREE.CubicBezierCurve3(
+                    new THREE.Vector3(-10, -5, 5),
+                    new THREE.Vector3(-5, 0, -5),
+                    new THREE.Vector3(5, 5, 5),
+                    new THREE.Vector3(10, -5, 0)
+                ));
+
+                const curve3 = new THREE.CurvePath();
+                curve3.add(new THREE.CubicBezierCurve3(
+                    new THREE.Vector3(-10, 5, -5),
+                    new THREE.Vector3(-5, -5, 0),
+                    new THREE.Vector3(5, 0, -5),
+                    new THREE.Vector3(10, 5, 0)
+                ));
+
+                const curves = [
+                    { path: curve1, color: 0x3b82f6 },
+                    { path: curve2, color: 0x22c55e },
+                    { path: curve3, color: 0xef4444 }
+                ];
+
+                const points = [];
+                curves.forEach(curveObj => {
+                    for (let i = 0; i < pointsCount; i++) {
+                        const t = i / pointsCount;
+                        const point = curveObj.path.getPoint(t);
+                        const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+                        const material = new THREE.MeshBasicMaterial({ color: curveObj.color });
+                        const particle = new THREE.Mesh(geometry, material);
+                        particle.position.copy(point);
+                        mainGroup.add(particle);
+                        points.push(particle);
+                    }
+                });
+
+                mainGroup.userData.points = points;
+                mainGroup.userData.type = "nanizeTechnologies";
+                mainGroup.userData.curves = curves;
+                mainGroup.userData.time = 0;
+            }
+        }
+
+
+        // Animation loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            if (autoRotate) {
+                mainGroup.rotation.y += 0.005;
+            }
+
+            // Update scene based on its type
+            if (mainGroup.userData.type === "whoAreNanize") {
+                const particles = mainGroup.userData.particles;
+                if (particles) {
+                    particles.forEach(p => {
+                        p.rotation.x += 0.01;
+                        p.rotation.y += 0.01;
+                        p.position.x = Math.sin(Date.now() * 0.001 + p.position.z) * 5;
+                        p.position.z = Math.cos(Date.now() * 0.001 + p.position.x) * 5;
+                    });
+                }
+            } else if (mainGroup.userData.type === "whatDoesNanizeMake") {
+                const particles = mainGroup.userData.particles;
+                if (particles) {
+                    particles.forEach(p => {
+                        p.rotation.x += 0.02;
+                        p.rotation.y += 0.02;
+                        p.position.x += (Math.random() - 0.5) * 0.05;
+                        p.position.y += (Math.random() - 0.5) * 0.05;
+                        p.position.z += (Math.random() - 0.5) * 0.05;
+                    });
+                }
+            } else if (mainGroup.userData.type === "performanceGains") {
+                const particles = mainGroup.userData.particles;
+                if (particles) {
+                    particles.forEach(p => {
+                        p.position.y = Math.sin(Date.now() * 0.002 + p.position.x) * 2 + Math.cos(Date.now() * 0.002 + p.position.z) * 2;
+                        p.scale.x = p.scale.y = p.scale.z = Math.abs(Math.sin(Date.now() * 0.001 + p.position.x * 0.5));
+                    });
+                }
+            } else if (mainGroup.userData.type === "nanizeTechnologies") {
+                // Update graph animation
+                const points = mainGroup.userData.points;
+                const curves = mainGroup.userData.curves;
+                const time = mainGroup.userData.time += 0.0005;
+
+                if (points && curves) {
+                    const pointsPerCurve = points.length / curves.length;
+                    curves.forEach((curveObj, curveIndex) => {
+                        for (let i = 0; i < pointsPerCurve; i++) {
+                            const pointIndex = curveIndex * pointsPerCurve + i;
+                            const t = (i / pointsPerCurve + time) % 1;
+                            const point = curveObj.path.getPoint(t);
+                            points[pointIndex].position.copy(point);
+                            points[pointIndex].scale.setScalar(Math.sin(t * Math.PI) * 1.5 + 0.5);
+                        }
+                    });
+                }
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        };
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+
+        // The JSON data with the questions and answers
+        const questionsData = [
+            {
+                "q": "Who are Nanize?",
+                "a": "Nanize is a Norwegian company that develops and manufactures sustainable, high-performance, PFAS-free surface coatings using a patent-pending polysilazane technology. Their nano-coatings offer durability, low friction, anti-adhesion, and ultra-fast curing capabilities, making them an eco-friendly alternative to traditional Teflon®-based coatings. Nanize's solutions are designed for various industries, including automotive, aerospace, medical, and industrial manufacturing, to enhance performance, reduce costs, and meet growing environmental regulations.",
+                "sceneType": "whoAreNanize"
+            },
+            {
+                "q": "What does Nanize make?",
+                "a": "We engineer nano/ceramic polysilazane coatings—PFAS-free by design—that protect metal, glass and plastics while keeping surfaces easy to clean and highly resistant to sticking and wear.",
+                "sceneType": "whatDoesNanizeMake"
+            },
+            {
+                "q": "What performance gains should I expect?",
+                "a": "Exceptionally low coefficient of friction and robust non-wetting/non-stick behavior, delivering durable protection and easier maintenance at industrial throughput.",
+                "sceneType": "performanceGains"
+            },
+            {
+                "q": "What does Nanize's technologies?",
+                "a": "Nanize's core technology is a patent-pending polysilazane formulation that combines durability with environmental friendliness. The ultra-fast curing process, often in less than a minute and at low temperatures, is a key feature. This technology allows for the creation of coatings that are highly durable and resistant to friction, making them a superior alternative to older, less sustainable options like Teflon.",
+                "sceneType": "nanizeTechnologies"
+            }
+        ];
+
+        // Function to create a message bubble
+        function createMessage(text, isUser) {
+            const message = document.createElement('div');
+            message.textContent = text;
+            message.className = `max-w-[80%] p-3 rounded-xl transition-all duration-300 ${isUser ? 'bg-user-bubble self-end' : 'bg-bot-bubble self-start'} message-anim-enter`;
+            return message;
+        }
+
+        // Function to create a typing indicator
+        function createTypingIndicator() {
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'bg-bot-bubble p-3 rounded-xl self-start flex space-x-1 items-center message-anim-enter';
+            typingIndicator.id = 'typing-indicator';
+            typingIndicator.innerHTML = `
+                <span class="dot w-2 h-2 rounded-full bg-current"></span>
+                <span class="dot w-2 h-2 rounded-full bg-current"></span>
+                <span class="dot w-2 h-2 rounded-full bg-current"></span>
+            `;
+            return typingIndicator;
+        }
+
+        // Function to add a message to the chat log and scroll to the bottom with animation
+        function addMessageToLog(element, delay = 0) {
+            chatLog.appendChild(element);
+            setTimeout(() => {
+                element.classList.remove('message-anim-enter');
+                element.classList.add('message-anim-enter-active');
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }, delay);
+        }
+
+        // Function to handle question button clicks
+        function handleQuestionClick(questionObj) {
+            // First, animate out the question buttons
+            const buttons = document.querySelectorAll('#questions-container button');
+            buttons.forEach(button => {
+                button.classList.add('fade-out');
+            });
+            setTimeout(() => {
+                questionsContainer.innerHTML = '';
+            }, 500);
+
+            // Add user's question to the chat log
+            const userMessage = createMessage(questionObj.q, true);
+            addMessageToLog(userMessage);
+
+            // Add typing indicator
+            const typingIndicator = createTypingIndicator();
+            addMessageToLog(typingIndicator, 300);
+
+            // Simulate "typing" delay before showing bot's response
+            const botMessageDelay = 1500;
+
+            setTimeout(() => {
+                typingIndicator.remove(); // Remove the typing indicator
+                const botMessage = createMessage(questionObj.a, false);
+                addMessageToLog(botMessage);
+
+                // Update the 3D scene
+                update3DScene(questionObj.sceneType);
+
+                if (questionObj.sceneType === "whoAreNanize") {
+                    const label = document.getElementById("scene-label") || (() => {
+                        const div = document.createElement("div");
+                        div.id = "scene-label";
+                       div.className = "absolute top-4 left-4 bg-black/60 text-white text-xs px-3 py-1 rounded animate-pulse";
+                        document.querySelector(".flex-1.bg-black").appendChild(div);
+                        return div;
+                    })();
+                    label.textContent = "Nanize Innovation";
+                    label.classList.remove("hidden");
+                    }
+
+
+
+                // Wait a bit and then show the questions again
+                setTimeout(populateQuestions, 1000);
+
+            }, botMessageDelay);
+        }
+
+        // Function to populate the question buttons
+        function populateQuestions() {
+            questionsContainer.innerHTML = '';
+            questionsData.forEach(q => {
+                const button = document.createElement('button');
+                button.textContent = q.q;
+                button.className = 'p-3 text-left rounded-xl bg-gray-600 hover:bg-gray-500 transition-colors text-gray-200 font-medium';
+                button.onclick = () => handleQuestionClick(q);
+                questionsContainer.appendChild(button);
+            });
+        }
+
+        // Initialize the app
+        // window.onload = function () {
+        //     populateQuestions();
+        //     // Start with a default scene for the first question
+        //     update3DScene(questionsData[0].sceneType);
+        //     animate();
+        // };
+        window.onload = function () {
+            populateQuestions();
+            // No scene on load — wait for a question click
+            // update3DScene(questionsData[0].sceneType);
+            animate();
+        };
+
+      //graphs: 
+       const c=document.getElementById('ftir');const ctx=c.getContext('2d');
+    function size(){const d=window.devicePixelRatio||1;const w=c.clientWidth;const h=c.clientHeight; c.width=w*d; c.height=h*d; ctx.setTransform(d,0,0,d,0,0);} size(); addEventListener('resize',size);
+
+    const L=56,R=28,T=26,B=64; const xmin=500,xmax=2500,span=xmax-xmin;
+    const curves=[
+      {name:'Uncured PZ',color:'#22c55e',base:.96,lo:.78,hi:.99,d:[{mu:820,s:35,a:.06},{mu:930,s:40,a:.08},{mu:1040,s:55,a:.05},{mu:1120,s:55,a:.04},{mu:1550,s:80,a:.03},{mu:2300,s:130,a:.02}]},
+      {name:'Cured PZ on aluminum',color:'#f59e0b',base:.74,lo:.48,hi:.90,d:[{mu:1250,s:85,a:.10},{mu:1550,s:95,a:.06}]},
+      {name:'Cured PZ on steel',color:'#60a5fa',base:.60,lo:.36,hi:.82,d:[{mu:1100,s:85,a:.12},{mu:1250,s:95,a:.16},{mu:1550,s:80,a:.03}]}
+    ];
+    const peaks=[{x:1100,l:'Si–O–Si'},{x:1250,l:'Si–CH₃'},{x:1550,l:'Si–H'},{x:2300,l:'N–H'}];
+
+    const xpx=wn=>L+(wn-xmin)/span*(c.clientWidth-L-R); 
+    const ypx=(y,lo,hi)=>T+(1-(y-lo)/(hi-lo))*(c.clientHeight-T-B);
+    function yval(wn,base,d){let y=base; for(const p of d){const q=wn-p.mu; y-=p.a*Math.exp(-(q*q)/(2*p.s*p.s));} return y;}
+
+    function draw(progress){
+      const W=c.clientWidth,H=c.clientHeight; ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#0f172a'; ctx.fillRect(L,T,W-L-R,H-T-B);
+      ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=1; ctx.beginPath();
+      [500,1000,1500,2000,2500].forEach(x=>{const gx=xpx(x); ctx.moveTo(gx,T); ctx.lineTo(gx,H-B);}); ctx.stroke();
+      ctx.strokeStyle='rgba(255,255,255,.10)'; ctx.strokeRect(L,T,W-L-R,H-T-B);
+      ctx.fillStyle='rgba(229,231,235,.9)'; ctx.font='12px system-ui,Segoe UI,Roboto,Arial'; ctx.textAlign='center';
+      ctx.fillText('500',xpx(500),H-42); ctx.fillText('1500',xpx(1500),H-42); ctx.fillText('2500',xpx(2500),H-42);
+      ctx.fillText('Wavenumber (cm⁻¹)',(L+W-R)/2,H-18);
+      ctx.save(); ctx.translate(18,(T+H-B)/2); ctx.rotate(-Math.PI/2); ctx.fillText('Transmittance (a.u.)',0,0); ctx.restore();
+
+      const reveal=L+(W-L-R)*progress; const legends=[];
+      curves.forEach(cv=>{ctx.beginPath(); ctx.strokeStyle=cv.color; ctx.lineWidth=2; let started=false; for(let px=L;px<=reveal;px++){
+          const wn=xmin+(px-L)/(W-L-R)*span; const y=yval(wn,cv.base,cv.d); const py=ypx(y,cv.lo,cv.hi); if(!started){ctx.moveTo(px,py); started=true;} else ctx.lineTo(px,py);
+      } ctx.stroke(); const yEnd=ypx(yval(xmax,cv.base,cv.d),cv.lo,cv.hi); legends.push({x:reveal,y:yEnd,c:cv.color,t:cv.name}); });
+
+      ctx.setLineDash([6,6]); ctx.lineDashOffset=(performance.now()/30)%12; ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.fillStyle='rgba(229,231,235,.9)'; ctx.textAlign='left';
+      peaks.forEach(p=>{const x=Math.max(L,Math.min(xpx(p.x),c.clientWidth-R)); ctx.beginPath(); ctx.moveTo(x,T); ctx.lineTo(x,H-B); ctx.stroke(); ctx.fillText(p.l,x+6,T+14);});
+      ctx.setLineDash([]);
+
+      legends.forEach(Lg=>{ctx.fillStyle=Lg.c; ctx.fillRect(Lg.x+8,Lg.y-5,8,8); ctx.fillStyle='white'; ctx.strokeStyle='#0b0f19'; ctx.lineWidth=3; ctx.strokeText(Lg.t,Lg.x+24,Lg.y+4); ctx.fillText(Lg.t,Lg.x+24,Lg.y+4);});
+    }
+
+    let t=0; (function loop(){t+=.010; const p=Math.min(1,Math.max(0,(Math.sin(t)*.5+.5)*.92+.08)); draw(p); requestAnimationFrame(loop); })();
+
+    </script>
+</body>
+
+</html>
