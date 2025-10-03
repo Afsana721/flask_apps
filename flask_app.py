@@ -27,8 +27,8 @@ def electronic():
     return render_template("electronic.html")
 
 #gemsone apps
-@app.route("/gemsttone")
-def electronic():
+@app.route("/gemstone")
+def gemstone():
     return render_template("gemstone.html")
 
 
