@@ -31,6 +31,11 @@ def electronic():
 def gemstone(): 
     return render_template('gemstone.html')
 
+#nanize apps
+@app.route("/nanize)
+def nanize():
+    return render_template('nanize.html)
+
 
 
 
