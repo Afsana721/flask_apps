@@ -1,0 +1,936 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ======= META / SEO ======= -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenQQuantify • Gemstone Marketplace</title>
+  <meta name="description" content="A modern, trustworthy gemstone marketplace by OpenQQuantify. Curate, compare, simulate, and purchase authenticated gemstones with transparent pricing." />
+  <meta property="og:title" content="OpenQQuantify • Gemstone Marketplace" />
+  <meta property="og:description" content="Curate, compare, simulate, and purchase authenticated gemstones with transparent pricing." />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0D3A32" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        container: { center: true, padding: '1rem' },
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            display: ['Playfair Display', 'serif']
+          },
+          colors: {
+            pine: '#0D3A32',
+            tealdeep: '#224942',
+            graphite: '#1a1a1a',
+            ink: '#0b0f12',
+            accent: '#E11D48',
+            emerald: '#10B981',
+            aqua: '#22D3EE',
+            gold: '#F59E0B'
+          },
+          boxShadow: {
+            float: '0 10px 30px rgba(0,0,0,.35)',
+            glow: '0 0 40px rgba(34,211,238,.25)',
+            card: '0 8px 30px rgba(0,0,0,.25)',
+          },
+          animation: {
+            'fade-up': 'fadeUp .6s ease-out both',
+            'spin-slower': 'spin 20s linear infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: 0, transform: 'translateY(14px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Subtle textured gradient background */
+    body {
+      background:
+        radial-gradient(1000px 600px at 10% -10%, rgba(34,73,66,.40), transparent 60%),
+        radial-gradient(1000px 600px at 110% 10%, rgba(13,58,50,.45), transparent 60%),
+        radial-gradient(900px 600px at 50% 120%, rgba(16,16,16,.65), transparent 60%),
+        linear-gradient(180deg, #0b0f12, #0D3A32 60%, #101010);
+      background-attachment: fixed;
+    }
+    /* Hide number input spinners (qty field) */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
+</head>
+
+<body class="text-white antialiased selection:bg-emerald/30">
+  <!-- ======= TOP BAR ======= -->
+  <div class="w-full border-b border-white/10 bg-black/20 backdrop-blur">
+    <div class="container flex items-center justify-between py-2 text-xs">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-2 text-white/70"><i class="fa-solid fa-shield-halved text-emerald"></i> Secure • Authenticated • Insured Shipping</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a class="hover:text-emerald" href="mailto:connect@openqquantify.com">connect@openqquantify.com</a>
+        <a class="hover:text-emerald hidden sm:inline" href="tel:+coming soon"> # coming soon</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= NAVBAR ======= -->
+  <header class="sticky top-0 z-50 bg-black/40 backdrop-blur border-b border-white/10">
+    <nav class="container flex items-center justify-between py-4">
+      <a class="flex items-center gap-3" href="#">
+        <img src="/static/static_gemstone/oqq.png" alt="OpenQQuantify" class="h-10 w-10 rounded-full ring-2 ring-emerald/60" />
+        <div class="leading-none">
+          <div class="font-extrabold tracking-tight">OpenQQuantify</div>
+          <div class="text-[10px] text-white/60 -mt-0.5">Gemstone Marketplace</div>
+        </div>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#catalog" class="hover:text-emerald">Catalog</a>
+        <a href="#filters" class="hover:text-emerald">Filters</a>
+        <a href="#upload" class="hover:text-emerald">Bulk Upload</a>
+        <a href="#about" class="hover:text-emerald">About</a>
+        <a href="#faq" class="hover:text-emerald">FAQ</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="searchBtn" class="hidden sm:flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald/60">
+          <i class="fa-solid fa-magnifying-glass text-white/70"></i>
+          <span class="text-white/70">Search</span>
+        </button>
+        <button id="cartOpen" class="relative inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2.5 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald/60" aria-label="Open cart" aria-haspopup="dialog">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span id="cartBadge" class="absolute -top-1 -right-1 hidden rounded-full bg-accent px-1.5 py-0.5 text-[10px] leading-none font-bold">0</span>
+        </button>
+        <button id="mobileMenu" class="md:hidden inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 p-2.5 hover:bg-white/10" aria-label="Open menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+    <!-- mobile drawer -->
+    <div id="mobileNav" class="md:hidden hidden border-t border-white/10 bg-black/60">
+      <div class="container py-3 grid gap-3 text-sm">
+        <a class="hover:text-emerald" href="#catalog">Catalog</a>
+        <a class="hover:text-emerald" href="#filters">Filters</a>
+        <a class="hover:text-emerald" href="#upload">Bulk Upload</a>
+        <a class="hover:text-emerald" href="#about">About</a>
+        <a class="hover:text-emerald" href="#faq">FAQ</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======= HERO ======= -->
+  <section class="relative overflow-hidden">
+    <div class="absolute -top-40 -right-40 h-[28rem] w-[28rem] rounded-full bg-emerald/20 blur-3xl"></div>
+    <div class="absolute top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-aqua/20 blur-3xl"></div>
+
+    <div class="container py-14 md:py-24 grid items-center gap-10 md:grid-cols-2">
+      <div class="space-y-6 animate-fade-up">
+        <h1 class="font-display text-4xl sm:text-5xl md:text-6xl leading-tight">
+          Curate & Trade <span class="bg-gradient-to-r from-emerald via-aqua to-emerald bg-clip-text text-transparent">Authenticated Gemstones</span>
+        </h1>
+        <p class="text-white/70 text-lg max-w-prose">
+          Built by engineers, loved by jewelers. Transparent pricing, provenance tracking, secure checkout, and simulation tools—so you buy brilliance, not uncertainty.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+          <div class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
+            <div class="font-semibold">Zero-Cost Prototyping</div>
+            <p class="text-white/60 mt-1">Design settings & collections digitally before spending on inventory.</p>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
+            <div class="font-semibold">Simulate & Verify</div>
+            <p class="text-white/60 mt-1">Optics & color matching, lighting conditions, and cut comparison.</p>
+          </div>
+          <div class="rounded-2xl border border-white/10 bg-white/[.04] p-4">
+            <div class="font-semibold">Agentic AI Assistant</div>
+            <p class="text-white/60 mt-1">Ask for sourcing, grading, BOMs, and client-ready quotes in seconds.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="#catalog" class="inline-flex items-center gap-2 rounded-xl bg-emerald px-5 py-3 text-black font-semibold shadow-card hover:bg-emerald/90">
+            <i class="fa-solid fa-gem"></i> Browse Catalog
+          </a>
+          <a href="#upload" class="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-5 py-3 hover:bg-white/10">
+            <i class="fa-solid fa-file-arrow-up"></i> Bulk Upload
+          </a>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="aspect-[4/3] w-full rounded-3xl border border-white/10 bg-gradient-to-br from-ink to-graphite p-1 shadow-glow">
+          <div class="relative h-full w-full rounded-[22px] bg-gradient-to-br from-pine/60 to-ink p-6">
+            <div class="absolute inset-0 pointer-events-none rounded-[22px] ring-1 ring-white/10"></div>
+            <!-- Simple hero “gem” SVG -->
+            <svg viewBox="0 0 240 240" class="h-full w-full drop-shadow-[0_0_20px_rgba(34,211,238,.35)]">
+              <defs>
+                <linearGradient id="lg" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#22D3EE"/>
+                  <stop offset="1" stop-color="#10B981"/>
+                </linearGradient>
+              </defs>
+              <polygon points="120,12 208,80 208,160 120,228 32,160 32,80" fill="url(#lg)" />
+              <polyline points="120,12 120,228" stroke="rgba(255,255,255,.35)" stroke-width="2" />
+              <polyline points="32,80 208,80" stroke="rgba(255,255,255,.2)" stroke-width="2" />
+              <polyline points="32,160 208,160" stroke="rgba(255,255,255,.2)" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+        <div class="absolute -bottom-6 right-6 rounded-2xl border border-white/10 bg-white/[.06] px-3 py-2 text-xs shadow-card">
+          Realtime provenance • GIA mapping • Multi-angle render
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FILTERS / SORT ======= -->
+  <section id="filters" class="container py-10">
+    <div class="rounded-3xl border border-white/10 bg-white/[.04] p-5 md:p-6 shadow-card">
+      <div class="flex flex-wrap items-end gap-4">
+        <div class="grow">
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Search</label>
+          <div class="relative">
+            <input id="query" type="search" placeholder="Search by name, color, origin…"
+                   class="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 outline-none focus:ring-2 focus:ring-emerald/50" />
+            <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-white/40"></i>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Type</label>
+          <select id="type" class="rounded-xl border border-white/10 bg-black/30 px-3 py-2.5">
+            <option value="">All</option>
+            <option value="Corundum">Corundum (Ruby/Sapphire)</option>
+            <option value="Beryl">Beryl (Emerald/Aquamarine)</option>
+            <option value="Quartz">Quartz (Amethyst/Citrine)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Origin</label>
+          <select id="origin" class="rounded-xl border border-white/10 bg-black/30 px-3 py-2.5">
+            <option value="">Any</option>
+            <option value="Myanmar">Myanmar</option>
+            <option value="Colombia">Colombia</option>
+            <option value="Sri Lanka">Sri Lanka</option>
+            <option value="Brazil">Brazil</option>
+            <option value="Botswana">Botswana</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Max Price</label>
+          <input id="maxPrice" type="number" min="0" step="10" placeholder="e.g. 500"
+                 class="w-36 rounded-xl border border-white/10 bg-black/30 px-3 py-2.5" />
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Sort</label>
+          <select id="sort" class="rounded-xl border border-white/10 bg-black/30 px-3 py-2.5">
+            <option value="featured">Featured</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button id="applyFilters" class="rounded-xl bg-emerald px-4 py-2.5 text-black font-semibold hover:bg-emerald/90">Apply</button>
+          <button id="resetFilters" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 hover:bg-white/10">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= CATALOG ======= -->
+  <section id="catalog" class="container pb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-2xl md:text-3xl font-bold">Catalog</h2>
+      <div class="text-sm text-white/60"><span id="resultsCount">0</span> results</div>
+    </div>
+
+    <!-- grid -->
+    <div id="grid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <!-- cards injected by JS -->
+    </div>
+
+    <!-- pagination -->
+    <div id="pagination" class="flex items-center justify-center gap-2 mt-8"></div>
+  </section>
+
+  <!-- ======= BULK UPLOAD + CHAT ======= -->
+  <section id="upload" class="container py-16 grid gap-6 lg:grid-cols-2">
+    <!-- Upload -->
+    <div class="rounded-3xl border border-white/10 bg-white/[.04] p-6 shadow-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold">Bulk Upload (CSV)</h3>
+        <span class="text-xs rounded-full bg-white/10 px-2 py-1">Beta</span>
+      </div>
+      <p class="text-white/70 text-sm mt-2">Upload a CSV containing <em>name, type, origin, price, carat, clarity</em>. We’ll preview the first rows.</p>
+      <form id="uploadForm" class="mt-4 space-y-3">
+        <input id="fileInput" type="file" accept=".csv" class="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2.5" />
+        <div class="flex gap-2">
+          <button class="rounded-xl bg-emerald px-4 py-2.5 text-black font-semibold hover:bg-emerald/90">Preview</button>
+          <button id="clearPreview" type="button" class="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 hover:bg-white/10">Clear</button>
+        </div>
+      </form>
+      <div id="uploadNote" class="mt-3 text-xs text-white/60"></div>
+      <div id="previewWrap" class="mt-4 overflow-x-auto hidden">
+        <table class="min-w-full text-sm">
+          <thead class="text-white/70"><tr id="previewHead"></tr></thead>
+          <tbody id="previewBody" class="text-white/80"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="rounded-3xl border border-white/10 bg-white/[.04] p-6 shadow-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold">GemBot Assistant</h3>
+        <span class="text-xs rounded-full bg-white/10 px-2 py-1">Demo</span>
+      </div>
+      <div id="chatWindow" aria-live="polite" class="mt-4 h-72 overflow-y-auto rounded-2xl border border-white/10 bg-black/30 p-4 space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-aqua/20 flex items-center justify-center"><i class="fa-solid fa-gem text-aqua"></i></div>
+          <div class="max-w-[85%] rounded-xl bg-white/10 px-3 py-2 text-sm">Hi, I’m GemBot. Ask me about grading, price ranges, or shipping.</div>
+        </div>
+      </div>
+      <form id="chatForm" class="mt-3 flex gap-2">
+        <input id="chatInput" type="text" placeholder="Ask something…"
+               class="flex-1 rounded-xl border border-white/10 bg-black/30 px-4 py-2.5 outline-none focus:ring-2 focus:ring-emerald/50" />
+        <button class="rounded-xl bg-emerald px-4 py-2.5 text-black font-semibold hover:bg-emerald/90">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ======= INSIGHTS (Canvas) ======= -->
+  <section class="container pb-20">
+    <div class="rounded-3xl border border-white/10 bg-white/[.04] p-6 shadow-card">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold">Market Insight • Demand vs Price (Inverse)</h3>
+        <div class="text-xs text-white/60">Interactive</div>
+      </div>
+      <div class="grid gap-4 md:grid-cols-[1fr_auto] mt-4">
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4">
+          <canvas id="insight" width="900" height="360" class="w-full"></canvas>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-black/30 p-4 h-max">
+          <label class="block text-xs uppercase tracking-wide text-white/60 mb-2">Global Demand</label>
+          <input id="demand" type="range" min="10" max="90" value="50" class="w-56" />
+          <div class="text-sm text-white/70 mt-2">Value: <span id="demandVal" class="font-semibold text-aqua">50%</span></div>
+          <div class="text-xs text-white/50 mt-3">Higher demand pushes unit price <span class="italic">down</span> in our simplified model.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= ABOUT / FAQ ======= -->
+  <section id="about" class="container pb-16">
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-3xl border border-white/10 bg-white/[.04] p-6 shadow-card">
+        <h3 class="text-xl font-semibold">About</h3>
+        <p class="text-white/70 mt-2">
+          OpenQQuantify blends <span class="text-emerald font-semibold">engineering rigor</span> with the artistry of gemstones.
+          We provide verifiable provenance, consistent grading metadata, and frictionless checkout with secure escrow.
+          Our agentic AI can generate quotes, validate inventory, and simulate lighting/setting scenarios before you buy.
+        </p>
+      </div>
+      <div id="faq" class="rounded-3xl border border-white/10 bg-white/[.04] p-6 shadow-card">
+        <h3 class="text-xl font-semibold">FAQ</h3>
+        <details class="mt-3 rounded-xl border border-white/10 bg-black/30 p-4">
+          <summary class="cursor-pointer font-medium">Do you accept returns?</summary>
+          <p class="text-white/70 mt-2 text-sm">Yes, 30-day returns in original condition. Authentication stickers/labels must be intact.</p>
+        </details>
+        <details class="mt-3 rounded-xl border border-white/10 bg-black/30 p-4">
+          <summary class="cursor-pointer font-medium">How long is shipping?</summary>
+          <p class="text-white/70 mt-2 text-sm">Most destinations arrive within 5–10 business days with insurance and tracking.</p>
+        </details>
+        <details class="mt-3 rounded-xl border border-white/10 bg-black/30 p-4">
+          <summary class="cursor-pointer font-medium">Do you provide certificates?</summary>
+          <p class="text-white/70 mt-2 text-sm">We attach certificate metadata and can link to GIA/IGI references where available.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="border-t border-white/10 bg-black/40 backdrop-blur">
+    <div class="container py-10 grid gap-8 md:grid-cols-3">
+      <div>
+        <div class="flex items-center gap-3">
+          <img src="/static/static_gemstone/oqq.png" alt="OpenQQuantify" class="h-12 w-12 rounded-full ring-2 ring-emerald/60" />
+          <div>
+            <div class="font-extrabold">OpenQQuantify</div>
+            <div class="text-xs text-white/60">Engineering marketplaces for humans.</div>
+          </div>
+        </div>
+        <p class="text-white/70 text-sm mt-3">No sensitive data collected. Encrypted checkout. Ethical sourcing.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Explore</h4>
+        <ul class="space-y-2 text-white/70 text-sm">
+          <li><a class="hover:text-emerald" href="#catalog">Catalog</a></li>
+          <li><a class="hover:text-emerald" href="#upload">Bulk Upload</a></li>
+          <li><a class="hover:text-emerald" href="#about">About</a></li>
+          <li><a class="hover:text-emerald" href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Connect</h4>
+        <div class="flex items-center gap-3 text-xl">
+          <a class="hover:text-aqua" href="https://linkedin.com" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin"></i></a>
+          <a class="hover:text-emerald" href="https://instagram.com" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a>
+          <a class="hover:text-blue-400" href="https://facebook.com" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i></a>
+          <a class="hover:text-white" href="https://x.com" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="text-center text-xs text-white/50 pb-8">© <span id="year"></span> OpenQQuantify • All rights reserved.</div>
+  </footer>
+
+  <!-- ======= PRODUCT DETAIL MODAL ======= -->
+  <dialog id="detailModal" class="backdrop:bg-black/70 rounded-3xl border border-white/10 bg-gradient-to-b from-ink to-graphite text-white w-[min(980px,94vw)] p-0">
+    <form method="dialog" class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+      <div class="font-semibold">Gemstone Details</div>
+      <button class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/10"><i class="fa-solid fa-xmark"></i></button>
+    </form>
+    <div class="grid gap-6 p-6 md:grid-cols-2">
+      <div class="rounded-2xl border border-white/10 bg-black/30 p-3 aspect-square flex items-center justify-center">
+        <img id="detailImage" alt="" class="h-full w-full object-cover rounded-xl" />
+      </div>
+      <div class="space-y-4">
+        <div>
+          <h4 id="detailName" class="text-2xl font-bold"></h4>
+          <div id="detailTag" class="text-white/60 text-sm mt-1"></div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div id="detailPrice" class="text-xl font-semibold"></div>
+          <span id="detailStock" class="text-xs rounded-full border border-emerald/40 bg-emerald/10 px-2 py-1 text-emerald">In stock</span>
+        </div>
+        <div id="detailSpecs" class="text-sm text-white/80 grid grid-cols-2 gap-x-6 gap-y-2"></div>
+        <div class="flex items-center gap-2">
+          <label for="detailQty" class="sr-only">Quantity</label>
+          <input id="detailQty" type="number" min="1" value="1" class="w-20 rounded-xl border border-white/10 bg-black/30 px-3 py-2.5" />
+          <button id="detailAdd" class="rounded-xl bg-emerald px-5 py-2.5 text-black font-semibold hover:bg-emerald/90">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ======= CART DRAWER ======= -->
+  <aside id="cartDrawer" class="fixed top-0 right-0 z-[60] h-full w-[min(420px,92vw)] translate-x-full transition-transform duration-300 border-l border-white/10 bg-gradient-to-b from-ink to-graphite shadow-2xl">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full ring-2 ring-accent text-accent font-extrabold">o</span>
+        <h3 class="font-bold">Cart</h3>
+      </div>
+      <button id="cartClose" class="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 hover:bg-white/10"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="h-full overflow-y-auto">
+      <div class="p-4 border-b border-white/10">
+        <ul id="cartItems" class="space-y-3"></ul>
+        <div id="emptyCart" class="text-white/60 text-sm py-4">Your cart is empty.</div>
+      </div>
+      <div class="p-4 border-b border-white/10">
+        <h4 class="font-semibold mb-2">Summary</h4>
+        <div class="flex items-center justify-between text-sm text-white/70"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+        <div class="flex items-center justify-between text-sm text-white/70"><span>Shipping</span><span>Calculated at checkout</span></div>
+        <div class="mt-2 flex items-center justify-between text-lg font-semibold"><span>Total</span><span id="grandTotal">$0.00</span></div>
+      </div>
+      <div class="p-4">
+        <button id="checkout" class="w-full rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4 py-3 font-semibold shadow-card hover:opacity-90">Pay with Stripe</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======= TEMPLATES (for JS cloning) ======= -->
+  <template id="cardTemplate">
+    <article class="group overflow-hidden rounded-2xl border border-white/10 bg-white/[.03] shadow-card hover:-translate-y-1 hover:shadow-glow transition">
+      <div class="relative aspect-[4/3] w-full overflow-hidden">
+        <img data-img alt="" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]" />
+        <button data-quick class="absolute bottom-3 right-3 rounded-xl border border-white/10 bg-black/50 px-3 py-1.5 text-xs backdrop-blur hover:bg-black/70">Quick view</button>
+      </div>
+      <div class="p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h4 data-name class="font-semibold"></h4>
+            <p data-tag class="text-xs text-white/60 mt-0.5"></p>
+          </div>
+          <div class="text-right">
+            <div data-price class="font-semibold"></div>
+            <div class="text-[10px] text-white/50">incl. taxes</div>
+          </div>
+        </div>
+        <div class="mt-3 flex items-center justify-between">
+          <div class="text-[11px] text-white/50" data-meta></div>
+          <button data-add class="rounded-xl bg-emerald px-3 py-1.5 text-black text-sm font-semibold hover:bg-emerald/90">Add</button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <!-- ======= SCRIPTS ======= -->
+  <script>
+    // ---------- Utilities ----------
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const money = new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' });
+    const clamp = (n, a, b) => Math.min(Math.max(n, a), b);
+
+    // ---------- Data (demo) ----------
+    /** In production, hydrate from API. */
+    const PRODUCTS = [
+      {
+        id: 'ruby-fire', name: 'Fire Ruby', type: 'Corundum', origin: 'Myanmar',
+        price: 2500, carat: 3.2, clarity: 'VS1', cut: 'Oval', stock: true,
+        //img: 'https://images.unsplash.com/photo-1617038260897-3ac3d9fe19cc?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/fire_ruby.jpg' // served from PythonAnywhere /static/gemstone_static
+      },
+      {
+        id: 'emerald-forest', name: 'Forest Emerald', type: 'Beryl', origin: 'Colombia',
+        price: 1800, carat: 2.8, clarity: 'SI1', cut: 'Emerald', stock: true,
+        //img: 'https://images.unsplash.com/photo-1573821206637-701a6c19f44f?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/emerald_gem.jpg'
+      },
+      {
+        id: 'sapphire-ocean', name: 'Ocean Sapphire', type: 'Corundum', origin: 'Sri Lanka',
+        price: 1200, carat: 4.1, clarity: 'VVS2', cut: 'Round', stock: true,
+        //img: 'https://images.unsplash.com/photo-1617038139153-6a69b6d1d5e8?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/sapprire.jpg'
+      },
+      {
+        id: 'diamond-eternal', name: 'Eternal Diamond', type: 'Other', origin: 'Botswana',
+        price: 5000, carat: 2.5, clarity: 'FL', cut: 'Round Brilliant', stock: true,
+        //img: 'https://images.unsplash.com/photo-1566927469332-0b9de7b2f2f8?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/eternal.png'
+      },
+      {
+        id: 'topaz-golden', name: 'Golden Topaz', type: 'Other', origin: 'Brazil',
+        price: 800, carat: 5.3, clarity: 'VS2', cut: 'Cushion', stock: true,
+        //img: 'https://images.unsplash.com/photo-1567016482711-5d21b07a3a35?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/Topaz.jpg'
+      },
+      {
+        id: 'amethyst-royal', name: 'Royal Amethyst', type: 'Quartz', origin: 'Brazil',
+        price: 600, carat: 6.7, clarity: 'VVS1', cut: 'Pear', stock: true,
+        //img: 'https://images.unsplash.com/photo-1606313564200-42f8a67a9f90?q=80&w=1400&auto=format&fit=crop
+        img: '/static/static_gemstone/amethyst.jpg'
+      },
+      {
+        id: 'aquamarine-tide', name: 'Aquamarine Tide', type: 'Beryl', origin: 'Brazil',
+        price: 120, carat: 1.1, clarity: 'VS2', cut: 'Step', stock: true,
+        //img: 'https://images.unsplash.com/photo-1615485737652-6f2d0b6c6a1a?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/aquamarine.jpeg'
+      },
+      {
+        id: 'citrine-sun', name: 'Citrine Sun', type: 'Quartz', origin: 'Brazil',
+        price: 320, carat: 3.0, clarity: 'VS2', cut: 'Oval', stock: true,
+        //img: 'https://images.unsplash.com/photo-1589994965851-d6f180cc4f0b?q=80&w=1400&auto=format&fit=crop'
+        img: '/static/static_gemstone/citrine.jpg'
+      }
+    ];
+
+    // ---------- State ----------
+    const state = {
+      page: 1,
+      perPage: 8,
+      filters: { q: '', type: '', origin: '', maxPrice: '' },
+      sort: 'featured',
+      cart: /** @type {Record<string,{id:string,name:string,price:number,qty:number,addedAt:number}>} */ (JSON.parse(localStorage.getItem('cart') || '{}'))
+    };
+
+    // ---------- DOM refs ----------
+    const grid = $('#grid');
+    const pagination = $('#pagination');
+    const resultsCount = $('#resultsCount');
+    const cardTemplate = $('#cardTemplate');
+
+    // Filters
+    const query = $('#query');
+    const typeSel = $('#type');
+    const originSel = $('#origin');
+    const maxPrice = $('#maxPrice');
+    const sortSel = $('#sort');
+    $('#applyFilters').addEventListener('click', () => {
+      state.filters.q = query.value.trim();
+      state.filters.type = typeSel.value;
+      state.filters.origin = originSel.value;
+      state.filters.maxPrice = maxPrice.value;
+      state.sort = sortSel.value;
+      state.page = 1;
+      render();
+    });
+    $('#resetFilters').addEventListener('click', () => {
+      query.value = typeSel.value = originSel.value = maxPrice.value = '';
+      sortSel.value = 'featured';
+      state.filters = { q: '', type: '', origin: '', maxPrice: '' };
+      state.sort = 'featured';
+      state.page = 1;
+      render();
+    });
+
+    // ---------- Catalog render ----------
+    function filterAndSort(data) {
+      let items = [...data];
+
+      // filter
+      const { q, type, origin, maxPrice } = state.filters;
+      if (q) {
+        const t = q.toLowerCase();
+        items = items.filter(p =>
+          p.name.toLowerCase().includes(t) ||
+          p.type.toLowerCase().includes(t) ||
+          p.origin.toLowerCase().includes(t)
+        );
+      }
+      if (type) items = items.filter(p => (type === 'Other' ? !['Corundum','Beryl','Quartz'].includes(p.type) : p.type === type));
+      if (origin) items = items.filter(p => p.origin === origin);
+      if (maxPrice) items = items.filter(p => p.price <= Number(maxPrice));
+
+      // sort
+      switch (state.sort) {
+        case 'price-asc': items.sort((a,b)=>a.price-b.price); break;
+        case 'price-desc': items.sort((a,b)=>b.price-a.price); break;
+        case 'name-asc': items.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        case 'name-desc': items.sort((a,b)=>b.name.localeCompare(a.name)); break;
+        default: /* featured: stable */ break;
+      }
+      return items;
+    }
+
+    function paginate(items) {
+      const total = items.length;
+      const pages = Math.max(1, Math.ceil(total / state.perPage));
+      const page = clamp(state.page, 1, pages);
+      const start = (page - 1) * state.perPage;
+      const slice = items.slice(start, start + state.perPage);
+      return { slice, total, pages, page };
+    }
+
+    function cardNode(p) {
+      const node = cardTemplate.content.firstElementChild.cloneNode(true);
+      const img = node.querySelector('[data-img]');
+      const nm = node.querySelector('[data-name]');
+      const tg = node.querySelector('[data-tag]');
+      const pr = node.querySelector('[data-price]');
+      const meta = node.querySelector('[data-meta]');
+      const add = node.querySelector('[data-add]');
+      const quick = node.querySelector('[data-quick]');
+
+      img.src = p.img; img.alt = p.name;
+      nm.textContent = p.name;
+      tg.textContent = `${p.type} • ${p.origin}`;
+      pr.textContent = money.format(p.price);
+      meta.textContent = `${p.carat} ct • ${p.clarity} • ${p.cut}`;
+      add.addEventListener('click', () => addToCart(p.id, 1, p));
+      quick.addEventListener('click', () => openDetail(p));
+
+      return node;
+    }
+
+    function renderGrid(slice) {
+      grid.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      slice.forEach(p => frag.appendChild(cardNode(p)));
+      grid.appendChild(frag);
+    }
+
+    function renderPagination(page, pages) {
+      pagination.innerHTML = '';
+      if (pages <= 1) return;
+      const mk = (label, disabled, onClick) => {
+        const b = document.createElement('button');
+        b.className = `rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-sm hover:bg-white/10 ${disabled?'opacity-40 cursor-not-allowed':''}`;
+        b.textContent = label;
+        if (!disabled) b.addEventListener('click', onClick);
+        return b;
+      };
+      pagination.appendChild(mk('Prev', page === 1, () => { state.page--; render(); }));
+      for (let i = 1; i <= pages; i++) {
+        const b = mk(String(i), false, () => { state.page = i; render(); });
+        if (i === page) b.classList.add('bg-emerald','text-black','border-emerald/30');
+        pagination.appendChild(b);
+      }
+      pagination.appendChild(mk('Next', page === pages, () => { state.page++; render(); }));
+    }
+
+    function render() {
+      const items = filterAndSort(PRODUCTS);
+      const { slice, total, pages, page } = paginate(items);
+      resultsCount.textContent = total;
+      renderGrid(slice);
+      renderPagination(page, pages);
+    }
+
+    // ---------- Detail modal ----------
+    const detailModal = $('#detailModal');
+    const detailName = $('#detailName');
+    const detailTag = $('#detailTag');
+    const detailPrice = $('#detailPrice');
+    const detailImage = $('#detailImage');
+    const detailSpecs = $('#detailSpecs');
+    const detailQty = $('#detailQty');
+    const detailAdd = $('#detailAdd');
+    let currentDetail = null;
+
+    function openDetail(p) {
+      currentDetail = p;
+      detailName.textContent = p.name;
+      detailTag.textContent = `${p.type} • ${p.origin}`;
+      detailPrice.textContent = money.format(p.price);
+      detailImage.src = p.img; detailImage.alt = p.name;
+      detailSpecs.innerHTML = `
+        <div><span class="text-white/50">Carat</span><div class="font-medium">${p.carat} ct</div></div>
+        <div><span class="text-white/50">Clarity</span><div class="font-medium">${p.clarity}</div></div>
+        <div><span class="text-white/50">Cut</span><div class="font-medium">${p.cut}</div></div>
+        <div><span class="text-white/50">Stock</span><div class="font-medium">${p.stock?'Available':'Backorder'}</div></div>
+      `;
+      detailQty.value = 1;
+      detailModal.showModal();
+    }
+
+    detailAdd.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!currentDetail) return;
+      const qty = clamp(parseInt(detailQty.value || '1', 10), 1, 999);
+      addToCart(currentDetail.id, qty, currentDetail);
+      detailModal.close();
+      openCart();
+    });
+
+    // ---------- Cart ----------
+    const cartDrawer = $('#cartDrawer');
+    const cartOpen = $('#cartOpen');
+    const cartClose = $('#cartClose');
+    const cartItems = $('#cartItems');
+    const emptyCart = $('#emptyCart');
+    const cartBadge = $('#cartBadge');
+    const subtotal = $('#subtotal');
+    const grandTotal = $('#grandTotal');
+    const checkout = $('#checkout');
+
+    function saveCart() {
+      localStorage.setItem('cart', JSON.stringify(state.cart));
+    }
+
+    function addToCart(id, qty, metaIfNew) {
+      const existing = state.cart[id];
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        const p = metaIfNew || PRODUCTS.find(x=>x.id===id);
+        state.cart[id] = { id, name: p.name, price: p.price, qty, addedAt: Date.now() };
+      }
+      renderCart();
+    }
+
+    function removeFromCart(id) {
+      delete state.cart[id];
+      renderCart();
+    }
+
+    function changeQty(id, delta) {
+      if (!state.cart[id]) return;
+      state.cart[id].qty += delta;
+      if (state.cart[id].qty <= 0) delete state.cart[id];
+      renderCart();
+    }
+
+    function renderCart() {
+      saveCart();
+      // items
+      cartItems.innerHTML = '';
+      let total = 0, count = 0;
+      for (const id in state.cart) {
+        const it = state.cart[id];
+        total += it.price * it.qty;
+        count += it.qty;
+
+        const li = document.createElement('li');
+        li.className = 'rounded-xl border border-white/10 bg-white/[.03] p-3 flex items-center justify-between';
+        li.innerHTML = `
+          <div>
+            <div class="font-semibold">${it.name}</div>
+            <div class="text-xs text-white/60">${money.format(it.price)} each</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="rounded-md border border-white/10 bg-white/5 px-2 py-1 hover:bg-white/10" data-dec>−</button>
+            <span class="min-w-[1.5rem] text-center">${it.qty}</span>
+            <button class="rounded-md border border-white/10 bg-white/5 px-2 py-1 hover:bg-white/10" data-inc>+</button>
+            <button class="rounded-md border border-white/10 bg-white/5 px-2 py-1 hover:bg-white/10 text-red-300" data-rem><i class="fa-solid fa-trash"></i></button>
+          </div>
+        `;
+        li.querySelector('[data-inc]').addEventListener('click', ()=>changeQty(id, +1));
+        li.querySelector('[data-dec]').addEventListener('click', ()=>changeQty(id, -1));
+        li.querySelector('[data-rem]').addEventListener('click', ()=>removeFromCart(id));
+        cartItems.appendChild(li);
+      }
+      subtotal.textContent = money.format(total);
+      grandTotal.textContent = money.format(total);
+      emptyCart.classList.toggle('hidden', Object.keys(state.cart).length>0);
+      emptyCart.style.display = Object.keys(state.cart).length ? 'none':'block';
+      if (count>0) { cartBadge.textContent = String(count); cartBadge.classList.remove('hidden'); }
+      else cartBadge.classList.add('hidden');
+    }
+
+    function openCart() { cartDrawer.classList.remove('translate-x-full'); }
+    function closeCart() { cartDrawer.classList.add('translate-x-full'); }
+    cartOpen.addEventListener('click', openCart);
+    cartClose.addEventListener('click', closeCart);
+
+    checkout.addEventListener('click', async () => {
+      const total = Object.values(state.cart).reduce((s,it)=>s+it.price*it.qty,0);
+      if (!total) { alert('Your cart is empty.'); return; }
+      // Stripe session creation – expects a backend at /gemstone/api/checkout
+      try {
+        const r = await fetch('/gemstone/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type':'application/json' },
+          body: JSON.stringify({ product: 'Cart', amount: Math.round(total*100), currency: 'usd', quantity: 1 })
+        });
+        const { url, error } = await r.json();
+        if (url) location = url; else alert(error || 'Payment failed');
+      } catch (e) {
+        alert('Unable to start checkout (demo).');
+      }
+    });
+
+    // ---------- Upload Preview ----------
+    const uploadForm = $('#uploadForm');
+    const fileInput = $('#fileInput');
+    const previewWrap = $('#previewWrap');
+    const previewHead = $('#previewHead');
+    const previewBody = $('#previewBody');
+    const uploadNote = $('#uploadNote');
+    $('#clearPreview').addEventListener('click', () => {
+      fileInput.value = '';
+      previewWrap.classList.add('hidden');
+      previewHead.innerHTML = previewBody.innerHTML = '';
+      uploadNote.textContent = '';
+    });
+    uploadForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const f = fileInput.files?.[0];
+      if (!f) { uploadNote.textContent = 'Choose a CSV file to preview.'; return; }
+      if (!/\.csv$/i.test(f.name)) { uploadNote.textContent = 'Only CSV is supported in this demo.'; return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = String(reader.result || '');
+          const lines = text.split(/\r?\n/).filter(Boolean);
+          if (!lines.length) throw new Error('No data.');
+          const header = lines[0].split(',').map(s=>s.trim());
+          const rows = lines.slice(1).map(l=>l.split(',').map(s=>s.trim()));
+          previewHead.innerHTML = header.map(h=>`<th class="text-left py-1 pr-3">${h}</th>`).join('');
+          previewBody.innerHTML = rows.slice(0,10).map(r=>`<tr>${r.map(c=>`<td class="py-1 pr-3">${c}</td>`).join('')}</tr>`).join('');
+          uploadNote.textContent = `Showing ${Math.min(10, rows.length)} of ${rows.length} rows.`;
+          previewWrap.classList.remove('hidden');
+        } catch {
+          uploadNote.textContent = 'Could not parse CSV.';
+        }
+      };
+      reader.readAsText(f);
+    });
+
+    // ---------- Chat demo ----------
+    const chatForm = $('#chatForm');
+    const chatInput = $('#chatInput');
+    const chatWindow = $('#chatWindow');
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const t = chatInput.value.trim();
+      if (!t) return;
+      appendChat('user', t);
+      chatInput.value = '';
+      setTimeout(()=> appendChat('bot', botReply(t)), 300);
+    });
+    function appendChat(sender, text) {
+      const row = document.createElement('div');
+      row.className = 'flex items-start gap-3';
+      if (sender === 'user') row.classList.add('justify-end');
+      row.innerHTML = sender === 'user'
+        ? `<div class="max-w-[85%] rounded-xl bg-emerald px-3 py-2 text-black text-sm">${escape(text)}</div>
+           <div class="w-8 h-8 rounded-full bg-emerald/30 flex items-center justify-center text-black/70"><i class="fa-solid fa-user"></i></div>`
+        : `<div class="w-8 h-8 rounded-full bg-aqua/20 flex items-center justify-center"><i class="fa-solid fa-gem text-aqua"></i></div>
+           <div class="max-w-[85%] rounded-xl bg-white/10 px-3 py-2 text-sm">${escape(text)}</div>`;
+      chatWindow.appendChild(row);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+    function botReply(s) {
+      const t = s.toLowerCase();
+      if (t.includes('price')) return 'Most gemstones here range from $120–$5,000. Specify a stone for a tighter range.';
+      if (t.includes('ship')) return 'We ship insured worldwide (5–10 business days average).';
+      if (t.includes('return')) return '30-day returns in original condition (labels intact).';
+      if (t.includes('cert') || t.includes('gia')) return 'We attach certificate metadata. For GIA stones, we can link to the record.';
+      return 'Ask me about grading, provenance, shipping, or how to choose a stone for your design.';
+    }
+    function escape(str){ return str.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+
+    // ---------- Insight Canvas ----------
+    const demandSlider = $('#demand');
+    const demandVal = $('#demandVal');
+    const canvas = $('#insight');
+    const ctx = canvas.getContext('2d');
+    const categories = PRODUCTS.map(p=>p.name);
+    const baseDemand = categories.map(()=> Math.floor(Math.random()*70)+20); // 20..90
+
+    function drawChart(mult=50) {
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      const pad = 40, bw = Math.floor((w - pad*2)/categories.length) - 10;
+      // axes
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(255,255,255,.2)';
+      ctx.beginPath(); ctx.moveTo(pad, pad); ctx.lineTo(pad, h-pad); ctx.lineTo(w-pad, h-pad); ctx.stroke();
+
+      categories.forEach((c,i)=>{
+        const x = pad + 10 + i*(bw+10);
+        const demand = Math.min(95, baseDemand[i]*(mult/100));
+        const price = 100 - demand;
+        const demandPx = (demand/100)*(h-pad*2);
+        const pricePx = (price/100)*(h-pad*2)*0.4;
+
+        // demand bar (aqua)
+        ctx.fillStyle = 'rgba(34,211,238,.8)';
+        ctx.fillRect(x, (h-pad)-demandPx, bw, demandPx);
+
+        // price indicator (orange) placed atop the bar
+        ctx.fillStyle = 'rgba(245,158,11,.9)';
+        const ph = Math.max(6, pricePx);
+        ctx.fillRect(x, (h-pad)-demandPx - ph - 2, bw, ph);
+
+        // label
+        ctx.fillStyle = 'rgba(255,255,255,.7)';
+        ctx.font = '10px Inter';
+        const label = c.length>10? c.slice(0,10)+'…' : c;
+        ctx.fillText(label, x, h-pad+12);
+      });
+    }
+    demandSlider.addEventListener('input', (e)=>{
+      const v = Number(e.target.value);
+      demandVal.textContent = v+'%';
+      drawChart(v);
+    });
+
+    // ---------- Navbar interactions ----------
+    $('#mobileMenu').addEventListener('click', ()=> $('#mobileNav').classList.toggle('hidden'));
+
+    // ---------- Search shortcut ----------
+    $('#searchBtn')?.addEventListener('click', ()=>{
+      query.focus();
+      query.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // ---------- Year ----------
+    $('#year').textContent = new Date().getFullYear();
+
+    // ---------- Initial render ----------
+    render();
+    renderCart();
+    drawChart(Number(demandSlider.value));
+  </script>
+</body>
+</html>
