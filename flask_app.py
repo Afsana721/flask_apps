@@ -26,6 +26,13 @@ def home():
 def electronic():
     return render_template("electronic.html")
 
+#gemsone apps
+@app.route("/gemsttone")
+def electronic():
+    return render_template("gemstone.html")
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
