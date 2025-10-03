@@ -20,6 +20,10 @@ class User(db.Model):
 def home():
     return render_template("index.html")
 
+#electroinc apps
+@app.route("/electronic")
+def electronic():
+    return render_template("electronic.html")
 
 
 if __name__ == "__main__":
