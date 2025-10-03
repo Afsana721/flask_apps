@@ -1,1 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronic Technology Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        canvas {
+            display: block;
+            background-color: transparent;
+        }
+
+        .text-glow {
+            text-shadow: 0 0 8px var(--accent-color), 0 0 16px rgba(100, 255, 218, 0.5);
+        }
+
+        .card-glow {
+            box-shadow: 0 0 8px rgba(100, 255, 218, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(100, 255, 218, 0.7);
+        }
+
+        [data-theme="ai"] {
+            --accent-color: rgb(236, 72, 153);
+        }
+
+        [data-theme="llm"] {
+            --accent-color: rgb(129, 140, 248);
+        }
+
+        [data-theme="simulation"] {
+            --accent-color: rgb(100, 255, 218);
+        }
+
+        [data-theme="robotics"] {
+            --accent-color: rgb(245, 158, 11);
+        }
+
+        [data-theme="electronics"] {
+            --accent-color: rgb(0, 184, 230);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slider-container {
+            position: relative;
+        }
+
+        .slider-content {
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide scrollbar for a cleaner look */
+        .slider-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slider-content {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(156, 163, 175, 0.2);
+            /* gray-400 with opacity */
+            color: white;
+            border-radius: 9999px;
+            /* full rounded */
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .slider-btn:hover {
+            background-color: rgba(156, 163, 175, 0.4);
+        }
+
+        .slider-btn.left {
+            left: 0.5rem;
+        }
+
+        .slider-btn.right {
+            right: 0.5rem;
+        }
+
+        .btn-plus-minus {
+            background-color: transparent;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            border-radius: 9999px;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .btn-plus-minus:hover {
+            background-color: var(--accent-color);
+            color: rgb(15, 23, 42);
+            /* slate-900 */
+        }
+    </style>
+</head>
+
+<body class="bg-gray-950 text-gray-200 overflow-x-hidden min-h-screen relative" data-theme="ai">
+    <nav>
+        <a href="{{ url_for('index') }}"
+            class="fixed top-4 left-4 z-50 bg-gray-800 bg-opacity-70 backdrop-blur-sm 
+            rounded-full p-3 border border-gray-700 hover:bg-gray-700 transition-colors duration-300">
+            ApiCraft</a>
+     </nav>  
+   
+    <!-- Canvas for the background animation -->
+    <div class="mt-10 mb-24">
+        <canvas id="animationCanvas" class="absolute inset-0 z-0"></canvas>
+    </div>
+
+    <!-- Content container -->
+    <div class="relative z-12 w-full h-full flex flex-col items-center justify-center p-4 sm:p-8  mb-40">
+        <!-- Main Hub View (Initial Screen) -->
+        <div id="main-hub" class="flex flex-col items-center justify-center w-full transition-opacity duration-500">
+            <!-- Main Display Card -->
+            <div id="display-card"
+                class="bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 flex flex-col items-center text-center transition-colors duration-500 card-glow">
+                <!-- START: MODIFIED SECTION - New color and animation class for the title -->
+                <h1 id="main-title"
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-cyan-400 text-glow transition-colors duration-500">
+                    OpenQQuantify Electronics Marketplace
+                </h1>
+                <!-- END: MODIFIED SECTION -->
+                <p id="main-description" class="mt-4 text-sm sm:text-base lg:text-lg text-gray-400 max-w-xl">
+                    Exploring the frontiers of machine learning, neural networks, and computer vision.
+                </p>
+            </div>
+
+            <!-- Theme Selection Cards -->
+            <div class="mt-8 grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 max-w-5xl w-full">
+                <div data-theme="ai"
+                    class="theme-card bg-gray-800 bg-opacity-50 border border-gray-700 rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 card-glow">
+                    <h3 class="text-sm sm:text-lg font-bold text-pink-500">AI Development</h3>
+                </div>
+                <div data-theme="llm"
+                    class="theme-card bg-gray-800 bg-opacity-50 border border-gray-700 rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 card-glow">
+                    <h3 class="text-sm sm:text-lg font-bold text-indigo-400">LLM Development</h3>
+                </div>
+                <div data-theme="simulation"
+                    class="theme-card bg-gray-800 bg-opacity-50 border border-gray-700 rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 card-glow">
+                    <h3 class="text-sm sm:text-lg font-bold text-teal-400">3D Simulation</h3>
+                </div>
+                <div data-theme="robotics"
+                    class="theme-card bg-gray-800 bg-opacity-50 border border-gray-700 rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 card-glow">
+                    <h3 class="text-sm sm:text-lg font-bold text-amber-500">Robotics</h3>
+                </div>
+                <div data-theme="electronics"
+                    class="theme-card bg-gray-800 bg-opacity-50 border border-gray-700 rounded-2xl p-4 text-center cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 card-glow">
+                    <h3 class="text-sm sm:text-lg font-bold text-cyan-400">Electronics Solutions</h3>
+                </div>
+            </div>
+
+            <!-- Animated Electronic Solutions Image -->
+            <div
+                class="mt-44 w-full max-w-5xl rounded-3xl bg-gray-900 bg-opacity-70 border border-gray-700 p-4 sm:p-6 card-glow">
+                <h3 class="text-center font-bold text-xl mb-2 text-cyan-400">
+                    <img src="{{ url_for('static', filename='Elec/logo.png') }}" alt="OQQ_logo" class="w-24 h-24">
+                    Our Technologies at Work
+                </h3>
+                <canvas id="electronicsAnimationCanvas" class="w-full h-40 sm:h-64 rounded-xl"></canvas>
+            </div>
+
+            <!-- Product Slider Section -->
+            <!-- <div class="mt-24 w-full "> -->
+            <div class="mt-40 w-full flex justify-center items-center">
+                <div class="slider-container">
+                    <div id="product-slider" class="slider-content flex overflow-x-auto gap-4 p-2 sm:p-4">
+                        <!-- Product Card 1: Circuit Design -->
+                        <div class="flex-shrink-0 w-80 sm:w-96 rounded-3xl bg-gray-900 bg-opacity-70 backdrop-blur-sm border border-gray-700 p-6 card-glow"
+                            data-product-id="circuit-design" data-price="299.00">
+                            <h3 class="text-center font-bold text-xl text-cyan-400 mb-2">Circuit Design</h3>
+                            <div class="w-full h-40 bg-gray-800 rounded-xl flex items-center justify-center mb-4">
+                                <!-- Placeholder for Circuit Design Animation -->
+                                <video class="w-full h-full object-cover cursor-pointer" autoplay muted loop playsinline
+                                    controls onclick="this.requestFullscreen()">
+                                    <source
+                                        src="https://videos.openai.com/vg-assets/assets%2Ftask_01k52xy4hsf8fb00nk38ep0wed%2Ftask_01k52xy4hsf8fb00nk38ep0wed_genid_ab908b20-6389-4506-9b39-699feb441de4_25_09_14_01_38_003577%2Fvideos%2F00000_216884303%2Fsource.mp4?st=2025-09-14T00%3A37%3A16Z&se=2025-09-20T01%3A37%3A16Z&sks=b&skt=2025-09-14T00%3A37%3A16Z&ske=2025-09-20T01%3A37%3A16Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=rQcF82gB6Qe5L5eQNeKVzKlnlrVrW%2F3oF7mRkjjG%2BiE%3D&az=oaivgprodscus"
+                                        type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <p class="text-sm text-gray-400">
+                                Our platform offers advanced tools for designing complex circuit layouts. With real-time
+                                validation and a vast component library, you can bring your ideas to life with precision
+                                and efficiency.
+                            </p>
+                            <button
+                                class="add-to-cart-btn mt-4 w-full bg-cyan-400 text-gray-900 font-semibold py-2 px-4 rounded-full hover:bg-cyan-500 transition-colors duration-300">
+                                Add to Cart
+                            </button>
+                        </div>
+
+                        <!-- Product Card 2: Device Simulation -->
+                        <div class="flex-shrink-0 w-80 sm:w-96 rounded-3xl bg-gray-900 bg-opacity-70 backdrop-blur-sm border border-gray-700 p-6 card-glow"
+                            data-product-id="device-simulation" data-price="499.00">
+                            <h3 class="text-center font-bold text-xl text-cyan-400 mb-2">Device Simulation</h3>
+                            <div class="w-full h-40 bg-gray-800 rounded-xl flex items-center justify-center mb-4">
+                                <!-- Placeholder for Device Simulation Animation -->
+                                <!-- Device Simulation Sora Video Embed -->
+                                <video class="w-full h-full object-cover cursor-pointer" autoplay muted loop playsinline
+                                    controls onclick="this.requestFullscreen()">
+                                    <source
+                                        src="https://videos.openai.com/vg-assets/assets%2Ftask_01k52x6r5ee84r3wdke3rvdhrc%2Ftask_01k52x6r5ee84r3wdke3rvdhrc_genid_2ecb3f44-4901-4354-8973-ee70b5836132_25_09_14_01_25_698154%2Fvideos%2F00000_180669910%2Fsource.mp4?st=2025-09-13T23%3A42%3A15Z&se=2025-09-20T00%3A42%3A15Z&sks=b&skt=2025-09-13T23%3A42%3A15Z&ske=2025-09-20T00%3A42%3A15Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=4wlEu0gPkkxm0w3xmlqdFkiRcxw3uALVjZw%2F3tIwC2k%3D&az=oaivgprodscus"
+                                        type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <p class="text-sm text-gray-400">
+                                Test your designs in a virtual environment before building physical prototypes. Our
+                                device simulation software provides accurate and detailed performance analysis, saving
+                                you time and resources.
+                            </p>
+                            <button
+                                class="add-to-cart-btn mt-4 w-full bg-cyan-400 text-gray-900 font-semibold py-2 px-4 rounded-full hover:bg-cyan-500 transition-colors duration-300">
+                                Add to Cart
+                            </button>
+                        </div>
+
+                        <!-- Product Card 3: Software Simulation -->
+                        <div class="flex-shrink-0 w-80 sm:w-96 rounded-3xl bg-gray-900 bg-opacity-70 backdrop-blur-sm border border-gray-700 p-6 card-glow"
+                            data-product-id="software-simulation" data-price="99.00">
+                            <h3 class="text-center font-bold text-xl text-cyan-400 mb-2">Software Simulation</h3>
+                            <div class="w-full h-40 bg-gray-800 rounded-xl flex items-center justify-center mb-4">
+                                <!-- Placeholder for Software Simulation Animation -->
+                                <!-- Software Simulation Sora Video Embed -->
+                                <video class="w-full h-full object-cover cursor-pointer" autoplay muted loop playsinline
+                                    controls onclick="this.requestFullscreen()">
+                                    <source
+                                        src="https://videos.openai.com/vg-assets/assets%2Ftask_01k52kzqxtev4tbhwd406fn5rb%2Ftask_01k52kzqxtev4tbhwd406fn5rb_genid_e681f081-8641-457c-8f20-123db0c6eefb_25_09_13_22_44_641986%2Fvideos%2F00000_647512163%2Fsource.mp4?st=2025-09-13T23%3A43%3A27Z&se=2025-09-20T00%3A43%3A27Z&sks=b&skt=2025-09-13T23%3A43%3A27Z&ske=2025-09-20T00%3A43%3A27Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=d9Suby5kcS%2B8oKcR7HnlU%2FpDg2XI5Ddc4glql%2BcVqYE%3D&az=oaivgprodscus"
+                                        type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            <p class="text-sm text-gray-400">
+                                Validate the firmware and software for your embedded systems. Our software simulation
+                                tools help you debug code, test logic, and ensure compatibility with your hardware from
+                                the comfort of your computer.
+                            </p>
+                            <button
+                                class="add-to-cart-btn mt-4 w-full bg-cyan-400 text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-cyan-500 transition-colors duration-300">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="scrollSlider('product-slider', 'left')" class="slider-btn left hidden lg:flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button onclick="scrollSlider('product-slider', 'right')" class="slider-btn right hidden lg:flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- New Shopping Cart Button Section -->
+            <div class="mt-36 mb-24 w-full max-w-5xl">
+                <div id="cart-button"
+                    class="flex items-center justify-between p-4 bg-gray-800 bg-opacity-70 rounded-3xl border border-gray-700 cursor-pointer card-glow transition-all duration-300 hover:scale-[1.01] active:scale-95">
+                    <!-- Cart Icon and Count -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Cart Logo (SVG) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-cyan-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.953.465 2.585L13.5 21l-.657-.657-.657-.657L11.5 19l1.414-1.414M16 11H8l-1-1h9.5a1.5 1.5 0 011.5 1.5V13M16 11l-2.293 2.293c-.63.63-.182 1.953.465 2.585L13.5 21" />
+                        </svg>
+                        <div class="text-xl font-bold text-gray-200">View Cart & Checkout</div>
+                    </div>
+                    <!-- Cart Amount -->
+                    <div class="flex items-center space-x-1">
+                        <span id="cart-count" class="text-2xl font-bold text-red-500">0</span>
+                        <span class="text-lg font-medium text-gray-400">items</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Shopping Cart & Payment Section (Initially Hidden) -->
+            <div id="payment-section"
+                class="mt-8 w-full max-w-5xl rounded-3xl bg-gray-900 bg-opacity-70 border border-gray-700 p-6 sm:p-10 card-glow hidden">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-teal-400 text-glow mb-6">
+                    Shopping Cart
+                </h2>
+
+                <!-- Cart Items List -->
+                <div class="mb-8">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 text-gray-400 mb-2 font-semibold">
+                        <span class="col-span-2">Product Name</span>
+                        <span class="text-center hidden md:block">Price</span>
+                        <span class="text-center">Qty</span>
+                        <span class="text-right">Total</span>
+                    </div>
+                    <hr class="border-gray-700 mb-4">
+                    <div id="cart-items-container">
+                        <!-- Cart items will be dynamically added here -->
+                    </div>
+                </div>
+
+                <!-- User & Address Details -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold text-gray-300 mb-2">Shipping Information</h3>
+                    <div class="p-4 rounded-xl bg-gray-800 bg-opacity-50">
+                        <p class="text-gray-400 font-medium">John Doe</p>
+                        <p class="text-gray-400">123 Tech Avenue, Innovation City, 90210</p>
+                        <p class="text-gray-400">johndoe@example.com</p>
+                    </div>
+                </div>
+
+                <!-- Payment Summary -->
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-300 mb-2">Order Summary</h3>
+                    <div class="p-4 rounded-xl bg-gray-800 bg-opacity-50 space-y-2">
+                        <div class="flex justify-between text-gray-400">
+                            <span id="subtotal-items-text">Subtotal (0 items)</span>
+                            <span id="subtotal-amount-text">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span>Tax</span>
+                            <span id="tax-amount-text">$0.00</span>
+                        </div>
+                        <hr class="border-gray-700">
+                        <div class="flex justify-between font-bold text-lg text-cyan-400">
+                            <span>Total Amount</span>
+                            <span id="total-amount-text">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pay Now Button -->
+                <button
+                    class="mt-6 w-full bg-cyan-400 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-cyan-500 transition-colors duration-300">
+                    Pay Now
+                </button>
+            </div>
+        </div>
+
+        <!-- Individual Pages (Initially hidden) -->
+        <div id="pages-container" class="hidden w-full h-full flex items-center justify-center">
+            <!-- AI Page -->
+            <div id="ai-page"
+                class="hidden bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 card-glow">
+                <button onclick="handleBackToHub()"
+                    class="text-gray-400 hover:text-white transition-colors duration-300 mb-6">
+                    &larr; Back to Hub
+                </button>
+                <h2
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-pink-500 text-glow transition-colors duration-500 mb-4">
+                    AI Development
+                </h2>
+                <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-6">
+                    Our focus on **Artificial Intelligence** involves creating intelligent systems that can learn,
+                    reason, and make decisions. We specialize in developing neural networks for a wide range of
+                    applications, from predictive analytics to advanced computer vision.
+                </p>
+                <h3 class="text-xl font-semibold text-pink-400 mb-2">Core Areas:</h3>
+                <ul class="list-disc list-inside text-gray-400">
+                    <li>**Neural Network Architectures:** Designing custom models for specific tasks.</li>
+                    <li>**Computer Vision:** Developing systems that interpret and understand visual information.</li>
+                    <li>**Generative AI:** Building models that can create new content, such as images and text.</li>
+                    <li>**Data Science:** Using machine learning to uncover insights from complex datasets.</li>
+                </ul>
+                <a href="#"
+                    class="mt-6 inline-block bg-pink-500 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-pink-600 transition-colors duration-300">
+                    Learn More About Our AI Solutions
+                </a>
+            </div>
+
+            <!-- LLM Page -->
+            <div id="llm-page"
+                class="hidden bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 card-glow">
+                <button onclick="handleBackToHub()"
+                    class="text-gray-400 hover:text-white transition-colors duration-300 mb-6">
+                    &larr; Back to Hub
+                </button>
+                <h2
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-indigo-400 text-glow transition-colors duration-500 mb-4">
+                    Large Language Models
+                </h2>
+                <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-6">
+                    We specialize in the development and fine-tuning of **Large Language Models (LLMs)**. Our work
+                    empowers applications to understand, generate, and interact with human language in sophisticated and
+                    context-aware ways.
+                </p>
+                <h3 class="text-xl font-semibold text-indigo-300 mb-2">Key Services:</h3>
+                <ul class="list-disc list-inside text-gray-400">
+                    <li>**Custom Model Training:** Building LLMs tailored to your specific industry data.</li>
+                    <li>**API Integration:** Seamlessly integrating LLM capabilities into existing platforms.</li>
+                    <li>**Natural Language Processing (NLP):** Enhancing text analysis, summarization, and sentiment
+                        analysis.</li>
+                    <li>**Conversational AI:** Creating advanced chatbots and virtual assistants.</li>
+                </ul>
+                <a href="#"
+                    class="mt-6 inline-block bg-indigo-400 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-indigo-500 transition-colors duration-300">
+                    Explore Our LLM Capabilities
+                </a>
+            </div>
+
+            <!-- 3D Simulation Page -->
+            <div id="simulation-page"
+                class="hidden bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 card-glow">
+                <button onclick="handleBackToHub()"
+                    class="text-gray-400 hover:text-white transition-colors duration-300 mb-6">
+                    &larr; Back to Hub
+                </button>
+                <h2
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-teal-400 text-glow transition-colors duration-500 mb-4">
+                    3D Simulation
+                </h2>
+                <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-6">
+                    Our **3D simulation** services bring complex data to life in immersive, interactive environments. We
+                    use advanced rendering and physics engines to visualize everything from molecular structures to
+                    large-scale urban planning projects.
+                </p>
+                <h3 class="text-xl font-semibold text-teal-300 mb-2">Our Techniques:</h3>
+                <ul class="list-disc list-inside text-gray-400">
+                    <li>**Physics Modeling:** Simulating real-world forces and interactions.</li>
+                    <li>**Data Visualization:** Converting abstract datasets into visual, spatial representations.</li>
+                    <li>**Real-time Rendering:** Optimizing performance for fluid, instantaneous feedback.</li>
+                    <li>**Virtual Prototyping:** Creating digital models to test and refine designs.</li>
+                </ul>
+                <a href="#"
+                    class="mt-6 inline-block bg-teal-400 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-teal-500 transition-colors duration-300">
+                    Discover Our Simulation Services
+                </a>
+            </div>
+
+            <!-- Robotics Page -->
+            <div id="robotics-page"
+                class="hidden bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 card-glow">
+                <button onclick="handleBackToHub()"
+                    class="text-gray-400 hover:text-white transition-colors duration-300 mb-6">
+                    &larr; Back to Hub
+                </button>
+                <h2
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-amber-500 text-glow transition-colors duration-500 mb-4">
+                    Robotics
+                </h2>
+                <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-6">
+                    Our robotics team designs and develops both software and hardware for automated systems. We focus on
+                    creating **intelligent robots** that can perform complex tasks with precision and autonomy, from
+                    industrial automation to innovative consumer products.
+                </p>
+                <h3 class="text-xl font-semibold text-amber-400 mb-2">Fields of Expertise:</h3>
+                <ul class="list-disc list-inside text-gray-400">
+                    <li>**Kinematics:** Programming precise movements for robotic arms and limbs.</li>
+                    <li>**Sensor Integration:** Utilizing sensors for perception and environmental awareness.</li>
+                    <li>**Embedded Systems:** Building the foundational electronics and software for robots.</li>
+                    <li>**Machine Perception:** Enabling robots to "see" and interpret the world around them.</li>
+                </ul>
+                <a href="#"
+                    class="mt-6 inline-block bg-amber-500 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-amber-600 transition-colors duration-300">
+                    See Our Robotics Projects
+                </a>
+            </div>
+
+            <!-- Electronics Page -->
+            <div id="electronics-page"
+                class="hidden bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-3xl border border-gray-700 max-w-3xl w-full p-6 sm:p-10 card-glow">
+                <button onclick="handleBackToHub()"
+                    class="text-gray-400 hover:text-white transition-colors duration-300 mb-6">
+                    &larr; Back to Hub
+                </button>
+                <h2
+                    class="text-3xl sm:text-4xl lg:text-5xl font-bold text-cyan-400 text-glow transition-colors duration-500 mb-4">
+                    Electronics Solutions
+                </h2>
+                <p class="text-sm sm:text-base lg:text-lg text-gray-400 mb-6">
+                    We provide end-to-end **electronics solutions**, from initial device design to the creation of
+                    custom firmware and embedded software. Our expertise ensures a seamless transition from concept to a
+                    fully functional product.
+                </p>
+                <h3 class="text-xl font-semibold text-cyan-300 mb-2">Core Services:</h3>
+                <ul class="list-disc list-inside text-gray-400">
+                    <li>**PCB Design & Layout:** Creating efficient and reliable circuit boards.</li>
+                    <li>**Firmware Development:** Writing the low-level software that controls device hardware.</li>
+                    <li>**Embedded Systems:** Building dedicated computer systems for specific tasks.</li>
+                    <li>**Prototyping & Manufacturing:** Guiding products from a digital design to a physical reality.
+                    </li>
+                </ul>
+                <a href="#"
+                    class="mt-6 inline-block bg-cyan-400 text-gray-900 font-semibold py-3 px-6 rounded-full btn-glow hover:bg-cyan-500 transition-colors duration-300">
+                    Contact Us for a Consultation
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer class="mt-16 bg-gray-900/60 border-t border-gray-700 relative overflow-hidden">
+        <!-- soft glow frame -->
+        <div class="absolute inset-0 pointer-events-none"
+            style="box-shadow: 0 -0.5rem 3rem rgba(34,211,238,.25) inset;"></div>
+
+        <div class="max-w-6xl mx-auto px-6 py-14 flex flex-col md:flex-row items-center md:items-start gap-8">
+            <!-- brand -->
+            <div class="flex items-center gap-3">
+                <img src="{{ url_for('static', filename='Elec/logo.png') }}" alt="OpenQQuantify"
+                    class="w-12 h-12 rounded-xl">
+                <div>
+                    <p class="text-2xl font-semibold text-[#5B128C] drop-shadow">OpenQQuantify</p>
+                    <p class="text-sm text-gray-400">Our Technology at Work</p>
+                </div>
+            </div>
+
+            <!-- links -->
+            <div class="md:ml-auto flex flex-wrap items-center gap-4 md:gap-6">
+                <!-- FB -->
+                <a href="#" class="group inline-flex items-center gap-2 text-gray-300 hover:text-cyan-300 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M22 12.06C22 6.5 17.52 2 11.99 2 6.47 2 2 6.5 2 12.06 2 17.06 5.66 21.2 10.44 22v-7.03H7.9v-2.9h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.86h2.78l-.44 2.9h-2.34V22C18.34 21.2 22 17.06 22 12.06z" />
+                    </svg>
+                    <span class="hidden sm:block">Facebook</span>
+                </a>
+                <!-- X / Twitter -->
+                <a href="#" class="group inline-flex items-center gap-2 text-gray-300 hover:text-cyan-300 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h4.6l4.05 5.9L16.9 3H21l-7.6 9.1L21 21h-4.6l-4.32-6.23L7.1 21H3l7.86-9.37L3 3z" />
+                    </svg>
+                    <span class="hidden sm:block">X</span>
+                </a>
+                <!-- LinkedIn -->
+                <a href="#" class="group inline-flex items-center gap-2 text-gray-300 hover:text-cyan-300 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M6.94 6.5A2.44 2.44 0 1 1 4.5 4.06 2.44 2.44 0 0 1 6.94 6.5zM4.75 9h4.38v11H4.75zM13 9h4.2v1.72h.06A4.6 4.6 0 0 1 22 15.71V20h-4.38v-3.74c0-.89-.02-2.04-1.24-2.04-1.24 0-1.42.96-1.42 1.98V20H10.6V9H13z" />
+                    </svg>
+                    <span class="hidden sm:block">LinkedIn</span>
+                </a>
+                <!-- GitHub -->
+                <a href="#" class="group inline-flex items-center gap-2 text-gray-300 hover:text-cyan-300 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 .5A11.5 11.5 0 0 0 .5 12c0 5.08 3.29 9.39 7.86 10.91.57.11.78-.25.78-.55v-2.1c-3.2.7-3.88-1.37-3.88-1.37-.52-1.32-1.26-1.67-1.26-1.67-1.03-.7.08-.68.08-.68 1.14.08 1.74 1.18 1.74 1.18 1.01 1.73 2.65 1.23 3.3.94.1-.75.39-1.23.71-1.51-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.28 1.18-3.08-.12-.29-.51-1.44.11-3 0 0 .96-.31 3.15 1.18.91-.25 1.88-.38 2.85-.38.97 0 1.94.13 2.85.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.56.23 2.71.11 3A4.35 4.35 0 0 1 19.5 12c0 4.43-2.69 5.41-5.25 5.69.4.34.77 1 .77 2.03v2.99c0 .31.21.67.79.55A11.52 11.52 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z" />
+                    </svg>
+                    <span class="hidden sm:block">GitHub</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- bottom strip -->
+        <div class="border-t border-gray-700/70">
+            <div
+                class="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-sm text-gray-400">
+                <span>© <span id="year"></span> OpenQQuantify. All rights reserved.</span>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-cyan-300">Privacy</a>
+                    <a href="#" class="hover:text-cyan-300">Terms</a>
+                    <a href="#" class="hover:text-cyan-300">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+      <!-- Floating Chat Button -->
+  <button id="oqqChatFab"
+          class="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-cyan-400 text-slate-900 font-semibold hover:bg-cyan-300 active:scale-95 transition"
+          aria-label="Open chat">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+      <path d="M12 3C7.03 3 3 6.58 3 11c0 2.25 1.1 4.28 2.9 5.76-.12 1.14-.54 2.57-1.62 3.7 0 0 2.1.13 3.99-1.09.99.28 2.05.43 3.13.43 4.97 0 9-3.58 9-8s-4.03-8-9-8Z"/>
+    </svg>
+    Chat
+  </button>
+
+  <!-- Chat Panel -->
+  <section id="oqqChatPanel"
+           class="fixed bottom-6 right-6 z-50 w-[min(90vw,380px)] hidden flex-col rounded-3xl border border-slate-700 bg-slate-900/90 backdrop-blur-xl shadow-2xl">
+    <!-- Header -->
+    <header id="oqqHeader" class="px-4 py-3 flex items-center justify-between border-b border-slate-700 rounded-t-3xl bg-slate-900/70">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <h3 class="text-sm font-semibold tracking-wide text-cyan-300">OQQ Assistant</h3>
+      </div>
+      <div class="flex items-center gap-1">
+        <button id="oqqMinimizeBtn" class="px-2 py-1 text-xs text-slate-300 hover:text-white" title="Minimize">_</button>
+        <button id="oqqCloseBtn" class="px-2 py-1 text-xs text-slate-300 hover:text-white" title="Close">✕</button>
+      </div>
+    </header>
+
+    <!-- Messages (JS will enforce its own scrolling + maxHeight) -->
+    <main id="oqqMessages" class="px-4 py-3 space-y-3">
+      <div class="flex items-start gap-3">
+        <div class="shrink-0 mt-1 h-6 w-6 rounded-full bg-cyan-400"></div>
+        <div class="max-w-[80%] rounded-2xl rounded-tl-sm bg-slate-800/70 px-4 py-2 text-sm text-slate-100">
+          Hi! Ask about products, simulations, or checkout. 💬
+        </div>
+      </div>
+    </main>
+
+    <!-- Composer -->
+    <form id="oqqForm" class="p-3 border-t border-slate-700 bg-slate-900/70 rounded-b-3xl">
+      <div class="flex items-end gap-2">
+        <textarea id="oqqInput" rows="1" placeholder="Type your question…"
+                  class="flex-1 resize-none rounded-2xl bg-slate-800/80 px-3 py-2 text-sm text-slate-100 placeholder-slate-400 outline-none focus:ring-2 focus:ring-cyan-400"></textarea>
+        <button type="submit"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-400 text-slate-900 font-semibold hover:bg-cyan-300 active:scale-95 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path d="M3.4 20.6 22 12 3.4 3.4l-.02 6.9L15 12 3.38 13.7z"/>
+          </svg>
+          Send
+        </button>
+      </div>
+    </form>
+  </section>
+  <!-- ======= END COPY BLOCK ======= -->
+  <!-- ==hiding video appear after 5 sec only & agian same-->
+       <!-- Video Container -->
+    <div id="video-panel" class="fixed inset-0 z-[9998] hidden items-center justify-center">
+        <div class="relative w-[min(92vw,900px)] h-[min(52vh,420px)] overflow-hidden rounded-3xl shadow-2xl">
+            <video id="demo-video" class="w-full h-full object-cover rounded-3xl" autoplay muted playsinline>
+                <source src="{{ url_for('static', filename='Elec/Elect.mp4') }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+<!--Js script code to link with dom-->
+    <script>
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        const body = document.body;
+        const mainHub = document.getElementById('main-hub');
+        const pagesContainer = document.getElementById('pages-container');
+        const mainTitle = document.getElementById('main-title');
+        const mainDescription = document.getElementById('main-description');
+        const themeCards = document.querySelectorAll('.theme-card');
+        const allPages = document.querySelectorAll('#pages-container > div');
+        const cartButton = document.getElementById('cart-button');
+        const paymentSection = document.getElementById('payment-section');
+
+        const electronicsCanvas = document.getElementById('electronicsAnimationCanvas');
+        const electronicsCtx = electronicsCanvas.getContext('2d');
+
+        let particlesArray = [];
+        let animationType = 'ai';
+        let centerX, centerY;
+        let currentThemeColor = 'rgb(236, 72, 153)'; // Default to AI theme color
+        let wireframeRotation = 0;
+        let circuitPoints = [];
+        let circuitPaths = [];
+
+        let electronicsParticles = [];
+        let electronicsCircuitPoints = [];
+        let electronicsCircuitPaths = [];
+
+        const themes = {
+            ai: {
+                title: 'AI Development',
+                description: 'Exploring the frontiers of machine learning, neural networks, and computer vision.',
+                color: 'rgb(236, 72, 153)',
+                animation: 'ai'
+            },
+            llm: {
+                title: 'LLM Development',
+                description: 'Crafting advanced language models that understand and generate human-like text with remarkable fluency and context.',
+                color: 'rgb(129, 140, 248)',
+                animation: 'llm'
+            },
+            simulation: {
+                title: '3D Simulation',
+                description: 'Bringing complex data to life with immersive, real-time 3D environments and physics-based simulations.',
+                color: 'rgb(100, 255, 218)',
+                animation: 'simulation'
+            },
+            robotics: {
+                title: 'Robotics',
+                description: 'Designing and building intelligent robotic systems that can perceive their environment and execute complex tasks autonomously.',
+                color: 'rgb(245, 158, 11)',
+                animation: 'robotics'
+            },
+            electronics: {
+                title: 'Electronics Solutions',
+                description: 'Providing comprehensive services from initial circuit design to full-scale embedded systems and firmware development.',
+                color: 'rgb(0, 184, 230)',
+                animation: 'circuits'
+            }
+        };
+
+        let cart = {}; // Use an object to store product ID as key and quantity as value
+
+        // Function to handle canvas size on window resize
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+            initParticles();
+
+            // Resize and re-initialize the electronics canvas
+            electronicsCanvas.width = electronicsCanvas.offsetWidth;
+            electronicsCanvas.height = electronicsCanvas.offsetHeight;
+            generateElectronicsCircuitPaths();
+            initElectronicsParticles();
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        // Particle class with different update behaviors based on type
+        class Particle {
+            constructor(type, canvasElement) {
+                this.type = type;
+                this.canvas = canvasElement;
+                this.ctx = this.canvas.getContext('2d');
+                this.x = Math.random() * this.canvas.width;
+                this.y = Math.random() * this.canvas.height;
+                this.size = Math.random() * 1.5 + 0.5;
+
+                // AI-specific properties
+                if (this.type === 'ai') {
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                }
+                // LLM-specific properties
+                else if (this.type === 'llm') {
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.speed = Math.random() * 0.5 + 0.1;
+                    this.radius = Math.random() * Math.min(this.canvas.width / 2, this.canvas.height / 2);
+                }
+                // Robotics-specific properties
+                else if (this.type === 'robotics') {
+                    this.targetX = Math.random() * this.canvas.width;
+                    this.targetY = Math.random() * this.canvas.height;
+                    this.speed = Math.random() * 1 + 0.5;
+                }
+                // Electronics-specific properties
+                else if (this.type === 'circuits') {
+                    const paths = this.canvas === canvas ? circuitPaths : electronicsCircuitPaths;
+                    this.pathIndex = Math.floor(Math.random() * paths.length);
+                    this.pathProgress = 0;
+                    this.speed = 0.005 + Math.random() * 0.01;
+                    this.size = Math.random() * 2 + 1;
+                }
+            }
+
+            draw() {
+                this.ctx.beginPath();
+                this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                this.ctx.fillStyle = currentThemeColor;
+                this.ctx.fill();
+            }
+
+            update() {
+                if (this.type === 'ai') {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > this.canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > this.canvas.height) this.speedY *= -1;
+                } else if (this.type === 'llm') {
+                    this.x = this.canvas.width / 2 + this.radius * Math.cos(this.angle);
+                    this.y = this.canvas.height / 2 + this.radius * Math.sin(this.angle);
+                    this.angle += 0.01 + this.speed * 0.005;
+                    this.radius += 0.1;
+                    if (this.radius > Math.min(this.canvas.width / 2, this.canvas.height / 2)) {
+                        this.x = this.canvas.width / 2;
+                        this.y = this.canvas.height / 2;
+                        this.radius = 0;
+                        this.angle = Math.random() * Math.PI * 2;
+                    }
+                } else if (this.type === 'robotics') {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < this.speed) {
+                        this.x = this.targetX;
+                        this.y = this.targetY;
+                        this.targetX = Math.random() * this.canvas.width;
+                        this.targetY = Math.random() * this.canvas.height;
+                    } else {
+                        this.x += (dx / distance) * this.speed;
+                        this.y += (dy / distance) * this.speed;
+                    }
+                } else if (this.type === 'circuits') {
+                    const paths = this.canvas === canvas ? circuitPaths : electronicsCircuitPaths;
+                    const path = paths[this.pathIndex];
+                    if (path && path.length > 1) {
+                        const segmentIndex = Math.floor(this.pathProgress * (path.length - 1));
+                        const fromPoint = path[segmentIndex];
+                        const toPoint = path[segmentIndex + 1];
+                        const segmentProgress = (this.pathProgress * (path.length - 1)) - segmentIndex;
+
+                        this.x = fromPoint.x + (toPoint.x - fromPoint.x) * segmentProgress;
+                        this.y = fromPoint.y + (toPoint.y - fromPoint.y) * segmentProgress;
+
+                        this.pathProgress += this.speed;
+                        if (this.pathProgress >= 1) {
+                            this.pathProgress = 0;
+                            this.pathIndex = Math.floor(Math.random() * paths.length);
+                        }
+                    }
+                }
+                this.draw();
+            }
+        }
+
+        // Initialize particles for the main background animation
+        function initParticles() {
+            particlesArray = [];
+            const numberOfParticles = Math.min(200, (canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle(animationType, canvas));
+            }
+        }
+
+        // Initialize particles for the new electronics canvas
+        function initElectronicsParticles() {
+            electronicsParticles = [];
+            const numberOfParticles = Math.min(100, (electronicsCanvas.width * electronicsCanvas.height) / 2000);
+            for (let i = 0; i < numberOfParticles; i++) {
+                electronicsParticles.push(new Particle('circuits', electronicsCanvas));
+            }
+        }
+
+        // Main animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.fillStyle = 'rgba(10, 10, 10, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Conditional background animation logic
+            if (animationType === 'ai') {
+                animateAI();
+            } else if (animationType === 'llm') {
+                animateLLM();
+            } else if (animationType === 'simulation') {
+                animateSimulation();
+            } else if (animationType === 'robotics') {
+                animateRobotics();
+            } else if (animationType === 'circuits') {
+                animateCircuits();
+            }
+
+            // Call the separate animation for the new canvas
+            animateElectronicsCard();
+        }
+
+        // AI Animation Logic
+        function animateAI() {
+            const connectDistance = Math.min(canvas.width, canvas.height) / 6;
+            for (let i = 0; i < particlesArray.length; i++) {
+                for (let j = i; j < particlesArray.length; j++) {
+                    const distance = Math.sqrt(
+                        (particlesArray[i].x - particlesArray[j].x) ** 2 +
+                        (particlesArray[i].y - particlesArray[j].y) ** 2
+                    );
+                    if (distance < connectDistance) {
+                        ctx.strokeStyle = `rgba(${currentThemeColor.slice(4, -1)}, ${1 - distance / connectDistance})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            // Update and draw particles
+            for (const particle of particlesArray) {
+                particle.update();
+            }
+        }
+
+        // LLM Animation Logic
+        function animateLLM() {
+            ctx.strokeStyle = `rgba(${currentThemeColor.slice(4, -1)}, 0.3)`;
+            ctx.lineWidth = 0.5;
+            for (const particle of particlesArray) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, canvas.height / 2);
+                ctx.lineTo(particle.x, particle.y);
+                ctx.stroke();
+                particle.update();
+            }
+        }
+
+        // Simulation Animation Logic (2D projection of a 3D object)
+        function animateSimulation() {
+            wireframeRotation += 0.01;
+            const points = [
+                { x: 1, y: 1, z: 1 }, { x: 1, y: -1, z: 1 }, { x: -1, y: -1, z: 1 }, { x: -1, y: 1, z: 1 },
+                { x: 1, y: 1, z: -1 }, { x: 1, y: -1, z: -1 }, { x: -1, y: -1, z: -1 }, { x: -1, y: 1, z: -1 }
+            ];
+
+            const rotatedPoints = points.map(p => {
+                const rx = p.x * Math.cos(wireframeRotation) - p.z * Math.sin(wireframeRotation);
+                const rz = p.x * Math.sin(wireframeRotation) + p.z * Math.cos(wireframeRotation);
+                const ry = p.y * Math.cos(wireframeRotation) - rz * Math.sin(wireframeRotation);
+                const finalZ = p.y * Math.sin(wireframeRotation) + rz * Math.cos(wireframeRotation);
+
+                const scale = Math.min(canvas.width, canvas.height) * 0.15;
+                return {
+                    x: centerX + rx * scale,
+                    y: centerY + ry * scale,
+                    z: finalZ
+                };
+            });
+
+            const edges = [
+                [0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4],
+                [0, 4], [1, 5], [2, 6], [3, 7]
+            ];
+
+            ctx.strokeStyle = currentThemeColor;
+            ctx.lineWidth = 1;
+            edges.forEach(edge => {
+                const start = rotatedPoints[edge[0]];
+                const end = rotatedPoints[edge[1]];
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(end.x, end.y);
+                ctx.stroke();
+            });
+        }
+
+        // Robotics Animation Logic
+        function animateRobotics() {
+            const connectDistance = 150;
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                const distance = Math.sqrt(
+                    (particlesArray[i].x - particlesArray[i].targetX) ** 2 +
+                    (particlesArray[i].y - particlesArray[i].targetY) ** 2
+                );
+                const opacity = 1 - (distance / connectDistance);
+
+                if (opacity > 0) {
+                    ctx.strokeStyle = `rgba(${currentThemeColor.slice(4, -1)}, ${opacity})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                    ctx.lineTo(particlesArray[i].targetX, particlesArray[i].targetY);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Electronics/Circuits Animation Logic for the main background
+        function animateCircuits() {
+            // Draw the underlying circuit paths
+            ctx.strokeStyle = `rgba(${currentThemeColor.slice(4, -1)}, 0.1)`;
+            ctx.lineWidth = 1;
+            circuitPaths.forEach(path => {
+                ctx.beginPath();
+                ctx.moveTo(path[0].x, path[0].y);
+                path.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+                ctx.stroke();
+            });
+
+            // Update and draw the particles
+            for (const particle of particlesArray) {
+                particle.update();
+            }
+        }
+
+        // Electronics/Circuits Animation Logic for the dedicated card
+        function animateElectronicsCard() {
+            electronicsCtx.clearRect(0, 0, electronicsCanvas.width, electronicsCanvas.height);
+            // Draw the underlying circuit paths
+            electronicsCtx.strokeStyle = `rgba(0, 184, 230, 0.2)`;
+            electronicsCtx.lineWidth = 1;
+            electronicsCircuitPaths.forEach(path => {
+                electronicsCtx.beginPath();
+                electronicsCtx.moveTo(path[0].x, path[0].y);
+                path.slice(1).forEach(p => electronicsCtx.lineTo(p.x, p.y));
+                electronicsCtx.stroke();
+            });
+
+            // Update and draw the particles
+            for (const particle of electronicsParticles) {
+                particle.update();
+            }
+        }
+
+        // Generate a grid of points and define paths between them for main canvas
+        function generateCircuitPaths() {
+            circuitPoints = [];
+            circuitPaths = [];
+            const gridSize = 40;
+            const horizontalOffset = (canvas.width % gridSize) / 2;
+            const verticalOffset = (canvas.height % gridSize) / 2;
+
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                for (let x = 0; x < canvas.width; x += gridSize) {
+                    circuitPoints.push({ x: x + horizontalOffset, y: y + verticalOffset, id: `${x}-${y}` });
+                }
+            }
+
+            for (let i = 0; i < circuitPoints.length; i++) {
+                const current = circuitPoints[i];
+                const neighbors = circuitPoints.filter(p =>
+                    (Math.abs(p.x - current.x) <= gridSize * 1.5 && Math.abs(p.y - current.y) <= gridSize * 1.5) &&
+                    !(p.x === current.x && p.y === current.y)
+                );
+
+                // Create a random path of 2-4 segments
+                if (Math.random() < 0.2) {
+                    let path = [current];
+                    let lastPoint = current;
+                    for (let j = 0; j < Math.floor(Math.random() * 3) + 2; j++) {
+                        const nextPoint = neighbors[Math.floor(Math.random() * neighbors.length)];
+                        if (nextPoint && nextPoint !== lastPoint) {
+                            path.push(nextPoint);
+                            lastPoint = nextPoint;
+                        }
+                    }
+                    if (path.length > 1) {
+                        circuitPaths.push(path);
+                    }
+                }
+            }
+        }
+
+        // Generate a grid of points and define paths between them for the new canvas
+        function generateElectronicsCircuitPaths() {
+            electronicsCircuitPoints = [];
+            electronicsCircuitPaths = [];
+            const gridSize = 20;
+            const horizontalOffset = (electronicsCanvas.width % gridSize) / 2;
+            const verticalOffset = (electronicsCanvas.height % gridSize) / 2;
+
+            for (let y = 0; y < electronicsCanvas.height; y += gridSize) {
+                for (let x = 0; x < electronicsCanvas.width; x += gridSize) {
+                    electronicsCircuitPoints.push({ x: x + horizontalOffset, y: y + verticalOffset, id: `${x}-${y}` });
+                }
+            }
+
+            for (let i = 0; i < electronicsCircuitPoints.length; i++) {
+                const current = electronicsCircuitPoints[i];
+                const neighbors = electronicsCircuitPoints.filter(p =>
+                    (Math.abs(p.x - current.x) <= gridSize * 1.5 && Math.abs(p.y - current.y) <= gridSize * 1.5) &&
+                    !(p.x === current.x && p.y === current.y)
+                );
+
+                if (Math.random() < 0.4) {
+                    let path = [current];
+                    let lastPoint = current;
+                    for (let j = 0; j < Math.floor(Math.random() * 3) + 2; j++) {
+                        const nextPoint = neighbors[Math.floor(Math.random() * neighbors.length)];
+                        if (nextPoint && nextPoint !== lastPoint) {
+                            path.push(nextPoint);
+                            lastPoint = nextPoint;
+                        }
+                    }
+                    if (path.length > 1) {
+                        electronicsCircuitPaths.push(path);
+                    }
+                }
+            }
+        }
+
+
+        // Handle theme switching and page display
+        function handleThemeSwitch(themeName) {
+            const selectedTheme = themes[themeName];
+            if (selectedTheme) {
+                // Update animation theme
+                currentThemeColor = selectedTheme.color;
+                body.setAttribute('data-theme', themeName);
+                animationType = selectedTheme.animation;
+                if (animationType === 'circuits') {
+                    generateCircuitPaths();
+                }
+                initParticles();
+
+                // Hide main hub and show the selected page
+                mainHub.style.display = 'none';
+                pagesContainer.classList.remove('hidden');
+                allPages.forEach(page => page.classList.add('hidden'));
+                document.getElementById(`${themeName}-page`).classList.remove('hidden');
+
+                // Animate content change
+                const pageContent = document.getElementById(`${themeName}-page`).querySelectorAll('h2, p, ul, a');
+                pageContent.forEach(element => {
+                    element.classList.remove('fade-in');
+                    void element.offsetWidth; // Trigger reflow to restart animation
+                    element.classList.add('fade-in');
+                });
+            }
+        }
+
+        // Handle back to hub button click
+        function handleBackToHub() {
+            pagesContainer.classList.add('hidden');
+            mainHub.style.display = 'flex';
+            // Also reset the main title and description to the AI theme
+            mainTitle.innerText = themes.ai.title;
+            mainDescription.innerText = themes.ai.description;
+            currentThemeColor = themes.ai.color;
+            body.setAttribute('data-theme', 'ai');
+            animationType = themes.ai.animation;
+            initParticles();
+        }
+
+        // Function to handle slider scrolling
+        function scrollSlider(sliderId, direction) {
+            const slider = document.getElementById(sliderId);
+            const scrollAmount = 300; // Adjust this value as needed
+            if (direction === 'left') {
+                slider.scrollLeft -= scrollAmount;
+            } else if (direction === 'right') {
+                slider.scrollLeft += scrollAmount;
+            }
+        }
+
+        // Function to render the cart UI
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartCountElement = document.getElementById('cart-count');
+            const subtotalItemsElement = document.getElementById('subtotal-items-text');
+            const subtotalAmountElement = document.getElementById('subtotal-amount-text');
+            const taxAmountElement = document.getElementById('tax-amount-text');
+            const totalAmountElement = document.getElementById('total-amount-text');
+
+            cartItemsContainer.innerHTML = '';
+            let totalItems = 0;
+            let subtotal = 0;
+
+            for (const productId in cart) {
+                const productCard = document.querySelector(`[data-product-id="${productId}"]`);
+                const productName = productCard.querySelector('h3').innerText;
+                const price = parseFloat(productCard.dataset.price);
+                const quantity = cart[productId];
+
+                if (quantity > 0) {
+                    const itemTotal = quantity * price;
+                    subtotal += itemTotal;
+                    totalItems += quantity;
+
+                    const itemHtml = `
+                        <div class="grid grid-cols-4 md:grid-cols-5 gap-4 items-center mb-4">
+                            <span class="col-span-2 text-gray-300 font-medium">${productName}</span>
+                            <span class="text-center hidden md:block">$${price.toFixed(2)}</span>
+                            <div class="flex items-center justify-center space-x-2">
+                                <button onclick="updateCart('${productId}', -1)" class="btn-plus-minus">-</button>
+                                <span class="text-gray-300">${quantity}</span>
+                                <button onclick="updateCart('${productId}', 1)" class="btn-plus-minus">+</button>
+                            </div>
+                            <span class="text-right">$${itemTotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                    cartItemsContainer.innerHTML += itemHtml;
+                }
+            }
+
+            const taxRate = 0.08;
+            const tax = subtotal * taxRate;
+            const total = subtotal + tax;
+
+            cartCountElement.innerText = totalItems;
+            subtotalItemsElement.innerText = `Subtotal (${totalItems} items)`;
+            subtotalAmountElement.innerText = `$${subtotal.toFixed(2)}`;
+            taxAmountElement.innerText = `$${tax.toFixed(2)}`;
+            totalAmountElement.innerText = `$${total.toFixed(2)}`;
+
+            // Hide the cart section if there are no items
+            if (totalItems === 0) {
+                paymentSection.classList.add('hidden');
+            }
+        }
+
+        // Function to update the cart
+        function updateCart(productId, change) {
+            cart[productId] = (cart[productId] || 0) + change;
+            if (cart[productId] <= 0) {
+                delete cart[productId];
+            }
+            renderCart();
+        }
+
+        // Add event listeners for "Add to Cart" buttons
+        document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = e.target.closest('[data-product-id]').dataset.productId;
+                updateCart(productId, 1);
+                // Make sure the payment section is visible when adding an item
+                paymentSection.classList.remove('hidden');
+            });
+        });
+
+        // Add event listeners to theme cards
+        themeCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const themeName = card.dataset.theme;
+                handleThemeSwitch(themeName);
+            });
+        });
+
+        // Toggle the payment section visibility
+        cartButton.addEventListener('click', () => {
+            paymentSection.classList.toggle('hidden');
+        });
+
+        // Initial setup
+        resizeCanvas();
+        animate();
+        renderCart();
+
+        //stripe paments link js to dom 
+
+        // place this after your existing script logic
+
+        (function () {
+            if (window._stripeBound) return;
+
+            // Bind to your existing "Pay Now" button (no class needed)
+            const payBtn = document.querySelector('.checkout-btn')
+                || Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim().toLowerCase() === 'pay now');
+            if (!payBtn) return;
+
+            payBtn.addEventListener('click', async () => {
+                // Read total from your Order Summary DOM
+                const totalEl = document.getElementById('total-amount-text');
+                const cents = Math.round(parseFloat((totalEl?.textContent || '0').replace(/[^0-9.]/g, '')) * 100);
+                if (!cents || isNaN(cents)) { alert('Cart total is 0'); return; }
+
+                // Create Stripe Checkout session for the whole cart
+                const r = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ product: 'Cart', amount: cents, currency: 'usd', quantity: 1 })
+                });
+                const { url, error } = await r.json();
+                if (url) location = url; else alert(error || 'Payment failed');
+            });
+
+            window._stripeBound = true;
+        })();
+
+        //footer year update
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Chat widget script
+  // The widget script is defensive: it checks for elements before wiring listeners,
+  // and it enforces an internal scroller INSIDE the chat panel only (no page scroll).
+  (function () {
+    function $(id){ return document.getElementById(id); }
+
+    // Elements (may be null if user pasted only part of the block). Guard all uses.
+    const fab = $('oqqChatFab');
+    const panel = $('oqqChatPanel');
+    const header = $('oqqHeader');
+    const closeBtn = $('oqqCloseBtn');
+    const minBtn = $('oqqMinimizeBtn');
+    const form = $('oqqForm');
+    const input = $('oqqInput');
+    const messages = $('oqqMessages');
+
+    // If any required element is missing, abort cleanly to avoid TypeError.
+    if (!fab || !panel || !closeBtn || !minBtn || !form || !input || !messages) {
+      console.warn('[OQQ Chat] Required elements missing. Ensure you copied the button & panel HTML with the correct IDs.');
+      return;
+    }
+
+    // Make sure the panel floats above any page footer/overlays regardless of site z‑index.
+    panel.style.zIndex = '9999';
+
+    // State
+    let minimized = false;
+
+    // Open/close/minimize wiring
+    fab.addEventListener('click', () => { panel.classList.remove('hidden'); adjustHeights(); focusInputSoon(); });
+    closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
+    minBtn.addEventListener('click', () => {
+      minimized = !minimized;
+      if (minimized) {
+        // Hide messages & composer, keep header visible
+        messages.style.display = 'none';
+        form.style.display = 'none';
+        panel.style.height = 'auto';
+      } else {
+        messages.style.display = '';
+        form.style.display = '';
+        adjustHeights();
+      }
+    });
+
+    // --- Internal scroller enforcement ---
+    function adjustHeights(){
+      // Calculate max message area height so the panel fits viewport without affecting page scroll.
+      const vh = window.innerHeight;
+      const headerH = header ? header.offsetHeight : 48;
+      const formH = form ? form.offsetHeight : 60;
+      const verticalPadding = 24; // combined internal paddings
+      const panelMaxH = Math.max(320, Math.min(560, vh - 24));
+      panel.style.maxHeight = panelMaxH + 'px';
+      panel.style.height = 'auto';
+
+      // messages max height = panelMaxH - header - form - paddings
+      const messagesMax = Math.max(120, panelMaxH - headerH - formH - verticalPadding);
+      messages.style.maxHeight = messagesMax + 'px';
+      messages.style.overflowY = 'auto';
+      messages.style.webkitOverflowScrolling = 'touch';
+    }
+
+    function scrollToBottom(){
+      // Scroll ONLY the messages container; do not scroll the page.
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function focusInputSoon(){ setTimeout(() => input && input.focus(), 50); }
+
+    // Resize/rotation observers keep the internal scroller correct
+    window.addEventListener('resize', adjustHeights);
+    new ResizeObserver(adjustHeights).observe(panel);
+
+    // Message helpers
+    function addMsg(text, who){
+      const wrap = document.createElement('div');
+      wrap.className = 'flex items-start gap-3 ' + (who === 'user' ? 'justify-end' : '');
+      const bubble = document.createElement('div');
+      bubble.className = (who === 'user')
+        ? 'max-w-[80%] rounded-2xl rounded-tr-sm bg-cyan-400 text-slate-900 px-4 py-2 text-sm'
+        : 'max-w-[80%] rounded-2xl rounded-tl-sm bg-slate-800/70 text-slate-100 px-4 py-2 text-sm';
+      bubble.textContent = text;
+
+      if (who !== 'user') {
+        const dot = document.createElement('div');
+        dot.className = 'shrink-0 mt-1 h-6 w-6 rounded-full bg-cyan-400';
+        wrap.appendChild(dot);
+        wrap.appendChild(bubble);
+      } else {
+        wrap.appendChild(bubble);
+      }
+      messages.appendChild(wrap);
+      scrollToBottom();
+    }
+
+    // Demo Q&A (no backend required)
+    const demoQA = {
+      'hello': 'Hi there! Welcome to OpenQQuantify.',
+      'what do you do': 'We build digital‑twin and AI solutions for electronics and simulation.',
+      'services': 'AI assistants, 3D/geo visualization, and e‑commerce platforms.',
+      'contact': 'Reach us via LinkedIn or the Contact page.'
+    };
+    function getDemoAnswer(q){
+      const key = Object.keys(demoQA).find(k => q.toLowerCase().includes(k));
+      return key ? demoQA[key] : "Thanks! We’ll get back to you soon.";
+    }
+
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const q = (input.value || '').trim();
+      if (!q) return;
+      addMsg(q, 'user');
+      input.value = '';
+
+      // Fake typing then reply (showcase only)
+      const typing = document.createElement('div');
+      typing.className = 'text-xs text-slate-400 px-2';
+      typing.textContent = 'Assistant is typing…';
+      messages.appendChild(typing);
+      scrollToBottom();
+
+      setTimeout(() => { typing.remove(); addMsg(getDemoAnswer(q), 'bot'); }, 500);
+    });
+
+    // Initial layout pass
+    adjustHeights();
+
+    // ================== Lightweight Self‑Tests ==================
+    // Visit with #test in the URL to run.
+    if (location.hash === '#test') {
+      console.log('[OQQ Chat Test] start');
+      // Test 1: Elements exist
+      console.assert(!!fab && !!panel && !!form && !!input && !!messages, 'Elements should exist');
+      // Test 2: Open panel
+      fab.click();
+      console.assert(!panel.classList.contains('hidden'), 'Panel should open');
+      // Test 3: Add messages and ensure internal scroller stays at bottom
+      addMsg('Test message 1', 'user');
+      addMsg('Test message 2', 'bot');
+      const nearBottom = Math.abs(messages.scrollHeight - messages.clientHeight - messages.scrollTop) < 4;
+      console.assert(nearBottom, 'Messages scroller should be pinned to bottom');
+      // Test 4: Minimize & restore
+      minBtn.click();
+      console.assert(messages.style.display === 'none', 'Messages hidden on minimize');
+      minBtn.click();
+      console.assert(messages.style.display === '', 'Messages restored on un‑minimize');
+      console.log('[OQQ Chat Test] done');
+    }
+    // ===========================================================
+  })();
+
+  //video appear after 5 seconds
+ (() => {
+          // target the "Our Technologies at Work" section by its canvas parent
+          const card = document.getElementById('electronicsAnimationCanvas')?.parentElement;
+          if (!card) { console.warn('Target section not found'); return; }
+          card.classList.add('relative');
+
+          const wrap = document.createElement('div');
+          wrap.id = 'oqqSecVideoWrap';
+          wrap.className = 'hidden absolute inset-0 rounded-3xl overflow-hidden z-[30]';
+
+          const vid = document.createElement('video');
+          vid.className = 'w-full h-full object-cover';
+          vid.autoplay = true; vid.muted = true; vid.playsInline = true;
+
+          const src = document.createElement('source');
+          src.src = "{{ url_for('static', filename='Elect.mp4') }}";
+          src.type = 'video/mp4';
+          vid.appendChild(src);
+
+          wrap.appendChild(vid);
+          card.appendChild(wrap);
+
+          const SHOW_MS = 10000, HIDE_MS = 5000, START_DELAY = 5000;
+
+          function show(){
+            wrap.classList.remove('hidden');
+            try { vid.currentTime = 0; vid.play().catch(()=>{}); } catch {}
+          }
+          function hide(){
+            wrap.classList.add('hidden');
+            try { vid.pause(); } catch {}
+          }
+          function cycle(){
+            show();
+            setTimeout(() => { hide(); setTimeout(cycle, HIDE_MS); }, SHOW_MS);
+          }
+
+          setTimeout(cycle, START_DELAY);
+        })();
+    </script>
+</body>
+</html>
