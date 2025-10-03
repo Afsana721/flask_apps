@@ -34,7 +34,7 @@ def gemstone():
 #nanize apps
 @app.route('/nanize')
 def nanize():
-    return render_template('nanize.html)
+    return render_template('nanize.html')
 
 
 
