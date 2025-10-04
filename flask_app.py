@@ -40,6 +40,12 @@ def nanize():
 @app.route('/info_index')
 def info_index():
     return render_template('business_Gem/index.html')
+    
+#Gemstone infomation apps products route
+@app.route('/products')
+def list_products():
+    return render_template('business_Gem/products.html', products=load_products())
+
 
 
 
