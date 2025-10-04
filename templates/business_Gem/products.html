@@ -1,0 +1,304 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-extrabold text-gray-900">Shop All Products</h1>
+      <p class="mt-4 text-lg text-gray-600">Stuller provides everything jewelry industry professionals need to succeed,
+        from trending jewelry styles and customizable mountings to essential tools and supplies. Explore our quality
+        products and innovative resources designed to help you create exceptional pieces and drive success daily.</p>
+    </div>
+
+    {% if products %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+      {% for product in products %}
+      <div
+        class="bg-white rounded-lg shadow-md hover:shadow-2xl hover:scale-105 transition duration-300 transform p-4 border border-indigo-100">
+        <div class="text-center">
+          <img src="{{ product['image'] }}" alt="{{ product['name'] }}" class="mx-auto w-32 h-32 object-contain mb-3">
+          <h3 class="text-lg font-semibold text-indigo-800">{{ product['name'] }}</h3>
+          <p class="text-gray-600 text-sm">{{ product['description'] }}</p>
+          <p class="text-green-600 font-semibold mt-1">${{ '%.2f'|format(product['price']) }}</p>
+          <p class="text-xs text-gray-500">Product ID: {{ product['id'] }}</p>
+          <a href="{{ url_for('add_to_cart', product_id=product['id']) }}"
+            class="inline-block mt-3 px-4 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded transition">Add to
+            Cart</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 mt-8">No products uploaded yet.</p>
+    {% endif %}
+
+    <div class="mt-20 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-48">
+      <div class="text-center">
+        <img src="https://i.ebayimg.com/images/g/V9EAAOSwVTNkAKtk/s-l1200.jpg" alt="New"
+          class="mx-auto w-32 h-32 border-2 border-black rounded-full">
+        <p class="mt-2 font-semibold underline text-2xl text-black">New</p>
+      </div>
+      <div class="text-center">
+        <img src="https://gemsbymail.com/cdn/shop/files/premium1.png?v=1732202855&width=1946" alt="Bestsellers"
+          class="mx-auto w-32 h-32 border-2 border-black rounded-full">
+        <p class="mt-2 font-semibold underline text-2xl text-black">Bestsellers</p>
+      </div>
+      <div class="text-center">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKtGaK_Fd8E1odccekjXPLjZCHhJDGQX1W-A&s"
+          alt="Trending" class="mx-auto w-32 h-32 border-2 border-black rounded-full">
+        <p class="mt-2 font-semibold underline text-2xl text-black">Trending</p>
+      </div>
+      <div class="text-center">
+        <img
+          src="https://www.folkmarketgems.com/cdn/shop/files/preview_images/67a1e2a6c17847218976660ff5c1e517.thumbnail.0000000000.jpg?v=1734725343&width=1024"
+          alt="Deals" class="mx-auto w-32 h-32 border-2 border-black rounded-full">
+        <p class="mt-2 font-semibold underline text-2xl text-black">Deals</p>
+      </div>
+    </div>
+
+    <div class="mt-20 bg-white rounded-lg p-6 shadow-md">
+      <h2 class="text-2xl font-bold mb-4 text-indigo-800">Stuller Services</h2>
+      <p class="text-gray-700 mb-4">With cutting-edge custom design tools, extensive product catalogs, rapid restocking,
+        and efficient repair services, Stuller has everything you need to meet your customers' demands. With Stuller as
+        your trusted partner, you can focus on honing your craft, expanding your creativity, and ultimately be the
+        jeweler you want to be.</p>
+      <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Explore Our Services</button>
+    </div>
+
+    <div class="mt-20 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-gray-100 rounded-lg p-6 shadow">
+        <h3 class="text-xl font-bold mb-2">Stuller Help Center</h3>
+        <p class="text-gray-700 mb-4">Explore our educational resources, Stuller Blog, Video Center, brochures and
+          catalogs, and more.</p>
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Learn More</button>
+      </div>
+      <div class="bg-gray-100 rounded-lg p-6 shadow">
+        <h3 class="text-xl font-bold mb-2">Events & Training</h3>
+        <p class="text-gray-700 mb-4">Connect with Stuller and an ever-growing community of jewelers around the world at
+          networking and educational events at our global headquarters or on the road.</p>
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Learn More</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toggle Chat Button -->
+<button id="chat-toggle"
+  class="fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center text-2xl text-white rounded-full shadow-xl hover:shadow-2xl focus:outline-none"
+  style="animation: vibrate .25s infinite linear, pulseColor 1.2s ease-in-out infinite;">
+  💎
+</button>
+<style>
+  @keyframes vibrate {
+
+    0%,
+    100% {
+      transform: translate(0)
+    }
+
+    25% {
+      transform: translate(-1px, 1px) rotate(-1deg)
+    }
+
+    50% {
+      transform: translate(1px, -1px) rotate(1deg)
+    }
+
+    75% {
+      transform: translate(-1px, -1px) rotate(0)
+    }
+  }
+
+  @keyframes pulseColor {
+
+    0%,
+    100% {
+      background: #4f46e5;
+      box-shadow: 0 8px 18px rgba(79, 70, 229, .35)
+    }
+
+    50% {
+      background: #6366f1;
+      box-shadow: 0 8px 22px rgba(99, 102, 241, .55)
+    }
+  }
+</style>
+
+<!-- Chat Panel -->
+<div id="chat-panel"
+  class="fixed bottom-24 right-8 z-50 w-80 h-[30rem] bg-white border border-gray-300 shadow-lg rounded-lg p-4 hidden flex flex-col">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-lg font-bold text-indigo-700">Welcome to OpenQQuantify Chatbot</h2>
+    <div class="w-full flex justify-center mb-3">
+      <span class="text-4xl"
+        style="display:inline-block; animation: vibrate 0.3s infinite linear, colorpulse 2s infinite alternate; @keyframes vibrate {0%{transform:translate(0);}20%{transform:translate(-2px,2px);}40%{transform:translate(-2px,-2px);}60%{transform:translate(2px,2px);}80%{transform:translate(-2px,-2px);}100%{transform:translate(0);}} @keyframes colorpulse {0%{color:#4f46e5;}100%{color:#4338ca;}}">💎</span>
+    </div>
+    <button id="chat-close" class="text-sm text-indigo-500 hover:underline">✖</button>
+  </div>
+
+  <!-- FAQ Section -->
+  <div id="chat-faqs" class="text-sm text-gray-600 mb-3">
+    <p class="mb-1">How can I assist you today?</p>
+    <ul class="list-disc list-inside text-indigo-700">
+      <li>Gemstone price range?</li>
+      <li>Best sellers this week?</li>
+      <li>Where are sellers from?</li>
+    </ul>
+  </div>
+
+  <!-- Q&A History -->
+  <div id="chat-history" class="max-h-48 overflow-y-auto space-y-2 text-sm text-gray-700 border rounded p-2 mb-2">
+    <!-- Filled dynamically -->
+  </div>
+
+  <!-- Input -->
+  <textarea id="chat-input" placeholder="Ask about gemstones, prices, etc..." rows="3"
+    class="w-full border border-gray-300 rounded-lg p-2 mb-2 text-black"></textarea>
+
+  <!-- Ask Button -->
+  <button id="ask-button" class="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Ask AI</button>
+</div>
+
+<script>
+  const toggleBtn = document.getElementById('chat-toggle');
+  const chatPanel = document.getElementById('chat-panel');
+  const closeBtn = document.getElementById('chat-close');
+  const askBtn = document.getElementById('ask-button');
+  const chatHistory = document.getElementById('chat-history');
+  let qaHistory = [];
+
+  toggleBtn.addEventListener('click', () => {
+    chatPanel.classList.toggle('hidden');
+  });
+
+  closeBtn.addEventListener('click', () => {
+    chatPanel.classList.add('hidden');
+  });
+
+  askBtn.addEventListener('click', async () => {
+    const inputEl = document.getElementById('chat-input');
+    const question = inputEl.value.trim();
+    if (!question) return;
+
+    const res = await fetch('/ask-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+
+    const data = await res.json();
+    const answer = (data.answer || data.error || '').slice(0, 400);
+    inputEl.value = ''; // Clear input
+
+    qaHistory.unshift({ q: question, a: answer });
+    qaHistory = qaHistory.slice(0, 3);
+
+    chatHistory.innerHTML = `<div class="text-indigo-600 flex items-center gap-2 mb-2">
+      <img src="https://www.openqquantify.com/static/home_page_frontend_media_files/oqqlogotransparent2.png" alt="QQ Logo" class="w-8 h-8">
+      My pleasure, on the OpenQQuantify's Gemstone Platform. How can I assist you today?
+    </div>` + qaHistory.map(item => `
+      <div><strong>You:</strong> ${item.q}</div>
+      <div><strong>AI:</strong> ${item.a}</div>
+    `).join('');
+  });
+</script>
+
+<!-- ===== Client-side Products (non-breaking) ===== -->
+<!-- If server doesn't pass `products`, we'll fetch a small JSON and render the same style cards here. -->
+<div id="productsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-10 hidden"></div>
+
+<script>
+  // --- Client-side Products: keeps your current server Jinja intact ---
+  async function loadProductsJSON() {
+    try {
+      const res = await fetch('/static/data/products.json', { cache: 'no-store' });
+      if (!res.ok) return; // silently skip if file not present yet
+      const items = await res.json();
+      if (!Array.isArray(items) || !items.length) return;
+
+      const grid = document.getElementById('productsGrid');
+      grid.classList.remove('hidden');
+      grid.innerHTML = items.map(p => `
+        <div class="bg-white rounded-lg shadow-md hover:shadow-2xl hover:scale-105 transition duration-300 transform p-4 border border-indigo-100">
+          <div class="text-center">
+            <img src="${p.image}" alt="${p.name}" class="mx-auto w-32 h-32 object-contain mb-3">
+            <h3 class="text-lg font-semibold text-indigo-800">${p.name}</h3>
+            <p class="text-gray-600 text-sm">${p.description ?? ''}</p>
+            <p class="text-green-600 font-semibold mt-1">$${Number(p.price||0).toFixed(2)}</p>
+            <p class="text-xs text-gray-500">Product ID: ${p.id}</p>
+            <!-- TODO: wire to your Flask route add_to_cart(product_id=p.id). For now, data-hook only: -->
+            <button class="inline-block mt-3 px-4 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded transition"
+                    data-add-to-cart="${p.id}">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Optional: emit an event so your existing cart JS can hook into it later
+      document.dispatchEvent(new CustomEvent('products:rendered'));
+    } catch (e) {
+      // no-op: keep page working if file missing
+    }
+  }
+  document.addEventListener('DOMContentLoaded', loadProductsJSON);
+
+  // --- Minimal Add-to-Cart hook (keeps existing flow untouched) ---
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-add-to-cart]');
+    if (!btn) return;
+    const id = btn.getAttribute('data-add-to-cart');
+    // Replace fetch URL below with your actual Flask route if exposed for client use
+    // fetch(`/cart/add/${id}`, { method: 'POST' })
+    alert(`Added to cart: ${id} (hook placeholder)`);
+  });
+</script>
+
+<!-- ===== Chatbot: 5 seeded Q/A fallback (uses your existing UI) ===== -->
+<script>
+  // If /ask-ai is not ready or fails, answer from a tiny KB of 5 entries.
+  const GEM_KB = [
+    { q: /price|cost|range/i, a: "Most natural gems on our site range $100–$2,500; lab gems start around $50. Exact price depends on carat, clarity, and cut." },
+    { q: /best ?seller|popular|trending/i, a: "Best sellers this week: Tanzanite ovals (2–4 ct), Ruby rounds (1–2 ct), and Lab Sapphire pairs for studs." },
+    { q: /origin|seller|where|from/i, a: "Sellers span US, India, Tanzania, and Thailand. Each listing shows origin and seller location on its card." },
+    { q: /shipping|delivery|time/i, a: "Standard shipping 3–5 business days in US; international 6–10 days. Insured options available at checkout." },
+    { q: /return|refund|policy/i, a: "14‑day inspection period on eligible items. Returns require original lab docs and tamper seals intact." }
+  ];
+
+  async function askBackend(question) {
+    try {
+      const r = await fetch('/ask-ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) });
+      if (!r.ok) throw new Error('bad');
+      const j = await r.json();
+      return j.answer;
+    } catch {
+      // fallback: keyword match from KB
+      const hit = GEM_KB.find(x => x.q.test(question));
+      return hit ? hit.a : "I can help with prices, best sellers, shipping, and returns. Ask me anything about our gems.";
+    }
+  }
+
+  // Patch your existing click handler to use the fallback without changing UI
+  if (typeof askBtn !== 'undefined') {
+    askBtn.onclick = async () => {
+      const inputEl = document.getElementById('chat-input');
+      const question = inputEl.value.trim();
+      if (!question) return;
+      const answer = (await askBackend(question)).slice(0, 400);
+      inputEl.value = '';
+      qaHistory.unshift({ q: question, a: answer });
+      qaHistory = qaHistory.slice(0, 5); // keep last 5
+      chatHistory.innerHTML = `<div class="text-indigo-600 flex items-center gap-2 mb-2">
+        <img src="https://www.openqquantify.com/static/home_page_frontend_media_files/oqqlogotransparent2.png" alt="QQ Logo" class="w-8 h-8">
+        My pleasure, on the OpenQQuantify's Gemstone Platform. How can I assist you today?
+      </div>` + qaHistory.map(item => `
+        <div><strong>You:</strong> ${item.q}</div>
+        <div><strong>AI:</strong> ${item.a}</div>
+      `).join('');
+    };
+  }
+</script>
+
+{% endblock %}
+
