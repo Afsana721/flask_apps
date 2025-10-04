@@ -40,6 +40,13 @@ def nanize():
 @app.route('/info_index')
 def info_index():
     return render_template('business_Gem/index.html')
+
+#Load products routes
+def load_products():
+    import os, json
+    p = os.path.join(app.root_path, 'static', 'data', 'products.json')
+    return json.load(open(p)) if os.path.exists(p) else []
+
     
 #Gemstone infomation apps products route
 @app.route('/products')
