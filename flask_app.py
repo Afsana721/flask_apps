@@ -36,6 +36,10 @@ def gemstone():
 def nanize():
     return render_template('nanize.html')
 
+#Gemstone informational apps
+@app.route('/info_index')
+def info_index():
+    return render_template('business_Gem/index.html')
 
 
 
