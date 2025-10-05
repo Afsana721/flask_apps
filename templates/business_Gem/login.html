@@ -4,7 +4,7 @@
 {% block content %}
 <main class="min-h-screen py-10 px-4">
   <!-- Login Form Section -->
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg border border-gray-300">
+  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg border-2 border-[#192a56]">
     <h2 class="text-2xl text-black font-semibold text-center mb-4">Login to Your Account</h2>
     <form action="{{ url_for('login') }}" method="POST" class="space-y-4">
      <div>
@@ -42,15 +42,43 @@
   </div>
 
   <!-- Product Promo Boxes -->
-  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-10">
-    {% for i in range(6) %}
-    <div class="bg-gradient-to-br from-indigo-200 to-indigo-400 shadow-lg rounded-xl p-4 transform hover:scale-105 transition">
-      <!-- use an image (your URL is a JPG, not an MP4) -->
-      <img class="w-full h-40 object-cover rounded mb-2"
-           src="https://cdn.pixabay.com/photo/2022/10/28/08/25/amethyst-7552587_1280.jpg" alt="Gemstone {{ i+1 }}">
-      <p class="text-center text-lg font-semibold text-white">Gemstone Showcase {{ i+1 }}</p>
-    </div>
-    {% endfor %}
-  </section>
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-10">
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://previews.123rf.com/images/apttone/apttone1010/apttone101000006/7924773-diamond-3d-render.jpg"  alt="gem">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://img.freepik.com/premium-photo/green-emerald-diamonds-gem-placed-reflection-background-3d-rendering_169963-1036.jpg"  alt="gem">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaDVit2t0rVL8BaMJoJGVDLf1WU9QV9BzLHw&s"  alt="gem">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://t4.ftcdn.net/jpg/16/53/74/09/360_F_1653740959_SxAXcXvoqE6K4tcIfM4rWV644XSE8452.jpg" alt="gem">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://static.vecteezy.com/system/resources/previews/063/050/059/non_2x/a-large-crystal-with-colorful-lights-on-it-photo.jpeg"  alt="gem">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+  <div class="shadow-lg rounded-xl p-4 transform hover:scale-105 transition animate-pulse"
+       style="background-image: linear-gradient(180.4deg, rgba(0,6,10,1) 1%, rgba(1,190,237,1) 91.4%);">
+    <img class="w-full h-40 object-cover rounded mb-2"
+         src="https://www.shutterstock.com/image-photo/macro-shot-single-garnet-crystals-260nw-2505339063.jpgg" alt="Gemstone 6">
+    <p class="text-center text-lg font-semibold text-white">Gemstone</p>
+  </div>
+</section>
 </main>
 {% endblock %}
