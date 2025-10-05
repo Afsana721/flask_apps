@@ -44,7 +44,7 @@ def info_index():
 #Load products routes
 def load_products():
     import os, json
-    p = os.path.join(app.root_path, 'static', 'data', 'products.json')
+    p = os.path.join(app.root_path, 'static', 'product.json')  # matches your repo
     return json.load(open(p)) if os.path.exists(p) else []
 
     
