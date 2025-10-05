@@ -1,55 +1,54 @@
 {% extends 'business_Gem/base.html' %}
-{% block title %}Login | OpenQQuantify{% endblock %}
+{% block title %}Login | AptiCraft{% endblock %}
 
 {% block content %}
 <main class="min-h-screen py-10 px-4">
   <!-- Login Form Section -->
   <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg border border-gray-300">
-    <h2 class="text-2xl font-semibold text-center mb-4 animate__animated animate__fadeInDown">Login to Your Account</h2>
-    <form action="/login" method="POST" class="space-y-4">
-      <!-- Username -->
+    <h2 class="text-2xl font-semibold text-center mb-4">Login to Your Account</h2>
+    <form action="{{ url_for('login') }}" method="POST" class="space-y-4">
       <div>
         <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-        <input type="text" id="username" name="username" required class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        <input id="username" name="username" required
+               class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
       </div>
 
-      <!-- Password -->
       <div>
         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input type="password" id="password" name="password" required class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        <input type="password" id="password" name="password" required
+               class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
       </div>
 
-      <!-- Login Type -->
       <div>
         <label for="role" class="block text-sm font-medium text-gray-700">Login Type</label>
-        <select name="role" id="role" required class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md">
+        <select id="role" name="role" required class="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md">
           <option value="" disabled selected>Select Login Type</option>
           <option value="buyer">Buyer</option>
           <option value="seller">Seller</option>
         </select>
       </div>
 
-      <!-- Submit -->
-      <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-md transition">Login</button>
+      <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded-md">
+        Login
+      </button>
 
-      <!-- Forgot Password Link -->
       <div class="text-right mt-2">
-        <a href="#" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        <a class="text-sm text-blue-600 hover:underline" href="#">Forgot password?</a>
       </div>
     </form>
 
     <p class="text-center text-sm text-gray-600 mt-4">
-      Don’t have an account? <a href="/register" class="text-blue-600 hover:underline">Sign up</a>
+      Don’t have an account? <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">Sign up</a>
     </p>
   </div>
 
   <!-- Product Promo Boxes -->
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 mt-10">
     {% for i in range(6) %}
-    <div class="bg-gradient-to-br from-indigo-200 to-indigo-400 shadow-lg rounded-xl p-4 transform hover:scale-105 transition duration-500 animate__animated animate__zoomIn">
-      <video autoplay loop muted playsinline class="w-full h-40 rounded mb-2">
-        <source src="https://cdn.pixabay.com/photo/2022/10/28/08/25/amethyst-7552587_1280.jpg" type="video/mp4">
-      </video>
+    <div class="bg-gradient-to-br from-indigo-200 to-indigo-400 shadow-lg rounded-xl p-4 transform hover:scale-105 transition">
+      <!-- use an image (your URL is a JPG, not an MP4) -->
+      <img class="w-full h-40 object-cover rounded mb-2"
+           src="https://cdn.pixabay.com/photo/2022/10/28/08/25/amethyst-7552587_1280.jpg" alt="Gemstone {{ i+1 }}">
       <p class="text-center text-lg font-semibold text-white">Gemstone Showcase {{ i+1 }}</p>
     </div>
     {% endfor %}
