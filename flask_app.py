@@ -2,6 +2,8 @@ import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
+from flask import request, redirect, url_for, flash
+
 app = Flask(__name__, template_folder="templates")
 
 
@@ -59,6 +61,18 @@ def add_to_cart(product_id):
     # TODO: add to session/db cart
     return redirect(url_for('list_products'))
 
+#login route 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # TODO: replace with real auth
+        username = request.form.get('username')
+        role = request.form.get('role')
+        if username and role:
+            flash('Logged in successfully.')
+            return redirect(url_for('dashboard'))  # or wherever you want
+        flash('Invalid login.')
+    return render_template('business_Gem/login.html')
 
 
 if __name__ == "__main__":
