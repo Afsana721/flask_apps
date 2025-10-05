@@ -61,6 +61,27 @@ def add_to_cart(product_id):
     # TODO: add to session/db cart
     return redirect(url_for('list_products'))
 
+#register route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        user_type = request.form.get('userType')
+        if user_type == 'seller':
+            session['user'] = {
+                'role': 'seller',
+                'username': request.form.get('seller_username'),
+                'shop_name': request.form.get('seller_fullname'),
+                'location': request.form.get('location')
+            }
+        else:
+            session['user'] = {
+                'role': 'buyer',
+                'username': request.form.get('buyer_username')
+            }
+        return redirect(url_for('dashboard'))
+    return render_template('business_Gem/register.html')
+
+
 
 @app.route('/login', methods=['GET','POST'])
 def login():
