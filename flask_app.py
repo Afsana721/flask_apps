@@ -3,7 +3,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 from flask import request, redirect, url_for, flash , session
-
+app.secret_key = "supersecret123"  # use a strong random key in production
 app = Flask(__name__, template_folder="templates")
 
 
