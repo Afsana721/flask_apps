@@ -1,0 +1,123 @@
+{% extends 'business_Gem/base.html' %}
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-10 px-6 mt-24 mb-24">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-2xl font-bold text-[#011f4b]">Dashboard</h1>
+      <div class="relative inline-block text-left mb-44">
+        <button onclick="toggleDropdown()" class="flex items-center gap-2 focus:outline-none">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User" class="w-12 h-12 rounded-full">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="userDropdown"
+          class="hidden absolute right-0 mt-2 w-44 bg-white shadow-lg rounded border text-sm text-[#011f4b] z-50">
+          <a href="/static/sample_products.csv" download class="block px-4 py-2 hover:bg-gray-100">Sample CSV</a>
+          <a href="/static/sample_products.xlsx" download class="block px-4 py-2 hover:bg-gray-100">Sample Excel</a>
+          <label for="fileUploadInput" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Upload File</label>
+          <div class="border-t my-1"></div>
+          <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <form id="fileUploadForm" action="/upload" method="POST" enctype="multipart/form-data" class="hidden">
+      <input type="file" id="fileUploadInput" name="file"
+        onchange="document.getElementById('fileUploadForm').submit();">
+    </form>
+
+    {% if session.get('user') and session['user']['role'] == 'seller' %}
+    <button onclick="toggleChart()"
+      class="mb-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Toggle Sales Graph</button>
+
+    <div id="salesChart" class="hidden bg-white shadow rounded p-4">
+      <canvas id="chartCanvas" height="100"></canvas>
+    </div>
+
+    <div class="mt-8 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700">Welcome, {{ session['user']['shop_name'] }}</h2>
+      <p class="text-sm text-gray-600">Location: {{ session['user']['location'] }}</p>
+    </div>
+    {% endif %}
+    <!--Sales report taggle chart-->
+    <div id="salesWrap" class="mt-6 max-w-3xl mr-auto">
+      <button onclick="toggleChart()"
+        class="mb-6 px-4 py-2 bg-[#2E38F5] text-white rounded hover:bg-[#9140F4] transition">Toggle Sales Graph</button>
+
+      <div id="salesChart" class="hidden bg-white shadow rounded p-4">
+        <canvas id="chartCanvas" height="100"></canvas>
+      </div>
+    </div>
+
+    <div id="dynamic-events" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-56 mb-24">
+      <div class="bg-gradient-to-br from-purple-100 to-blue-100 p-5 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800">Top Product</h3>
+        <img
+          src="https://www.latelita.com/cdn/shop/articles/the-ruby-gemstone-everything-you-ever-needed-to-know-about-rubies-748231.jpg?v=1692710601&width=2048"
+          alt="ruby">
+        <p class="text-gray-600 text-sm mt-1">High-performance gemstone.</p>
+      </div>
+      <div class="bg-gradient-to-br from-green-100 to-lime-100 p-5 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800">Top Seller</h3>
+        <img
+          src="https://imgix.starlanka.com/static/Pn1zhBMV-Untitled-1.jpg?auto=compress&fit=scale&fm=pjpg&h=630&w=840"
+          alt="Paul Jewelers LTD">
+        <p class="text-gray-600 text-sm mt-1">Paul Jewelers LTD</p>
+      </div>
+      <div class="bg-gradient-to-br from-pink-100 to-rose-100 p-5 rounded-xl shadow hover:shadow-lg transition">
+        <h3 class="text-lg font-semibold text-gray-800">New Orders</h3>
+        <img
+          src="https://www.pinnaclediamonds.net/sites/pinnaclediamonds.indiemade.com/files/imagecache/im_clientsite_product_zoom/P-019-253586482-1.jpg"
+          alt="pending products">
+        <p class="text-gray-600 text-sm mt-1">23 pending shipments products</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  function toggleChart() {
+    const chartSection = document.getElementById("salesChart");
+    chartSection.classList.toggle("hidden");
+  }
+
+  function toggleDropdown() {
+    document.getElementById('userDropdown').classList.toggle('hidden');
+  }
+
+  const ctx = document.getElementById('chartCanvas')?.getContext('2d');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Sales ($)',
+          data: [200, 400, 300, 600, 500, 700],
+          borderColor: '#4F46E5',
+          backgroundColor: 'rgba(79, 70, 229, 0.2)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            grid: { display: false },
+            title: { display: true, text: 'Month' }
+          },
+          y: {
+            title: { display: true, text: 'Revenue' }
+          }
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}
