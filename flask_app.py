@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
-from flask import request, redirect, url_for, flash
+from flask import request, redirect, url_for, flash , session,
 
 app = Flask(__name__, template_folder="templates")
 
@@ -61,23 +61,30 @@ def add_to_cart(product_id):
     # TODO: add to session/db cart
     return redirect(url_for('list_products'))
 
-#login route 
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'POST':
-        # TODO: replace with real auth
-        username = request.form.get('username')
-        role = request.form.get('role')
-        if username and role:
-            flash('Logged in successfully.')
-            return redirect(url_for('dashboard'))  # or wherever you want
-        flash('Invalid login.')
+        u = request.form.get('username','').strip()
+        p = request.form.get('password','').strip()
+        if u == 'admin' and p == 'admin123':
+            session['user'] = {'username': u}
+            session['role']  = 'user'   # keep simple
+            return redirect(url_for('dashboard'))
+        flash('Invalid credentials')
     return render_template('business_Gem/login.html')
 
-#dashboard route
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 @app.route('/dashboard')
 def dashboard():
+    if not session.get('user'):
+        return redirect(url_for('login'))
     return render_template('business_Gem/dashboard.html')
+
 
 
 
