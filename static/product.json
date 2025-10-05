@@ -1,0 +1,44 @@
+[
+{
+"id": 1,
+"name": "Quartz Crystal",
+"price": 12.99,
+"image": "https://static.platform.michaels.com/2c-prd/en_US/2306135421813842128.jpeg",
+"description": "Clear natural quartz crystal, perfect for jewelry and display."
+},
+{
+"id": 2,
+"name": "Amethyst Cluster",
+"price": 18.50,
+"image": "https://cdn11.bigcommerce.com/s-w60s75xh/images/stencil/1280x1280/products/13518/53939/71LNfyo6wKL__20489.1715898281.jpg?c=2?imbypass=on",
+"description": "Deep purple amethyst cluster, polished edges, raw crystal interior."
+},
+{
+"id": 3,
+"name": "Sodalite Rough",
+"price": 9.75,
+"image": "https://crystalrivergems.com/cdn/shop/products/sodalite-rough-size-1-to-2-inches-bulk-wholesale-lot-raw-crystals-minerals-gemstones-293798.jpg?v=1709597103&width=1080",
+"description": "Blue sodalite rough stones, natural mineral specimen lot."
+},
+{
+"id": 4,
+"name": "Rose Quartz Chunk",
+"price": 14.20,
+"image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4Q5nCNx2s_FlzkKPn2ZhWS4bKyBMWMYvpSQ&s",
+"description": "Light pink rose quartz rough chunk, healing and decorative uses."
+},
+{
+"id": 5,
+"name": "Citrine Point",
+"price": 16.40,
+"image": "https://m.media-amazon.com/images/I/81qtE8iyxbL._AC_SL1500_.jpg",
+"description": "Golden citrine crystal point, ideal for display or crystal grids."
+},
+{
+"id": 6,
+"name": "Raw Garnet Lot",
+"price": 11.99,
+"image": "https://cdn11.bigcommerce.com/s-74zp6w28re/images/stencil/1280x1280/products/9975/115920/raw-garnet-bulk-crr-aa433-bulk__79742.1686868488.jpg?c=1",
+"description": "Dark red raw garnet stones, bulk wholesale crystal lot."
+}
+]
