@@ -116,11 +116,9 @@ def get_product_by_id(pid):
 
 @app.route('/cart')
 def view_cart():
-    ids = session.get('cart', [])
-    items = [(pid, get_product_by_id(pid)) for pid in ids]
-    items = [(pid, p) for pid, p in items if p]
-    total = sum(p['price'] for _, p in items)
-    return render_template('business_Gem/cart.html', cart=items, total=total)
+    cart = session.get('cart', [])
+    total = sum(float(item['price']) for item in cart) if cart else 0
+    return render_template('business_Gem/cart.html', cart=cart, total=total)
 
 
 @app.route('/add-to-cart/<product_id>')
