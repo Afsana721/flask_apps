@@ -107,11 +107,21 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('business_Gem/dashboard.html')
 
-#cart , add & remove item routes 
+# total, cart , add & remove item routes 
+def get_product_by_id(pid):
+    for p in load_products():
+        if str(p.get("id")) == str(pid):
+            return p
+    return None
+
 @app.route('/cart')
 def view_cart():
-    cart = session.get('cart', [])
-    return render_template('business_Gem/cart.html', cart=cart)
+    ids = session.get('cart', [])
+    items = [(pid, get_product_by_id(pid)) for pid in ids]
+    items = [(pid, p) for pid, p in items if p]
+    total = sum(p['price'] for _, p in items)
+    return render_template('business_Gem/cart.html', cart=items, total=total)
+
 
 @app.route('/add-to-cart/<product_id>')
 def add_to_cart(product_id):
