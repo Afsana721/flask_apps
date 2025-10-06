@@ -57,7 +57,7 @@
           <!-- User Details Below Invoice -->
           <div class="mt-6">
             <h5 class="text-md font-semibold text-indigo-700 mb-2">Shipping Information</h5>
-            <form method="POST" action="{{ url_for('remove_from_cart', product_id=item[0]) }}">
+            <form method="POST" action="{{ url_for('checkout') }}">
               <input type="text" name="name" placeholder="Full Name" required class="p-2 border rounded col-span-2" />
               <input type="email" name="email" placeholder="Email Address" required
                 class="p-2 border rounded col-span-2" />
@@ -111,3 +111,5 @@
   }
 </style>
 {% endblock %}
+
+
