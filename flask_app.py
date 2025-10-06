@@ -107,6 +107,26 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('business_Gem/dashboard.html')
 
+#cart , add & remove item routes 
+@app.route('/cart')
+def view_cart():
+    cart = session.get('cart', [])
+    return render_template('business_Gem/cart.html', cart=cart)
+
+@app.route('/add-to-cart/<product_id>')
+def add_to_cart(product_id):
+    cart = session.get('cart', [])
+    cart.append(product_id)
+    session['cart'] = cart
+    return redirect(url_for('view_cart'))
+
+@app.route('/remove-from-cart/<product_id>', methods=['POST'])
+def remove_from_cart(product_id):
+    cart = session.get('cart', [])
+    if product_id in cart:
+        cart.remove(product_id)
+    session['cart'] = cart
+    return redirect(url_for('view_cart'))
 
 
 
