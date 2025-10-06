@@ -146,6 +146,26 @@ def remove_from_cart(product_id):
     session['cart'] = cart
     return redirect(url_for('view_cart'))
 
+#check out route
+@app.route('/checkout', methods=['POST'])
+def checkout():
+    # Read shipping form
+    name    = request.form.get('name', '')
+    email   = request.form.get('email', '')
+    phone   = request.form.get('phone', '')
+    address = request.form.get('address', '')
+
+    # Here you could save the order to DB / send email, etc.
+    order = {
+        "items": session.get('cart', []),
+        "name": name, "email": email, "phone": phone, "address": address
+    }
+
+    # Clear cart after “purchase”
+    session['cart'] = []
+    flash("Checkout complete. Thank you!")
+    return redirect(url_for('view_cart'))
+
 
 
 if __name__ == "__main__":
