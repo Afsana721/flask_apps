@@ -121,9 +121,12 @@ def view_cart():
     for pid in ids:
         p = get_product_by_id(pid)
         if p:
-            cart_items.append((pid, p.get('name',''), p.get('description',''), float(p.get('price',0)), p.get('image','')))
+            price = float(str(p.get('price', 0)).replace('$','').replace(',',''))
+            cart_items.append((pid, p.get('name',''), p.get('description',''), price, p.get('image','')))
+
     total = sum(i[3] for i in cart_items)
     return render_template('business_Gem/cart.html', cart_items=cart_items, total=total)
+
 
 
 
