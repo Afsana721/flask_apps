@@ -57,10 +57,10 @@ def list_products():
     return render_template('business_Gem/products.html', products=load_products())
 
 #product page products add to cart route
-@app.route('/cart/add/<product_id>', methods=['GET','POST'])
-def add_to_cart(product_id):
+#@app.route('/cart/add/<product_id>', methods=['GET','POST'])
+#def add_to_cart(product_id):
     # TODO: add to session/db cart
-    return redirect(url_for('list_products'))
+    #return redirect(url_for('list_products'))
 
 #register route
 @app.route('/register', methods=['GET', 'POST'])
