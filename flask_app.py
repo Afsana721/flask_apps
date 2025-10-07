@@ -106,6 +106,11 @@ def dashboard():
     if not session.get('user'):
         return redirect(url_for('login'))
     return render_template('business_Gem/dashboard.html')
+    
+#suppliers route 
+@app.route('/suppliers')
+def supplier():
+    return render_template('buiness_Gem//suppliers.html)
 
 # total, cart , add & remove item routes 
 def get_product_by_id(pid):
