@@ -110,7 +110,8 @@ def dashboard():
 #suppliers route 
 @app.route('/suppliers')
 def supplier():
-    return render_template('buiness_Gem/suppliers.html')
+    return render_template('business_Gem/suppliers.html')
+    
 
 # total, cart , add & remove item routes 
 def get_product_by_id(pid):
