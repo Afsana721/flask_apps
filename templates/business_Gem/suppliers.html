@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AptiCraft • Gemstone Supplier Directory</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night: '#0b0b10',
+            ink: '#111318',
+            gold: '#d4af37',
+            soft: '#c9c9d4'
+          },
+          fontFamily: {
+            display: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'ui-sans-serif', 'system-ui']
+          },
+          boxShadow: {
+            glow: '0 0 0 1px rgba(212,175,55,0.35), 0 10px 30px rgba(0,0,0,0.45)'
+          },
+          keyframes: {
+            floaty: {
+              '0%,100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% 0' },
+              '100%': { backgroundPosition: '200% 0' }
+            }
+          },
+          animation: {
+            floaty: 'floaty 6s ease-in-out infinite',
+            shimmer: 'shimmer 2.5s linear infinite'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/J6MdWn8J7QZ4G3b7f9bX+5i1rRkRrQ9o3t0m3qg1s7PjKZbG0f3J5j8q2zW5iQm0Z5B5h3Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* Gold gradient border helper */
+    .gold-frame { position: relative; }
+    .gold-frame::before {
+      content:""; position:absolute; inset:-1px; border-radius:1.25rem; padding:1px;
+      background: linear-gradient(135deg, rgba(212,175,55,.9), rgba(212,175,55,.2), transparent 60%);
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude;
+    }
+    /* Tiny pill shimmer */
+    .pill-shimmer{background:linear-gradient(90deg,rgba(212,175,55,.15),rgba(212,175,55,.45),rgba(212,175,55,.15));background-size:200% 100%}
+  </style>
+</head>
+<body class="bg-night text-soft font-sans selection:bg-gold/20 selection:text-gold">
+  <!-- Header -->
+  <header class="relative overflow-hidden">
+    <div class="absolute -top-24 -right-20 h-64 w-64 rounded-full bg-gold/10 blur-3xl"></div>
+    <div class="max-w-7xl mx-auto px-6 py-10 md:py-14">
+      <p class="uppercase tracking-[0.35em] text-gold text-xs">Directory</p>
+      <h1 class="font-display text-3xl md:text-5xl text-[#FFD700] mt-2">AptiCraft Gemstone Supplier Network</h1>
+      <p class="mt-3 max-w-2xl text-sm md:text-base text-soft/80">Verified partners providing curated stones and ethical sourcing. Hover any card to explore products, channels, and contact.</p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        <span class="pill-shimmer animate-shimmer text-[11px] md:text-xs px-3 py-1 rounded-full text-gold border border-gold/30">Trusted • Hand‑picked • Updated</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Grid of Suppliers -->
+  <main class="max-w-7xl mx-auto px-6 pb-20 grid gap-6 md:gap-8 md:grid-cols-2">
+
+    <!-- SUPPLIER CARD TEMPLATE (duplicate & edit) -->
+    <section class="gold-frame rounded-2xl bg-ink/70 backdrop-blur-sm border border-white/5 shadow-glow group overflow-hidden">
+      <div class="p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-display text-xl md:text-2xl text-[#FFFF00]">AptiCraft Gemstone Supplier • Dhaka</h2>
+            <div class="mt-1 flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-badge-check text-gold"></i>
+              <span class="text-gold">Verified</span>
+              <span class="mx-1">•</span>
+              <span class="text-emerald-400">Open now (09:00–19:00)</span>
+            </div>
+          </div>
+          <div class="text-right text-xs leading-5">
+            <p><i class="fa-solid fa-location-dot text-gold"></i> Banani, Dhaka</p>
+            <p><i class="fa-solid fa-phone text-gold"></i> +880 1711‑000000</p>
+            <p><i class="fa-solid fa-envelope text-gold"></i> dhaka@apticraft.com</p>
+          </div>
+        </div>
+
+        <!-- Products thumbnails -->
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10 group-hover:scale-[1.02] transition" src="https://picsum.photos/seed/ruby/300/300" alt="Ruby" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10 group-hover:scale-[1.02] transition" src="https://picsum.photos/seed/emerald/300/300" alt="Emerald" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10 group-hover:scale-[1.02] transition" src="https://picsum.photos/seed/sapphire/300/300" alt="Sapphire" />
+        </div>
+
+        <!-- Meta rows -->
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Supply Channels</dt><dd class="mt-1 text-white">Wholesale • Retail • Online</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Cert & Traceability</dt><dd class="mt-1 text-white">GIA • Batch QR • COA</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Lead Time</dt><dd class="mt-1 text-white">3–7 days</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Payment</dt><dd class="mt-1 text-white">Wire • Card • LC</dd></div>
+        </dl>
+
+        <!-- Actions -->
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#" class="px-4 py-2 rounded-full bg-gold/90 text-night text-sm font-semibold hover:bg-gold transition shadow-sm"><i class="fa-solid fa-cart-shopping mr-2"></i>Request Quote</a>
+          <a href="#" class="px-4 py-2 rounded-full border border-gold/40 text-gold text-sm hover:bg-gold/10 transition"><i class="fa-brands fa-whatsapp mr-2"></i>Chat</a>
+          <span class="px-3 py-2 rounded-full text-xs border border-white/10 text-soft/70">MOQs: 10 pcs / SKU</span>
+        </div>
+      </div>
+
+      <!-- Floating deco -->
+      <div class="pointer-events-none absolute -left-8 top-6 h-24 w-24 rounded-full bg-gold/10 blur-2xl animate-floaty"></div>
+    </section>
+
+    <!-- Supplier 2 -->
+    <section class="gold-frame rounded-2xl bg-ink/70 backdrop-blur-sm border border-white/5 shadow-glow group overflow-hidden">
+      <div class="p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-display text-xl md:text-2xl text-[#FFFF00]">AptiCraft Gemstone Supplier • Jaipur</h2>
+            <div class="mt-1 flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-badge-check text-gold"></i>
+              <span class="text-gold">Verified</span>
+              <span class="mx-1">•</span>
+              <span class="text-amber-400">Closes 18:00</span>
+            </div>
+          </div>
+          <div class="text-right text-xs leading-5">
+            <p><i class="fa-solid fa-location-dot text-gold"></i> Johari Bazar</p>
+            <p><i class="fa-solid fa-phone text-gold"></i> +91 141‑555‑1020</p>
+            <p><i class="fa-solid fa-envelope text-gold"></i> jaipur@apticraft.com</p>
+          </div>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/opals/300/300" alt="Opal" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/topaz/300/300" alt="Topaz" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/garnet/300/300" alt="Garnet" />
+        </div>
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Supply Channels</dt><dd class="mt-1 text-white">Export • B2B • Designer</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Cert & Traceability</dt><dd class="mt-1 text-white">IGI • Laser‑engraved IDs</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Lead Time</dt><dd class="mt-1 text-white">5–10 days</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Payment</dt><dd class="mt-1 text-white">SWIFT • Card</dd></div>
+        </dl>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#" class="px-4 py-2 rounded-full bg-gold/90 text-night text-sm font-semibold hover:bg-gold transition shadow-sm"><i class="fa-solid fa-envelope-open-text mr-2"></i>Send Inquiry</a>
+          <a href="#" class="px-4 py-2 rounded-full border border-gold/40 text-gold text-sm hover:bg-gold/10 transition"><i class="fa-solid fa-globe mr-2"></i>Website</a>
+          <span class="px-3 py-2 rounded-full text-xs border border-white/10 text-soft/70">ISO 9001</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute -right-10 bottom-6 h-28 w-28 rounded-full bg-gold/10 blur-2xl animate-floaty"></div>
+    </section>
+
+    <!-- Supplier 3 -->
+    <section class="gold-frame rounded-2xl bg-ink/70 backdrop-blur-sm border border-white/5 shadow-glow group overflow-hidden">
+      <div class="p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-display text-xl md:text-2xl text-[#FFFF00]">AptiCraft Gemstone Supplier • Colombo</h2>
+            <div class="mt-1 flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-badge-check text-gold"></i>
+              <span class="text-gold">Verified</span>
+              <span class="mx-1">•</span>
+              <span class="text-rose-400">By Appointment</span>
+            </div>
+          </div>
+          <div class="text-right text-xs leading-5">
+            <p><i class="fa-solid fa-location-dot text-gold"></i> Fort, Colombo</p>
+            <p><i class="fa-solid fa-phone text-gold"></i> +94 11‑222‑8899</p>
+            <p><i class="fa-solid fa-envelope text-gold"></i> colombo@apticraft.com</p>
+          </div>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/spinel/300/300" alt="Spinel" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/tsavorite/300/300" alt="Tsavorite" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/citrine/300/300" alt="Citrine" />
+        </div>
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Supply Channels</dt><dd class="mt-1 text-white">Auction • Private Lots</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Cert & Traceability</dt><dd class="mt-1 text-white">SGL • Mine‑to‑Market</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Lead Time</dt><dd class="mt-1 text-white">On request</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Payment</dt><dd class="mt-1 text-white">Escrow • Wire</dd></div>
+        </dl>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#" class="px-4 py-2 rounded-full bg-gold/90 text-night text-sm font-semibold hover:bg-gold transition shadow-sm"><i class="fa-solid fa-calendar-check mr-2"></i>Book Viewing</a>
+          <a href="#" class="px-4 py-2 rounded-full border border-gold/40 text-gold text-sm hover:bg-gold/10 transition"><i class="fa-solid fa-shield-halved mr-2"></i>Compliance</a>
+          <span class="px-3 py-2 rounded-full text-xs border border-white/10 text-soft/70">KYC / AML Ready</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute -left-8 bottom-4 h-20 w-20 rounded-full bg-gold/10 blur-2xl animate-floaty"></div>
+    </section>
+
+    <!-- Supplier 4 -->
+    <section class="gold-frame rounded-2xl bg-ink/70 backdrop-blur-sm border border-white/5 shadow-glow group overflow-hidden">
+      <div class="p-6 md:p-7">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="font-display text-xl md:text-2xl text-[#FFFF00]">AptiCraft Gemstone Supplier • New York</h2>
+            <div class="mt-1 flex items-center gap-2 text-xs">
+              <i class="fa-solid fa-badge-check text-gold"></i>
+              <span class="text-gold">Verified</span>
+              <span class="mx-1">•</span>
+              <span class="text-emerald-400">Open (10:00–18:00)</span>
+            </div>
+          </div>
+          <div class="text-right text-xs leading-5">
+            <p><i class="fa-solid fa-location-dot text-gold"></i> 47th St, NYC</p>
+            <p><i class="fa-solid fa-phone text-gold"></i> +1 (212) 555‑7733</p>
+            <p><i class="fa-solid fa-envelope text-gold"></i> nyc@apticraft.com</p>
+          </div>
+        </div>
+        <div class="mt-5 grid grid-cols-3 gap-3">
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/morganite/300/300" alt="Morganite" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/paraiba/300/300" alt="Paraiba" />
+          <img class="aspect-square object-cover rounded-xl ring-1 ring-white/10" src="https://picsum.photos/seed/alexandrite/300/300" alt="Alexandrite" />
+        </div>
+        <dl class="mt-5 grid grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Supply Channels</dt><dd class="mt-1 text-white">Retail • Private Client</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Cert & Traceability</dt><dd class="mt-1 text-white">GIA • AGS</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Lead Time</dt><dd class="mt-1 text-white">2–5 days</dd></div>
+          <div class="p-3 rounded-lg bg-white/5"><dt class="text-soft/60">Payment</dt><dd class="mt-1 text-white">Card • Apple Pay</dd></div>
+        </dl>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="#" class="px-4 py-2 rounded-full bg-gold/90 text-night text-sm font-semibold hover:bg-gold transition shadow-sm"><i class="fa-solid fa-store mr-2"></i>Visit Showroom</a>
+          <a href="#" class="px-4 py-2 rounded-full border border-gold/40 text-gold text-sm hover:bg-gold/10 transition"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
+          <span class="px-3 py-2 rounded-full text-xs border border-white/10 text-soft/70">Save up to 15%</span>
+        </div>
+      </div>
+      <div class="pointer-events-none absolute right-6 -top-8 h-24 w-24 rounded-full bg-gold/10 blur-2xl animate-floaty"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#222222] text-[#dde5ea] pt-20 pb-10 px-6 font-sans shadow-lg animate-fade-in-up ">
+    <div class="max-w-6xl mx-auto">
+      <h2
+        class="text-4xl font-bold mb-8 text-center text-[#fffffa] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] tracking-wide animate-pulse"
+        style="font-family: 'Orbitron', sans-serif;">
+        🌐 Discover AptiCraft Service Domains
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-4 text-[#fffffa]">
+        
+      </div>
+      <p class="text-sm text-center text-[#051114] mt-10">&copy; 2025 AptiCraft. All rights reserved.</p>
+    </div>
+  </footer>
+  <!--footer script for styles-->
+  <style>
+    @keyframes fade-in-up {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in-up {
+      animation: fade-in-up 0.8s ease-out both;
+    }
+  </style>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
