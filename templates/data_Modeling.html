@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Modeling Workshop</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Three.js (r128 - common CDN) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Cannon.js for Physics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+
+    <style>
+        /* Custom styles for the interactive section and overall theme */
+        :root {
+            --primary-color: #4f46e5;
+            /* Indigo-600 */
+            --background-color: #1f2937;
+            /* Gray-800 */
+            --text-color: #f3f4f6;
+            /* Gray-100 */
+            --card-color: #374151;
+            /* Gray-700 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        /* Styling for the Three.js canvas container */
+        #schema-container {
+            width: 100%;
+            height: 400px;
+            background: #111827;
+            /* Darker blue-gray */
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(79, 70, 229, 0.5);
+            /* Glowing shadow */
+            margin-top: 1.5rem;
+        }
+
+        /* Collapsible Section Styling */
+        .collapsible-header {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .collapsible-header:hover {
+            background-color: #4b5563;
+            /* Gray-600 hover */
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            padding: 0 1.5rem;
+        }
+
+        .collapsible-content.active {
+            max-height: 4000px;
+            /* Increased to safely hold more content */
+            padding: 1.5rem;
+        }
+
+        /* Three.js Object Text Labels (CSS 3D transform approach) */
+        .label {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        /* Video Card Styling (Applies the 3D effect) */
+        #user-content-placeholder {
+            min-height: 200px;
+            background-color: #1f2937;
+            /* Dark background for frame */
+            border: 2px solid #4f46e5;
+            /* Solid primary border */
+            border-radius: 0.75rem;
+            /* 3D Transform */
+            transform: perspective(1000px) rotateX(3deg) rotateY(-3deg);
+            box-shadow: 0 15px 40px rgba(79, 70, 229, 0.6);
+            /* Enhanced shadow */
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+            /* Ensure video corners are rounded */
+        }
+
+        #user-content-placeholder:hover {
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            box-shadow: 0 5px 25px rgba(79, 70, 229, 0.8);
+        }
+
+        /*interactive star schema container simulation style*/
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 24px;
+            margin: 8px 0 6px
+        }
+
+        p {
+            margin: 0 0 12px;
+            color: var(--muted)
+        }
+
+        #schema3d {
+            position: relative;
+            height: 70vh;
+            border: 1px solid #1e2435;
+            border-radius: 14px;
+            overflow: hidden;
+            background: radial-gradient(1200px 600px at 20% 10%, rgba(212, 175, 55, .08), transparent 65%), linear-gradient(180deg, var(--ink), #0b0e15)
+        }
+
+        #legend {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px
+        }
+
+        .pill {
+            font-size: 12px;
+            color: #c8c9d4;
+            border: 1px solid #2a3248;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #0e1320
+        }
+
+        .pill b {
+            color: var(--gold)
+        }
+
+        #tooltip {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            background: #0b1020d9;
+            border: 1px solid #2a3550;
+            border-radius: 10px;
+            padding: 8px 10px;
+            min-width: 200px;
+            backdrop-filter: blur(6px);
+            display: none
+        }
+
+        #tooltip .t {
+            font-weight: 700;
+            color: #fff
+        }
+
+        #tooltip .s {
+            color: #a9b4c7;
+            font-size: 12px
+        }
+
+        #note {
+            font-size: 12px;
+            color: #8f99ad;
+            margin-top: 10px
+        }
+
+        /* End of interactive star schema container simulation style */
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center py-6 mb-8 border-b border-indigo-500">
+            <div class="text-left mb-12">
+                <span
+                    class="text-2xl font-extrabold tracking-wide bg-gradient-to-r from-[#001BB7] via-indigo-600 to-sky-500 bg-clip-text text-transparent drop-shadow-[0_2px_8px_rgba(0,27,183,0.35)]">AptiCraft</span>
+            </div>
+            <h1
+                class="text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[#001BB7] via-indigo-600 to-sky-500 bg-clip-text text-transparent drop-shadow-[0_3px_10px_rgba(0,27,183,0.35)]">
+                <i class="fas fa-database mr-3 text-indigo-200 drop-shadow-[0_2px_6px_rgba(99,102,241,0.45)]"></i>Data
+                Modeling Essentials Workshop
+            </h1>
+            <p class="mt-2 text-indigo-300 text-lg">Comprehensive concepts and interactive schema visualization.</p>
+        </header>
+
+        <!-- Dynamic Content Placeholder for User's Image/Video -->
+        <div class="mb-10 text-center">
+            <h2 class="text-2xl font-bold text-indigo-300 mb-4">Visualizing the Business Need</h2>
+            <div id="user-content-placeholder" class="max-w-2xl p-4">
+                <video
+                    src="https://videos.openai.com/vg-assets/assets%2Ftask_01k6wwqq5zfcja49g8xmdseqjb%2Ftask_01k6wwqq5zfcja49g8xmdseqjb_genid_d567bdbd-af3d-485b-8113-4ed4533a3007_25_10_06_13_53_493248%2Fvideos%2F00000_791006932%2Fsource.mp4?st=2025-10-06T17%3A10%3A10Z&se=2025-10-12T18%3A10%3A10Z&sks=b&skt=2025-10-06T17%3A10%3A10Z&ske=2025-10-12T18%3A10%3A10Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=cfbc986b-d2bc-4088-8b71-4f962129715b&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=0ALVLPFFzWutEilC68BsVMDfl%2FZztCgr3v%2FyWcFYLHs%3D&az=oaivgprodscus"
+                    controls autoplay muted loop
+                    class="w-full rounded-md shadow-lg border-2 border-indigo-500 transition-shadow duration-300 hover:shadow-indigo-600/50">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <!-- Right-side page link -->
+            <div class="flex justify-end mt-3">
+                <a href="{{ url_for('elec_data') }}"
+                    class="inline-flex items-center gap-2 text-sm font-semibold text-indigo-200 hover:text-white px-3 py-2 rounded-lg border border-indigo-500/60 hover:border-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 transition">
+                    <i class="fas fa-bolt"></i> Live Data Modeling with ETL &amp; ELT
+                </a>
+            </div>
+            <p class="mt-4 text-sm text-gray-400 italic">This section now displays the Sora video with a responsive,
+                card-like 3D effect.</p>
+        </div>
+
+
+
+        <!-- Star Schema Interactive Visualization (Exposed Section) -->
+        <div class="bg-gray-800 p-2 rounded-xl shadow-2xl mb-10 border border-indigo-700">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-400 flex items-center">
+                <i class="fas fa-star mr-2"></i>Interactive Star Schema for E-Marketplace
+            </h2>
+            <p class="text-gray-300 mb-4">
+                Drag the tables to see the physical connections between the **Fact_Sales** (central red table) and the
+                surrounding **Dimension** tables. The connections are maintained using physics constraints.
+            </p>
+
+            <div id="schema-container">
+                <!-- Three.js Canvas will be injected here -->
+                <section class="wrap">
+                    <h1>Electronics Marketplace • Interactive Star Schema</h1>
+                    <p>Drag to orbit, scroll to zoom. Hover a table to see keys. Click a table to highlight its
+                        relationships.</p>
+
+                    <!-- Canvas holder; Three.js will inject a canvas here -->
+                    <div id="schema3d">
+                        <div id="tooltip">
+                            <div class="t"></div>
+                            <div class="s"></div>
+                        </div>
+                    </div>
+                    <div id="legend">
+                        <div class="pill"><b>Fact</b> = Sales/Orders metrics</div>
+                        <div class="pill"><b>Dim</b> = Lookup/Attributes</div>
+                        <div class="pill">Lines show <b>FK → PK</b> references</div>
+                    </div>
+                    <div id="note">Edit the <code>schemaModel</code> JSON in the script to change fields or add
+                        dimensions. All code is inline and self‑contained.</div>
+                </section>
+                <!--End three.js canvas simulation html elements-->
+            </div>
+            <div id="labels-container" class="relative">
+                <!-- CSS Labels will be injected here -->
+            </div>
+
+            <p class="mt-4 text-sm text-gray-400">
+                <span class="font-semibold text-pink-300">Fact Table:</span> Sales Metrics.
+                <span class="font-semibold ml-4 text-cyan-300">Dimension Tables:</span> Context (Customer, Product,
+                Date, Seller).
+            </p>
+        </div>
+
+        <!-- Hidden/Collapsible Learning Sections -->
+        <div id="learning-sections">
+
+            <!-- 1. Data Fundamentals -->
+            <div class="rounded-lg mb-4 bg-gray-700 overflow-hidden">
+                <div class="collapsible-header flex items-center justify-between p-6"
+                    onclick="toggleCollapsible('data-concept')">
+                    <h3 class="text-xl font-semibold text-[#40E0D0]"><i class="fas fa-cubes mr-3 text-red-400"></i>Data
+                        Fundamentals
+                    </h3>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
+                </div>
+                <div class="collapsible-content" id="data-concept">
+                    <!-- NEW DETAILED CONTENT START -->
+                    <div class="p-6 sm:p-8 lg:p-10">
+                        <!-- HEADER -->
+                        <header class="text-center mb-8 border-b border-gray-700 pb-4">
+                            <h1 class="text-4xl font-extrabold text-indigo-400 tracking-tight leading-snug">
+                                Data Fundamentals: The Core Building Blocks
+                            </h1>
+                            <p class="mt-2 text-lg text-gray-400 max-w-3xl mx-auto">
+                                Understanding the essential concepts of data is the first step toward effective analysis
+                                and successful digital transformation.
+                            </p>
+                        </header>
+
+                        <!-- THREE CORE CONCEPTS GRID -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+
+                            <!-- CARD 1: What is Data? -->
+                            <div
+                                class="p-5 bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.02] border-t-4 border-indigo-500">
+                                <div class="flex items-center mb-3">
+                                    <span class="text-3xl mr-3" role="img" aria-label="Chip">💾</span>
+                                    <h2 class="text-xl font-bold text-indigo-300">Definition & Types</h2>
+                                </div>
+                                <p class="text-gray-300 leading-relaxed">
+                                    Data is defined as raw facts, figures, or observations that can be collected and
+                                    analyzed. It exists in many forms:
+                                </p>
+                                <img src="https://visualstudiomagazine.com/blogs/data-driver/2013/09/~/media/ECG/visualstudiomagazine/Images/introimages/BigData.ashx"
+                                    alt="data image" class="border-2 border-gray-700 rounded-lg mt-3 p-2">
+                                <ul class="list-none space-y-4 mt-4 pl-0 text-xs text-[#f2e4d4] ">
+                                    <li><span class="dot">▪</span> <b>Structured</b>: tabular data with fixed schema —
+                                        e.g., <em>orders</em>, <em>order_items</em>, <em>inventory</em>,
+                                        <em>customers</em>.
+                                    </li>
+                                    <li><span class="dot">▪</span> <b>Semi‑structured</b>: tagged/key‑value — e.g.,
+                                        <em>product_specs JSON</em>, <em>event logs JSONL</em>, <em>partner XML
+                                            feeds</em>.
+                                    </li>
+                                    <li><span class="dot">▪</span> <b>Unstructured</b>: media/text — e.g., <em>product
+                                            images</em>, <em>video</em>, <em>emails</em>, <em>reviews</em>; link by IDs,
+                                        index for search.</li>
+                                    <li><span class="dot">▪</span> <b>Keys & Links</b>: use surrogate
+                                        <em>CustomerKey</em>, <em>ProductKey</em>; enforce <b>FK → PK</b> integrity in
+                                        the fact table.
+                                    </li>
+                                    <li><span class="dot">▪</span> <b>Grain</b>: one row per <em>order line</em>
+                                        (captures quantity & unit price), not per order.</li>
+                                </ul>
+                            </div>
+
+                            <!-- CARD 2: Data Life Cycle -->
+                            <div
+                                class="p-5 bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.02] border-t-4 border-pink-500">
+                                <div class="flex items-center mb-3">
+                                    <span class="text-3xl mr-3" role="img" aria-label="Cycle">🔄</span>
+                                    <h2 class="text-xl font-bold text-pink-300">The Data Life Cycle</h2>
+                                </div>
+                                <p class="text-gray-300 leading-relaxed">
+                                    Data moves through several predictable stages from creation to destruction.
+                                    Understanding this cycle is vital for governance:
+                                </p>
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJ7Zal5QChcPPmOd8EmAq2XUHk_JK-f3onaA&s"
+                                    alt="data life cycle" class="border-2 border-gray-700 rounded-lg mt-3 p-2">
+                                <ul class="list-none space-y-4 mt-4 pl-0 text-xs text-[#f2e4d4] ">
+                                    <li><span class="dot">▪</span> <b>Creation / Capture</b>: collect raw input from
+                                        <em>web checkout</em>, <em>POS</em>, <em>seller uploads</em>, <em>IoT stock
+                                            sensors</em>; timestamp and assign IDs at source.
+                                    </li>
+                                    <li><span class="dot">▪</span> <b>Storage</b>: land data in <em>object storage
+                                            (e.g., S3)</em> and curate to a <em>warehouse</em>; encrypt PII, set access
+                                        roles, enable backups & versioning.</li>
+                                    <li><span class="dot">▪</span> <b>Processing / Analysis</b>: ETL/ELT (e.g.,
+                                        pipelines/dbt) to build <em>FactSales</em> + dims; validate FKs; publish metrics
+                                        (GMV, AOV, conversion) to BI.</li>
+                                    <li><span class="dot">▪</span> <b>Archival / Destruction</b>: retain per policy
+                                        (e.g., <em>3–7 years</em>); apply legal holds; securely purge expired data
+                                        (key‑wipe or overwrite).</li>
+                                </ul>
+                            </div>
+
+                            <!-- CARD 3: Data Quality & Integrity -->
+                            <div
+                                class="p-5 bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-[1.02] border-t-4 border-teal-500">
+                                <div class="flex items-center mb-3">
+                                    <span class="text-3xl mr-3" role="img" aria-label="Quality">✅</span>
+                                    <h2 class="text-xl font-bold text-teal-300">Quality & Integrity</h2>
+                                </div>
+                                <p class="text-gray-300 leading-relaxed">
+                                    Reliable analysis requires high-quality data. Integrity focuses on maintaining and
+                                    assuring the accuracy and consistency of data over its entire life cycle:
+                                </p>
+                                <img src="https://lh3.googleusercontent.com/proxy/Klkf-Zu54pEHQYdefqYpVi8n-jsBSE__LzHCnJzfqFVVa1Cienq8q2aiSHFZzNt8pKrRUhWbDaj_twd6BfecTk-e6yx3lL4UkMeXZt-FAZJfJJmCDRrD7l9FBpuJCJZzuCEl-TTvJYZWcJoQaRkLTdURRoE"
+                                    alt="data quality" class="border-2 border-gray-700 rounded-lg mt-3 p-2 ">
+                                <ul class="list-none space-y-4 mt-4 pl-0 text-xs text-[#f2e4d4] ">
+                                    <li><span class="dot">▪</span> <b>Creation / Capture</b>: collect raw input from
+                                        <em>web checkout</em>, <em>POS</em>, <em>seller uploads</em>, <em>IoT stock
+                                            sensors</em>; timestamp and assign IDs at source.
+                                    </li>
+                                    <li><span class="dot">▪</span> <b>Storage</b>: land data in <em>object storage
+                                            (e.g., S3)</em> and curate to a <em>warehouse</em>; encrypt PII, set access
+                                        roles, enable backups & versioning.</li>
+                                    <li><span class="dot">▪</span> <b>Processing / Analysis</b>: ETL/ELT (e.g.,
+                                        pipelines/dbt) to build <em>FactSales</em> + dims; validate FKs; publish metrics
+                                        (GMV, AOV, conversion) to BI.</li>
+                                    <li><span class="dot">▪</span> <b>Archival / Destruction</b>: retain per policy
+                                        (e.g., <em>3–7 years</em>); apply legal holds; securely purge expired data
+                                        (key‑wipe or overwrite).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- DETAILED EXPLORATION: DATABASES AND WAREHOUSES -->
+                        <div class="mt-10 p-6 bg-gray-900 rounded-xl border-l-8 border-yellow-500 shadow-xl">
+                            <h3 class="text-2xl font-bold text-gray-100 mb-3 flex items-center">
+                                <span class="text-3xl mr-3 text-yellow-400">🏛️</span>
+                                Data Storage Architectures
+                            </h3>
+                            <p class="text-lg text-gray-300 mb-4">
+                                The way data is stored critically impacts how it can be accessed and analyzed. The
+                                primary distinction is between systems optimized for transactions (OLTP) and those
+                                optimized for analytical reporting (OLAP).
+                            </p>
+                            <img src="https://cdn.prod.website-files.com/605c9e03d6553a5d82976ce2/6682ffbfe0a3f5724452e6d8_Screenshot%202024-07-02%20at%2012.42.42%20AM.png"
+                                alt="data storage" class="border-2 border-gray-700 rounded-lg mt-3 p-2">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-gray-800 p-5 rounded-lg shadow-md border border-gray-700">
+                                    <h3 class="text-xl text-blue-800 font-bold">Transactional database (OLTP):</h3>
+                                    <span class="font-semibold text-white"></span> records many small, real‑time
+                                    business events (orders, payments, inventory updates) fast and reliably. <br
+                                        class="hidden md:inline" />
+                                    <span class="font-semibold text-gray-200">Keeps data safe:</span> ACID
+                                    (all‑or‑nothing, consistent, isolated,
+                                    durable), unique IDs & constraints to stop duplicates, plus logs/backups/recovery so
+                                    committed data persists.
+                                    <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k6zyfpjte76rafv5vfvcxmxg%2F1759861347_img_0.webp?st=2025-10-07T16%3A54%3A14Z&se=2025-10-13T17%3A54%3A14Z&sks=b&skt=2025-10-07T16%3A54%3A14Z&ske=2025-10-13T17%3A54%3A14Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=3d249c53-07fa-4ba4-9b65-0bf8eb4ea46a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=Nk%2F%2BhQdpxj4OSRwPp2It5yS99WX%2FUhJx34neNLakUYo%3D&az=oaivgprodscus"
+                                        alt="transactionaldb" class="border-2 border-gray-700 rounded-lg mt-3 p-2">
+                                </div>
+                                <div class="bg-gray-800 p-5 rounded-lg shadow-md border border-gray-700 mt-5">
+                                    <h3 class="text-xl text-blue-800 font-bold">Data Warehouse (OLAP / Analytical
+                                        Focus):</h3>
+                                    <span class="font-semibold text-white">Purpose:</span> consolidate historical data
+                                    for analytics—fast scans, aggregates, trends, and BI. <br
+                                        class="hidden md:inline" />
+                                    <span class="font-semibold text-gray-200">Inside process:</span> ingest
+                                    (batch/stream) → stage → transform (star/snowflake: <em>FactSales</em> + dimensions)
+                                    → publish semantic layer. <br class="hidden md:inline" />
+                                    <span class="font-semibold text-gray-200">Storage/engine:</span> columnar formats,
+                                    compression, partitions & clustering; MPP query engine for parallel reads. <br
+                                        class="hidden md:inline" />
+                                    <span class="font-semibold text-gray-200">Workload:</span> long, read‑heavy queries
+                                    (dashboards, cohorts, ML features), eventual consistency is okay. <br
+                                        class="hidden md:inline" />
+                                    <span class="font-semibold text-gray-200">Governance:</span> data quality checks
+                                    (PK/FK in facts/dims), SCD for history, lineage, role‑based access. <br
+                                        class="hidden md:inline" />
+                                    <img src="https://galaktika-soft.com/wp-content/uploads/2019/03/What-is-Data-Warehouse.jpg"
+                                        alt="data-warehouse" class="border-2 border-gray-700 rounded-lg mt-3 p-2">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FOOTER/CLOSURE -->
+                        <div class="mt-10 text-center pt-6 border-t border-gray-700">
+                            <p class="text-gray-500 text-sm">
+                                These fundamentals form the basis for all advanced topics in Data Science, Engineering,
+                                and Analytics.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- NEW DETAILED CONTENT END -->
+                </div>
+            </div>
+            <!-- 2. Data Storage, ETL & Normalization -->
+            <div class="rounded-lg mb-4 bg-gray-700 overflow-hidden">
+                <div class="collapsible-header flex items-center justify-between p-6"
+                    onclick="toggleCollapsible('data-storage')">
+                    <h3 class="text-xl text-[#40E0D0] font-semibold"><i
+                            class="fas fa-hdd mr-3 text-yellow-400"></i>Storage, ETL, ELT &amp; Normalization</h3>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
+                </div>
+                <div class="collapsible-content" id="data-storage">
+                    <!-- Main Container for Section 2 Content -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                        <!-- SUB-SECTION 1: STORAGE -->
+                        <div
+                            class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-emerald-500 flex flex-col hover:shadow-emerald-500/30 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <span class="text-3xl mr-3 text-emerald-400" role="img" aria-label="Storage">🗄️</span>
+                                <h4 class="text-xl font-bold text-gray-100">Data Storage</h4>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                Durable places where data lives: <strong>object storage</strong> for raw files/logs and
+                                <strong>databases/warehouses</strong> for structured tables. Use backups, versioning,
+                                and retention.
+                            </p>
+                            <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span> Layers:
+                                    <em>staging</em> → <em>curated</em> → <em>published</em>.</li>
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span> Protections:
+                                    encryption, roles, and audit logs.</li>
+                            </ul>
+                            <div class="mt-4">
+                                <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70d12j6fbk9j4ehyzm8rjnv%2F1759876610_img_0.webp?st=2025-10-07T20%3A54%3A13Z&se=2025-10-13T21%3A54%3A13Z&sks=b&skt=2025-10-07T20%3A54%3A13Z&ske=2025-10-13T21%3A54%3A13Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=ngnnbc9paxKVBtfQnmfPuNPzdc%2Bxop8rYd4WkNM16g4%3D&az=oaivgprodscus"
+                                    alt="Storage diagram" class="w-full h-auto rounded-lg border border-emerald-700">
+                                <p class="text-xs text-center text-gray-500 mt-1">Example storage layers.</p>
+                            </div>
+                        </div>
+
+                        <!-- SUB-SECTION 2B: ELT PROCESS -->
+                        <div
+                            class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-emerald-500 flex flex-col hover:shadow-emerald-500/30 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <span class="text-3xl mr-3 text-emerald-400" role="img" aria-label="ELT">⚡</span>
+                                <h4 class="text-xl font-bold text-gray-100">2. ELT (Extract • Load • Transform)</h4>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                Land raw data <strong>first</strong> in storage/warehouse, then transform
+                                <strong>inside</strong> the warehouse. Keeps full history and allows
+                                reprocessing/backfills.
+                            </p>
+                            <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span> Good for
+                                    streaming + cloud MPP warehouses.</li>
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span> Append-only
+                                    raw zone; reproducible models.</li>
+                            </ul>
+                            <div class="mt-4">
+                                <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70dekasew1v15qcpy2mkf0r%2F1759877033_img_0.webp?st=2025-10-07T20%3A51%3A37Z&se=2025-10-13T21%3A51%3A37Z&sks=b&skt=2025-10-07T20%3A51%3A37Z&ske=2025-10-13T21%3A51%3A37Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=E9H6R8tTWVdK1LDv4s5dpydt0HIfDKWRx64PK2KFYWo%3D&az=oaivgprodscus"
+                                    alt="ELT flow" class="w-full h-auto rounded-lg border border-emerald-700">
+                                <p class="text-xs text-center text-gray-500 mt-1">ELT: Extract → Load → Transform
+                                    (in-warehouse).</p>
+                            </div>
+                        </div>
+                        <!-- SUB-SECTION 2: ETL PROCESS -->
+                        <div
+                            class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-emerald-500 flex flex-col hover:shadow-emerald-500/30 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <span class="text-3xl mr-3 text-emerald-400" role="img" aria-label="Pipeline">➡️</span>
+                                <h4 class="text-xl font-bold text-gray-100">The ETL Process (Data Pipeline)</h4>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                **ETL (Extract, Transform, Load)** is the standard three-step process for moving data
+                                from source systems to a target system (like a Data Warehouse or Mart).
+                            </p>
+                            <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70dwq4yfwjags5thbj0mrqb%2F1759877498_img_0.webp?st=2025-10-07T21%3A51%3A01Z&se=2025-10-13T22%3A51%3A01Z&sks=b&skt=2025-10-07T21%3A51%3A01Z&ske=2025-10-13T22%3A51%3A01Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=w10fmpserXtXK1ihhc308rLVB7dxHRVXyS0ZsFhlevU%3D&az=oaivgprodscus"
+                                alt="ETL prodcess" class="w-full h-auto rounded-lg border border-emerald-700">
+                            <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2 font-bold">E -
+                                        Extract:</span> Reading and collecting data from source systems.</li>
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2 font-bold">T -
+                                        Transform:</span> Cleaning, aggregating, calculating, and applying business
+                                    rules to the data to ensure quality and relevance.</li>
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2 font-bold">L -
+                                        Load:</span> Writing the transformed data into the final target storage.</li>
+                            </ul>
+                            <p class="text-xs text-gray-500 mt-4 italic">
+                                *Note: **ELT (Extract, Load, Transform)** is a modern variation, often used with cloud
+                                data warehouses, where transformation happens after loading.*
+                            </p>
+                        </div>
+
+                        <!-- SUB-SECTION 3: DATA NORMALIZATION -->
+                        <div
+                            class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-emerald-500 flex flex-col hover:shadow-emerald-500/30 transition duration-300">
+                            <div class="flex items-center mb-4">
+                                <span class="text-3xl mr-3 text-emerald-400" role="img" aria-label="Table">🔗</span>
+                                <h4 class="text-xl font-bold text-gray-100">Data Normalization</h4>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                Normalization is the process of structuring a relational database to reduce **data
+                                redundancy** and improve **data integrity**. This is achieved by dividing large tables
+                                into smaller, linked tables.
+                            </p>
+                            <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span>
+                                    <strong>Goal:</strong> Eliminate duplicate data and protect dependencies.
+                                </li>
+                                <li class="flex items-start"><span class="text-emerald-400 mr-2">▪</span>
+                                    <strong>Forms:</strong> Common standards include **1NF**, **2NF**, and **3NF**.
+                                </li>
+                            </ul>
+                            <!-- IMAGE PLACEHOLDER 2 -->
+                            <div class="mt-4">
+                                <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70e3tdpen9rc4mbvgmt74j5%2F1759877747_img_0.webp?st=2025-10-07T21%3A48%3A30Z&se=2025-10-13T22%3A48%3A30Z&sks=b&skt=2025-10-07T21%3A48%3A30Z&ske=2025-10-13T22%3A48%3A30Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=fK3hq8AGOteOp3GP7PAPwSrzs58UFPcZ1jhDMLFenI4%3D&az=oaivgprodscus"
+                                    alt="Placeholder for Normalization example diagram"
+                                    class="w-full h-auto rounded-lg border border-emerald-700"
+                                    onerror="this.onerror=null; this.src='https://placehold.co/400x200/1f2937/a7f3d0?text=Diagram+showing+3NF+Example';">
+                                <p class="text-xs text-center text-gray-500 mt-1">Diagram showing a table before and
+                                    after 3NF.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END NEW SECTION -->
+                </div>
+            </div>
+
+            <!-- 3. Schema Design and Entity Definition -->
+            <div class="rounded-lg mb-4 bg-gray-700 overflow-hidden">
+                <div class="collapsible-header flex items-center justify-between p-6"
+                    onclick="toggleCollapsible('schema-design')">
+                    <h3 class="text-xl text-[#40E0D0] font-semibold"><i
+                            class="fas fa-columns mr-3 text-blue-400"></i>Schema
+                        Definition & Data Entities</h3>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
+                </div>
+                <div class="collapsible-content" id="schema-design">
+                    <!-- NEW SECTION 3: SCHEMA DEFINITION & ENTITIES (Requested) -->
+                    <div class="mt-4 p-8 bg-gray-900 rounded-2xl border-2 border-sky-700 shadow-xl">
+                        <header class="text-center mb-8">
+                            <h3 class="text-4xl font-extrabold text-sky-300 mb-2">
+                                Data Modeling: Schema Definition & Entities
+                            </h3>
+                            <p class="text-lg text-sky-400">
+                                The structured framework and real-world objects that constitute a data system.
+                            </p>
+                        </header>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                            <!-- SUB-SECTION 1: SCHEMA DEFINITION (The Blueprint) -->
+                            <div class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-sky-500 flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-3xl mr-3 text-sky-400" role="img" aria-label="Blueprint">📜</span>
+                                    <h4 class="text-xl font-bold text-gray-100">Schema Definition (The Blueprint)
+                                    </h4>
+                                </div>
+                                <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                    A **schema** defines the structure of the data, acting as a blueprint. It specifies
+                                    the table names, field names, data types (e.g., string, integer, date), and the
+                                    relationships between tables.
+                                </p>
+                                <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70f9ge4ejctbdc401z1ck34%2F1759878977_img_0.webp?st=2025-10-07T22%3A02%3A18Z&se=2025-10-13T23%3A02%3A18Z&sks=b&skt=2025-10-07T22%3A02%3A18Z&ske=2025-10-13T23%3A02%3A18Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=gCbZwHJXeXMbd4JxxxxTvGbHK7yBq1hWgU%2FasruDIuY%3D&az=oaivgprodscus"
+                                    alt="schema blueprint" class="w-full h-auto rounded-lg border border-sky-700 mb-6">
+                                <div class="bg-gray-950 p-3 rounded-lg text-xs font-mono text-gray-200">
+                                    <strong class="text-sky-400">Schema Example (JSON):</strong>
+                                    <code class="block whitespace-pre-wrap">
+{
+  "orderId": "INT",
+  "customerId": "INT",
+  "orderDate": "DATE",
+  "totalAmount": "FLOAT"
+}
+                                    </code>
+                                </div>
+                            </div>
+
+                            <!-- SUB-SECTION 2: DATA ENTITIES (The Objects) -->
+                            <div class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-sky-500 flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-3xl mr-3 text-sky-400" role="img" aria-label="Cube">📦</span>
+                                    <h4 class="text-xl font-bold text-gray-100">Data Entities (The Objects)</h4>
+                                </div>
+                                <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                    An **entity** represents a real-world object (person, place, event) that is tracked
+                                    by the system. In programming, an entity often corresponds to a **Model** or an
+                                    **Object** instance that adheres to the defined **Schema**.
+                                </p>
+                                <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70fyjeaf8a8n2z0ae57m45f%2F1759879669_img_0.webp?st=2025-10-07T22%3A02%3A30Z&se=2025-10-13T23%3A02%3A30Z&sks=b&skt=2025-10-07T22%3A02%3A30Z&ske=2025-10-13T23%3A02%3A30Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=cPTdJnKCFjglI1Ah2StCENIdH07Unvc099ZRlh5FH4w%3D&az=oaivgprodscus"
+                                    alt="data entity" class="w-full h-auto rounded-lg border border-sky-700 mb-6">
+                                <div class="bg-gray-950 p-3 rounded-lg text-xs font-mono text-gray-200">
+                                    <strong class="text-sky-400">Entity Instance Example (Object):</strong>
+                                    <code class="block whitespace-pre-wrap">
+{
+  "orderId": 1001,
+  "customerId": 45,
+  "orderDate": "2024-05-01",
+  "totalAmount": 49.99
+}
+                                    </code>
+                                </div>
+                            </div>
+
+                            <!-- SUB-SECTION 3: INTERACTION & WAREHOUSING MODELS -->
+                            <div class="p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-sky-500 flex flex-col">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-3xl mr-3 text-sky-400" role="img" aria-label="Nodes">🌐</span>
+                                    <h4 class="text-xl font-bold text-gray-100">Interaction & Data Models
+                                        (Star/Snowflake)</h4>
+                                </div>
+                                <p class="text-gray-300 text-sm leading-relaxed mb-4 flex-grow">
+                                    Entities (like **Facts** for measurements, and **Dimensions** for context) interact
+                                    via schema relationships. In Data Warehousing, this structure is defined by:
+                                </p>
+                                <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                    <li class="flex items-start"><span class="text-sky-500 mr-2">▪</span> <strong>Star
+                                            Schema:</strong> A central **Fact Table** connected directly to multiple
+                                        **Dimension Tables**. Simple and fast for querying.</li>
+                                    <li class="flex items-start"><span class="text-sky-500 mr-2">▪</span>
+                                        <strong>Snowflake Schema:</strong> An extension of the Star Schema where
+                                        dimension tables are normalized further into sub-dimensions, reducing redundancy
+                                        but increasing join complexity.
+                                    </li>
+                                    <!-- IMAGE PLACEHOLDER 3 -->
+                                    <div class="mt-4">
+                                        <img src="https://videos.openai.com/vg-assets/assets%2Ftask_01k70hnzavf0gag1nq477kepy0%2F1759881476_img_0.webp?st=2025-10-07T22%3A53%3A33Z&se=2025-10-13T23%3A53%3A33Z&sks=b&skt=2025-10-07T22%3A53%3A33Z&ske=2025-10-13T23%3A53%3A33Z&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&skv=2019-02-02&sv=2018-11-09&sr=b&sp=r&spr=https%2Chttp&sig=o%2FMKLsJnL5RYoaT8%2BUwyVcwHADuP8bU2%2Fm2ni8%2BSLCM%3D&az=oaivgprodscus"
+                                            alt="Schema Diagram" class="w-full h-auto rounded-lg border border-sky-700" ">
+                                        <p class=" text-xs text-center text-gray-500 mt-1">Visualizing the central Fact
+                                        table connected to Dimension tables.</p>
+                                    </div>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- END SCHEMA DEFINITION SECTION -->
+                </div>
+            </div>
+
+            <!-- 4. Types of Schema and Business Needs -->
+            <div class="rounded-lg mb-4 bg-gray-700 overflow-hidden">
+                <div class="collapsible-header flex items-center justify-between p-6"
+                    onclick="toggleCollapsible('business-needs')">
+                    <h3 class="text-xl text-[#40E0D0] font-semibold"><i
+                            class="fas fa-chart-line mr-3 text-green-400"></i>Schema
+                        Types and Business Alignment</h3>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
+                </div>
+                <div class="collapsible-content" id="business-needs">
+
+                    <!-- NEW DETAILED CONTENT INSERTED HERE -->
+                    <div class="p-8 bg-gray-900 rounded-2xl border-2 border-indigo-700 shadow-xl space-y-6">
+                        <header class="text-center mb-8">
+                            <h3 class="text-4xl font-extrabold text-indigo-300 mb-2">
+                                Schema Types and Business Alignment
+                            </h3>
+                            <p class="text-lg text-indigo-400">
+                                Mapping data structures to organizational needs and measuring success.
+                            </p>
+                        </header>
+
+                        <!-- DETAILS BLOCK 1: OPERATIONAL VS. ANALYTICAL SCHEMAS -->
+                        <details
+                            class="group p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-indigo-500 open:shadow-xl transition duration-300">
+                            <summary
+                                class="flex items-center justify-between cursor-pointer font-bold text-xl text-gray-100 hover:text-indigo-400 transition duration-150">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3 text-indigo-400" role="img" aria-label="Gears">⚙️</span>
+                                    Operational vs. Analytical Schemas
+                                </div>
+                                <span class="text-indigo-400 group-open:rotate-90 transform transition-transform">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </summary>
+
+                            <div class="pt-4 border-t border-gray-700 mt-4">
+                                <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                                    The schema design must align with its intended function:
+                                </p>
+                                <ul class="list-none space-y-2 pl-0 text-sm text-gray-400 mt-2">
+                                    <li class="flex items-start">
+                                        <span class="text-indigo-400 mr-2 font-bold">Operational (OLTP):</span> Highly
+                                        normalized ($\geq 3$NF), focused on minimizing redundancy and ensuring quick,
+                                        secure updates. Ideal for transactional systems (e.g., inventory management).
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="text-indigo-400 mr-2 font-bold">Analytical (OLAP):</span> Highly
+                                        denormalized (Star/Snowflake), focused on quick reading and aggregation of large
+                                        data sets. Ideal for business intelligence and reporting.
+                                    </li>
+                                </ul>
+
+                                <!-- VISUALIZATION A (Operational vs Analytical Focus) -->
+                                <div class="mt-6 p-4 bg-gray-950 rounded-lg shadow-inner">
+                                    <h5 class="text-lg font-semibold text-indigo-300 mb-2">Conceptual Architecture
+                                        Visualization</h5>
+                                    <img src="https://bogotobogo.com/Hadoop/images/OLTP_OLAP/DataWareHouse.png"
+                                        alt="OLTP vs OLAP Diagram"
+                                        class=" w-6xl h-400 rounded-lg border border-gray-700" ">
+                                    <p class=" text-xs text-center text-gray-500 mt-1">Diagram showing the structural
+                                    differences between transactional and analytical databases.</p>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- DETAILS BLOCK 2: BUSINESS ALIGNMENT AND METRICS -->
+                        <details
+                            class="group p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-indigo-500 open:shadow-xl transition duration-300">
+                            <summary
+                                class="flex items-center justify-between cursor-pointer font-bold text-xl text-gray-100 hover:text-indigo-400 transition duration-150">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3 text-indigo-400" role="img" aria-label="Target">🎯</span>
+                                    Aligning Data to Business Goals (KPIs -Key Performance Indicators).
+                                </div>
+                                <span class="text-indigo-400 group-open:rotate-90 transform transition-transform">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </summary>
+
+                            <div class="pt-4 border-t border-gray-700 mt-4">
+                                <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                                    The ultimate goal of data infrastructure is to drive business value. This requires
+                                    defining clear metrics and <strong>Key Performance Indicators (KPIs)</strong> that
+                                    translate business strategy into measurable data points.
+                                </p>
+                                <ul class="list-none space-y-1 pl-0 text-sm text-gray-400 mt-2">
+                                    <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span>
+                                        <strong>KPIs:</strong> Examples include Customer Acquisition Cost (CAC), Monthly
+                                        Recurring Revenue (MRR), and Churn Rate.
+                                    </li>
+                                    <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span>
+                                        <strong>Data Mapping:</strong> Ensuring source fields can be reliably aggregated
+                                        or transformed to calculate these KPIs.
+                                    </li>
+                                </ul>
+
+                                <!-- VISUALIZATION B (KPI Performance) -->
+                                <div class="mt-6 p-4 bg-gray-950 rounded-lg shadow-inner">
+                                    <h5 class="text-lg font-semibold text-indigo-300 mb-2">KPI Performance Visualization
+                                    </h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-gray-700 p-4 rounded-lg shadow-md">
+                                            <img src="https://cdn.prod.website-files.com/67bb1d183ef97043723c6a4a/688f9d9eea848f15bb599d61_Data%20Governance%20Metrics%20and%20KPIs%20Banner%20Image.webp"
+                                                alt="Sales Trend Graph"
+                                                class="w-full h-auto rounded-lg border border-gray-600">
+                                            <p class="text-xs text-center text-gray-500 mt-1">Example: Time Series Chart
+                                                (Tracking MRR over time)</p>
+                                        </div>
+                                        <div class="bg-gray-700 p-4 rounded-lg shadow-md">
+                                            <img src="https://slidebazaar.com/wp-content/uploads/2022/10/KPI-Dashboard-Template-Dark-jpg.webp"
+                                                alt="Customers Segmentation Pie Chart"
+                                                class="w-full h-auto rounded-lg border border-gray-600">
+                                            <p class="text-xs text-center text-gray-500 mt-1">Example: Pie Chart
+                                                (Customer Segmentation by Value)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- DETAILS BLOCK 3: ANALYTICAL SCHEMA TYPES -->
+                        <details
+                            class="group p-6 bg-gray-800 rounded-xl shadow-lg border-b-4 border-indigo-500 open:shadow-xl transition duration-300">
+                            <summary
+                                class="flex items-center justify-between cursor-pointer font-bold text-xl text-gray-100 hover:text-indigo-400 transition duration-150">
+                                <div class="flex items-center">
+                                    <span class="text-3xl mr-3 text-indigo-400" role="img" aria-label="Chart">📊</span>
+                                    Advanced Analytical Schema Types
+                                </div>
+                                <span class="text-indigo-400 group-open:rotate-90 transform transition-transform">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </summary>
+
+                            <div class="pt-4 border-t border-gray-700 mt-4">
+                                <h4 class="text-lg font-medium text-indigo-300 mb-2">Types of Common Analytical Schemas
+                                </h4>
+                                <ul class="list-disc list-inside space-y-2 mb-4 text-gray-300 pl-4">
+                                    <li><span class="font-semibold text-indigo-400">Star Schema:</span> Simplest and
+                                        fastest for analytical querying. Fact table (metrics) is joined directly to
+                                        several dimension tables (context).</li>
+                                    <li><span class="font-semibold text-indigo-400">Snowflake Schema:</span> Dimensions
+                                        are further normalized. Offers better data integrity but slower query
+                                        performance due to more joins.</li>
+                                    <li><span class="font-semibold text-indigo-400">Galaxy Schema (Fact
+                                            Constellation):</span> Multiple fact tables sharing dimension tables. Used
+                                        for more complex, interconnected business domains.</li>
+                                </ul>
+
+                                <h4 class="text-lg font-medium text-indigo-300 mb-2">Data-to-Business Alignment and
+                                    Fetching</h4>
+                                <p class="text-gray-300 text-sm leading-relaxed">The chosen schema (e.g., Star Schema
+                                    for an e-marketplace) directly addresses the business need for analytical reporting.
+                                    It enables fast, predictable <strong>data fetching</strong> by minimizing complex
+                                    joins, allowing analysts to quickly answer questions like, "What were the sales
+                                    (Fact) of red T-shirts (Product Dim) to customers in London (Customer Dim) last week
+                                    (Date Dim)?"</p>
+
+                                <!-- Schema detail cards -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                                    <!-- STAR -->
+                                    <div
+                                        class="p-5 bg-gray-800 rounded-xl shadow-lg border-b-4 border-indigo-500 flex flex-col">
+                                        <h5 class="text-lg font-bold text-indigo-300 mb-1">Star Schema</h5>
+                                        <p class="text-gray-300 text-sm">Central <b>Fact</b> table (measures) with
+                                            direct links to surrounding <b>Dimensions</b> (who/what/when/where). Small,
+                                            predictable joins.</p>
+                                        <ul class="list-none space-y-1 mt-3 pl-0 text-sm text-gray-400">
+                                            <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span>
+                                                <b>Use for:</b> dashboards, BI, ad‑hoc analytics.</li>
+                                            <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span>
+                                                <b>Pros:</b> fast scans, simple model, easy to learn.</li>
+                                            <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span>
+                                                <b>Trade‑offs:</b> some duplication in dimensions.</li>
+                                        </ul>
+                                        <div class="mt-4 flex-1">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVd3PyOyNwICGop6m3qs3FtDLkCDW3Cti1aw&s"
+                                                alt="Star schema diagram"
+                                                class="w-full h-auto rounded-lg border border-indigo-600">
+                                        </div>
+                                    </div>
+
+                                    <!-- SNOWFLAKE -->
+                                    <div
+                                        class="p-5 bg-gray-800 rounded-xl shadow-lg border-b-4 border-cyan-500 flex flex-col">
+                                        <h5 class="text-lg font-bold text-cyan-300 mb-1">Snowflake Schema</h5>
+                                        <p class="text-gray-300 text-sm">Dimensions are <b>normalized</b> into
+                                            sub‑dimensions (e.g., Product → Brand → Category). Reduces redundancy, more
+                                            joins.</p>
+                                        <ul class="list-none space-y-1 mt-3 pl-0 text-sm text-gray-400">
+                                            <li class="flex items-start"><span class="text-cyan-400 mr-2">▪</span>
+                                                <b>Use for:</b> large, shared dimensions with governance needs.</li>
+                                            <li class="flex items-start"><span class="text-cyan-400 mr-2">▪</span>
+                                                <b>Pros:</b> better integrity, smaller storage.</li>
+                                            <li class="flex items-start"><span class="text-cyan-400 mr-2">▪</span>
+                                                <b>Trade‑offs:</b> slower queries; complexity.</li>
+                                        </ul>
+                                        <div class="mt-4 flex-1">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYzzrhGZtnHBkiguMU0BsksjEqC2wBcjxlxQ&s"
+                                                alt="Snowflake schema diagram"
+                                                class="w-full h-auto rounded-lg border border-cyan-600">
+                                        </div>
+                                    </div>
+
+                                    <!-- GALAXY / FACT CONSTELLATION -->
+                                    <div
+                                        class="p-5 bg-gray-800 rounded-xl shadow-lg border-b-4 border-violet-500 flex flex-col">
+                                        <h5 class="text-lg font-bold text-violet-300 mb-1">Galaxy (Fact Constellation)
+                                        </h5>
+                                        <p class="text-gray-300 text-sm">Multiple <b>Fact</b> tables (e.g., Sales,
+                                            Inventory, Returns) that <b>share</b> conformed dimensions (Date, Product,
+                                            Store).</p>
+                                        <ul class="list-none space-y-1 mt-3 pl-0 text-sm text-gray-400">
+                                            <li class="flex items-start"><span class="text-violet-400 mr-2">▪</span>
+                                                <b>Use for:</b> cross‑domain analytics & data marts.</li>
+                                            <li class="flex items-start"><span class="text-violet-400 mr-2">▪</span>
+                                                <b>Pros:</b> scales breadth; reuse of dimensions.</li>
+                                            <li class="flex items-start"><span class="text-violet-400 mr-2">▪</span>
+                                                <b>Trade‑offs:</b> governance needed to keep dimensions conformed.</li>
+                                        </ul>
+                                        <div class="mt-4 flex-1">
+                                            <img src="https://www.montecarlodata.com/wp-content/uploads/2025/02/data-warehouse-schemas-2.png"
+                                                alt="Galaxy schema diagram"
+                                                class="w-full h-auto rounded-lg border border-violet-600">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick chooser -->
+                                <div class="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                                    <h6 class="text-sm font-semibold text-indigo-300 mb-2">Which should I choose?</h6>
+                                    <ul class="list-none space-y-1 pl-0 text-sm text-gray-300">
+                                        <li class="flex items-start"><span class="text-indigo-400 mr-2">▪</span> Start
+                                            with <b>Star</b> for most BI use‑cases (clarity + speed).</li>
+                                        <li class="flex items-start"><span class="text-cyan-300 mr-2">▪</span> Use
+                                            <b>Snowflake</b> when dimensions are huge or centrally governed.</li>
+                                        <li class="flex items-start"><span class="text-violet-300 mr-2">▪</span> Use
+                                            <b>Galaxy</b> when you have several facts that must share the same
+                                            dimensions.</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </details>
+                    </div>
+
+                    <!-- END NEW DETAILED CONTENT -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const __app_id = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        // --- Collapsible Logic ---
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.arrow-icon');
+
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                content.classList.add('active');
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            }
+        }
+
+        // --- Three.js & Cannon.js Star Schema Visualization ---
+
+        let scene, camera, renderer, raycaster, mouse;
+        let world, timeStep = 1 / 60;
+        let dragObject = null;
+        let dragBody = null;
+        let constraint = null;
+        let mouseBody = null;
+
+        const tables = [];
+        const tableLabels = {};
+        const connectors = [];
+
+        const container = document.getElementById('schema-container');
+        const labelContainer = document.getElementById('labels-container');
+
+        // --- 1. Cannon.js World Initialization ---
+        function initCannon() {
+            world = new CANNON.World();
+            world.gravity.set(0, 0, 0);
+            world.broadphase = new CANNON.NaiveBroadphase();
+            mouseBody = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC });
+            world.addBody(mouseBody);
+        }
+
+        // --- 2. Three.js Scene Setup ---
+        function initThreeJS() {
+            if (container.clientWidth === 0 || container.clientHeight === 0) {
+                console.error("Schema container has zero dimensions. Skipping Three.js initialization.");
+                return;
+            }
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x111827);
+
+            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 15, 20);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 15, 10);
+            scene.add(directionalLight);
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Ground Plane
+            const planeGeometry = new THREE.PlaneGeometry(40, 40);
+            const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x1f2937, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.rotation.x = -Math.PI / 2;
+            plane.position.y = -0.01;
+            plane.name = 'Ground';
+            scene.add(plane);
+
+            createStarSchema();
+
+            window.addEventListener('resize', onWindowResize, false);
+            renderer.domElement.addEventListener('mousedown', onMouseDown, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+            window.addEventListener('mouseup', onMouseUp, false);
+            // Touch support
+            renderer.domElement.addEventListener('touchstart', onTouchStart, false);
+            renderer.domElement.addEventListener('touchmove', onTouchMove, false);
+            renderer.domElement.addEventListener('touchend', onMouseUp, false);
+        }
+
+        // --- 3. Schema Creation (Mesh + Body) ---
+        function createTable(name, color, position) {
+            const isFact = name.startsWith('Fact');
+            const size = isFact ? 3 : 2;
+            const height = 0.5;
+
+            // THREE.js Mesh
+            const geometry = new THREE.BoxGeometry(size, height, size);
+            const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(color), metalness: 0.2, roughness: 0.5 });
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(position.x, height / 2, position.z);
+            mesh.userData.name = name;
+            mesh.userData.color = color;
+            tables.push(mesh);
+            scene.add(mesh);
+
+            // CANNON.js Body
+            const mass = isFact ? 1.0 : 0.5;
+            const halfExtents = new CANNON.Vec3(size / 2, height / 2, size / 2);
+            const shape = new CANNON.Box(halfExtents);
+            const body = new CANNON.Body({ mass: mass, shape: shape, angularDamping: 0.8, linearDamping: 0.9 });
+            body.position.set(position.x, height / 2, position.z);
+            world.addBody(body);
+
+            // Link them
+            mesh.userData.body = body;
+
+            createLabel(mesh);
+            return mesh;
+        }
+
+        function createStarSchema() {
+            // Clear existing elements
+            tables.forEach(mesh => {
+                scene.remove(mesh);
+                if (mesh.userData.body) world.removeBody(mesh.userData.body);
+            });
+            tables.length = 0;
+            connectors.forEach(c => scene.remove(c));
+            connectors.length = 0;
+            labelContainer.innerHTML = '';
+
+            // Fact Table (Center) - Red-Pinkish
+            const fact = createTable('Fact_Sales', 0xff6b81, { x: 0, z: 0 });
+
+            // Dimension Tables (Around)
+            const dimCustomer = createTable('Dim_Customer', 0x4ddbff, { x: -8, z: 0 });
+            const dimProduct = createTable('Dim_Product', 0x9c4fff, { x: 8, z: 0 });
+            const dimDate = createTable('Dim_Date', 0x5aff9b, { x: 0, z: 8 });
+            const dimSeller = createTable('Dim_Seller', 0xffc44d, { x: 0, z: -8 });
+
+            const dimensionTables = [dimCustomer, dimProduct, dimDate, dimSeller];
+
+            // Connectors (Lines) - Indigo
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0x4f46e5, linewidth: 3 });
+
+            dimensionTables.forEach(dim => {
+                const geometry = new THREE.BufferGeometry();
+                const line = new THREE.Line(geometry, lineMaterial);
+                line.userData.start = fact;
+                line.userData.end = dim;
+                connectors.push(line);
+                scene.add(line);
+            });
+        }
+
+        // --- 4. Physics and Graphics Synchronization ---
+        function syncPhysics() {
+            tables.forEach(mesh => {
+                const body = mesh.userData.body;
+                mesh.position.copy(body.position);
+                mesh.quaternion.copy(body.quaternion);
+            });
+            updateConnectors();
+            updateLabels();
+        }
+
+        function updateConnectors() {
+            connectors.forEach(line => {
+                const start = line.userData.start.position;
+                const end = line.userData.end.position;
+
+                // Adjust positions slightly so lines start/end on top surface (y=0.5)
+                const points = [
+                    new THREE.Vector3(start.x, 0.5, start.z),
+                    new THREE.Vector3(end.x, 0.5, end.z)
+                ];
+
+                line.geometry.setFromPoints(points);
+            });
+        }
+
+        function createLabel(mesh) {
+            const label = document.createElement('div');
+            label.className = 'label';
+            label.innerHTML = `<strong>${mesh.userData.name}</strong>`;
+            labelContainer.appendChild(label);
+            tableLabels[mesh.uuid] = label;
+        }
+
+        function updateLabels() {
+            tables.forEach(mesh => {
+                const label = tableLabels[mesh.uuid];
+                if (label) {
+                    const vector = mesh.position.clone().project(camera);
+                    const canvasX = (vector.x * 0.5 + 0.5) * container.clientWidth;
+                    const canvasY = (-vector.y * 0.5 + 0.5) * container.clientHeight;
+
+                    label.style.left = `${canvasX}px`;
+                    label.style.top = `${canvasY}px`;
+                    label.style.zIndex = Math.round(100 - mesh.position.z);
+                }
+            });
+        }
+
+        // --- 5. Drag Interaction Logic (Cannon.js based) ---
+        // Interaction plane (Y-coordinate of the tables)
+        const planeY = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.25);
+        let raycastPosition = new THREE.Vector3();
+
+        function getMouseVector(clientX, clientY) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        }
+
+        function handleDragStart(clientX, clientY) {
+            getMouseVector(clientX, clientY);
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(tables);
+
+            if (intersects.length > 0) {
+                dragObject = intersects[0].object;
+                dragBody = dragObject.userData.body;
+
+                // Calculate the intersection point on the horizontal plane (y=0.25)
+                if (raycaster.ray.intersectPlane(planeY, raycastPosition)) {
+                    // Update mouseBody position to the intersection point
+                    mouseBody.position.copy(raycastPosition);
+
+                    // Use a PointToPointConstraint (like a spring) to attach the dragged body to the mouse body
+                    const pivotA = new CANNON.Vec3(0, 0, 0);
+                    const pivotB = new CANNON.Vec3(0, 0, 0);
+
+                    // Stiffness and relaxation add to the springy, physical feel
+                    constraint = new CANNON.PointToPointConstraint(
+                        dragBody, pivotA,
+                        mouseBody, pivotB,
+                        10, // Stiffness
+                        0.5 // Relaxation
+                    );
+
+                    world.addConstraint(constraint);
+
+                    // Indicate selection visually
+                    dragObject.material.emissive.setHex(0x333333);
+                    container.style.cursor = 'grabbing';
+                }
+            }
+        }
+
+        function handleDragMove(clientX, clientY) {
+            getMouseVector(clientX, clientY);
+
+            if (dragBody) {
+                raycaster.setFromCamera(mouse, camera);
+
+                // Calculate the new position on the plane for the mouseBody to follow
+                if (raycaster.ray.intersectPlane(planeY, raycastPosition)) {
+                    // Kinematically move the mouse body
+                    mouseBody.position.copy(raycastPosition);
+                }
+            } else {
+                // If not dragging, check if hovering over an object
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(tables);
+                if (intersects.length > 0) {
+                    container.style.cursor = 'grab';
+                } else {
+                    container.style.cursor = 'default';
+                }
+            }
+        }
+
+        function onMouseDown(event) {
+            handleDragStart(event.clientX, event.clientY);
+        }
+
+        function onMouseMove(event) {
+            event.preventDefault();
+            handleDragMove(event.clientX, event.clientY);
+        }
+
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                handleDragStart(event.touches[0].clientX, event.touches[0].clientY);
+            }
+        }
+
+        function onTouchMove(event) {
+            event.preventDefault(); // Prevents scrolling while dragging
+            if (event.touches.length === 1) {
+                handleDragMove(event.touches[0].clientX, event.touches[0].clientY);
+            }
+        }
+
+        function onMouseUp() {
+            if (dragBody && constraint) {
+                world.removeConstraint(constraint);
+                // Reset visual indicator
+                dragObject.material.emissive.setHex(0x000000);
+
+                dragBody = null;
+                dragObject = null;
+                constraint = null;
+                container.style.cursor = 'default';
+            }
+        }
+
+        function onWindowResize() {
+            if (container.clientWidth > 0 && container.clientHeight > 0) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        }
+
+        // --- 6. Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Step the physics world
+            world.step(timeStep);
+
+            // Sync graphics to physics
+            syncPhysics();
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize both worlds when the document is ready
+        window.onload = () => {
+            if (document.getElementById('schema-container')) {
+                initCannon();
+                initThreeJS();
+                animate();
+            } else {
+                console.error("Schema container not found.");
+            }
+        };
+    </script>
+    <!--star schema simulation script here -->
+    <!-- Three.js + controls (inline via CDN) -->
+    <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Wrap in IIFE to avoid leaking globals
+        (function () {
+            // ===================== CONFIGURABLE MODEL =====================
+            // Star schema for an Electronics Marketplace
+            const schemaModel = {
+                fact: {
+                    name: 'FactSales', color: 0xd4af37, // gold
+                    fields: [
+                        { name: 'OrderID', type: 'PK' },
+                        { name: 'CustomerKey', type: 'FK', ref: 'DimCustomer.CustomerKey' },
+                        { name: 'ProductKey', type: 'FK', ref: 'DimProduct.ProductKey' },
+                        { name: 'DateKey', type: 'FK', ref: 'DimDate.DateKey' },
+                        { name: 'StoreKey', type: 'FK', ref: 'DimStore.StoreKey' },
+                        { name: 'Quantity', type: 'MEASURE' },
+                        { name: 'UnitPrice', type: 'MEASURE' },
+                        { name: 'TotalAmount', type: 'MEASURE' }
+                    ]
+                },
+                dims: [
+                    {
+                        name: 'DimCustomer', color: 0x5bb5a2, fields: [
+                            { name: 'CustomerKey', type: 'PK' }, { name: 'CustomerID' }, { name: 'Name' }, { name: 'Email' }, { name: 'City' }, { name: 'Segment' }
+                        ]
+                    },
+                    {
+                        name: 'DimProduct', color: 0x8694ff, fields: [
+                            { name: 'ProductKey', type: 'PK' }, { name: 'SKU' }, { name: 'Name' }, { name: 'Category' }, { name: 'Brand' }, { name: 'SpecsJSON' }
+                        ]
+                    },
+                    {
+                        name: 'DimDate', color: 0xff9f6e, fields: [
+                            { name: 'DateKey', type: 'PK' }, { name: 'Date' }, { name: 'Year' }, { name: 'Month' }, { name: 'Day' }, { name: 'Quarter' }
+                        ]
+                    },
+                    {
+                        name: 'DimStore', color: 0xc77dff, fields: [
+                            { name: 'StoreKey', type: 'PK' }, { name: 'StoreID' }, { name: 'Name' }, { name: 'City' }, { name: 'Region' }, { name: 'Channel' }
+                        ]
+                    }
+                ]
+            };
+
+            // ===================== THREE.JS SCENE =====================
+            const schemaHost = document.getElementById('schema3d');
+            const schemaWidth = schemaHost.clientWidth, schemaHeight = schemaHost.clientHeight;
+            const schemaScene = new THREE.Scene();
+            schemaScene.background = null;
+
+            // Camera & renderer
+            const schemaCam = new THREE.PerspectiveCamera(55, schemaWidth / schemaHeight, 0.1, 1000);
+            schemaCam.position.set(0, 10, 26);
+
+            const schemaRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            schemaRenderer.setSize(schemaWidth, schemaHeight); schemaRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            schemaHost.appendChild(schemaRenderer.domElement);
+
+            // Orbit controls
+            const schemaControls = new THREE.OrbitControls(schemaCam, schemaRenderer.domElement);
+            schemaControls.enableDamping = true; schemaControls.dampingFactor = .06; schemaControls.minDistance = 10; schemaControls.maxDistance = 60;
+
+            // Grid & light
+            const schemaGrid = new THREE.GridHelper(80, 80, 0x24304a, 0x1a2438); schemaGrid.position.y = -6; schemaScene.add(schemaGrid);
+            schemaScene.add(new THREE.AmbientLight(0xffffff, .55));
+            const schemaDir = new THREE.DirectionalLight(0xffffff, .9); schemaDir.position.set(6, 10, 8); schemaScene.add(schemaDir);
+
+            // Utilities: label texture from canvas
+            function makeSchemaLabelTexture(text, color = '#e8ecf4') {
+                const cnv = document.createElement('canvas');
+                const ctx = cnv.getContext('2d');
+                ctx.font = '600 22px Inter, system-ui';
+                const w = Math.max(180, ctx.measureText(text).width + 30);
+                const h = 42; cnv.width = w * 2; cnv.height = h * 2; // hi-DPI
+                const r = 12; ctx.scale(2, 2);
+                // pill bg
+                ctx.fillStyle = 'rgba(12,16,32,.85)';
+                ctx.strokeStyle = 'rgba(42,53,80,1)'; ctx.lineWidth = 1.2;
+                roundRectSchema(ctx, 0.5, 0.5, w - 1, h - 1, r, true, true);
+                // text
+                ctx.fillStyle = color; ctx.font = '600 14px Inter, system-ui';
+                ctx.fillText(text, 14, 26);
+                const tex = new THREE.CanvasTexture(cnv); tex.anisotropy = 8; tex.needsUpdate = true; return tex;
+            }
+            function roundRectSchema(ctx, x, y, w, h, r, fill, stroke) {
+                if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+                ctx.beginPath(); ctx.moveTo(x + r.tl, y);
+                ctx.lineTo(x + w - r.tr, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+                ctx.lineTo(x + w, y + h - r.br); ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+                ctx.lineTo(x + r.bl, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+                ctx.lineTo(x, y + r.tl); ctx.quadraticCurveTo(x, y, x + r.tl, y); ctx.closePath();
+                if (fill) ctx.fill(); if (stroke) ctx.stroke();
+            }
+
+            // Create a table node (box + title sprite)
+            const schemaNodes = []; const schemaEdges = []; const schemaPickables = [];
+            function addSchemaTableNode(name, fields, color, position) {
+                const boxGeo = new THREE.BoxGeometry(6, 3.2, 1.2);
+                const mat = new THREE.MeshStandardMaterial({ color, metalness: .2, roughness: .5 });
+                const mesh = new THREE.Mesh(boxGeo, mat); mesh.position.copy(position);
+                mesh.userData = { name, fields, color }; schemaScene.add(mesh); schemaPickables.push(mesh); schemaNodes.push(mesh);
+
+                // Title label above the box
+                const labelTex = makeSchemaLabelTexture(name, '#ffffff');
+                const labelMat = new THREE.SpriteMaterial({ map: labelTex, transparent: true });
+                const sprite = new THREE.Sprite(labelMat); sprite.position.set(position.x, position.y + 2.6, position.z);
+                sprite.scale.set(6, 1.8, 1); schemaScene.add(sprite);
+
+                // Tiny field ticks on box (visual cue only)
+                const tickGeo = new THREE.BoxGeometry(.05, .05, .05);
+                for (let i = 0; i < Math.min(fields.length, 10); i++) {
+                    const t = new THREE.Mesh(tickGeo, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                    const x = -2.5 + (i % 5) * 1.25, y = 1.2 - Math.floor(i / 5) * .6; t.position.set(position.x + x, position.y + y, position.z + .66);
+                    t.material.color.set(i === 0 ? 0x00ffaa : 0xffffff); // first often PK
+                    schemaScene.add(t);
+                }
+                return mesh;
+            }
+
+            // Layout: center fact, dims on a circle
+            const schemaFact = addSchemaTableNode(schemaModel.fact.name, schemaModel.fact.fields, schemaModel.fact.color, new THREE.Vector3(0, 0, 0));
+            const schemaRadius = 12, schemaY = 0;
+            schemaModel.dims.forEach((d, i) => {
+                const ang = i / schemaModel.dims.length * Math.PI * 2;
+                const pos = new THREE.Vector3(Math.cos(ang) * schemaRadius, schemaY, Math.sin(ang) * schemaRadius);
+                const node = addSchemaTableNode(d.name, d.fields, d.color, pos);
+
+                // Edge line (FK->PK)
+                const pts = [schemaFact.position, node.position];
+                const g = new THREE.BufferGeometry().setFromPoints(pts);
+                const m = new THREE.LineDashedMaterial({ color: 0xbcd0ff, dashSize: .6, gapSize: .35 });
+                const line = new THREE.Line(g, m); line.computeLineDistances(); schemaScene.add(line); schemaEdges.push({ line, a: schemaFact, b: node });
+            });
+
+            // Raycast hover + tooltip
+            const schemaRay = new THREE.Raycaster(); const schemaMouse = new THREE.Vector2();
+            const schemaTip = document.getElementById('tooltip'); const schemaTipT = schemaTip.querySelector('.t'); const schemaTipS = schemaTip.querySelector('.s');
+            let schemaHover = null, schemaActive = null;
+
+            function onSchemaMove(e) {
+                const rect = schemaRenderer.domElement.getBoundingClientRect();
+                schemaMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1; schemaMouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            }
+            schemaHost.addEventListener('mousemove', (e) => { onSchemaMove(e); });
+            schemaHost.addEventListener('mouseleave', () => { schemaTip.style.display = 'none'; if (schemaHover) { schemaHover.material.emissive.set(0x000000); schemaHover = null; } });
+            schemaHost.addEventListener('click', () => { schemaActive = schemaHover; highlightSchemaConnections(); });
+
+            function highlightSchemaConnections() {
+                schemaEdges.forEach(({ line, a, b }) => {
+                    const on = schemaActive && (schemaActive === a || schemaActive === b);
+                    line.material.color.set(on ? 0xffffff : 0xbcd0ff);
+                    line.material.dashSize = on ? .9 : .6; line.material.gapSize = on ? .25 : .35; line.material.needsUpdate = true;
+                });
+            }
+
+            function showSchemaTooltip(obj) {
+                if (!obj) { schemaTip.style.display = 'none'; return; }
+                const { name, fields } = obj.userData;
+                schemaTipT.textContent = name;
+                const pk = fields.find(f => f.type === 'PK');
+                const fks = fields.filter(f => f.type === 'FK');
+                let html = '';
+                if (pk) html += `<b>PK:</b> ${pk.name}<br/>`;
+                if (fks.length) { html += `<b>FK:</b> ${fks.map(f => `${f.name} → ${f.ref || '?'}`).join(', ')}`; }
+                schemaTipS.innerHTML = html || 'Attributes table';
+
+                const v = obj.position.clone(); v.project(schemaCam);
+                const x = (v.x * 0.5 + 0.5) * schemaHost.clientWidth; const y = (-v.y * 0.5 + 0.5) * schemaHost.clientHeight;
+                schemaTip.style.transform = `translate(${x + 12}px, ${y - 10}px)`; schemaTip.style.display = 'block';
+            }
+
+            // Resize
+            window.addEventListener('resize', () => {
+                const w = schemaHost.clientWidth, h = schemaHost.clientHeight; schemaRenderer.setSize(w, h); schemaCam.aspect = w / h; schemaCam.updateProjectionMatrix();
+            });
+
+            // Animate
+            function animateSchema() {
+                requestAnimationFrame(animateSchema); schemaControls.update();
+                // Hover logic
+                schemaRay.setFromCamera(schemaMouse, schemaCam);
+                const hit = schemaRay.intersectObjects(schemaPickables, false)[0]?.object || null;
+                if (hit !== schemaHover) { if (schemaHover) { schemaHover.material.emissive.set(0x000000); } schemaHover = hit; if (schemaHover) { schemaHover.material.emissive.setHex(0x2233ff); } }
+                showSchemaTooltip(schemaHover);
+                schemaRenderer.render(schemaScene, schemaCam);
+            }
+            animateSchema();
+        })();
+    </script>
+    <!-End -star schema simulation script here -->
+</body>
+
+</html>
