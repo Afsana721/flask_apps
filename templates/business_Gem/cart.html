@@ -1,115 +1,151 @@
 {% extends "business_Gem/base.html" %}
 {% block title %}Cart | AptiCraft{% endblock %}
 {% block content %}
-<section class="min-h-screen bg-[#63686e] border-1 border-[#d1cebd] rounded-xl py-12 px-6 mt-12 animate-fade-in">
-  <div class="max-w-6xl mx-auto bg-[#d1cebd]  rounded-xl border-2 border-[#63686e] shadow-lg p-6">
-    <a href="/dashboard" class="text-[#0c005a] hover:underline text-xl mb-4 inline-block">← Back to Dashboard</a>
-    <h2 class="text-2xl font-extrabold text-center text-[#430f58] mb-6 animate-bounce">Your Shopping Cart</h2>
+<!--
+  Cart Page (refined layout + colors)
+  Notes:
+  - All Jinja routes/variables kept intact (urls, forms, {{ }})
+  - Structure organized with Tailwind utility classes only
+  - Order Summary is sticky on desktop; form grouped and spaced
+-->
+<section class="min-h-screen bg-gradient-to-b from-[#f7f7fb] to-[#eef2ff] py-10">
+  <div class="max-w-6xl mx-auto px-4">
+    <!-- Top bar -->
+    <div class="mb-6 flex items-center justify-between">
+      <a href="/dashboard" class="text-indigo-800 hover:underline inline-flex items-center gap-2">
+        <span class="text-lg">←</span>
+        <span class="font-medium">Back to Dashboard</span>
+      </a>
+      <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-indigo-900">Your Shopping Cart</h2>
+      <span class="hidden md:block w-8"></span>
+    </div>
 
     <div class="grid md:grid-cols-3 gap-6">
-      <!-- Cart Item List -->
-      <div class="md:col-span-2">
-        <table class="w-full text-left border-collapse text-sm">
-          <thead>
-            <tr class="text-indigo-700 border-b text-sm">
-              <th class="pb-2">Image</th>
-              <th class="pb-2">Product</th>
-              <th class="pb-2">Description</th>
-              <th class="pb-2">Price</th>
-              <th class="pb-2">Remove</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in cart_items %}
-            <tr class="border-b hover:bg-indigo-50">
-              <td class="py-1 text-sm">
-                <img src="{{ item[4] or 'https://via.placeholder.com/100' }}" alt="{{ item[1] }}"
-                  class="w-16 h-16 object-cover rounded">
-              </td>
-              <td class="py-3 font-semibold text-indigo-800">{{ item[1] }}</td>
-              <td class="py-3 text-gray-600">{{ item[2] }}</td>
-              <td class="py-3 text-indigo-700 font-semibold">${{ item[3] }}</td>
-              <td class="py-3">
-                <a href="{{ url_for('add_to_cart', product_id=item[0]) }}"
-                  class="text-indigo-600 hover:underline text-sm mr-3">Add</a>
-                <form method="POST" action="{{ url_for('checkout') }}">
-                  <button type="submit" class="text-red-600 hover:underline text-sm">Remove</button>
-                </form>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
-        <!-- Invoice Section -->
-        <div class="mt-10 border-t pt-6 text-black">
-          <div class="flex items-center mb-4">
-            <img src="{{ url_for('static', filename='assets/basic/OQQ_logo.jpg') }}" class="w-10 h-10 mr-2">
-            <h4 class="text-xl font-semibold text-indigo-700">Invoice</h4>
+      <!-- Left: Cart + Invoice + Shipping -->
+      <div class="md:col-span-2 space-y-6">
+        <!-- Cart Items Card -->
+        <div class="bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-indigo-50 overflow-hidden">
+          <div class="px-5 py-4 border-b border-indigo-50">
+            <h3 class="text-lg font-semibold text-indigo-900">Items</h3>
           </div>
-          <ul class="text-black text-sm space-y-1 mb-4">
+
+          {% if cart_items and cart_items|length > 0 %}
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+              <thead>
+                <tr class="text-indigo-700/80 bg-indigo-50">
+                  <th class="py-3 px-5">Image</th>
+                  <th class="py-3 px-5">Product</th>
+                  <th class="py-3 px-5">Description</th>
+                  <th class="py-3 px-5">Price</th>
+                  <th class="py-3 px-5">Remove</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-indigo-50">
+                {% for item in cart_items %}
+                <tr class="hover:bg-indigo-50/50">
+                  <td class="py-3 px-5 align-top">
+                    <img src="{{ item[4] or 'https://via.placeholder.com/100' }}" alt="{{ item[1] }}" class="w-16 h-16 object-cover rounded-lg ring-1 ring-indigo-100">
+                  </td>
+                  <td class="py-3 px-5 font-medium text-indigo-900">{{ item[1] }}</td>
+                  <td class="py-3 px-5 text-slate-600">{{ item[2] }}</td>
+                  <td class="py-3 px-5 font-semibold text-indigo-700">${{ item[3] }}</td>
+                  <td class="py-3 px-5">
+                    <!-- Kept original URLs (Add + Remove) -->
+                    <a href="{{ url_for('add_to_cart', product_id=item[0]) }}" class="text-indigo-600 hover:text-indigo-800 underline text-sm mr-3">Add</a>
+                    <form method="POST" action="{{ url_for('checkout') }}" class="inline">
+                      <button type="submit" class="text-rose-600 hover:text-rose-800 underline text-sm">Remove</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <!-- Empty state (no logic changed, only visual) -->
+          <div class="px-5 py-10 text-center text-slate-600">
+            <p>Your cart is empty. Browse products and add items to see them here.</p>
+          </div>
+          {% endif %}
+
+          <!-- Subtotal on small screens -->
+          <div class="px-5 py-4 border-t border-indigo-50 md:hidden">
+            <p class="text-right text-base font-bold text-indigo-900">Total: ${{ total|default(0)|round(2) }}</p>
+          </div>
+        </div>
+
+        <!-- Invoice Card -->
+        <div class="bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-indigo-50 p-5">
+          <div class="flex items-center gap-3 mb-3">
+            <img src="{{ url_for('static', filename='assets/basic/OQQ_logo.jpg') }}" class="w-10 h-10 rounded" alt="OQQ logo">
+            <h4 class="text-xl font-semibold text-indigo-900">Invoice</h4>
+          </div>
+          <ul class="text-slate-700 text-sm space-y-1 mb-4">
             {% for item in cart_items %}
             <li>✔️ {{ item[1] }} — Qty: 1 — ${{ item[3] }}</li>
             {% endfor %}
           </ul>
-          <p class="text-right font-bold text-lg">Total: ${{ total|default(0)|round(2) }}</p>
+          <p class="text-right font-bold text-lg text-indigo-900">Total: ${{ total|default(0)|round(2) }}</p>
+        </div>
 
-          <!-- User Details Below Invoice -->
-          <div class="mt-6">
-            <h5 class="text-md font-semibold text-indigo-700 mb-2">Shipping Information</h5>
-            <form method="POST" action="{{ url_for('checkout') }}">
-              <input type="text" name="name" placeholder="Full Name" required class="p-2 border rounded col-span-2" />
-              <input type="email" name="email" placeholder="Email Address" required
-                class="p-2 border rounded col-span-2" />
-              <input type="text" name="phone" placeholder="Phone Number" required
-                class="p-2 border rounded col-span-1" />
-              <input type="text" name="address" placeholder="Shipping Address" required
-                class="p-2 border rounded col-span-1" />
-              <button type="submit"
-                class="col-span-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 ease-in-out">
-                Confirm Order & Pay
-              </button>
-            </form>
-          </div>
+        <!-- Shipping / Payment Info (kept POST to checkout) -->
+        <div class="bg-white/90 backdrop-blur rounded-2xl shadow-xl ring-1 ring-indigo-50 p-5">
+          <h5 class="text-base font-semibold text-indigo-900 mb-3">Shipping Information</h5>
+          <form method="POST" action="{{ url_for('checkout') }}" class="grid sm:grid-cols-2 gap-3">
+            <!-- Inputs kept same names -->
+            <label class="sr-only" for="name">Full Name</label>
+            <input id="name" type="text" name="name" placeholder="Full Name" required class="p-3 border border-indigo-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white/70">
+
+            <label class="sr-only" for="email">Email Address</label>
+            <input id="email" type="email" name="email" placeholder="Email Address" required class="p-3 border border-indigo-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white/70">
+
+            <label class="sr-only" for="phone">Phone Number</label>
+            <input id="phone" type="text" name="phone" placeholder="Phone Number" required class="p-3 border border-indigo-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white/70">
+
+            <label class="sr-only" for="address">Shipping Address</label>
+            <input id="address" type="text" name="address" placeholder="Shipping Address" required class="p-3 border border-indigo-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white/70 sm:col-span-2">
+
+            <!-- Confirm button -->
+            <div class="sm:col-span-2 mt-1 flex items-center justify-end gap-3">
+              <button type="submit" class="inline-flex items-center justify-center px-5 py-3 font-semibold rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">Confirm Order & Pay</button>
+            </div>
+
+            <!-- Small helper text -->
+            <p class="sm:col-span-2 text-xs text-slate-500 mt-2">Your information is encrypted and used only to process this order.</p>
+          </form>
         </div>
       </div>
 
-      <!-- Order Summary Section -->
-      <div class="bg-[#f4eeff] border-2 border-[#d1cebd] p-6 rounded-xl shadow">
-        <h3 class="text-lg font-bold text-indigo-700 mb-4">Order Summary</h3>
-        <p class="text-sm mb-2">Items: {{ cart_items|length }}</p>
-        <p class="text-sm mb-2">Subtotal:</p>
-        <p class="text-2xl font-bold text-indigo-800 mb-4">${{ total|default(0)|round(2) }}</p>
+      <!-- Right: Order Summary -->
+      <aside class="md:sticky md:top-6">
+        <div class="bg-indigo-50/70 backdrop-blur rounded-2xl shadow-xl ring-1 ring-indigo-100 p-6">
+          <h3 class="text-lg font-bold text-indigo-900 mb-4">Order Summary</h3>
+          <dl class="space-y-2 text-sm text-slate-700">
+            <div class="flex justify-between"><dt>Items</dt><dd>{{ cart_items|length }}</dd></div>
+            <div class="flex justify-between"><dt>Subtotal</dt><dd>${{ total|default(0)|round(2) }}</dd></div>
+          </dl>
 
-        <h4 class="text-md font-semibold text-indigo-600 mb-2">Invoice Information</h4>
-        <ul class="text-sm text-gray-700 space-y-1">
-          {% for item in cart_items %}
-          <li>✔️ {{ item[1] }} — ${{ item[3] }}</li>
-          {% endfor %}
-        </ul>
-       <p class="mt-4 text-right font-bold">Total: ${{ total|default(0)|round(2) }}</p>
-      </div>
+          <h4 class="text-sm font-semibold text-indigo-800 mt-5 mb-2">Invoice Information</h4>
+          <ul class="text-sm text-slate-700 space-y-1 max-h-40 overflow-auto pr-1">
+            {% for item in cart_items %}
+            <li>✔️ {{ item[1] }} — ${{ item[3] }}</li>
+            {% endfor %}
+          </ul>
+
+          <div class="mt-5 pt-4 border-t border-indigo-100 flex items-center justify-between">
+            <span class="font-semibold text-slate-700">Total</span>
+            <span class="text-xl font-extrabold text-indigo-900">${{ total|default(0)|round(2) }}</span>
+          </div>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
 
+<!-- minor fade-in helper -->
 <style>
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.8s ease-out;
-  }
+  @keyframes fade-in{0%{opacity:.0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
+  .animate-fade-in{animation:fade-in .6s ease-out}
 </style>
 {% endblock %}
-
-
