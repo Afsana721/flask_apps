@@ -1,13 +1,7 @@
 {% extends "business_Gem/base.html" %}
 {% block title %}Cart | AptiCraft{% endblock %}
 {% block content %}
-<!--
-  Cart Page (refined layout + colors)
-  Notes:
-  - All Jinja routes/variables kept intact (urls, forms, Jinja variables)
-  - Structure organized with Tailwind utility classes only
-  - Order Summary is sticky on desktop; form grouped and spaced
--->
+
 <section class="min-h-screen bg-gradient-to-b from-[#f7f7fb] to-[#eef2ff] py-10">
   <div class="max-w-6xl mx-auto px-4">
     <!-- Top bar -->
@@ -108,7 +102,29 @@
 
             <!-- Confirm button -->
             <div class="sm:col-span-2 mt-1 flex items-center justify-end gap-3">
-              <button type="submit" class="inline-flex items-center justify-center px-5 py-3 font-semibold rounded-xl bg-indigo-600 text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">Confirm Order & Pay</button>
+            <!--adding Payment Demo only - no gateway -->
+              <!-- Payment (DEMO ONLY — no gateway) -->
+            <div class="sm:col-span-2 mt-2 space-y-2 p-3 rounded-lg bg-indigo-50/60 ring-1 ring-indigo-100">
+              <h6 class="text-sm font-semibold text-indigo-900">Payment Method (Demo)</h6>
+              <div class="grid sm:grid-cols-3 gap-2">
+                <select id="payMethod" class="p-2 border border-indigo-100 rounded-lg bg-white/90">
+                  <option>Card</option><option>Cash</option><option>Bank</option>
+                </select>
+                <input id="cardNum" class="p-2 border border-indigo-100 rounded-lg bg-white/90" placeholder="Card number (any digits)">
+                <input id="payAmount" class="p-2 border border-indigo-100 rounded-lg bg-white/90" placeholder="Amount e.g. 129.99">
+              </div>
+              <button id="btnPay" type="button" class="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+                Pay (Demo)
+              </button>
+              <p class="text-xs text-slate-600">This is a front-end demo only (no real charge).</p>
+            </div>
+
+              
+              <button type="submit" class="inline-flex items-center justify-center px-5 
+                py-3 font-semibold rounded-xl bg-indigo-600 
+                text-white shadow hover:bg-indigo-700 focus:outline-none 
+                focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition">
+                Confirm Order & Pay</button>
             </div>
 
             <!-- Small helper text -->
@@ -124,6 +140,8 @@
           <dl class="space-y-2 text-sm text-slate-700">
             <div class="flex justify-between"><dt>Items</dt><dd>{{ cart_items|length }}</dd></div>
             <div class="flex justify-between"><dt>Subtotal</dt><dd>${{ total|default(0)|round(2) }}</dd></div>
+            <div class="flex justify-between"><dt>Paid (Demo)</dt><dd>$<span id="invoiceAmount">0.00</span></dd></div>
+
           </dl>
 
           <h4 class="text-sm font-semibold text-indigo-800 mt-5 mb-2">Invoice Information</h4>
@@ -148,4 +166,27 @@
   @keyframes fade-in{0%{opacity:.0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
   .animate-fade-in{animation:fade-in .6s ease-out}
 </style>
+<!--payment demo script -->
+<script>
+  (function () {
+    const btn = document.getElementById('btnPay');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      const amt = parseFloat((document.getElementById('payAmount')?.value || '0').trim()) || 0;
+      const method = (document.getElementById('payMethod')?.value || 'Card');
+      const card = (document.getElementById('cardNum')?.value || '').replace(/\s+/g,'');
+      const out = document.getElementById('invoiceAmount');
+      if (out) out.textContent = amt.toFixed(2);
+
+      // Optional: small receipt note under the invoice card
+      const note = document.createElement('div');
+      note.className = 'text-xs text-slate-600 mt-2';
+      note.textContent = `Demo paid $${amt.toFixed(2)} via ${method}${card ? ' • ****' + card.slice(-4) : ''}`;
+      // append after the Invoice card
+      const invoiceCard = document.querySelector('h4.text-xl.font-semibold.text-indigo-900')?.closest('div[class*="bg-white"]');
+      (invoiceCard || document.body).appendChild(note);
+    });
+  })();
+</script>
+
 {% endblock %}
