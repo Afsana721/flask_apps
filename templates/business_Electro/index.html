@@ -1,1 +1,709 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AptiCraft Simulation & Design Marketplace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Open+Sans:wght@400;600&display=swap"
+    rel="stylesheet">
+  
+  <!-- CDNs for styling and functionality -->
+  <script src="https://kit.fontawesome.com/a73383f015.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Three.js and Cannon.js for 3D simulation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    /* Custom styles to maintain the dark, futuristic theme */
+    body {
+      margin: 0;
+      background-color: #01041d; /* Deeper dark blue background */
+      font-family: 'Open Sans', sans-serif;
+      color: #fff;
+      overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+    }
+
+    /* Define primary digital accent color */
+    :root {
+      --digital-cyan: #00d4ff; 
+      --digital-magenta: #ff0066;
+      --deep-navy: #090979;
+    }
+
+    /* Logo Styling */
+    .top-logo-bar {
+      display: flex;
+      align-items: center;
+      position: absolute;
+      top: 1rem;
+      left: 2rem;
+      z-index: 1000;
+      color: var(--digital-cyan);
+    }
+    .logo-img {
+      width: 40px; 
+      height: 40px; 
+      margin-right: 0.5rem;
+      background-color: var(--digital-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.6);
+    }
+    .logo-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+    }
+    
+    /* Navigation Link Effects */
+    nav a {
+      font-weight: 900;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      left: 0;
+      bottom: -3px;
+      background: var(--digital-cyan); /* Cyan underline */
+      transition: width 0.3s;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    nav a:hover {
+      transform: scale(1.05);
+      text-shadow: 0 0 5px var(--digital-cyan);
+    }
+
+    #cart-count {
+      color: var(--digital-magenta); /* Bright magenta for count */
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-shadow: 0 0 5px rgba(255, 0, 102, 0.8);
+    }
+    
+    /* 3D Simulation Container */
+    #three-d-container {
+        width: 100%;
+        height: 600px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 5px solid var(--digital-cyan);
+    }
+    #three-d-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+        /* Ensure canvas is below text overlay */
+        z-index: 0; 
+    }
+
+    /* Custom Animation */
+    @keyframes pulse-cyan {
+        0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(0, 212, 255, 1), 0 0 40px rgba(0, 212, 255, 0.4); }
+    }
+    .pulse-cyan-glow {
+        animation: pulse-cyan 3s infinite ease-in-out;
+    }
+    
+    /* General Content Styling */
+    main {
+      padding: 2rem;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      background-color: rgba(7, 31, 56, 0.8);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+      transition: all 0.3s;
+      border: 1px solid var(--deep-navy);
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+      border-color: var(--digital-cyan);
+    }
+    
+    .text-shadow-lg {
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <!--Logo with company name-->
+  <div class="top-logo-bar">
+    <!-- Placeholder for logo image since the asset URL is removed -->
+    <div class="logo-img"></div> 
+    <span class="logo-text">AptiCraft</span>
+  </div>
+  
+  <!-- Navigation Bar -->
+  <!-- Navigation Bar -->
+  <header class="w-full pt-20 pb-4 bg-[#01041d] mb-40">
+      <nav
+        class="flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-white font-bold text-xs py-4 px-4 max-w-7xl mx-auto rounded-xl bg-[--deep-navy] border-4 border-[--digital-cyan] shadow-2xl pulse-cyan-glow">
+        <a href="/" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Home</a>
+        <a href="#products_list" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Products</a>
+         <a href="#sample" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Sample</a>
+        <a href="#login" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Login</a>
+        <a href="#signup" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Register</a>
+        <a href="#dashboard" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Dashboard</a>
+        <a href="#cesium" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Cesium</a>
+        <a href="#about" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">About Us</a>
+        <a href="#data_modelling" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Data Modelling</a>
+        <a href="#business_data" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Business Data</a>
+        <a href="#business_schema" target="_blank" class="hover:text-[--digital-cyan] transition duration-200">Business Schema</a>
+        <a href="#elec_data" target="_blank" class="hover:text-cyan-400 transition duration-200" target="_blank">Data</a>
+        <a href="#elec_Schema" target="_blank" class="hover:text-cyan-400 transition duration-200" target="_blank">star Schema</a>
+        <a href="#cart" target="_blank" class="hover:text-[--digital-cyan] transition duration-200 flex items-center gap-1">
+          <i class="fas fa-shopping-cart text-lg text-white"></i>
+          <span class="text-base font-semibold">
+            Cart (<span id="cart-count" class="font-bold">0</span>)
+          </span>
+        </a>
+        <a href="#about" target="_blank"  class="hover:text-cyan-400 transition duration-200" target="_blank">About Us</a>
+      </nav>
+  </header>
+
+ 
+  
+  <!-- Social Media Icons Bar -->
+  <div class="social-icons absolute top-4 right-6 flex space-x-4 z-[999] text-white text-xl">
+    <a href="https://facebook.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-facebook"></i></a>
+    <a href="https://twitter.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-twitter"></i></a>
+    <a href="https://instagram.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-instagram"></i></a>
+    <a href="https://linkedin.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-linkedin"></i></a>
+    <a href="https://youtube.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-youtube"></i></a>
+    <a href="https://tiktok.com" target="_blank" class="hover:text-[--digital-cyan] transition duration-200"><i class="fab fa-tiktok"></i></a>
+  </div>
+  
+  <!-- 3D Simulation Hero Section -->
+  <div id="three-d-container" class="mt-4 shadow-2xl">
+      <div class="absolute inset-0 flex flex-col justify-center items-center z-10 p-4 bg-[#00CCDD] bg-opacity-10">
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-[--digital-cyan] tracking-wider mb-4 text-shadow-lg" style="font-family: 'Orbitron', sans-serif;">
+              The AptiCraft Engine Marketplace
+          </h1>
+          <p class="text-lg text-gray-200 text-center max-w-3xl">
+              Design, Simulate, and Sell Next-Gen Technology: Showcasing the convergence of Robotics, AI, and Digital Engineering.
+          </p>
+          <p class="text-xs text-gray-400 mt-2 italic">
+            (Click and drag the blocks to rotate the 3D simulation. Blocks reset every 5 seconds!)
+          </p>
+      </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto">
+    <!-- Marketplace Focus Section -->
+    <section id="marketplace-focus" class="py-16 px-4">
+        <h2 class="text-center text-3xl sm:text-4xl font-bold text-[#DFEBED] tracking-wide leading-relaxed mb-12"
+            style="font-family: 'Orbitron', sans-serif;">
+            Engines for Innovation: Showcase Your Skill, Sell Your Creation
+        </h2>
+        
+        <p class="text-center text-lg text-gray-300 mb-16 max-w-4xl mx-auto">
+            AptiCraft is the global channel where **engineers and developers** design, test, and market high-fidelity **libraries and simulation engines**. Use our platform to make your expertise in **circuit design, robotics, LLM data processing, and complex simulations** accessible to every corner of the world.
+        </p>
+
+        <div class="product-grid">
+            <!-- Card 1: Circuit Design -->
+            <div class="service-card">
+                <i class="fas fa-microchip text-4xl text-[--digital-cyan] mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Circuit Design Libraries</h3>
+                <p class="text-gray-400 text-sm">Sell validated RTL, schematic components, and complex logic blocks for digital and analog electronics design.</p>
+            </div>
+            
+            <!-- Card 2: Robotics & Kinematics -->
+            <div class="service-card">
+                <i class="fas fa-robot text-4xl text-[--digital-cyan] mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Robotics Engines</h3>
+                <p class="text-gray-400 text-sm">Offer kinematic solvers, motion planning algorithms, and dynamic simulation tools for physical and virtual robot deployment.</p>
+            </div>
+            
+            <!-- Card 3: LLM & AI Data -->
+            <div class="service-card">
+                <i class="fas fa-brain text-4xl text-[--digital-magenta] mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">LLM Data & Models</h3>
+                <p class="text-gray-400 text-sm">Market specialized datasets, pre-trained AI models, and processing pipelines optimized for engineering and scientific applications.</p>
+            </div>
+            
+            <!-- Card 4: Multi-Physics Simulation -->
+            <div class="service-card">
+                <i class="fas fa-vial text-4xl text-[--digital-cyan] mb-4"></i>
+                <h3 class="text-xl font-bold mb-2">Advanced Simulation Tools</h3>
+                <p class="text-gray-400 text-sm">Provide engines for fluid dynamics, thermal analysis, structural integrity, and custom physics environments.</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-16">
+            <a href="#register" class="inline-block px-10 py-4 bg-[--digital-cyan] text-gray-900 font-extrabold text-lg rounded-full shadow-lg hover:shadow-[--digital-cyan] transition duration-300 transform hover:scale-105" style="font-family: 'Orbitron', sans-serif;">
+                Start Selling Your Engine Today
+            </a>
+        </div>
+    </section>
+
+    <!-- 🎥 Strategy + Consulting Section -->
+    <section class="bg-gradient-to-r from-[#01041d] via-[#0b1c53] to-[#00d4ff] py-20 px-8 mt-16 mb-12 rounded-xl shadow-2xl pulse-cyan-glow">
+      <h2
+        class="text-center text-2xl sm:text-3xl font-extrabold text-[#DFEBED] tracking-wide leading-relaxed mb-4 animate-pulse"
+        style="font-family: 'Orbitron', sans-serif;">
+        Accelerating Digital Transformation Through Simulation, AI, and DaaS Strategy
+      </h2>
+      <p class="text-center text-[#DFEBED] mt-4 mb-10 max-w-xl mx-auto text-base font-light italic">
+        From prototype to global scale — discover how AptiCraft blends AI-driven engineering with digital twin
+        simulation to fuel next-gen electronics.
+      </p>
+      <div class="relative max-w-6xl mx-auto h-[400px] overflow-hidden rounded-xl shadow-2xl border-2 border-[--digital-cyan]">
+        <img src="https://media.licdn.com/dms/image/v2/D5612AQGCStrz7FAEaA/article-cover_image-shrink_720_1280/B56ZnEpf_pJ8AI-/0/1759940838161?e=1762992000&v=beta&t=XeiQddWPQAcunpta9exEYLLC8dgXnkWRL6nSS92QaEY" alt="simulation"
+          class="w-full h-full object-cover brightness-75 hover:brightness-100 transition duration-500 ease-in-out">
+      </div>
+    </section>
+  </main>
+  
+    <!--Chatbot html contents-->
+    <!-- Floating Chatbot -->
+    <div id="chatbot-widget" class="fixed bottom-6 right-6 w-80 bg-white text-black rounded-lg shadow-lg hidden">
+      <div class="p-3 font-bold bg-[#00d4ff] text-black rounded-t-lg">AptiCraft Q&A Bot</div>
+      <div id="chatbot-messages" class="p-3 h-48 overflow-y-auto text-sm"></div>
+      <input id="chatbot-input" type="text" placeholder="Ask me..."
+        class="w-full border-t px-3 py-2 text-sm focus:outline-none">
+    </div>
+
+    <!-- Chat button -->
+    <button id="chatbot-toggle"
+      class="fixed bottom-6 right-6 bg-[#00d4ff] text-black rounded-full p-3 shadow-xl">
+      💬
+    </button>
+
+  <!--Chatbot html contents end-->
+  <!-- Section Divider Between Main and Footer -->
+  <div class="h-12 w-full bg-gradient-to-b from-[#01041d] to-[#115469]"></div>
+
+  <!-- Footer: AptiCraft Services Directory -->
+  <footer class="bg-[#115469] text-gray-200 pt-20 pb-10 px-6 font-sans shadow-lg">
+    <div class="max-w-6xl mx-auto">
+      <h2
+        class="text-4xl font-bold mb-8 text-center text-[#020024] drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] tracking-wide animate-pulse"
+        style="font-family: 'Orbitron', sans-serif;">
+        🌐 Discover AptiCraft Apps Designs and Features
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-10 gap-y-4 text-[--deep-navy]">
+          <!-- Footer Links Placeholder -->
+          <div class="text-left">
+              <h4 class="font-bold text-white mb-2">Platform</h4>
+              <ul class="space-y-1">
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Dashboard</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">API Access</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Security</a></li>
+              </ul>
+          </div>
+          <div class="text-left">
+              <h4 class="font-bold text-white mb-2">Resources</h4>
+              <ul class="space-y-1">
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Documentation</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Tutorials</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Community Forum</a></li>
+              </ul>
+          </div>
+          <div class="text-left">
+              <h4 class="font-bold text-white mb-2">Company</h4>
+              <ul class="space-y-1">
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">About Us</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Careers</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Contact</a></li>
+              </ul>
+          </div>
+          <div class="text-left">
+              <h4 class="font-bold text-white mb-2">Legal</h4>
+              <ul class="space-y-1">
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Terms of Service</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">Privacy Policy</a></li>
+                  <li><a href="#" class="text-gray-300 hover:text-[--digital-cyan] text-sm">License Agreements</a></li>
+              </ul>
+          </div>
+      </div>
+      <p class="text-sm text-center text-[#051114] mt-10">&copy; 2025 AptiCraft. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <!-- JavaScript for Three.js and Cannon.js Simulation -->
+ <script>
+    // --- 3D Simulation Setup (Three.js and Cannon.js) ---
+    let scene, camera, renderer, world, objects = [];
+    const TIME_STEP = 1 / 60;
+    let lastTime;
+
+    // Variables for the automatic reset loop
+    let timeSinceLastReset = 0;
+    const resetInterval = 6000; // 5 seconds in milliseconds
+
+    /**
+     * Initializes the Three.js scene, Cannon.js world, and sets up objects.
+     */
+    function initThreeD() {
+        const canvasContainer = document.getElementById('three-d-container');
+        
+        // 1. Scene setup
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x234C6A); // Deep dark background
+        
+        // 2. Camera setup - Adjusted for a wider, slightly lower view of smaller objects
+        const aspectRatio = canvasContainer.clientWidth / canvasContainer.clientHeight;
+        camera = new THREE.PerspectiveCamera(60, aspectRatio, 0.1, 1000); // Wider FOV (60)
+        camera.position.set(0, 3, 12); // Closer and slightly lower
+
+        // 3. Renderer setup
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.top = '0';
+        renderer.domElement.style.left = '0';
+        canvasContainer.appendChild(renderer.domElement);
+        
+
+        // 4. Lights - Essential for seeing the 3D objects
+        const ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.5); // Soft ambient light
+        scene.add(ambientLight);
+        
+        // Hemisphere light for better depth and overall fill
+        const hemiLight = new THREE.HemisphereLight(0x00d4ff, 0x01041d, 0.8); // Cyan sky to deep blue ground
+        scene.add(hemiLight);
+
+        // Directional light for shadows and highlights
+        const directionalLight = new THREE.DirectionalLight(0x0ef, 1.8); // Cyan light
+        directionalLight.position.set(15, 15, 10);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        scene.add(directionalLight);
+
+
+        // 5. CANNON.js World
+        world = new CANNON.World();
+        world.gravity.set(0, -9.82, 0); // Standard gravity
+        
+        // 6. Ground Plane (Visual + Invisible Physics Plane)
+        const floorGeometry = new THREE.PlaneGeometry(30, 30);
+        const floorMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x052030, // Very dark blue/cyan
+            side: THREE.DoubleSide,
+            metalness: 0.8,
+            roughness: 0.1
+        });
+        const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+        floorMesh.rotation.x = -Math.PI / 2;
+        floorMesh.receiveShadow = true;
+        scene.add(floorMesh);
+
+        const groundShape = new CANNON.Plane();
+        const groundBody = new CANNON.Body({ mass: 0, shape: groundShape, material: new CANNON.Material() });
+        groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+        world.addBody(groundBody);
+
+        // 7. Add simulation blocks
+        const boxSize = 0.8;
+        const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
+        
+        // Core Data block material (Cyan) & AI/Robotics block material (Magenta) — kept for theme consistency
+        const coreMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x00d4ff, emissive: 0x001122, metalness: 0.9, roughness: 0.1 
+        });
+        const aiMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0xff0066, emissive: 0x330011, metalness: 0.1, roughness: 0.2 
+        });
+
+        // --- Replace cube field with two GLB models (Screw + Screwdriver) ---
+        // Ensure GLTFLoader is available, then load models and pair each with a Cannon body.
+        function ensureGLTFLoader(onReady){
+          if (THREE.GLTFLoader) return onReady();
+          const s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/GLTFLoader.js';
+          s.onload = onReady;
+          document.head.appendChild(s);
+        }
+
+        function addModel(url, scale, mass, pos){
+          const loader = new THREE.GLTFLoader();
+          loader.load(url, (gltf)=>{
+            const mesh = gltf.scene;
+            mesh.traverse(o=>{ if(o.isMesh){ o.castShadow = true; o.receiveShadow = true; }});
+            mesh.scale.set(scale, scale, scale);
+            mesh.position.set(pos.x, pos.y, pos.z);
+            scene.add(mesh);
+
+            // Physics proxy sized from bounding box
+            const bbox = new THREE.Box3().setFromObject(mesh);
+            const size = new THREE.Vector3();
+            bbox.getSize(size);
+            const shape = new CANNON.Box(new CANNON.Vec3(Math.max(size.x/2,0.1), Math.max(size.y/2,0.1), Math.max(size.z/2,0.1)));
+            const body = new CANNON.Body({ mass, shape, linearDamping:0.6, angularDamping:0.6 });
+            body.position.set(pos.x, pos.y, pos.z);
+            world.addBody(body);
+            objects.push({ mesh, body });
+          });
+        }
+
+        ensureGLTFLoader(()=>{
+          // Ten screws + ten screwdrivers (randomized spawn positions)
+          for (let i = 0; i < 10; i++) {
+            addModel("{{ url_for('static', filename='Screw.glb') }}", 0.5, 1, {
+              x: -4 + Math.random()*8,
+              y: 8 + Math.random()*4,
+              z: -3 + Math.random()*6
+            });
+          }
+          for (let i = 0; i < 10; i++) {
+            addModel("{{ url_for('static', filename='Screwdriver.glb') }}", 8, 5, {
+              x: -4 + Math.random()*8,
+              y: 8 + Math.random()*4,
+              z: -3 + Math.random()*6
+            });
+          }
+        });
+        // --- Interaction Controls (Mouse/Touch Rotation) --- (Mouse/Touch Rotation) ---
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        
+        const handleDragStart = (x, y) => { isDragging = true; previousMousePosition = { x, y }; };
+        const handleDragEnd = () => { isDragging = false; };
+        
+        const handleDrag = (x, y) => {
+            if (!isDragging) return;
+            
+            const deltaX = x - previousMousePosition.x;
+            const deltaY = y - previousMousePosition.y;
+
+            // Rotate scene around Y axis (Horizontal movement)
+            scene.rotation.y += deltaX * 0.005;
+            
+            // Rotate camera/scene position slightly (Vertical movement, limited)
+            camera.position.y -= deltaY * 0.05;
+            camera.position.y = Math.max(1, Math.min(10, camera.position.y));
+            
+            previousMousePosition = { x, y };
+        };
+
+        // Mouse Listeners
+        renderer.domElement.addEventListener('mousedown', (e) => handleDragStart(e.clientX, e.clientY));
+        renderer.domElement.addEventListener('mouseup', handleDragEnd);
+        renderer.domElement.addEventListener('mousemove', (e) => handleDrag(e.clientX, e.clientY));
+
+        // Touch Listeners
+        renderer.domElement.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        renderer.domElement.addEventListener('touchend', handleDragEnd);
+        renderer.domElement.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1) {
+                e.preventDefault(); // Prevent scrolling while dragging
+                handleDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        });
+
+
+        window.addEventListener('resize', onWindowResize, false);
+        animate();
+    }
+
+    /**
+     * Handles window resizing to maintain responsiveness.
+     */
+    function onWindowResize() {
+        const canvasContainer = document.getElementById('three-d-container');
+        camera.aspect = canvasContainer.clientWidth / canvasContainer.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+    }
+
+    /**
+     * Resets all simulation blocks to a high starting position with zero velocity.
+     */
+    function resetObjects() {
+        objects.forEach(obj => {
+            // Reset position high above the ground
+            obj.body.position.set(
+                Math.random() * 12 - 6, 
+                10 + Math.random() * 20, 
+                Math.random() * 12 - 6
+            );
+            // Reset velocity and angular velocity to zero
+            obj.body.velocity.set(0, 0, 0);
+            obj.body.angularVelocity.set(0, 0, 0);
+            // Reset rotation
+            obj.body.quaternion.set(0, 0, 0, 1);
+        });
+        timeSinceLastReset = 0; // Reset the timer
+    }
+
+    /**
+     * Main animation loop: updates physics, renders the scene, and handles the reset loop.
+     */
+    function animate(time) {
+        requestAnimationFrame(animate);
+
+        if (lastTime !== undefined) {
+            const dt = (time - lastTime); // dt in milliseconds
+            
+            // 1. Update reset timer
+            timeSinceLastReset += dt;
+
+            // 2. Check for reset condition (5 seconds)
+            if (timeSinceLastReset >= resetInterval) {
+                resetObjects();
+            }
+
+            // 3. Update physics world (Cannon expects time step in seconds)
+            world.step(TIME_STEP, dt / 1000, 3);
+            
+            // 4. Copy coordinates from Cannon to Three.js
+            objects.forEach(obj => {
+                obj.mesh.position.copy(obj.body.position);
+                obj.mesh.quaternion.copy(obj.body.quaternion);
+                
+                // Optional fail-safe: Force reset if a block falls too far below the floor
+                if (obj.body.position.y < -30) {
+                     obj.body.position.set(
+                        Math.random() * 12 - 6, 
+                        10 + Math.random() * 20, 
+                        Math.random() * 12 - 6
+                    );
+                    obj.body.velocity.set(0, 0, 0);
+                    obj.body.angularVelocity.set(0, 0, 0);
+                }
+            });
+        }
+        
+        renderer.render(scene, camera);
+        lastTime = time; // Update lastTime for the next frame
+    }
+    
+    // --- Initializer ---
+    window.onload = function () {
+        // Only initialize 3D if Three.js and Cannon.js are available
+        if (typeof THREE !== 'undefined' && typeof CANNON !== 'undefined') {
+            initThreeD();
+        } else {
+            console.error("Three.js or Cannon.js not loaded.");
+            const container = document.getElementById('three-d-container');
+            container.style.backgroundImage = "url('https://placehold.co/1200x600/090979/0ef?text=3D+Simulation+Loading+Error')";
+            container.style.backgroundSize = 'cover';
+        }
+    }
+
+  //Chatbot script here -->
+    // Floating Q&A Chatbot — FAQ first (with answers) + full scroll + toggle/close
+    const qa = [
+      { q: "What is electronic marketplace?", a: "A platform where electronic components and simulation/systems are listed and sold." },
+      { q: "How to add a product?", a: "Register → add product details/images → publish to marketplace." },
+      { q: "What about pricing?", a: "Sellers set prices; buyers purchase directly from the product page/cart." },
+      { q: "How to see cart?", a: "Use the cart icon in the header to view/update your items." },
+      { q: "Support?", a: "Reach us via the About/Support page for help and policies." }
+    ];
+
+    // Toggle button
+    const toggleBtn=document.createElement('button');
+    toggleBtn.innerText='💬';
+    toggleBtn.style.cssText="position:fixed;bottom:1.5rem;right:1.5rem;background:#00d4ff;color:#000;border:none;border-radius:50%;padding:12px 16px;font-size:20px;cursor:pointer;z-index:9999;box-shadow:0 4px 10px rgba(0,0,0,0.3);";
+    document.body.appendChild(toggleBtn);
+
+    // Chat box
+    const botBox=document.createElement('div');
+    botBox.style.cssText="position:fixed;bottom:5rem;right:2rem;width:360px;height:520px;background:#fff;color:#000;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.3);display:none;flex-direction:column;z-index:9999;font-family:sans-serif;";
+
+    // Header (image + title + close)
+    const header=document.createElement('div');
+    header.style.cssText="background:#00d4ff;color:#000;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;border-top-left-radius:12px;border-top-right-radius:12px;";
+    header.innerHTML=`<div style="display:flex;align-items:center;gap:8px;">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAuAspTZ0_1n3u8a9gS00wTt-TYUjXkV3pqg&s" style="width:26px;height:26px;border-radius:50%;"/>
+        <span style="font-weight:700;">Electronic FAQ</span>
+      </div>
+      <span id='chatClose' style='cursor:pointer;font-weight:bold'>&times;</span>`;
+    botBox.appendChild(header);
+
+    // Scrollable content (FAQ first, then chat stream)
+    const messages=document.createElement('div');
+    messages.id='chatMessages';
+    messages.style.cssText="flex:1;overflow-y:auto;padding:12px 12px 0 12px;font-size:14px;line-height:1.45;scrollbar-gutter:stable;";
+
+    // Render FAQ (Q + A blocks) at the top
+    const faqWrap=document.createElement('div');
+    faqWrap.style.cssText="margin-bottom:10px";
+    const faqTitle=document.createElement('div');
+    faqTitle.textContent='Top FAQs';
+    faqTitle.style.cssText="font-weight:700;margin:0 0 6px 0";
+    faqWrap.appendChild(faqTitle);
+    qa.forEach(item=>{
+      const card=document.createElement('div');
+      card.style.cssText="background:#f9f9f9;border:1px solid #e5e7eb;border-radius:10px;padding:8px 10px;margin-bottom:8px";
+      const q=document.createElement('div');
+      q.innerHTML=`<b>Q:</b> ${item.q}`;
+      const a=document.createElement('div');
+      a.innerHTML=`<b> A:</b> ${item.a}`;
+      a.style.marginTop='4px';
+      card.appendChild(q); card.appendChild(a);
+      faqWrap.appendChild(card);
+    });
+    messages.appendChild(faqWrap);
+    botBox.appendChild(messages);
+
+    // Input area
+    const inputWrap=document.createElement('div');
+    inputWrap.style.cssText="border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;padding:8px";
+    const input=document.createElement('input');
+    input.type='text'; input.placeholder='Ask a question...';
+    input.style.cssText="flex:1;border:1px solid #e5e7eb;border-radius:8px;padding:10px;font-size:14px;outline:none;";
+    const sendBtn=document.createElement('button');
+    sendBtn.textContent='Send';
+    sendBtn.style.cssText="background:#00d4ff;border:none;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700;";
+    inputWrap.appendChild(input); inputWrap.appendChild(sendBtn);
+    botBox.appendChild(inputWrap);
+
+    document.body.appendChild(botBox);
+
+    // Toggle + close
+    toggleBtn.onclick=()=>{botBox.style.display=botBox.style.display==='none'?'flex':'none';};
+    document.getElementById('chatClose').onclick=()=>{botBox.style.display='none';};
+
+    // Send handler (answers from small preset map built from qa list)
+    const qaMap = Object.fromEntries(qa.map(x=>[x.q.toLowerCase(), x.a]));
+    function sendMessage(){
+      const q=input.value.trim(); if(!q) return;
+      const you=document.createElement('div'); you.innerHTML=`<b>You:</b> ${q}`;
+      const bot=document.createElement('div'); bot.style.margin='0 0 10px 0';
+      bot.innerHTML=`<b>Bot:</b> ${qaMap[q.toLowerCase()]||'Sorry, I answer only these FAQs for now.'}`;
+      messages.appendChild(you); messages.appendChild(bot);
+      messages.scrollTop = messages.scrollHeight; input.value='';
+    }
+    sendBtn.onclick=sendMessage;
+    input.addEventListener('keypress',e=>{ if(e.key==='Enter') sendMessage(); });
+    //<--chatbot script end.
+  </script>
+</body>
+</html>
