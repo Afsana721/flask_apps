@@ -44,6 +44,11 @@ def nanize():
 def info_index():
     return render_template('business_Gem/index.html')
 
+#Electronic information apps
+@app.route('/elec_index')
+def elec_index():
+    return render_template('business_Electro/index.html')
+
 #Load products routes
 def load_products():
     import os, json
