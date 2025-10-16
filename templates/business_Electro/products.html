@@ -21,6 +21,8 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    {# Use DB rows if provided; fall back to 'products' or 'items' #}
+    {% set rows = db_products|default(products)|default(items)|default([]) %}
     <!-- Row 1: Simulation on the left; first 3 products on the right -->
     <section class="grid lg:grid-cols-2 gap-6">
       <!-- Simulation -->
@@ -34,9 +36,8 @@
 
       <!-- Products (first 3) -->
       <div class="card rounded-2xl p-4">
-        <h2 class="text-xl font-bold mb-3">Featured</h2>
-        <div id="productsTop" class="grid sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-          {% set rows = db_products|default([]) %}
+        <h2 class="text-xl font-bold mb-3">Products</h2>
+        <div id="productsTop" class="grid grid-cols-3 gap-4">
           {% for p in rows[:3] %}
           <article class="rounded-xl border border-white/10 p-3 hover:border-white/20 transition">
             <div class="aspect-[4/3] bg-slate-900/40 rounded-lg overflow-hidden">
@@ -51,7 +52,13 @@
             </div>
             <div class="mt-3 flex gap-2">
               <button class="add-to-cart px-3 py-1.5 rounded-md bg-[var(--accent)] text-slate-900 text-sm font-semibold" data-id="{{ p.product_id }}">Add</button>
-              <button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 text-sm" data-action="details" data-pid="{{ p.product_id }}" data-name="{{ p.product_name }}" data-category="{{ p.category }}" data-price="{{ '%.2f' % (p.price or 0) }}" data-img="{{ p.image_url }}">Quick view</button>
+              <button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 text-sm" data-action="details"
+              data-pid="{{ p.product_id }}"
+              data-name="{{ p.product_name }}"
+              data-category="{{ p.category }}"
+              data-price="{{ '%.2f' % (p.price or 0) }}"
+              data-img="{{ p.image_url }}"
+              data-details="{{ p.details or 'More specifications and usage details coming soon.' }}">More view</button>
             </div>
           </article>
           {% endfor %}
@@ -63,8 +70,8 @@
     <section class="grid lg:grid-cols-2 gap-6 mt-6">
       <!-- More products (next 3) -->
       <div class="card rounded-2xl p-4">
-        <h2 class="text-xl font-bold mb-3">Catalog</h2>
-        <div id="productsBottom" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- heading intentionally removed per request -->
+        <div id="productsBottom" class="grid grid-cols-3 gap-4">
           {% for p in rows[3:6] %}
           <article class="rounded-xl border border-white/10 p-3 hover:border-white/20 transition">
             <div class="aspect-[4/3] bg-slate-900/40 rounded-lg overflow-hidden">
@@ -79,7 +86,13 @@
             </div>
             <div class="mt-3 flex gap-2">
               <button class="add-to-cart px-3 py-1.5 rounded-md bg-[var(--accent)] text-slate-900 text-sm font-semibold" data-id="{{ p.product_id }}">Add</button>
-              <button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 text-sm" data-action="details" data-pid="{{ p.product_id }}" data-name="{{ p.product_name }}" data-category="{{ p.category }}" data-price="{{ '%.2f' % (p.price or 0) }}" data-img="{{ p.image_url }}">Quick view</button>
+              <button class="px-3 py-1.5 rounded-md border border-slate-700 text-slate-200 text-sm" data-action="details"
+              data-pid="{{ p.product_id }}"
+              data-name="{{ p.product_name }}"
+              data-category="{{ p.category }}"
+              data-price="{{ '%.2f' % (p.price or 0) }}"
+              data-img="{{ p.image_url }}"
+              data-details="{{ p.details or 'More specifications and usage details coming soon.' }}">More view</button>
             </div>
           </article>
           {% endfor %}
@@ -111,7 +124,25 @@
         </div>
       </div>
     </section>
-  </main>
+    <!-- Product Details (hidden reveal) -->
+  <section id="detailsPanel" class="card rounded-2xl p-6 mt-8 hidden">
+    <div class="grid md:grid-cols-2 gap-6 items-start">
+      <div>
+        <img id="pdImg" src="" alt="" class="w-full aspect-[4/3] object-cover rounded-xl border border-white/10"/>
+      </div>
+      <div>
+        <h3 id="pdName" class="text-2xl font-extrabold text-white"></h3>
+        <p id="pdCat" class="text-slate-400 mt-1"></p>
+        <p class="mt-3 text-[var(--accent2)] font-extrabold">$<span id="pdPrice"></span></p>
+        <p id="pdText" class="mt-4 text-slate-300 leading-relaxed"></p>
+        <div class="mt-6 flex gap-2">
+          <button id="dpAdd" class="px-3 py-2 rounded-lg bg-[var(--accent)] text-slate-900 text-sm font-semibold" data-id="">Add to Cart</button>
+          <button id="dpClose" class="px-3 py-2 rounded-lg bg-white/80 text-slate-900 text-sm">Hide</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
   <!-- Quick View Modal -->
   <div id="quickModal" class="fixed inset-0 z-50 hidden items-center justify-center">
@@ -220,6 +251,7 @@
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+  window.__sim = { mode: "2d" };
 })();
 
 // IDEs
@@ -228,15 +260,23 @@
     var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code'), od=document.getElementById('dom-out'); if(rd) rd.onclick=function(){ try{ od.textContent='OK'; eval(td.value);}catch(e){ od.textContent=String(e);} };
   })();
 
-  // Quick view modal
+  // Details reveal (populate hidden panel instead of modal)
   document.addEventListener('click',function(e){
-    var b=e.target.closest('[data-action="details"]'); if(b){ var m=document.getElementById('quickModal');
-      document.getElementById('modalImg').src=b.dataset.img||'';
-      document.getElementById('modalName').textContent=b.dataset.name||'';
-      document.getElementById('modalCat').textContent=b.dataset.category||'';
-      document.getElementById('modalPrice').textContent=b.dataset.price||'0.00';
-      document.getElementById('modalAdd').dataset.id=b.dataset.pid; m.classList.remove('hidden'); m.classList.add('flex'); }
-    if(e.target.matches('[data-close]')){ var m2=document.getElementById('quickModal'); m2.classList.add('hidden'); m2.classList.remove('flex'); }
+    var b=e.target.closest('[data-action="details"]');
+    if(b){
+      var p=document.getElementById('detailsPanel');
+      document.getElementById('pdImg').src=b.dataset.img||'';
+      document.getElementById('pdName').textContent=b.dataset.name||'';
+      document.getElementById('pdCat').textContent=b.dataset.category||'';
+      document.getElementById('pdPrice').textContent=b.dataset.price||'0.00';
+      document.getElementById('pdText').textContent=b.dataset.details||'More specifications and usage details coming soon.';
+      document.getElementById('dpAdd').dataset.id=b.dataset.pid;
+      p.classList.remove('hidden');
+      p.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+  document.getElementById('dpClose')?.addEventListener('click', function(){
+    document.getElementById('detailsPanel').classList.add('hidden');
   });
 
   // --- Smoke tests (run in Console) ---
