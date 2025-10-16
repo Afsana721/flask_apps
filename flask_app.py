@@ -44,11 +44,6 @@ def nanize():
 def info_index():
     return render_template('business_Gem/index.html')
 
-#Electronic information apps
-@app.route('/elec_index')
-def elec_index():
-    return render_template('business_Electro/index.html')
-
 #Load products routes
 def load_products():
     import os, json
@@ -138,10 +133,6 @@ def view_cart():
     total = sum(i[3] for i in cart_items)
     return render_template('business_Gem/cart.html', cart_items=cart_items, total=total)
 
-
-
-
-
 @app.route('/add-to-cart/<product_id>')
 def add_to_cart(product_id):
     cart = session.get('cart', [])
@@ -176,6 +167,17 @@ def checkout():
     session['cart'] = []
     flash("Checkout complete. Thank you!")
     return redirect(url_for('view_cart'))
+
+
+#Electronic information apps
+@app.route('/elec_index')
+def elec_index():
+    return render_template('business_Electro/index.html')
+
+#Electroinic products page routes
+@app.route('/elec_products)
+def elec_products()
+    return render_template('business_Electron/products.html)
 
 
 
