@@ -177,7 +177,7 @@ def elec_index():
 #Electroinic products page routes
 @app.route('/elec_products')
 def elec_products()
-    return render_template('business_Electron/products.html')
+    return render_template('business_Electro/products.html')
 
 
 
