@@ -109,7 +109,7 @@
   <div class="grid md:grid-cols-3 gap-4">
     <div class="rounded-xl border border-white/10 p-3">
       <h3 class="font-semibold mb-2">JS IDE</h3>
-      <textarea id="js-code" class="w-full h-40 rounded p-2 bg-[#071F38] text-white text-sm" spellcheck="false">(()=>{ return 2+2; })()</textarea>
+      <textarea id="js-code" class="w-full h-40 rounded p-2 bg-[#071F38] text-white text-sm" spellcheck="false">(()=>{ console.log('calc',2+2); return 2+2; })()</textarea>
       <button id="run-js" class="mt-3 bg-[var(--accent)] text-slate-900 px-3 py-1.5 rounded font-semibold text-sm">Run</button>
       <pre id="js-out" class="mt-2 text-xs text-[var(--accent)]"></pre>
     </div>
@@ -126,6 +126,28 @@
       <pre id="sql-out" class="mt-2 text-xs text-[var(--accent)]">Wire to your route later.</pre>
     </div>
   </div>
+
+  <!-- NEW: Trace panel showing Sent / Applied / Diff (only for JS/DOM IDEs) -->
+  <div class="rounded-xl border border-white/10 p-3 mt-4">
+    <h3 class="font-semibold mb-3">Trace (JS ⇢ DOM)</h3>
+    <div class="grid md:grid-cols-3 gap-3 text-xs">
+      <div>
+        <div class="text-slate-400 mb-1">Sent</div>
+        <pre id="trace-sent" class="h-32 overflow-auto bg-[#071F38] p-2 rounded"></pre>
+      </div>
+      <div>
+        <div class="text-slate-400 mb-1">Applied</div>
+        <pre id="trace-applied" class="h-32 overflow-auto bg-[#071F38] p-2 rounded"></pre>
+      </div>
+      <div>
+        <div class="text-slate-400 mb-1">Diff</div>
+        <pre id="trace-diff" class="h-32 overflow-auto bg-[#071F38] p-2 rounded"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Invisible sandboxed iframe for safe execution -->
+  <iframe id="ide-sandbox" class="hidden" sandbox="allow-scripts"></iframe>
 </section>
     <!-- Product Details (hidden reveal) -->
   <section id="detailsPanel" class="card rounded-2xl p-6 mt-8 hidden">
@@ -257,9 +279,71 @@
   window.__sim = { mode: "2d" };
 })();
 
-// IDEs
-  (function(){
-    var rj=document.getElementById('run-js'), tj=document.getElementById('js-code'), oj=document.getElementById('js-out'); if(rj) rj.onclick=function(){ try{ oj.textContent=String(Function('return ('+tj.value+')')()); }catch(e){ oj.textContent=String(e);} };
+// IDEs (upgraded): run inside a sandboxed iframe and capture DOM mutations
+(function(){
+  var iframe = document.getElementById('ide-sandbox');
+  if(!iframe) return;
+  // Build a minimal sandbox document with a header to target and a MutationObserver
+  var sandboxHTML = `<!doctype html><html><head><meta charset=\"utf-8\">
+    <style>body{font-family:ui-sans-serif,system-ui;background:#071F38;color:#e5e7eb}
+    header{padding:8px 12px}</style></head><body>
+    <header><h1>Sandbox Header</h1></header>
+    <main id=\"app\"><p id=\"p1\">Try styling me</p></main>
+    <script>
+      (function(){
+        // capture console logs
+        var logs=[]; var oldLog=console.log; console.log=function(){ logs.push(Array.from(arguments).join(' ')); oldLog.apply(console,arguments); };
+        function snapshot(el){ return el.outerHTML; }
+        function apply(code){
+          var target=document;
+          var before=snapshot(document.body);
+          var muts=[]; var mo=new MutationObserver(function(m){ m.forEach(function(x){ muts.push({type:x.type, target:x.target && x.target.tagName, attr:x.attributeName||null}); }); });
+          mo.observe(document, {subtree:true,childList:true,attributes:true,characterData:true});
+          var result, error=null; try{ result = eval(code); }catch(e){ error=String(e); }
+          setTimeout(function(){ mo.disconnect(); var after=snapshot(document.body);
+            parent.postMessage({kind:'result', logs:logs, result:result, error:error, muts:muts, before:before, after:after}, '*');
+            logs=[]; }, 50);
+        }
+        window.addEventListener('message', function(ev){ if(ev.data && ev.data.kind==='run'){ apply(ev.data.code); } });
+      })();
+    <\/script></body></html>`;
+  iframe.srcdoc = sandboxHTML;
+
+  var sentEl = document.getElementById('trace-sent');
+  var appEl  = document.getElementById('trace-applied');
+  var diffEl = document.getElementById('trace-diff');
+  function write(el,msg){ if(!el) return; el.textContent = (msg+"
+
+") + el.textContent; }
+
+  // Handle results from sandbox
+  window.addEventListener('message', function(ev){
+    var d = ev.data||{}; if(d.kind!=='result') return;
+    // Applied: list mutations
+    write(appEl, JSON.stringify(d.muts.slice(0,30), null, 2));
+    // Diff: before/after lengths for quick glance (keep lightweight)
+    var diff = { before_len: (d.before||'').length, after_len: (d.after||'').length, delta: ((d.after||'').length - (d.before||'').length) };
+    write(diffEl, JSON.stringify(diff, null, 2));
+    // JS output goes to js/dom out
+    if(d.error){ document.getElementById('js-out').textContent = d.error; document.getElementById('dom-out').textContent = d.error; }
+    else {
+      var res = typeof d.result==='undefined'? 'undefined' : JSON.stringify(d.result);
+      document.getElementById('js-out').textContent = res;
+      document.getElementById('dom-out').textContent = res;
+    }
+  });
+
+  function run(code){
+    write(sentEl, code);
+    iframe.contentWindow.postMessage({kind:'run', code: code}, '*');
+  }
+
+  // Bind buttons (keep IDs & layout intact)
+  var rj=document.getElementById('run-js'), tj=document.getElementById('js-code');
+  if(rj) rj.onclick=function(){ run(tj.value); };
+  var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code');
+  if(rd) rd.onclick=function(){ run(td.value); };
+})(); if(rj) rj.onclick=function(){ try{ oj.textContent=String(Function('return ('+tj.value+')')()); }catch(e){ oj.textContent=String(e);} };
     var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code'), od=document.getElementById('dom-out'); if(rd) rd.onclick=function(){ try{ od.textContent='OK'; eval(td.value);}catch(e){ od.textContent=String(e);} };
   })();
 
