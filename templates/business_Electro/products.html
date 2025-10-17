@@ -291,6 +291,60 @@
       console.info('Simulation mode:', (window.__sim||{}).mode);
     } catch(e){ console.warn('Smoke tests skipped:', e); }
   })();
+
+ <!-- Add-to-Cart → JS/DOM trace + server roundtrip -->
+     (function () {
+    const outJS  = document.getElementById('js-out');
+    const outDOM = document.getElementById('dom-out');
+  
+    // Utility loggers
+    const logJS  = (o) => { if(outJS)  outJS.textContent  = JSON.stringify(o, null, 2) + "\n" + outJS.textContent; };
+    const logDOM = (m) => { if(outDOM) outDOM.textContent = JSON.stringify(m, null, 2) + "\n" + outDOM.textContent; };
+  
+    // MutationObserver to capture DOM changes (cart badge, mini-cart, etc.)
+    const applied = [];
+    const mo = new MutationObserver((muts) => {
+      muts.forEach(m => applied.push({ type: m.type, node: m.target?.tagName || '', attr: m.attributeName || null }));
+    });
+    mo.observe(document.body, { subtree: true, childList: true, attributes: true, characterData: false });
+  
+    // Delegated click handler for .add-to-cart
+    document.addEventListener('click', async (e) => {
+      const btn  = e.target.closest('.add-to-cart'); if (!btn) return;
+      const card = btn.closest('article');
+  
+      // 1) SENT: event payload
+      const payload = { product_id: Number(btn.dataset.id || 0) };
+      logJS({ step: 'sent', event: 'click', payload, cardHTML: (card?.outerHTML || '').slice(0, 800) + '…' });
+  
+      // snapshot before (for quick diff)
+      const before = { cart: document.getElementById('cart-count')?.textContent || null };
+  
+      // 2) REQUEST/RESPONSE
+      try {
+        const res  = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        logJS({ step: 'response', ok: res.ok, status: res.status, data });
+  
+        // Optional UI update (only if you have #cart-count)
+        if (res.ok && data.ok) {
+          const badge = document.getElementById('cart-count');
+          if (badge) badge.textContent = String((+badge.textContent || 0) + 1);
+        }
+      } catch (err) {
+        logJS({ step: 'error', message: String(err) });
+      } finally {
+        // 3) DIFF + APPLIED
+        const after = { cart: document.getElementById('cart-count')?.textContent || null };
+        logJS({ step: 'diff', before, after });
+        logDOM(applied.slice(-30)); // last mutations only
+      }
+    });
+  })();
   </script>
 </body>
 </html>
