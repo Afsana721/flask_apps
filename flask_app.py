@@ -174,7 +174,7 @@ def checkout():
 def elec_index():
     return render_template('business_Electro/index.html')
 
-#Electroinic products page routes
+
 # --- Electronic products page (DB-driven) ---
 def _fetch_dim_products(limit=6):
     sql = """
@@ -191,7 +191,6 @@ def _fetch_dim_products(limit=6):
 def elec_products():
     rows = _fetch_dim_products(6)
     return render_template('business_Electro/products.html', db_products=rows)
-
 
 
 
