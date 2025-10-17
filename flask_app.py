@@ -178,10 +178,10 @@ def elec_index():
 # --- Electronic products page (DB-driven) ---
 def _fetch_dim_products(limit=6):
     sql = """
-        SELECT product_id, product_name, category, price, image_url, details
-        FROM public.dim_products
-        ORDER BY product_id
-        LIMIT %s
+      SELECT product_id, product_name, category, price, image_url, details
+      FROM public.dim_products
+      ORDER BY product_id
+      LIMIT %s
     """
     with db.engine.connect() as conn:
         rows = conn.exec_driver_sql(sql, (limit,)).fetchall()
@@ -189,8 +189,9 @@ def _fetch_dim_products(limit=6):
 
 @app.route('/elec_products')
 def elec_products():
-    rows = _fetch_dim_products(limit=6)
+    rows = _fetch_dim_products(6)
     return render_template('business_Electro/products.html', db_products=rows)
+
 
 
 
