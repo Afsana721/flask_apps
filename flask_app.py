@@ -8,16 +8,24 @@ app = Flask(__name__, template_folder="templates")
 app.secret_key = "supersecret123"  # use a strong random key in production
 
 
-# Use the Railway DATABASE_URL
+# Use DATABASE_URL from Render/GitHub → force driver + SSL
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+url = app.config["SQLALCHEMY_DATABASE_URI"] or ""
+if url.startswith("postgresql://"):
+    url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
+if "sslmode=" not in url:
+    url += ("&" if "?" in url else "?") + "sslmode=require"
+app.config["SQLALCHEMY_DATABASE_URI"] = url
+
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+
 # Example model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+#class User(db.Model):
+    #id = db.Column(db.Integer, primary_key=True)
+    #name = db.Column(db.String(100), nullable=False)
 
 #@app.route("/")
 @app.route("/", endpoint="index")
