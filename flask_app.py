@@ -220,7 +220,8 @@ def api_sql_run():
     try:
         t0 = time.perf_counter()
         with db.engine.connect() as c:
-            rows = c.execute(text(q)).mappings().all()
+            #rows = c.execute(text(q)).mappings().all()
+            rows = [dict(r) for r in rows]
         ms = int((time.perf_counter() - t0) * 1000)
         app.logger.info("SQL.OUT rowCount=%d duration_ms=%d", len(rows), ms)
         return {"ok": True, "rowCount": len(rows), "duration_ms": ms, "rows": rows}
