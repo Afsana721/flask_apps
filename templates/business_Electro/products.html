@@ -374,6 +374,7 @@
             body: JSON.stringify({ query })
           });
           const j = await r.json();
+           console.log("SQL >", query)
            console.log('SQL ◀', j);                    // <— logs after response
           // show only the essentials
           out.textContent = JSON.stringify({
