@@ -218,16 +218,14 @@ def api_sql_run():
         return {"ok": False, "error": "SELECT only"}, 400
 
     try:
-        t0 = time.perf_counter()
+        t0=time.perf_counter()
         with db.engine.connect() as c:
-            #rows = c.execute(text(q)).mappings().all()
-            rows = [dict(r) for r in rows]
-        ms = int((time.perf_counter() - t0) * 1000)
-        app.logger.info("SQL.OUT rowCount=%d duration_ms=%d", len(rows), ms)
-        return {"ok": True, "rowCount": len(rows), "duration_ms": ms, "rows": rows}
+            rows = c.execute(text(q)).mappings().all()
+        rows = [dict(r) for r in rows]
+        ms=int((time.perf_counter()-t0)*1000)
+        return {"ok":True,"rowCount":len(rows),"duration_ms":ms,"rows":rows}
     except Exception as e:
-        app.logger.exception("SQL.ERR")
-        return {"ok": False, "error": str(e)}, 500
+        app.logger.exception("SQL.ERR"); return {"ok":False,"error":str(e)},500
 
 
 
