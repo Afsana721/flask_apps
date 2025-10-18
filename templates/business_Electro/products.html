@@ -329,6 +329,7 @@
           body: JSON.stringify(payload)
         });
         const data = await res.json().catch(() => ({}));
+        console.log('Add ◀', { status: res.status, data });   // <— INSERT HERE
         logJS({ step: 'response', ok: res.ok, status: res.status, data });
   
         // Optional UI update (only if you have #cart-count)
@@ -356,6 +357,7 @@
     
       btn.addEventListener('click', async () => {
         const query = "SELECT product_id, product_name, price FROM public.dim_products LIMIT 6";
+         console.log('SQL ▶', query);                  // <— logs before request
         out.textContent = "Running…";
         try {
           const r = await fetch('/api/sql/run', {
@@ -363,6 +365,7 @@
             body: JSON.stringify({ query })
           });
           const j = await r.json();
+           console.log('SQL ◀', j);                    // <— logs after response
           // show only the essentials
           out.textContent = JSON.stringify({
             ok: j.ok, status: r.status,
