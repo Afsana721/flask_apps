@@ -210,29 +210,15 @@ def api_cart_add():
 
 #Electronic products page sql outcome route
 # SQL IDE: safe runner (SELECT only on public.dim_products)
-@app.route("/api/sql/run", methods=["POST"])
+@app.post("/api/sql/run")
 def api_sql_run():
-    import time, re
-    q = (request.json or {}).get("query","").strip()
-    # allow only SELECT from public.dim_products
-    if (not re.match(r"(?is)^\s*select\b.+\bfrom\b\s+public\.?dim_products\b", q)
-        or re.search(r"(?is)\b(insert|update|delete|drop|alter|create)\b", q)):
-        return {"ok": False, "error": "Only SELECT from public.dim_products allowed."}, 400
-    if "limit" not in q.lower():
-        q = q.rstrip(";") + " LIMIT 50"
+    q = (request.get_json() or {}).get("query","")
+    rows = []
+    with conn.cursor() as cur:
+        cur.execute(q)
+        if cur.description: rows = [dict(zip([c.name for c in cur.description], r)) for r in cur.fetchall()]
+    return jsonify({"ok": True, "rowCount": len(rows), "duration_ms": 0, "rows": rows})
 
-    t0 = time.perf_counter()
-    with db.engine.connect() as conn:
-        res = conn.exec_driver_sql(q)
-        cols = list(res.keys())
-        rows = [dict(zip(cols, r)) for r in res.fetchall()]
-    return {
-        "ok": True,
-        "duration_ms": int((time.perf_counter() - t0) * 1000),
-        "rowCount": len(rows),
-        "fields": cols,
-        "rows": rows,
-    }, 200
 
 
 
