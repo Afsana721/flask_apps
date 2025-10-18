@@ -261,6 +261,7 @@
   (function(){
     var rj=document.getElementById('run-js'), tj=document.getElementById('js-code'), oj=document.getElementById('js-out'); if(rj) rj.onclick=function(){ try{ oj.textContent=String(Function('return ('+tj.value+')')()); }catch(e){ oj.textContent=String(e);} };
     var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code'), od=document.getElementById('dom-out'); if(rd) rd.onclick=function(){ try{ od.textContent='OK'; eval(td.value);}catch(e){ od.textContent=String(e);} };
+    var rs=document.getElementById('run-sql'), ts=document.getElementById('sql-code'), os=document.getElementById('sql-out'); if(rs) rs.onclick=function(){ try{ os.textContent = (ts?ts.value:''); }catch(e){ os.textContent=String(e);} };
   })();
 
   // Details reveal (populate hidden panel instead of modal)
