@@ -201,6 +201,12 @@ def elec_products():
     return render_template('business_Electro/products.html', db_products=rows)
 
 
+# Electronic products page 
+@app.route('/api/cart/add', methods=['POST'])
+def api_cart_add():
+    data = request.get_json(silent=True) or {}
+    pid = data.get('product_id')
+    return ({'ok': True, 'product_id': pid}, 200)
 
 
 if __name__ == "__main__":
