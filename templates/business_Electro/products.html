@@ -166,7 +166,7 @@
     </div>
   </div>
 
-   <script>
+  <script>
   // --- Simulation: Live Network Topology (2D canvas; no WebGL) ---
 (function(){
   var host = document.getElementById('simCanvasWrap'); if(!host) return;
@@ -293,11 +293,8 @@
     } catch(e){ console.warn('Smoke tests skipped:', e); }
   })();
 
- <!-- Add-to-Cart → JS/DOM trace + server roundtrip -->
+ /* Add-to-Cart → JS/DOM trace + server roundtrip */
      (function () {
-    const outJS  = document.getElementById('js-out');
-    const outDOM = document.getElementById('dom-out');
-  
     // Utility loggers
     const outJS  = document.getElementById('js-out');
     const outDOM = document.getElementById('dom-out');
@@ -305,12 +302,8 @@
     const logDOM = (m) => { if(outDOM) outDOM.textContent = JSON.stringify(m, null, 2); };
 
     // Single-source clear: ensures only current event output is visible
-    function clearAll(){
-      if(outJS)  outJS.textContent  = '';
-      if(outDOM) outDOM.textContent = '';
-      const so = document.getElementById('sql-out'); if (so) so.textContent = '';
-      if (typeof applied !== 'undefined' && applied) applied.length = 0;
-    }
+    function clearAll(){$1}
+    window.clearAll = clearAll;
 
     // MutationObserver to capture DOM changes (cart badge, mini-cart, etc.)
     const applied = [];
@@ -323,7 +316,6 @@
     document.addEventListener('click', async (e) => {
       const btn  = e.target.closest('.add-to-cart'); if (!btn) return;
       clearAll();
-      const card = btn.closest('article');
       const card = btn.closest('article');
   
       // 1) SENT: event payload
