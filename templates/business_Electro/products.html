@@ -166,7 +166,7 @@
     </div>
   </div>
 
-  <script>
+   <script>
   // --- Simulation: Live Network Topology (2D canvas; no WebGL) ---
 (function(){
   var host = document.getElementById('simCanvasWrap'); if(!host) return;
@@ -259,9 +259,9 @@
 
 // IDEs
   (function(){
-    var rj=document.getElementById('run-js'), tj=document.getElementById('js-code'), oj=document.getElementById('js-out'); if(rj) rj.onclick=function(){ try{ oj.textContent=String(Function('return ('+tj.value+')')()); }catch(e){ oj.textContent=String(e);} };
-    var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code'), od=document.getElementById('dom-out'); if(rd) rd.onclick=function(){ try{ od.textContent='OK'; eval(td.value);}catch(e){ od.textContent=String(e);} };
-    var rs=document.getElementById('run-sql'), ts=document.getElementById('sql-code'), os=document.getElementById('sql-out'); if(rs) rs.onclick=function(){ try{ os.textContent = (ts?ts.value:''); }catch(e){ os.textContent=String(e);} };
+    var rj=document.getElementById('run-js'), tj=document.getElementById('js-code'), oj=document.getElementById('js-out'); if(rj) rj.onclick = function(){ try{ clearAll(); oj.textContent=String(Function('return ('+tj.value+')')()); }catch(e){ oj.textContent=String(e);} };
+    var rd=document.getElementById('run-dom'), td=document.getElementById('dom-code'), od=document.getElementById('dom-out'); if(rd) rd.onclick = function(){ try{ clearAll(); od.textContent='OK'; eval(td.value);}catch(e){ od.textContent=String(e);} };
+    var rs=document.getElementById('run-sql'), ts=document.getElementById('sql-code'), os=document.getElementById('sql-out'); if(rs) rs.onclick = function(){ try{ clearAll(); } catch(e){} };
   })();
 
   // Details reveal (populate hidden panel instead of modal)
@@ -299,9 +299,19 @@
     const outDOM = document.getElementById('dom-out');
   
     // Utility loggers
-    const logJS  = (o) => { if(outJS)  outJS.textContent  = JSON.stringify(o, null, 2) + "\n" + outJS.textContent; };
-    const logDOM = (m) => { if(outDOM) outDOM.textContent = JSON.stringify(m, null, 2) + "\n" + outDOM.textContent; };
-  
+    const outJS  = document.getElementById('js-out');
+    const outDOM = document.getElementById('dom-out');
+    const logJS  = (o) => { if(outJS)  outJS.textContent  = JSON.stringify(o, null, 2); };
+    const logDOM = (m) => { if(outDOM) outDOM.textContent = JSON.stringify(m, null, 2); };
+
+    // Single-source clear: ensures only current event output is visible
+    function clearAll(){
+      if(outJS)  outJS.textContent  = '';
+      if(outDOM) outDOM.textContent = '';
+      const so = document.getElementById('sql-out'); if (so) so.textContent = '';
+      if (typeof applied !== 'undefined' && applied) applied.length = 0;
+    }
+
     // MutationObserver to capture DOM changes (cart badge, mini-cart, etc.)
     const applied = [];
     const mo = new MutationObserver((muts) => {
@@ -312,6 +322,8 @@
     // Delegated click handler for .add-to-cart
     document.addEventListener('click', async (e) => {
       const btn  = e.target.closest('.add-to-cart'); if (!btn) return;
+      clearAll();
+      const card = btn.closest('article');
       const card = btn.closest('article');
   
       // 1) SENT: event payload
