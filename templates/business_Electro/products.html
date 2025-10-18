@@ -346,6 +346,34 @@
       }
     });
   })();
+  //added sql IDEs script to show query on page
+    (function(){
+      const btn = document.getElementById('run-sql');
+      const out = document.getElementById('sql-out');
+      if(!btn || !out) return;
+      btn.disabled = false;
+      btn.classList.remove('cursor-not-allowed','bg-slate-600/50');
+    
+      btn.addEventListener('click', async () => {
+        const query = "SELECT product_id, product_name, price FROM public.dim_products LIMIT 6";
+        out.textContent = "Running…";
+        try {
+          const r = await fetch('/api/sql/run', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({ query })
+          });
+          const j = await r.json();
+          // show only the essentials
+          out.textContent = JSON.stringify({
+            ok: j.ok, status: r.status,
+            duration_ms: j.duration_ms, rowCount: j.rowCount,
+            rows: (j.rows || []).slice(0,6)
+          }, null, 2);
+        } catch (e) {
+          out.textContent = String(e);
+        }
+      });
+    })();
   </script>
 </body>
 </html>
