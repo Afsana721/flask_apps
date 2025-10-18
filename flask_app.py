@@ -1,6 +1,8 @@
 import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask import jsonify
+from sqlalchemy import text
 
 from flask import request, redirect, url_for, flash , session
 
@@ -212,7 +214,15 @@ def api_cart_add():
 # SQL IDE: safe runner (SELECT only on public.dim_products)
 @app.post("/api/sql/run")
 def api_sql_run():
-    return jsonify({"ok": True, "rows":[{"product_id":1,"product_name":"Test","price":1.0}], "rowCount":1, "duration_ms":0})
+    data = request.get_json(silent=True) or {}
+    q = (data.get("query") or
+         "SELECT product_id, product_name, category, price FROM public.dim_products LIMIT 5")
+    if not q.strip().lower().startswith("select"):
+        return {"ok": False, "error": "SELECT only"}, 400
+    with db.engine.connect() as c:
+        rows = c.execute(text(q)).mappings().all()
+    return {"ok": True, "rowCount": len(rows), "rows": rows}
+
 
 
 
