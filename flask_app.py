@@ -5,7 +5,7 @@ from flask import jsonify
 from sqlalchemy import text
 #import os, json
 import time
-import json.
+import json
 
 from flask import request, redirect, url_for, flash , session
 
