@@ -179,7 +179,8 @@ def checkout():
     return redirect(url_for('view_cart'))
 
 
-#Electronic information apps
+#Electronic information apps routes from here.
+
 @app.route('/elec_index')
 def elec_index():
     return render_template('business_Electro/index.html')
@@ -218,6 +219,13 @@ def api_sql_run():
         return {"ok": False, "error": str(e)}, 500
 
 
+@app.post("/api/cart/add")
+def api_cart_add():
+    pid = (request.get_json(silent=True) or {}).get("product_id")
+    if not pid: return {"ok": False, "error": "product_id required"}, 400
+    cart = session.get("cart", [])
+    cart.append(str(pid)); session["cart"] = cart
+    return {"ok": True, "count": len(cart)}
 
 
 
