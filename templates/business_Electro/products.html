@@ -302,7 +302,12 @@
     const logDOM = (m) => { if(outDOM) outDOM.textContent = JSON.stringify(m, null, 2); };
 
     // Single-source clear: ensures only current event output is visible
-    function clearAll(){$1}
+    function clearAll(){
+      if (outJS)  outJS.textContent  = '';
+      if (outDOM) outDOM.textContent = '';
+      const so = document.getElementById('sql-out'); if (so) so.textContent = '';
+      if (typeof applied !== 'undefined' && applied) applied.length = 0;
+    }
     window.clearAll = clearAll;
 
     // MutationObserver to capture DOM changes (cart badge, mini-cart, etc.)
