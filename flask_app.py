@@ -212,7 +212,8 @@ def api_cart_add():
 # SQL IDE: safe runner (SELECT only on public.dim_products)
 @app.post("/api/sql/run")
 def api_sql_run():
-    return jsonify({"ok": True,"rows":[{"product_id":1,"product_name":"Test","price":1.0}],"rowCount":1,"duration_ms":0})
+    return jsonify({"ok": True, "rows":[{"product_id":1,"product_name":"Test","price":1.0}], "rowCount":1, "duration_ms":0})
+
 
 
 
