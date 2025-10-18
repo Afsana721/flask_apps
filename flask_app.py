@@ -208,6 +208,33 @@ def api_cart_add():
     pid = data.get('product_id')
     return ({'ok': True, 'product_id': pid}, 200)
 
+#Electronic products page sql outcome route
+# SQL IDE: safe runner (SELECT only on public.dim_products)
+@app.route("/api/sql/run", methods=["POST"])
+def api_sql_run():
+    from flask import request, jsonify
+    import time, re
+    q = (request.json or {}).get("query", "").strip()
+
+    # allow only SELECT … FROM public.dim_products (no writes/DDL)
+    if not re.match(r"(?is)^\s*select\b.+\bfrom\b\s+public\.?dim_products\b", q):
+        return jsonify(ok=False, error="Only SELECT from public.dim_products allowed."), 400
+    if re.search(r"(?is)\b(insert|update|delete|drop|alter|create)\b", q):
+        return jsonify(ok=False, error="Writes/DDL blocked."), 400
+    if "limit" not in q.lower():  # cap results
+        q = q.rstrip(";") + " LIMIT 50"
+
+    t0 = time.perf_counter()
+    with db.engine.raw_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(q)
+            rows = cur.fetchall()
+            cols = [d[0] for d in cur.description]
+    ms = int((time.perf_counter() - t0) * 1000)
+    return jsonify(ok=True, duration_ms=ms, rowCount=len(rows),
+                   fields=cols, rows=[dict(zip(cols, r)) for r in rows])
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
