@@ -209,14 +209,23 @@ def elec_products():
 def api_sql_run():
     data = request.get_json(silent=True) or {}
     q = data.get("query") or "SELECT product_id, product_name, category, price FROM public.dim_products LIMIT 5"
+    app.logger.info("SQL.IN query=%s", q)
+
     if not q.strip().lower().startswith("select"):
+        app.logger.warning("SQL.BLOCK non-select")
         return {"ok": False, "error": "SELECT only"}, 400
+
     try:
+        t0 = time.perf_counter()
         with db.engine.connect() as c:
             rows = c.execute(text(q)).mappings().all()
-        return {"ok": True, "rowCount": len(rows), "rows": rows}
+        ms = int((time.perf_counter() - t0) * 1000)
+        app.logger.info("SQL.OUT rowCount=%d duration_ms=%d", len(rows), ms)
+        return {"ok": True, "rowCount": len(rows), "duration_ms": ms, "rows": rows}
     except Exception as e:
+        app.logger.exception("SQL.ERR")
         return {"ok": False, "error": str(e)}, 500
+
 
 
 @app.post("/api/cart/add")
