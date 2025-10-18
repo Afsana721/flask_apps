@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask import jsonify
 from sqlalchemy import text
+#import os, json
 
 from flask import request, redirect, url_for, flash , session
 
@@ -11,14 +12,14 @@ app.secret_key = "supersecret123"  # use a strong random key in production
 
 
 # Use DATABASE_URL from Render/GitHub → force driver + SSL
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-
-url = app.config["SQLALCHEMY_DATABASE_URI"] or ""
-if url.startswith("postgresql://"):
-    url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
-if "sslmode=" not in url:
-    url += ("&" if "?" in url else "?") + "sslmode=require"
+url = os.environ.get("DATABASE_URL","")
+if url.startswith("postgres://"):
+    url = url.replace("postgres://","postgresql+psycopg2://",1)
+elif url.startswith("postgresql://"):
+    url = url.replace("postgresql://","postgresql+psycopg2://",1)
+if "sslmode=" not in url: url += ("&" if "?" in url else "?")+"sslmode=require"
 app.config["SQLALCHEMY_DATABASE_URI"] = url
+
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -56,7 +57,6 @@ def info_index():
 
 #Load products routes
 def load_products():
-    import os, json
     p = os.path.join(app.root_path, 'static', 'product.json')  # matches your repo
     return json.load(open(p)) if os.path.exists(p) else []
 
@@ -204,24 +204,18 @@ def elec_products():
 
 
 # Electronic products page 
-@app.route('/api/cart/add', methods=['POST'])
-def api_cart_add():
-    data = request.get_json(silent=True) or {}
-    pid = data.get('product_id')
-    return ({'ok': True, 'product_id': pid}, 200)
-
-#Electronic products page sql outcome route
-# SQL IDE: safe runner (SELECT only on public.dim_products)
 @app.post("/api/sql/run")
 def api_sql_run():
     data = request.get_json(silent=True) or {}
-    q = (data.get("query") or
-         "SELECT product_id, product_name, category, price FROM public.dim_products LIMIT 5")
+    q = data.get("query") or "SELECT product_id, product_name, category, price FROM public.dim_products LIMIT 5"
     if not q.strip().lower().startswith("select"):
         return {"ok": False, "error": "SELECT only"}, 400
-    with db.engine.connect() as c:
-        rows = c.execute(text(q)).mappings().all()
-    return {"ok": True, "rowCount": len(rows), "rows": rows}
+    try:
+        with db.engine.connect() as c:
+            rows = c.execute(text(q)).mappings().all()
+        return {"ok": True, "rowCount": len(rows), "rows": rows}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}, 500
 
 
 
