@@ -367,7 +367,9 @@
       btn.addEventListener('click', async () => {
         const query = "SELECT product_id, product_name, price FROM public.dim_products LIMIT 6";
          console.log('SQL ▶', query);                  // <— logs before request
-        out.textContent = "Running…";
+        //out.textContent = "Running…";
+        // with:
+        out.textContent = `Query:\n${query}\n\nRunning…`;
         try {
           const r = await fetch('/api/sql/run', {
             method:'POST', headers:{'Content-Type':'application/json'},
@@ -377,11 +379,9 @@
            console.log("SQL >", query)
            console.log('SQL ◀', j);                    // <— logs after response
           // show only the essentials
-          out.textContent = JSON.stringify({
-            ok: j.ok, status: r.status,
-            duration_ms: j.duration_ms, rowCount: j.rowCount,
-            rows: (j.rows || []).slice(0,6)
-          }, null, 2);
+       // with:
+        out.textContent = JSON.stringify({ query, ok: j.ok, status: r.status, duration_ms: j.duration_ms, rowCount: j.rowCount, 
+        rows: (j.rows||[]).slice(0,6) }, null, 2);
         } catch (e) {
           out.textContent = String(e);
         }
