@@ -240,8 +240,8 @@ def api_cart_add():
 
 
 #data modeling page routes
-@app.route('/data_Modeling')
-def data_Modeling():
+@app.route('/dataModeling')
+def dataModeling():
     return render_template('dataModeling.html')
 
 
