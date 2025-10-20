@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Modeling & Schema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-accent': '#06b6d4', // Cyan (Ingestion/Load Prep)
+                        'secondary-accent': '#f97316', // Orange (E & T Stages)
+                        'tertiary-accent': '#22c55e', // Green (Persistence/Load)
+                        'data-concept': '#8b5cf6', // Purple for data concepts
+                        'structure-fact': '#facc15', // Yellow for Fact Table
+                        'structure-dim': '#34d399', // Mint Green for Dimension Tables
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* Custom Styles for Animation and Layout */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark BG */
+        }
+        .flow-box {
+            background-color: #1f2937; /* Darker component background */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+            border-left: 5px solid;
+            transition: box-shadow 0.5s ease;
+        }
+        #data-packet {
+            transition: all 1s ease-in-out, background-color 0.3s, border-color 0.3s;
+            position: absolute;
+            z-index: 10;
+        }
+        #query-packet {
+            transition: all 1s ease-in-out, background-color 0.3s, border-color 0.3s;
+            position: absolute;
+            z-index: 10;
+        }
+        /* New Packet for Snowflake Animation */
+        #snow-query-packet {
+            transition: all 1s ease-in-out;
+            position: absolute;
+            z-index: 30;
+        }
+
+        .data-point {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .path {
+            position: absolute;
+            background: rgba(6, 182, 212, 0.3); /* Transparent Cyan */
+            z-index: 5;
+        }
+        .path-active {
+            animation: glow 1s infinite alternate;
+        }
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #06b6d4; }
+            to { box-shadow: 0 0 15px #06b6d4, 0 0 20px #06b6d4; }
+        }
+
+        /* New glow for the secondary path (orange) */
+        #path-2.path-active {
+            animation: glow-secondary 1s infinite alternate;
+        }
+        @keyframes glow-secondary {
+            from { box-shadow: 0 0 5px #f97316; }
+            to { box-shadow: 0 0 15px #f97316, 0 0 20px #f97316; }
+        }
+        /* Style for incoming raw fields */
+        .raw-field {
+            animation: slideIn 0.3s ease-out;
+            transition: all 0.5s ease-out;
+            opacity: 0;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Styles for Inefficiency Animation (Red/Warning) */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            25% { transform: translate(-1px, -1px) rotate(0.5deg); }
+            50% { transform: translate(1px, -1px) rotate(-0.5deg); }
+            75% { transform: translate(-1px, 1px) rotate(0.5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .slow-process-shake {
+            animation: shake 0.1s infinite;
+        }
+
+        /* --- Snowflake Schema Visualization Styles (New/Updated) --- */
+        .dim-box {
+            position: absolute;
+            width: 150px;
+            height: 80px;
+            border: 2px solid #34d399;
+            background-color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .fact-box {
+            width: 180px;
+            height: 120px;
+            border: 3px solid #facc15;
+            background-color: #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+            z-index: 10;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        /* Animation Glows for Snowflake Tables */
+        .snow-highlight-fact {
+            border-color: #facc15 !important;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.9), 0 0 25px rgba(250, 204, 21, 0.5);
+            transform: scale(1.05);
+        }
+        .snow-highlight-dim {
+            border-color: #34d399 !important;
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.9);
+            transform: scale(1.05);
+        }
+        .snow-highlight-norm {
+            border-color: #8b5cf6 !important; /* Purple for secondary normalization */
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.9);
+            transform: scale(1.05);
+        }
+
+        /* Responsive adjustments for structure visualization */
+        @media (max-width: 768px) {
+            #star-schema-container {
+                height: 500px !important;
+                flex-direction: column;
+                justify-content: space-around;
+            }
+            .fact-box {
+                margin: 0 auto;
+            }
+            .dim-box {
+                width: 100px; /* Smaller for mobile */
+                height: 60px;
+                font-size: 10px;
+            }
+            /* Adjusted positions for better mobile view of Snowflake */
+            #fact-snow { transform: translate(-50%, -50%); }
+            #dim-product-snow { left: 15%; top: 35%; transform: translate(-50%, -50%); }
+            #dim-category-snow { right: 15%; top: 35%; transform: translate(50%, -50%); }
+            #snow-dashboard { top: 5%; }
+            #snow-query-packet {
+                /* Ensure packet stays visible on mobile */
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start">
+    
+    <!-- START: OpenQQuantify Header (OQQ) -->
+    <header class="sticky top-0 z-50 bg-gray-950/95 backdrop-blur-sm shadow-xl border-b border-primary-accent/50 p-4 w-full">
+        <!-- Main Header Row (Logo + Nav) -->
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Logo and Name -->
+            <div class="flex items-center space-x-3">
+                <!-- AptiCraft(Inline SVG for Data Flow) -->
+                <div class="text-3xl text-primary-accent font-extrabold" title="Logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                        <!-- Data Flow/Forking Icon -->
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                    </svg>
+                </div>
+                <span class="text-2xl font-bold text-white tracking-wider">OpenQQuantify</span>
+            </div>
+            
+            <!-- Nav Item -->
+            <button id="nav-home-btn" class="text-sm font-semibold text-gray-300 hover:text-white transition duration-300 px-4 py-2 rounded-full border border-transparent hover:border-white/20 hover:bg-white/5 active:scale-95">
+                Back to Main Home Page
+            </button>
+        </div>
+
+        <!-- Mission Text Row -->
+        <div class="max-w-7xl mx-auto mt-2 pt-2 border-t border-gray-800">
+            <p class="text-xs text-gray-400 font-medium">
+                Delivering partners a **holistic, secure, and insightful data transformation service**, ensuring all business data is treated with utmost **integrity, safety, and secrecy**.
+            </p>
+        </div>
+    </header>
+    <!-- END: OpenQQuantify Header -->
+
+    <!-- Spacer/Padding to push content below the sticky header -->
+    <div class="h-[120px] md:h-[100px] w-full"></div> 
+
+    <!-- Original Content starts here (Added p-4/p-10 to the body and removed it from this div's classes to avoid double padding) -->
+    <div class="max-w-6xl w-full text-white space-y-8 px-4 md:px-10">
+    
+        <!-- START: Efficient ETL Flow Animation -->
+        <div class="bg-gray-900/80 p-6 md:p-10 rounded-xl shadow-2xl border border-gray-700/50">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-center text-primary-accent mb-10">
+                1. Electronic Marketplace Data Modeling (Efficient ETL Flow)
+            </h1>
+            
+            <div id="flow-container" class="relative w-full h-[600px] md:h-[450px] flex flex-col md:flex-row justify-between items-start md:items-center">
+
+                <!-- 1. Data Source (Cyan) -->
+                <div id="data-source" class="flow-box border-primary-accent p-4 rounded-xl w-full md:w-1/4 h-32 flex flex-col items-center justify-center relative overflow-hidden">
+                    <div class="text-2xl text-primary-accent">🌐</div>
+                    <h2 class="text-lg font-semibold mt-2">External Source</h2>
+                    <p class="text-xs text-gray-400">Raw, Unstructured Data</p>
+                </div>
+
+                <!-- Path 1: Source to Processor (Cyan) -->
+                <div id="path-1" class="path mx-auto md:mx-0 my-4 md:my-0 w-1 h-12 md:w-1/4 md:h-1 rounded-full"></div>
+
+                <!-- 2. Modeling Processor (Orange) -->
+                <div id="data-processor" class="flow-box border-secondary-accent p-4 rounded-xl w-full md:w-1/3 h-64 flex flex-col">
+                    <h2 class="text-lg font-semibold text-secondary-accent mb-2 text-center">Data Modeling & Transformation (E & T)</h2>
+                    <div id="modeling-area" class="flex-grow bg-gray-700/50 p-3 rounded-lg text-sm font-mono overflow-auto">
+                        <pre id="raw-data" class="text-gray-400 hidden">// Awaiting ingestion...</pre>
+                        <pre id="structured-data" class="text-white hidden"></pre>
+                    </div>
+                </div>
+
+                <!-- Path 2: Processor to Database (Orange) -->
+                <div id="path-2" class="path mx-auto md:mx-0 my-4 md:my-0 w-1 h-12 md:w-1/4 md:h-1 rounded-full bg-secondary-accent/30"></div>
+
+                <!-- 3. Database Storage (Green) -->
+                <div id="data-database" class="flow-box border-tertiary-accent p-4 rounded-xl w-full md:w-1/4 h-64 flex flex-col">
+                    <h2 class="text-lg font-semibold text-tertiary-accent mb-2 text-center">Database Persistence (L)</h2>
+                    <div id="db-collection" class="flex-grow bg-gray-700/50 p-2 rounded-lg text-xs font-mono space-y-1 overflow-y-auto">
+                        <p class="text-center text-gray-400">Records Collection (fact_sales)</p>
+                    </div>
+                </div>
+
+                <!-- The Moving Data Packet -->
+                <div id="data-packet" class="w-8 h-8 rounded-full bg-primary-accent border-2 border-white opacity-0 transform translate-x-[-100px] flex items-center justify-center text-sm font-bold text-gray-900 shadow-xl">
+                    D
+                </div>
+            </div>
+
+            <!-- Status Log -->
+            <div class="bg-gray-800 p-4 rounded-xl mt-8 flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+                <div id="status-log" class="text-sm text-gray-300 font-mono italic">
+                    Visualization running...
+                </div>
+            </div>
+        </div>
+        <!-- END: Efficient ETL Flow Animation -->
+
+        <div class="my-10 border-t border-gray-700"></div>
+
+        <!-- START: The Cost of Unmodeled Data Section (Inefficiency Animation) -->
+        <div class="pt-8">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-red-500 mb-8">
+                2. The Cost of Unmodeled Data: The Slow Path
+            </h2>
+            <div id="inefficiency-content" class="text-gray-300 space-y-4 text-lg mb-8">
+                <p>
+                    Without a strict schema, every query becomes a desperate, resource-intensive search through massive, messy data piles. The cost is measured in **wasted time** and **lack of trust** in the resulting reports.
+                </p>
+                <p>
+                    The animation below simulates a query struggling, shaking, and ultimately failing or timing out because the system cannot quickly locate or correctly interpret the required fields from the raw, unstructured inputs. This leads directly to **lost business opportunities** and difficult user experiences.
+                </p>
+            </div>
+
+            <div id="inefficiency-animation" class="relative w-full h-80 flex items-center justify-center bg-gray-900/80 p-6 rounded-xl border border-red-500/50">
+                
+                <!-- Inefficiency Boxes -->
+                <div class="w-full md:w-3/4 flex justify-between items-center h-full">
+                    <div id="raw-pile" class="flow-box border-red-500 p-4 rounded-xl w-1/3 h-48 flex flex-col items-center justify-center relative overflow-hidden bg-gray-800">
+                        <div class="text-3xl text-red-500 mb-2">📦</div>
+                        <h3 class="text-lg font-semibold text-red-300 text-center">Unstructured Data Pile</h3>
+                        <p class="text-xs text-gray-400">No Indexing, No Schema</p>
+                    </div>
+
+                    <!-- Path Slow -->
+                    <div id="path-slow" class="w-1/4 h-1 bg-red-500/30 rounded-full mx-4 relative">
+                    </div>
+
+                    <!-- Slow Processor (The Struggle) -->
+                    <div id="slow-processor" class="flow-box border-red-500 p-4 rounded-xl w-1/3 h-48 flex flex-col items-center justify-center bg-gray-800">
+                        <div class="text-2xl text-red-500 mb-1">⏳</div>
+                        <h3 class="text-lg font-semibold text-red-300 text-center">Inefficient Query Processing</h3>
+                        <p id="result-display" class="mt-3 text-sm text-center text-white font-mono italic">Awaiting Query...</p>
+                    </div>
+                </div>
+                <!-- The Moving Query Packet (Moved here for universal coordinate system) -->
+                <div id="query-packet" class="absolute w-8 h-8 rounded-full bg-red-500 border-2 border-white opacity-0 transform translate-x-0 flex items-center justify-center text-sm font-bold text-gray-900 shadow-xl" style="transition: all 1s ease-in-out;">
+                    Q?
+                </div>
+            </div>
+        </div>
+        <!-- END: The Cost of Unmodeled Data Section -->
+
+        <div class="my-10 border-t border-gray-700"></div>
+
+        <!-- START: Structured Data Design Section (Replaced with user's star‑schema animation via isolated iframe) -->
+<div class="pt-8">
+  <h2 class="text-3xl md:text-4xl font-extrabold text-center text-data-concept mb-4">
+    3. Star Schema • Your Animation (Isolated)
+  </h2>
+  <p class="text-center text-gray-400 mb-6">This embeds your exact code in a sandboxed iframe so nothing else on the page is touched.</p>
+
+  <!-- Template carries the user's full HTML exactly as provided -->
+  <template id="schema-user-code">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Looped Data Modeling & Query Efficiency</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; overflow: hidden; }
+        .table-card { background-color: #1e293b; border: 2px solid; box-shadow: 0 4px 10px rgba(0,0,0,.5); transition: border-color .3s, box-shadow .3s; }
+        .table-card-fact { border-color: #f87171; }
+        .table-card-dim { border-color: #34d399; }
+        .data-block { position: absolute; width: 40px; height: 20px; background-color: #a78bfa; border-radius: 4px; opacity: 0; transition: all 1.5s ease-in-out; z-index: 10; }
+        .fk-block { background-color: #f87171; width: 20px; height: 10px; z-index: 11; }
+        .query-beam { position: absolute; background-color: #fbbf24; border-radius: 50%; opacity: 0; width: 15px; height: 15px; transition: all 1.0s linear; z-index: 20; }
+        .result-data { position: absolute; width: 30px; height: 15px; background-color: #22c55e; border-radius: 4px; opacity: 0; transition: all 1.0s ease-out; z-index: 20; }
+        .highlight-query { border-color: #fbbf24 !important; box-shadow: 0 0 20px #fbbf24; }
+        .highlight-result { border-color: #22c55e !important; box-shadow: 0 0 20px #22c55e; }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen flex flex-col items-center justify-start">
+    <div class="max-w-6xl w-full mx-auto">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-400 mb-2">Automated Data Modeling & Business Flow Efficiency</h1>
+        <p class="text-center text-gray-400 mb-6">A visual demonstration of the <strong>Star Schema</strong> data model in action.</p>
+    </div>
+    <div id="visualization-area" class="relative max-w-6xl mx-auto h-[600px] border-2 border-gray-700 rounded-xl bg-gray-900 p-4">
+        <div id="fact-table" class="table-card table-card-fact absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-40 flex flex-col justify-center items-center p-3 z-10">
+            <div class="text-xl font-bold text-red-400">FACT_SALES (Metrics)</div>
+            <div class="text-sm text-gray-400 mt-2">Millions of Rows</div>
+            <div class="text-xs text-red-300 mt-1">Foreign Keys: Product_ID, Customer_ID, Time_ID</div>
+        </div>
+        <div id="dim-product" class="table-card table-card-dim absolute top-10 left-10 w-48 h-28 flex flex-col justify-center items-center p-2">
+            <div class="text-base font-semibold text-teal-400">DIM_PRODUCT (Attributes)</div>
+            <div class="text-xs text-gray-400 mt-2">Category, Brand, Name</div>
+        </div>
+        <div id="dim-customer" class="table-card table-card-dim absolute top-10 right-10 w-48 h-28 flex flex-col justify-center items-center p-2">
+            <div class="text-base font-semibold text-teal-400">DIM_CUSTOMER (Attributes)</div>
+            <div class="text-xs text-gray-400 mt-2">Region, Segment, Tier</div>
+        </div>
+        <div id="dim-time" class="table-card table-card-dim absolute bottom-10 left-1/2 -translate-x-1/2 w-48 h-28 flex flex-col justify-center items-center p-2">
+            <div class="text-base font-semibold text-teal-400">DIM_TIME (Attributes)</div>
+            <div class="text-xs text-gray-400 mt-2">Day, Week, Month, Year</div>
+        </div>
+        <div id="user-dashboard" class="absolute top-0 left-1/2 -translate-x-1/2 p-3 bg-indigo-700 border border-indigo-500 rounded-b-lg shadow-xl z-20">
+            <div class="text-sm font-bold text-white mb-2">BUSINESS INSIGHTS DASHBOARD</div>
+            <!-- Added efficient query snippet -->
+            <pre class="text-xs font-mono text-lime-300 bg-indigo-800 p-2 rounded">
+SELECT SUM(revenue)
+FROM fact_sales
+JOIN dim_product
+WHERE category = 'Electronics'
+            </pre>
+            <!-- End query snippet -->
+        </div>
+        <div id="status-log" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-white bg-gray-800/90 p-4 rounded-lg shadow-2xl z-50 transition-opacity duration-500 min-w-[300px] text-center">Initialization...</div>
+        <div id="animation-container"></div>
+    </div>
+    <script>
+        const $=s=>document.querySelector(s),$all=s=>document.querySelectorAll(s);
+        const factTable=$('#fact-table'),dimProduct=$('#dim-product'),dimCustomer=$('#dim-customer'),dimTime=$('#dim-time'),userDashboard=$('#user-dashboard'),animContainer=$('#animation-container'),statusLog=$('#status-log');
+        const INGEST_TIME=1500,FK_CONVERSION_TIME=500,FACT_LOAD_TIME=1000,QUERY_TIME=800,LOG_DELAY=1500,CYCLE_DELAY=4000; let currentAnimationPromise=Promise.resolve(),loopTimeout=null;
+        function getPos(e){const r=e.getBoundingClientRect(),c=animContainer.getBoundingClientRect();return{x:r.left+r.width/2-c.left,y:r.top+r.height/2-c.top}}
+        function updateLog(m,c='text-white'){statusLog.innerHTML=`<span class="${c}">${m}</span>`;statusLog.style.opacity='1'} function hideLog(){statusLog.style.opacity='0'} function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+        async function animateDataIngestion(){const factPos=getPos(factTable),prodPos=getPos(dimProduct),custPos=getPos(dimCustomer),timePos=getPos(dimTime);const startX=-50,startY=100;updateLog('1. INGESTION START: Raw Data Arrives (ELT)','text-indigo-400');await delay(LOG_DELAY);
+            const createDataBlock=async(targetDim,targetPos,label)=>{const block=document.createElement('div');block.className='data-block';block.style.transform=`translate(${startX}px, ${startY}px)`;block.style.opacity='1';animContainer.appendChild(block);block.style.transition=`all ${INGEST_TIME/1000}s cubic-bezier(0.5,0.0,0.5,1.0)`;block.style.transform=`translate(${targetPos.x}px, ${targetPos.y}px)`;targetDim.classList.add('highlight-query');await delay(INGEST_TIME);block.classList.add('fk-block');targetDim.classList.remove('highlight-query');targetDim.classList.add('highlight-result');updateLog(`2. MODELING: ${label} data is structured, assigned a Key, and stored.`,'text-teal-400');await delay(FK_CONVERSION_TIME);block.style.transition=`all ${FACT_LOAD_TIME/1000}s ease-in-out`;block.style.transform=`translate(${factPos.x}px, ${factPos.y}px)`;factTable.classList.add('highlight-query');await delay(FACT_LOAD_TIME);block.style.opacity='0';targetDim.classList.remove('highlight-result');block.remove();};
+            await Promise.all([createDataBlock(dimProduct,prodPos,'Product'),createDataBlock(dimCustomer,custPos,'Customer'),createDataBlock(dimTime,timePos,'Time')]);factTable.classList.remove('highlight-query');updateLog('3. STORAGE COMPLETE: Fact Table updated with Foreign Keys.','text-indigo-400');await delay(LOG_DELAY);hideLog();}
+        async function animateQuery(){const factPos=getPos(factTable),prodPos=getPos(dimProduct),dashPos=getPos(userDashboard);updateLog('4. QUERY START: Find Revenue by Product Category (Efficient JOIN)','text-yellow-400');await delay(LOG_DELAY);const qb=document.createElement('div');qb.className='query-beam';qb.style.transform=`translate(${dashPos.x}px, ${dashPos.y}px)`;qb.style.opacity='1';animContainer.appendChild(qb);qb.style.transition=`all ${QUERY_TIME/1000}s ease-out`;qb.style.transform=`translate(${prodPos.x}px, ${prodPos.y}px)`;dimProduct.classList.add('highlight-query');await delay(QUERY_TIME);updateLog('5. FILTERING: Filtering Product Dimension to get only required IDs.','text-teal-400');qb.style.backgroundColor='#f87171';dimProduct.classList.remove('highlight-query');dimProduct.classList.add('highlight-result');await delay(LOG_DELAY);qb.style.transition=`all ${QUERY_TIME/1000}s linear`;qb.style.transform=`translate(${factPos.x}px, ${factPos.y}px)`;await delay(QUERY_TIME);updateLog('6. EFFICIENT LOOKUP: Fact Table instantly looks up metrics using filtered IDs.','text-red-400');factTable.classList.add('highlight-query');dimProduct.classList.remove('highlight-result');qb.style.opacity='0';qb.remove();await delay(LOG_DELAY);const result=document.createElement('div');result.className='result-data';result.style.transform=`translate(${factPos.x}px, ${factPos.y}px)`;result.style.opacity='1';animContainer.appendChild(result);result.style.transition=`all ${QUERY_TIME/1000}s ease-out`;result.style.transform=`translate(${dashPos.x}px, ${dashPos.y}px)`;updateLog('7. RESULT: Business Insight delivered instantly. No Lacking.','text-green-400');factTable.classList.remove('highlight-query');userDashboard.classList.add('highlight-result');await delay(QUERY_TIME);result.style.opacity='0';userDashboard.classList.remove('highlight-result');await delay(500);result.remove();updateLog(`CYCLE COMPLETE. Looping again in ${CYCLE_DELAY/1000} seconds.`,'text-indigo-400');await delay(1000);hideLog();}
+        async function runAutoLoop(){currentAnimationPromise=currentAnimationPromise.then(async()=>{await delay(2000);await animateDataIngestion();await delay(1000);await animateQuery();animContainer.innerHTML='';['highlight-query','highlight-result'].forEach(cls=>document.querySelectorAll('.table-card').forEach(e=>e.classList.remove(cls)));setTimeout(runAutoLoop,CYCLE_DELAY);}).catch(()=>setTimeout(runAutoLoop,CYCLE_DELAY));}
+        window.addEventListener('load',()=>{runAutoLoop();});
+    </script>
+  </template>
+
+  <div class="rounded-xl overflow-hidden border border-gray-700 bg-black">
+    <iframe id="schema-anim-frame" class="w-full h-[720px]" sandbox="allow-scripts allow-forms allow-pointer-lock" referrerpolicy="no-referrer"></iframe>
+  </div>
+
+  <script>
+    (function(){
+      const tpl = document.getElementById('schema-user-code');
+      const frame = document.getElementById('schema-anim-frame');
+      if (tpl && frame) { frame.srcdoc = tpl.innerHTML; }
+    })();
+  </script>
+</div>
+<!-- END: Structured Data Design Section -->
+
+        <div class="my-10 border-t border-gray-700"></div>
+
+        <!-- START: Snowflake Schema Deep Dive (New Section 4) -->
+        <div class="pt-8 bg-gray-900/80 p-6 md:p-10 rounded-xl shadow-2xl border border-gray-700/50">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-data-concept mb-8">
+                4. Deep Dive: The Snowflake Schema (Normalization for Cloud)
+            </h2>
+
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Text and Concepts -->
+                <div class="md:w-1/2 space-y-4 text-gray-300">
+                    <h3 class="text-2xl font-bold text-teal-400">The Purpose of Normalization</h3>
+                    <p>
+                        The **Snowflake Schema** is an extension of the Star Schema where **dimension tables are normalized**, meaning they are broken down into multiple, related tables (sub-dimensions).
+                        This normalization eliminates data redundancy, making data maintenance easier and saving storage space in massive cloud environments.
+                    </p>
+                    <h3 class="text-2xl font-bold text-indigo-400">Trade-offs in Analytical Performance</h3>
+                    <p>
+                        While normalization is good for data integrity and storage, it requires more complex **JOIN operations** during querying. For instance, to get a customer's region, you might join `FACT_SALES` to `DIM_CUSTOMER`, and then `DIM_CUSTOMER` to `DIM_REGION`. This increases query planning time but is often manageable on highly optimized cloud platforms like **Snowflake**, which are built for this kind of computational load.
+                    </p>
+                    <p class="mt-4 p-3 border-l-4 border-white/50 bg-gray-800 rounded-r-lg italic text-sm">
+                        **Context:** Star is optimized for speed (denormalization), while Snowflake is optimized for storage and data integrity (normalization), but still highly performant in modern ELT cloud systems.
+                    </p>
+                </div>
+
+                <!-- Visualization (ANIMATED) -->
+                <div id="snowflake-vis-container" class="md:w-1/2 flex items-center justify-center relative min-h-[300px] border border-gray-800 rounded-lg">
+                    
+                    <!-- 1. Query Start/End Point -->
+                    <div id="snow-dashboard" class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-gray-700 p-2 rounded-lg text-xs font-semibold text-data-concept border border-data-concept/50 shadow-xl z-20">
+                        ANALYTICS QUERY
+                    </div>
+
+                    <!-- 2. Fact Table (Center) -->
+                    <div id="fact-snow" class="fact-box fact-center w-40 h-24 bg-structure-fact/20 border-structure-fact text-white p-3 rounded-xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                        <p class="font-bold text-lg text-structure-fact">FACT_SALES</p>
+                        <p class="text-xs text-gray-400">Transaction Metrics</p>
+                        <p id="fact-snow-status" class="text-xs font-mono mt-1 text-yellow-300"></p>
+                    </div>
+
+                    <!-- 3. Level 1 Dimension (Product) -->
+                    <div id="dim-product-snow" class="dim-box dim-top w-28 h-20 bg-structure-dim/20 border-structure-dim text-white p-2 rounded-xl absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
+                        <p class="font-semibold text-structure-dim">DIM_PRODUCT</p>
+                        <p class="text-xs text-gray-400">Product (Lvl 1)</p>
+                        <p id="dim-prod-status" class="text-xs font-mono mt-1 text-yellow-300"></p>
+                    </div>
+
+                    <!-- 4. Level 2 Dimension (Category) - Normalized -->
+                    <div id="dim-category-snow" class="dim-box dim-norm-1 w-28 h-20 bg-structure-dim/10 border-indigo-400 text-white p-2 rounded-xl absolute top-1/4 right-1/4 transform translate-x-1/2 -translate-y-1/2">
+                        <p class="font-semibold text-indigo-400">DIM_CATEGORY</p>
+                        <p class="text-xs text-gray-400">Category (Lvl 2)</p>
+                        <p id="dim-cat-status" class="text-xs font-mono mt-1 text-yellow-300"></p>
+                    </div>
+                    
+                    <!-- 5. The Moving Query Packet for Snowflake -->
+                    <div id="snow-query-packet" class="w-6 h-6 rounded-full bg-yellow-400 border-2 border-white opacity-0 transform translate-x-0 flex items-center justify-center text-xs font-bold text-gray-900 shadow-xl absolute z-30" style="transition: all 1s ease-in-out;">
+                        Q
+                    </div>
+
+                    <p class="absolute bottom-4 text-xs text-gray-500">Visualization: Fact → Product Dim → Category Dim (3 Hops)</p>
+                </div>
+            </div>
+        </div>
+        <!-- END: Snowflake Schema Deep Dive -->
+        
+        <div class="my-10 border-t border-gray-700"></div>
+
+        <!-- START: ETL vs ELT Comparison -->
+        <div class="pt-8 bg-gray-900/80 p-6 md:p-10 rounded-xl shadow-2xl border border-gray-700/50">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-secondary-accent mb-8">
+                5. Understanding Data Flow Architectures: ETL vs. ELT
+            </h2>
+
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- LEFT SIDE: Informational Text -->
+                <div class="md:w-1/2 space-y-4 text-gray-300">
+                    <h3 class="text-2xl font-bold text-teal-400">Why Model Before Loading (ETL)?</h3>
+                    <p>
+                        The **Extract, Transform, Load (ETL)** model is traditional, using a staging area to clean and structure data **before** it hits the warehouse. This is essential for legacy systems with limited compute power, ensuring only pristine, finalized data is saved. It works well for smaller, highly structured workloads.
+                    </p>
+                    <h3 class="text-2xl font-bold text-indigo-400">Why Load Before Modeling (ELT)?</h3>
+                    <p>
+                        The **Extract, Load, Transform (ELT)** model leverages modern cloud data warehouses (like Snowflake or BigQuery) that offer massive, scalable compute. The raw data is **Load**ed first, and transformation happens *within* the powerful warehouse. This allows data scientists to access raw data immediately and supports continuous, agile modeling.
+                    </p>
+                    <p class="mt-4 p-3 border-l-4 border-white/50 bg-gray-800 rounded-r-lg italic text-sm">
+                        **The Need:** Both processes require a schema like the Star Schema to define the *target* structure (Fact/Dimension tables), making the final data useful for analysis, regardless of when the 'T' happens.
+                    </p>
+                </div>
+
+                <!-- RIGHT SIDE: Visual Comparison -->
+                <div class="md:w-1/2 flex flex-col gap-6">
+                    
+                    <!-- ETL DIAGRAM -->
+                    <div class="border border-teal-400 p-4 rounded-lg bg-gray-800/70">
+                        <h4 class="text-xl font-semibold text-teal-400 mb-3">ETL Flow (Traditional)</h4>
+                        <div class="flex items-center justify-between text-center text-sm font-bold relative">
+                            <span class="bg-gray-700 p-2 rounded-lg border border-teal-400">E</span>
+                            <!-- Arrow -->
+                            <div class="flex-grow h-px bg-teal-400 mx-2"></div>
+                            <span class="bg-teal-400 text-gray-900 p-2 rounded-lg">T (Staging)</span>
+                            <!-- Arrow -->
+                            <div class="flex-grow h-px bg-teal-400 mx-2"></div>
+                            <span class="bg-gray-700 p-2 rounded-lg border border-teal-400">L (Warehouse)</span>
+                        </div>
+                    </div>
+
+                    <!-- ELT DIAGRAM -->
+                    <div class="border border-indigo-400 p-4 rounded-lg bg-gray-800/70">
+                        <h4 class="text-xl font-semibold text-indigo-400 mb-3">ELT Flow (Modern/Cloud)</h4>
+                        <div class="flex items-center justify-between text-center text-sm font-bold relative">
+                            <span class="bg-gray-700 p-2 rounded-lg border border-indigo-400">E</span>
+                            <!-- Arrow -->
+                            <div class="flex-grow h-px bg-indigo-400 mx-2"></div>
+                            <span class="bg-gray-700 p-2 rounded-lg border border-indigo-400">L (Warehouse)</span>
+                            <!-- Arrow -->
+                            <div class="flex-grow h-px bg-indigo-400 mx-2"></div>
+                            <span class="bg-indigo-400 text-gray-900 p-2 rounded-lg">T (In-Warehouse)</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 mt-2 text-center">
+                        E=Extract, T=Transform, L=Load. The main difference is where the transformation step occurs.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <!-- END: ETL vs ELT Comparison -->
+    </div>
+
+    <script>
+        // Global Constants and Setup
+        const PACKET_SIZE = 32; // Width/Height of the data packet in pixels
+        const DELAY = 800; // General delay between steps in ms
+        const FIELD_DELAY = 400; // Delay for field-by-field ingestion
+        const LONG_DELAY = 1500; // Delay for processing steps
+        const LOOP_DELAY = 3000; // Delay before the next loop starts
+        const MAX_RECORDS = 5;
+        const LONG_QUERY_TIME = 4000; // Simulated struggle time for inefficient query
+        const ERROR_DELAY = 2500; // Time to show error/slow result for inefficient query
+
+        // Data Queue for Looping
+        const rawDataSamples = [
+            { user: "Sarah Connor", amount: "105.75", time_raw: "2025-01-10T14:15:00Z", tags: "new_client, web_signup" },
+            { user: "John Doe", amount: "12.00", time_raw: "2025-01-11T09:00:00Z", tags: "renewal, monthly_fee" },
+            { user: "Lisa G.", amount: "300.99", time_raw: "2025-01-11T16:45:00Z", tags: "enterprise, large_buy" }
+        ];
+
+        let currentDataIndex = 0;
+        let currentRecordId = 1001;
+        let currentModeledData = {};
+
+        // Efficient Flow Elements
+        const packet = document.getElementById('data-packet');
+        const source = document.getElementById('data-source');
+        const processor = document.getElementById('data-processor');
+        const database = document.getElementById('data-database');
+        const path1 = document.getElementById('path-1');
+        const path2 = document.getElementById('path-2');
+        const dbCollection = document.getElementById('db-collection');
+        const statusLog = document.getElementById('status-log');
+        const rawDataPre = document.getElementById('raw-data');
+        const structuredDataPre = document.getElementById('structured-data');
+        
+        // Inefficient Flow Elements
+        const rawPile = document.getElementById('raw-pile');
+        const queryPacket = document.getElementById('query-packet');
+        const slowProcessor = document.getElementById('slow-processor');
+        const pathSlow = document.getElementById('path-slow');
+        const resultDisplay = document.getElementById('result-display');
+
+        // --- Utility Functions ---
+        
+        /**
+         * Moves the main data packet element to the given coordinates relative to #flow-container.
+         * @param {object} coords - { x, y } coordinates
+         */
+        function movePacket(coords) {
+            packet.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
+        }
+
+        /**
+         * Moves the query packet element to the given coordinates relative to #inefficiency-animation.
+         * @param {object} coords - { x, y } coordinates
+         */
+        function moveQueryPacket(coords) {
+            queryPacket.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
+        }
+
+        /** Calculates the center coordinates of an element relative to its container. */
+        function getCenterCoords(el, containerId = 'flow-container') {
+            const containerRect = document.getElementById(containerId).getBoundingClientRect();
+            const elRect = el.getBoundingClientRect();
+            
+            // Calculate center relative to the container's top-left corner
+            const x = (elRect.left + elRect.width / 2) - containerRect.left - PACKET_SIZE / 2;
+            const y = (elRect.top + elRect.height / 2) - containerRect.top - PACKET_SIZE / 2;
+            return { x, y };
+        }
+        
+        /** Calculates the center coordinates of an element relative to the inefficiency-animation container. */
+        function getIneffCoords(el) {
+            return getCenterCoords(el, 'inefficiency-animation');
+        }
+
+        /** Helper to wait for a specific duration. */
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        /** Prints a message to the status log (Efficient Flow). */
+        function logStatus(msg, color = 'text-gray-300') {
+            statusLog.innerHTML = `<span class="${color}">${msg}</span>`;
+        }
+
+        /** Clears the processor view. */
+        function clearProcessor() {
+            rawDataPre.classList.add('hidden');
+            structuredDataPre.classList.add('hidden');
+            structuredDataPre.innerHTML = '';
+            rawDataPre.innerHTML = '';
+        }
+
+        // --- Core Animation Steps (Efficient Flow) ---
+
+        /**
+         * Simulates raw data fields streaming into the source box.
+         */
+        async function simulateIngestion(data) {
+            logStatus("1. Ingestion: Receiving raw data packet from the source system.", 'text-primary-accent');
+
+            const fields = [
+                { key: 'Customer Name', label: data.user, color: 'text-yellow-300' },
+                { key: 'Transaction Amount', label: '$' + data.amount, color: 'text-orange-400' },
+                { key: 'Raw Timestamp', label: data.time_raw.substring(0, 19) + '...', color: 'text-purple-300' }
+            ];
+
+            // 1. Create and animate fields
+            for (let i = 0; i < fields.length; i++) {
+                const field = fields[i];
+                
+                const fieldEl = document.createElement('div');
+                fieldEl.classList.add('raw-field', 'absolute', 'top-2', 'left-1/2', 'transform', '-translate-x-1/2', 'p-1', 'px-2', 'rounded', 'font-mono', 'text-xs', 'bg-gray-700', field.color, 'shadow');
+                fieldEl.style.top = '10px'; // Starting position
+                fieldEl.style.opacity = 0;
+                fieldEl.textContent = `${field.key}: ${field.label}`;
+                source.appendChild(fieldEl);
+                
+                // Animate visibility and position
+                await delay(50); 
+                fieldEl.style.opacity = 1;
+                fieldEl.style.top = `${25 + i * 20}px`; // Move down sequentially
+                
+                await delay(FIELD_DELAY);
+            }
+            
+            // 2. Aggregate into main data packet (moves to processor)
+            logStatus("...Aggregating raw fields for Extraction (E) and Modeling.", 'text-primary-accent');
+            await delay(DELAY);
+
+            // Remove individual field elements
+            source.querySelectorAll('.raw-field').forEach(el => el.remove());
+
+            // Move the main packet
+            const processorCoords = getCenterCoords(processor);
+            packet.classList.remove('opacity-0');
+            packet.classList.add('opacity-100', 'bg-primary-accent');
+            path1.classList.add('path-active');
+            movePacket(processorCoords);
+            await delay(DELAY);
+            path1.classList.remove('path-active');
+
+            // Set the packet color to Orange for E & T phase
+            packet.classList.replace('bg-primary-accent', 'bg-secondary-accent');
+        }
+
+        /**
+         * Core data transformation and persistence logic.
+         */
+        async function processDataCycle(data) {
+            const databaseCoords = getCenterCoords(database);
+            
+            // 3. Extraction Phase: Raw data is now in the Modeling Processor
+            logStatus("2. Extraction: Parsing raw fields and validating against the Star Schema.", 'text-secondary-accent');
+            
+            // Show raw data in processor
+            rawDataPre.classList.remove('hidden');
+            structuredDataPre.classList.add('hidden'); // Ensure structured is hidden initially
+            rawDataPre.innerHTML = `// RAW DATA RECEIVED (Extraction Target)\n{\n  user: "${data.user}",\n  amount: "${data.amount}",\n  time_raw: "${data.time_raw}",\n  tags: "${data.tags}"\n}`;
+            await delay(LONG_DELAY);
+
+            // Calculation (Modeling)
+            currentModeledData = {
+                username: data.user.split(' ')[0].toLowerCase(), // Transform: name to lowercase key
+                transaction_amount: parseFloat(data.amount),      // Transform: string to float
+                tags: data.tags.split(', ').map(t => t.trim()), // Transform: string to array
+                timestamp_iso: data.time_raw,
+                id: null
+            };
+
+
+            // 4. Transformation Phase (Type Casting, Formatting)
+            logStatus("3. Transformation (T): Cleaning, Type Casting, and generating Dimension Keys.", 'text-secondary-accent');
+            
+            // Hide Raw Data and show the structured JSON, indicating the *change* in pattern
+            rawDataPre.classList.add('hidden');
+            structuredDataPre.classList.remove('hidden'); 
+
+            // Step 4a: Show initial structure and transformation (Cyan highlights)
+            structuredDataPre.innerHTML = `// STRUCTURED DATA (Applied Schema)\n{\n  username: <span class="text-primary-accent">'${currentModeledData.username}'</span>, \n  transaction_amount: <span class="text-primary-accent">${currentModeledData.transaction_amount}</span>, \n  tags: <span class="text-primary-accent">['...']</span>, \n  timestamp_iso: <span class="text-primary-accent">'${currentModeledData.timestamp_iso}'</span>, \n  fact_id: null\n}`;
+
+            await delay(LONG_DELAY);
+
+            // Step 4b: Conversion (Type Casting) - Highlight the change with Orange
+            logStatus("...Converting 'timestamp_iso' (String) to 'unix_epoch' (Number) for faster indexing.", 'text-secondary-accent');
+            
+            const timestampPre = new Date(currentModeledData.timestamp_iso).getTime() / 1000;
+            currentModeledData.unix_epoch = timestampPre;
+            delete currentModeledData.timestamp_iso;
+
+            structuredDataPre.innerHTML = `// TRANSFORMATION COMPLETE\n{\n  username: <span class="text-primary-accent">'${currentModeledData.username}'</span>, \n  transaction_amount: <span class="text-primary-accent">${currentModeledData.transaction_amount}</span>, \n  tags: <span class="text-primary-accent">['...']</span>, \n  <span class="bg-secondary-accent/70 text-gray-900 px-1 rounded-sm">unix_epoch: ${currentModeledData.unix_epoch}</span>, \n  fact_id: null\n}`;
+
+            await delay(LONG_DELAY);
+
+
+            // 5. Loading Preparation: ID Assignment (The 'L' phase is approaching)
+            logStatus("4. Loading Prep: Assigning unique Fact ID (Primary Key) for efficient joins.", 'text-tertiary-accent'); // Change log color for L prep
+            currentModeledData.id = currentRecordId++; // Assign ID
+            packet.innerHTML = currentModeledData.id;
+
+            // Highlight the new ID (Green background)
+            structuredDataPre.innerHTML = `// READY FOR LOAD\n{\n  username: <span class="text-primary-accent">'${currentModeledData.username}'</span>, \n  transaction_amount: <span class="text-primary-accent">${currentModeledData.transaction_amount}</span>, \n  tags: <span class="text-primary-accent">['...']</span>, \n  unix_epoch: <span class="text-primary-accent">${currentModeledData.unix_epoch}</span>, \n  <span class="bg-tertiary-accent/70 text-gray-900 px-1 rounded-sm">fact_id: ${currentModeledData.id}</span>\n}`;
+
+            await delay(DELAY);
+
+            // 6. Flow to Database (Load)
+            logStatus("5. Load (L): Modeled data moving to fact_sales table.", 'text-tertiary-accent');
+            path2.classList.add('path-active');
+            packet.classList.replace('bg-secondary-accent', 'bg-tertiary-accent');
+            movePacket(databaseCoords);
+            await delay(DELAY);
+            path2.classList.remove('path-active');
+
+            // 7. Storage in Collection
+            logStatus(`6. Data Stored successfully with fact_id: ${currentModeledData.id}. Immediate reporting enabled.`, 'text-tertiary-accent');
+            
+            // Add record to DB collection
+            const recordElement = document.createElement('div');
+            recordElement.classList.add('data-point', 'bg-gray-900', 'p-1', 'rounded-md', 'border-l-4', 'border-tertiary-accent', 'text-gray-200');
+            recordElement.innerHTML = `
+                <span class="text-tertiary-accent font-bold">[${currentModeledData.id}]</span>
+                <span class="text-xs text-gray-400">${currentModeledData.username}</span> | 
+                <span class="text-xs text-secondary-accent">$${currentModeledData.transaction_amount.toFixed(2)}</span>
+            `;
+            
+            // Manage max records
+            if (dbCollection.children.length > MAX_RECORDS) {
+                // Remove the oldest record (which is the element after the 'Records Collection' paragraph)
+                dbCollection.removeChild(dbCollection.children[1]); 
+            }
+            dbCollection.insertBefore(recordElement, dbCollection.children[1]);
+
+            // Hide the packet and reset its content
+            packet.classList.remove('opacity-100');
+            packet.classList.add('opacity-0');
+            packet.innerHTML = 'D';
+
+            await delay(1000);
+        }
+
+        // --- Inefficient Flow Cycle ---
+        async function runInefficientCycle() {
+            // 1. Reset state
+            slowProcessor.classList.remove('slow-process-shake');
+            queryPacket.classList.add('opacity-0');
+            resultDisplay.textContent = 'Awaiting Query...';
+            queryPacket.innerHTML = 'Q?';
+            queryPacket.classList.replace('bg-gray-400', 'bg-red-500'); // Reset color
+
+            // Calculate start position (Left of raw pile, same height as path)
+            const rawPileCoords = getIneffCoords(rawPile);
+            const pathSlowCoords = getIneffCoords(pathSlow);
+            const slowProcessorCoords = getIneffCoords(slowProcessor); // Get coordinates for the processor
+
+            const queryStartY = pathSlowCoords.y - (PACKET_SIZE / 2) + (pathSlow.offsetHeight / 2); // Center on path
+            
+            // FIX 1: Position the packet so its right edge is flush with the left edge of the raw pile.
+            const queryStartX = rawPileCoords.x - (rawPile.offsetWidth / 2) - PACKET_SIZE / 2;
+            
+            moveQueryPacket({ x: queryStartX, y: queryStartY });
+            
+            await delay(5000); // Wait for efficient flow to run a few cycles
+
+            // 2. Start Query
+            resultDisplay.textContent = 'Query Started: Find avg sales for top suppliers.';
+
+            // 2a. Move packet into the Raw Pile (start of scan)
+            queryPacket.classList.remove('opacity-0');
+            queryPacket.style.transition = 'transform 0.5s ease-out';
+            
+            // Move packet to center of the raw pile
+            moveQueryPacket(rawPileCoords); 
+            await delay(500);
+
+            // 2b. Scan and move across the path towards the slow processor
+            
+            // FIX 2: Position the packet so its right edge is flush with the left edge of the slow processor.
+            const queryTravelX = slowProcessorCoords.x - (slowProcessor.offsetWidth / 2) - PACKET_SIZE / 2;
+            
+            queryPacket.style.transition = 'transform 1s linear';
+            queryPacket.style.transform = `translate(${queryTravelX}px, ${queryStartY}px)`;
+            
+            resultDisplay.textContent = 'Scanning massive, unindexed data...';
+            await delay(1000); // Wait for packet travel
+
+            // 3. The Struggle (Shake and wait at the processor)
+            queryPacket.style.transition = 'transform 0.5s ease-in-out';
+            moveQueryPacket(slowProcessorCoords); // Snap to processor center
+            
+            slowProcessor.classList.add('slow-process-shake');
+            resultDisplay.textContent = 'Struggling to parse raw fields (40M rows)...';
+            queryPacket.innerHTML = '😵';
+            await delay(LONG_QUERY_TIME);
+
+            // 4. Final Result (Failure or slow success)
+            slowProcessor.classList.remove('slow-process-shake');
+            resultDisplay.textContent = 'RESULT: Query Timeout or Inaccurate Result (4.5s)';
+            queryPacket.innerHTML = '❌';
+            queryPacket.classList.replace('bg-red-500', 'bg-gray-400'); // Faded out
+
+            await delay(ERROR_DELAY);
+            
+            // 5. Reset and Loop
+            queryPacket.classList.add('opacity-0');
+            await delay(LOOP_DELAY);
+            runInefficientCycle();
+        }
+
+        // --- Snowflake Animation Functions ---
+
+        // New function for Snowflake-specific coordinates, relative to its container
+        function getSnowCoords(el) {
+            // Note: The container for Section 4 visualization is 'snowflake-vis-container'
+            return getCenterCoords(el, 'snowflake-vis-container');
+        }
+
+        function moveSnowPacket(coords) {
+            const snowPacket = document.getElementById('snow-query-packet');
+            snowPacket.style.transform = `translate(${coords.x}px, ${coords.y}px)`;
+        }
+
+        function clearSnowHighlights() {
+            ['fact-snow', 'dim-product-snow', 'dim-category-snow'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('snow-highlight-fact', 'snow-highlight-dim', 'snow-highlight-norm');
+                el.style.transform = 'scale(1.0)'; // Reset scale
+            });
+            // Clear status text
+            ['fact-snow-status', 'dim-prod-status', 'dim-cat-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '';
+            });
+            document.getElementById('snow-dashboard').classList.remove('snow-highlight-dim');
+        }
+
+        async function runSnowflakeQueryAnimation() {
+            clearSnowHighlights();
+            const snowPacket = document.getElementById('snow-query-packet');
+            snowPacket.classList.remove('opacity-0');
+            snowPacket.style.transition = 'all 1s ease-in-out';
+            snowPacket.style.backgroundColor = '#facc15';
+            snowPacket.innerHTML = 'Q';
+
+            const factSnow = document.getElementById('fact-snow');
+            const dimProductSnow = document.getElementById('dim-product-snow');
+            const dimCategorySnow = document.getElementById('dim-category-snow');
+            const snowDashboard = document.getElementById('snow-dashboard');
+
+            // Calculate center positions
+            const dashboardPos = getSnowCoords(snowDashboard);
+            const factPos = getSnowCoords(factSnow);
+            const dimProdPos = getSnowCoords(dimProductSnow);
+            const dimCatPos = getSnowCoords(dimCategorySnow);
+            
+            // 1. Start Query from Dashboard
+            document.getElementById('dim-cat-status').textContent = 'Query started...';
+            moveSnowPacket(dashboardPos);
+            await delay(500);
+            
+            // 2. Query hits Fact table (First Hop)
+            moveSnowPacket(factPos);
+            factSnow.classList.add('snow-highlight-fact');
+            document.getElementById('fact-snow-status').textContent = '1. Accessing Metrics';
+            await delay(DELAY);
+            factSnow.classList.remove('snow-highlight-fact');
+
+            // 3. Query goes to Lvl 1 Dim (Product) - Second Hop (JOIN 1)
+            moveSnowPacket(dimProdPos);
+            dimProductSnow.classList.add('snow-highlight-dim');
+            document.getElementById('dim-prod-status').textContent = '2. Joining Product Dim';
+            await delay(DELAY);
+            dimProductSnow.classList.remove('snow-highlight-dim');
+
+            // 4. Query goes to Lvl 2 Dim (Category) - Third Hop (JOIN 2 - The extra cost!)
+            snowPacket.style.backgroundColor = '#8b5cf6'; // Purple for extra normalization lookup
+            moveSnowPacket(dimCatPos);
+            dimCategorySnow.classList.add('snow-highlight-norm');
+            document.getElementById('dim-cat-status').textContent = '3. Joining Category Dim (Cost)';
+            await delay(LONG_DELAY * 1.5); // Longer delay to simulate higher cost/complexity
+            dimCategorySnow.classList.remove('snow-highlight-norm');
+
+            // 5. Query results loop back through Lvl 1 Dim (Result aggregation)
+            snowPacket.style.backgroundColor = '#34d399';
+            moveSnowPacket(dimProdPos);
+            dimProductSnow.classList.add('snow-highlight-dim');
+            document.getElementById('dim-prod-status').textContent = '4. Aggregating results';
+            await delay(DELAY);
+            dimProductSnow.classList.remove('snow-highlight-dim');
+
+            // 6. Final Result back to Dashboard
+            snowPacket.style.backgroundColor = '#22c55e'; // Green for success
+            snowPacket.innerHTML = 'OK';
+            moveSnowPacket(dashboardPos);
+            document.getElementById('snow-dashboard').classList.add('snow-highlight-dim');
+            document.getElementById('dim-cat-status').textContent = 'Result Delivered (3 Hops)';
+
+            await delay(DELAY);
+
+            // 7. Reset and Loop
+            snowPacket.classList.add('opacity-0');
+            document.getElementById('snow-dashboard').classList.remove('snow-highlight-dim');
+            clearSnowHighlights();
+            await delay(LOOP_DELAY);
+        }
+        
+        // --- Game Loops ---
+
+        /** Main loop for the efficient ETL flow. */
+        async function gameLoop() {
+            // 1. Reset packet position and processor view
+            const sourceCoords = getCenterCoords(source);
+            movePacket(sourceCoords);
+            clearProcessor();
+            
+            // Loop through data samples
+            if (currentDataIndex >= rawDataSamples.length) {
+                currentDataIndex = 0; // Reset index for continuous loop
+            }
+
+            const currentData = rawDataSamples[currentDataIndex];
+            
+            // 2. Run Ingestion (E)
+            await simulateIngestion(currentData);
+
+            // 3. Run Transformation (T) and Load (L)
+            await processDataCycle(currentData);
+
+            // 4. Wait before next cycle
+            currentDataIndex++;
+            await delay(LOOP_DELAY);
+            gameLoop();
+        }
+
+        /** Start the Inefficient Flow in parallel. */
+        function runInefficientFlowInParallel() {
+            // This is called once to start the independent loop
+            runInefficientCycle();
+        }
+
+        /** Initialize the navigation button animation */
+        document.addEventListener('DOMContentLoaded', () => {
+            const homeBtn = document.getElementById('nav-home-btn');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', () => {
+                    logStatus('Navigation simulation: Returning to the Main Dashboard...', 'text-white/80');
+                });
+            }
+        });
+
+        // --- Start Application ---
+        window.onload = function() {
+            // Kick off all animation loops
+            gameLoop();
+            runInefficientFlowInParallel();
+            
+            // Snowflake Animation Loop Starter (Must auto-loop)
+            (function startSnowflakeLoop() {
+                // Ensure runSnowflakeQueryAnimation is called and then loops after its internal delay
+                runSnowflakeQueryAnimation().then(() => {
+                    setTimeout(startSnowflakeLoop, LOOP_DELAY);
+                });
+            })();
+        };
+    </script>
+</body>
+</html>
