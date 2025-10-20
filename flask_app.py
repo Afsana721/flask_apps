@@ -239,6 +239,10 @@ def api_cart_add():
 
 
 
+#data modeling page routes
+@app.route('/data_Modeling')
+def data_Modeling():
+    return render_template('dataModeling.html')
 
 
 
