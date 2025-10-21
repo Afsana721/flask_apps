@@ -194,12 +194,11 @@
             <div class="flex items-center space-x-3">
                 <!-- AptiCraft(Inline SVG for Data Flow) -->
                 <div class="text-3xl text-primary-accent font-extrabold" title="Logo">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
-                        <!-- Data Flow/Forking Icon -->
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                    </svg>
+                    <!-- inside the same <div class="flex items-center mb-4"> ... -->
+                <img src="{{ url_for('static', filename='aptiCraft.png') }}" alt="AptiCraft" class="w-8 h-8 object-contain mr-4">
+
                 </div>
-                <span class="text-2xl font-bold text-white tracking-wider">OpenQQuantify</span>
+                <span class="text-2xl font-bold text-white tracking-wider">AptiCraft</span>
             </div>
             
             <!-- Nav Item -->
