@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Farming Assistant: Integrated Intelligence</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Apply the Inter font globally for a modern, professional look */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #040404;
+            /* Very deep dark background */
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Custom gradient for titles and accents - BRIGHT VIOLET/BLUE */
+        .gradient-accent {
+            background: linear-gradient(90deg, #9D00FF, #00C2FF);
+            /* Bright Violet to Electric Blue */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        /* Full screen canvas for 3D Background */
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        /* Styling for the main content card */
+        .content-card {
+            background-color: rgba(17, 24, 39, 0.96);
+            /* Deep dark blue-gray (Gray-900) */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.4);
+        }
+
+        /* --- PILLAR CARD STYLING (The original pillars are replaced, but keeping this for other cards) --- */
+        .pillar-card {
+            /* Base style */
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+            transform: translateY(0) scale(1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            min-height: 180px;
+        }
+
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 0;
+        }
+
+        .pillar-card:hover::before,
+        .pillar-card.active::before {
+            opacity: 1;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .pillar-card.active,
+        .pillar-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            /* More pronounced lift */
+            background-color: rgba(31, 41, 55, 0.95);
+            /* Slightly lighter dark background on hover */
+        }
+
+        /* Specific glow for active/hover state (Kept for completeness, though unused in the replaced section) */
+        .pillar-card.green.active,
+        .pillar-card.green:hover {
+            border-color: #10B981;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.7);
+        }
+
+        /* Emerald-500 */
+        .pillar-card.pink.active,
+        .pillar-card.pink:hover {
+            border-color: #EC4899;
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.7);
+        }
+
+        /* Pink-500 */
+        .pillar-card.yellow.active,
+        .pillar-card.yellow:hover {
+            border-color: #FACC15;
+            box-shadow: 0 0 25px rgba(252, 211, 77, 0.7);
+        }
+
+        /* Yellow-400 */
+        .pillar-card.purple.active,
+        .pillar-card.purple:hover {
+            border-color: #A78BFA;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.7);
+        }
+
+        /* Violet-400 */
+
+
+        /* Inner Icon/Title Container */
+        .pillar-content-header {
+            position: relative;
+            z-index: 10;
+            /* Ensure text/icon is above glow */
+        }
+
+        /* Detail Text (Toggled Visibility) */
+        .pillar-detail {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            /* Bouncier transition */
+            margin-top: 0;
+            padding-top: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .pillar-card.active .pillar-detail {
+            max-height: 200px;
+            opacity: 1;
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            border-top: 1px solid rgba(156, 163, 175, 0.25);
+        }
+
+        /* --- INTERACTIVE WORKFLOW STYLING --- */
+        .workflow-step-btn {
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            color: #E2E8F0;
+            /* Light gray text for inactive */
+            background-color: #374151;
+            /* Gray-700 for inactive */
+            border: 1px solid transparent;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .workflow-step-btn:hover:not(.active) {
+            background-color: #4B5563;
+            /* Darker gray on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .workflow-step-btn.active {
+            box-shadow: 0 0 20px rgba(157, 0, 255, 0.7);
+            /* Electric Violet glow */
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #9D00FF, #00C2FF);
+            /* Gradient background for active */
+            color: #111827;
+            /* Dark text for contrast */
+            border-color: #00C2FF;
+        }
+
+        .step-content {
+            min-height: 280px;
+            /* Slightly more space */
+            opacity: 0;
+            transform: translateY(10px);
+            /* Initial subtle slide */
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .step-content.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .visualization-box {
+            background-color: #0D1016;
+            /* Even darker for code/viz */
+            border: 1px solid #9D00FF;
+            /* Electric Violet border */
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        /* --- NEW: Pipeline Component Card Styles --- */
+        .pipeline-card {
+            background-color: #1F2937;
+            /* Gray-800 */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .pipeline-card:hover {
+            transform: translateY(-3px);
+            background-color: #2D3748;
+            border-color: #00C2FF;
+            /* Electric Blue on hover */
+            box-shadow: 0 0 15px rgba(0, 194, 255, 0.4);
+        }
+
+        .pipeline-card.active {
+            border-color: #9D00FF;
+            /* Electric Violet when active */
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.7);
+        }
+
+        .pipeline-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #9D00FF;
+            /* Electric Violet */
+            margin-right: 0.75rem;
+        }
+
+        .pipeline-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .pipeline-type {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            background-color: #00C2FF30;
+            /* Semi-transparent blue */
+            color: #00C2FF;
+            white-space: nowrap;
+        }
+
+        .pipeline-detail {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            margin-top: 0;
+            padding-top: 0;
+            color: #CBD5E1;
+        }
+
+        .pipeline-card.active .pipeline-detail {
+            max-height: 100px;
+            /* Enough height for the content */
+            opacity: 1;
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+            border-top: 1px dashed rgba(156, 163, 175, 0.3);
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        /* --- VISUALIZATION MODULE STYLES (New Section) --- */
+        #llm-visualization-module {
+            background-color: #111827;
+            /* bg-gray-900 */
+            color: #F9FAFB;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            /* rounded-xl */
+        }
+
+        /* Style for the text labels on the canvas */
+        .label {
+            position: absolute;
+            color: white;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            /* Make sure labels don't block mouse interaction with canvas */
+            text-shadow: 0 0 5px black;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
+            /* Ensure labels are above the canvas */
+            white-space: nowrap;
+        }
+
+        /* Ensure the canvas container fills its parent and relative positioning works for labels */
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Ensure the actual canvas element fits its container */
+        #canvas-container canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="content-card w-full max-w-7xl mx-auto p-6 md:p-12 rounded-3xl shadow-2xl relative z-10 my-8">
+
+        <header class="text-center mb-12">
+            <h1 class="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3">
+                AUTONOMOUS SYSTEM ARCHITECTURE
+            </h1>
+            <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight gradient-accent">
+                AI FARMING ASSISTANT
+            </h2>
+            <p class="mt-4 text-shadow text-gray-300 max-w-4xl mx-auto">
+                Integrated intelligence stack, designed for seamless communication from natural language to field
+                execution.
+            </p>
+        </header>
+
+        <!-- 
+            ===============================================================
+            START OF THE NEW VISUALIZATION SECTION (Replacing "Four Pillars")
+            ===============================================================
+        -->
+        <section id="llm-visualization-module"
+            class="w-full max-w-full h-auto mx-auto p-8 bg-gray-900/70 rounded-2xl border border-gray-800 mb-12"
+            style="min-height: 500px;">
+
+            <!-- Content Structure -->
+            <div class="w-full h-full flex flex-col items-center justify-center p-0 md:p-0">
+
+                <h4 class="text-3xl sm:text-3xl font-extrabold leading-tight text-[#00D4FF] text-center mb-8">
+                    Deep Data Integration- LLM Development Core
+                </h4>
+                <p class="text-xl md:text-sm font-light text-[#70DFE0] mb-6 text-center">
+                    Visualizing the flow of multi-modal farm data into the centralized AI processing unit.
+                </p>
+
+                <!-- The simulation visual area -->
+                <div id="simulation-visual-area"
+                    class="w-full max-w-6xl h-[400px] rounded-xl shadow-2xl shadow-purple-500/20 relative border border-gray-700 bg-black">
+                    <!-- The canvas will be inserted here by three.js -->
+                    <div id="canvas-container" class="w-full h-full"></div>
+
+                    <!-- Text labels for the simulation -->
+                    <div class="label" style="top: 15%; left: 10%; color: #17c9cf;">Satellite & Drone Imagery (Web Data)</div>
+                    <div class="label" style="top: 20%; right: 10%; color: #17c9cf;">Soil & Climate Sensor Data</div>
+                    <div class="label" style="bottom: 25%; left: 15%; color: #17c9cf;">Historical Farm ERP Data</div>
+                    <div class="label"
+                        style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1rem; color: #2e0128; padding: 2px 2px; background: rgba(147, 92, 168, 0.8);">
+                        LLM Processing Core(Brain)</div>
+                    <div class="label" style="bottom: 10%; right: 10%; color: #17c9cf;">Actionable Robotic Commands</div>
+                </div>
+            </div>
+        </section>
+        <!-- 
+            ===============================================================
+            END OF THE NEW VISUALIZATION SECTION
+            ===============================================================
+        -->
+
+
+        <section class="p-8 bg-gray-900/70 rounded-2xl border border-gray-800 mb-12">
+            <h4 class="text-3xl sm:text-4xl font-extrabold leading-tight text-white text-center mb-8">
+                Interactive Query Pipeline- From Language to Action
+            </h4>
+
+
+            <div class="flex flex-wrap justify-center space-x-2 md:space-x-4 mb-8">
+                <button class="workflow-step-btn active bg-violet-500 text-white" data-step="1" onclick="showStep(1)">1.
+                    User Input</button>
+                <button class="workflow-step-btn bg-gray-700 text-gray-300" data-step="2" onclick="showStep(2)">2.
+                    Orchestration (LLM)</button>
+                <button class="workflow-step-btn bg-gray-700 text-gray-300" data-step="3" onclick="showStep(3)">3. Data
+                    Retrieval (RAG)</button>
+                <button class="workflow-step-btn bg-gray-700 text-gray-300" data-step="4" onclick="showStep(4)">4.
+                    Prediction & Planning</button>
+                <button class="workflow-step-btn bg-gray-700 text-gray-300" data-step="5" onclick="showStep(5)">5.
+                    Autonomous Execution</button>
+            </div>
+
+
+            <div id="workflow-content" class="bg-gray-800 rounded-xl p-6 border border-violet-500/30 relative fade-in">
+
+            </div>
+
+        </section>
+
+        <!-- NEW SECTION: 14-Step AI Q->A Pipeline -->
+        <section class="p-8 bg-gray-900/70 rounded-2xl border border-gray-800">
+            <h4 class="text-3xl sm:text-4xl font-extrabold leading-tight text-white text-center mb-6">
+                Deep Dive: The 14-Step AI Q→A Pipeline
+            </h4>
+
+            <!-- Controls -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button class="control-btn bg-teal-600 text-white hover:bg-teal-500"
+                    onclick="toggleAllPipelineDetails(true)">Open All</button>
+                <button class="control-btn bg-pink-600 text-white hover:bg-pink-500"
+                    onclick="toggleAllPipelineDetails(false)">Close All</button>
+            </div>
+
+            <!-- Pipeline Grid -->
+            <div id="pipeline-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <!-- Content injected by JavaScript -->
+            </div>
+        </section>
+
+    </div>
+    <canvas id="three-canvas"></canvas>
+    <script>
+        // --- Global Variables (Background) ---
+        let bgScene, bgCamera, bgRenderer, bgParticles;
+        let bgWidth, bgHeight;
+
+        // --- Global Variables (Farm Stack Visualization) ---
+        let farmVizScene, farmVizCamera, farmVizRenderer, farmVizCore, farmVizInboundParticles, farmVizOutboundParticles;
+        let farmVizWebDataCloud, farmVizSensorDataCloud, farmVizCognitiveDataCloud;
+        const farmVizDataColors = {
+            web: new THREE.Color(0x3b82f6), // Blue: Satellite Imagery
+            sensor: new THREE.Color(0x22c55e), // Green: Soil/Climate Sensors
+            cognitive: new THREE.Color(0xfacc15) // Yellow: ERP/Historical Data
+        };
+
+
+        // --- Data for Interactive Workflow ---
+        const workflowSteps = {
+            1: {
+                title: "1. User Input: The Natural Language Command",
+                description: "The farmer issues a conversational request, such as: **'How much water should I use on Field-3 next week?'** This input is captured via a dashboard or voice interface and sent to the LLM for initial processing.",
+                visualization: "<span class='text-4xl font-extrabold text-violet-400'>'Water Field 3'</span> <span class='text-gray-500'>-> LLM</span>"
+            },
+            2: {
+                title: "2. Orchestration: LLM (The Brain)",
+                description: "The Large Language Model acts as the orchestrator. It uses **tool-calling** to break down the request into a structured action plan, identifying key parameters (Field ID, Date Range) and delegating the task to the specialized Predictive Model.",
+                visualization: "<span class='text-4xl font-extrabold text-violet-400'>LLM</span> <span class='text-gray-500'>parses request -> Calls Predictive Model (Field 3, Next Week)</span>"
+            },
+            3: {
+                title: "3. Data Retrieval: RAG (The Memory)",
+                description: "The Retrieval-Augmented Generation (RAG) tool queries the farm's central database (sensor history, ERP systems, external weather APIs). It fetches **only the most relevant, up-to-date data** (soil moisture, temperature forecasts, crop history) needed for the prediction.",
+                visualization: "<span class='text-4xl font-extrabold text-violet-400'>RAG</span> <span class='text-gray-500'>fetches data from sensors & APIs:</span> <span class='text-sm font-mono text-emerald-400'> {Soil: 18%, Temp: 25C, Rainfall: 5mm}</span>"
+            },
+            4: {
+                title: "4. Prediction & Planning: Specialized Models",
+                description: "The specialized **Predictive Model** consumes the RAG-retrieved data. It calculates the precise output, determining that 30mm of water is required. The result is then sent back to the LLM for synthesis and validation against historical best practices.",
+                visualization: "<span class='text-4xl font-extrabold text-violet-400'>Model</span> <span class='text-gray-500'>calculates:</span> <span class='text-4xl font-extrabold text-yellow-400'>Water = 30mm</span>"
+            },
+            5: {
+                title: "5. Autonomous Execution: Edge & Robotics",
+                description: "The LLM generates a final, human-readable response and simultaneously translates the 30mm command into a low-level **machine command packet**. This packet is sent over the Global Connectivity network for immediate execution by the farm's System & Circuitry and Robotics hardware.",
+                visualization: "<span class='text-4xl font-extrabold text-violet-400'>Output</span> <span class='text-gray-500'>-> 'Apply 30mm' & Edge Command Packet -></span> <span class='text-4xl font-extrabold text-pink-400'>Tractor Actuation</span>"
+            }
+        };
+
+        // --- Data for 14-Step Pipeline ---
+        const pipelineStepsData = [
+            { num: 1, name: "AI (Agent)", type: "object/function", desc: "Receives question; orchestrates steps" },
+            { num: 2, name: "Ingest (Cleaner)", type: "function", desc: "Cleans the raw sentence" },
+            { num: 3, name: "Chunk (Cutter)", type: "object", desc: "Small passages for search" },
+            { num: 4, name: "Embed (to numbers)", type: "function", desc: "Text → vectors (meaning)" },
+            { num: 5, name: "Index (Vector DB)", type: "object", desc: "Find top‑K fast" },
+            { num: 6, name: "NLP (Listener)", type: "function", desc: "Intent + entities + time" },
+            { num: 7, name: "RAG (Retriever)", type: "function", desc: "Fetch facts first" },
+            { num: 8, name: "ToolPlan (Planner)", type: "function", desc: "Decide SQL / API / Predict" },
+            { num: 9, name: "Execute (Worker)", type: "function", desc: "Run tasks safely" },
+            { num: 10, name: "ComposePrompt (Packager)", type: "function", desc: "Build final packet" },
+            { num: 11, name: "LLM (Writer)", type: "model", desc: "Read + write grounded answer" },
+            { num: 12, name: "Post‑Process (Checker)", type: "function", desc: "Format + citations + safety" },
+            { num: 13, name: "Return (Messenger)", type: "function", desc: "Send to UI/DOM" },
+            { num: 14, name: "Learn Loop (Improver)", type: "object/job", desc: "Log + improve next time" },
+        ];
+
+        // --- Pillar Interaction Functions (Kept for compatibility, though pillar cards are removed) ---
+
+        function togglePillar(element) {
+            const isActive = element.classList.contains('active');
+
+            // Close all other pillars
+            document.querySelectorAll('.pillar-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // Toggle the clicked pillar
+            if (!isActive) {
+                element.classList.add('active');
+            }
+        }
+
+        // --- Interactive Workflow Functions ---
+
+        function showStep(stepNumber) {
+            const step = workflowSteps[stepNumber];
+            const contentDiv = document.getElementById('workflow-content');
+            const buttons = document.querySelectorAll('.workflow-step-btn');
+
+            // Update button styles
+            buttons.forEach(btn => {
+                if (parseInt(btn.getAttribute('data-step')) === stepNumber) {
+                    btn.classList.add('active');
+                    btn.classList.remove('bg-gray-700', 'text-gray-300', 'hover:bg-violet-700', 'hover:text-white');
+                } else {
+                    btn.classList.remove('active');
+                    btn.classList.add('bg-gray-700', 'text-gray-300', 'hover:bg-violet-700', 'hover:text-white');
+                }
+            });
+
+            // Add fade-out effect
+            contentDiv.classList.remove('fade-in');
+
+            // Wait for the fade out to complete before updating content
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                <h5 class="text-2xl font-bold text-white mb-4">${step.title}</h5>
+                <p class="text-lg text-gray-300 mb-6">${step.description}</p>
+                <div class="p-4 bg-gray-900 rounded-lg visualization-box text-center">
+                    <p class="font-mono">${step.visualization}</p>
+                </div>
+            `;
+                // Add fade-in effect for new content
+                contentDiv.classList.add('fade-in');
+            }, 200); // Matches the CSS transition time for opacity
+        }
+
+        // --- NEW: Pipeline Detail Functions ---
+
+        function togglePipelineDetail(element) {
+            element.classList.toggle('active');
+        }
+
+        function toggleAllPipelineDetails(shouldOpen) {
+            document.querySelectorAll('.pipeline-card').forEach(card => {
+                if (shouldOpen) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+        }
+
+        function renderPipelineSteps() {
+            const grid = document.getElementById('pipeline-grid');
+            if (!grid) return;
+
+            let html = '';
+            pipelineStepsData.forEach(step => {
+                html += `
+                <div class="pipeline-card" onclick="togglePipelineDetail(this)">
+                    <div class="flex items-center space-x-3">
+                        <div class="pipeline-number text-teal-400">${step.num}.</div>
+                        <div class="flex flex-col flex-grow">
+                            <span class="pipeline-name">${step.name}</span>
+                        </div>
+                        <span class="pipeline-type">${step.type}</span>
+                    </div>
+                    <div class="pipeline-detail">
+                        <p class="text-sm mt-1">${step.desc}</p>
+                    </div>
+                </div>
+            `;
+            });
+            grid.innerHTML = html;
+        }
+
+
+        // --- Background 3D Functions (Existing Logic) ---
+
+        function initBackground() {
+            const canvas = document.getElementById('three-canvas');
+            bgWidth = window.innerWidth;
+            bgHeight = window.innerHeight;
+
+            // 1. Scene Setup
+            bgScene = new THREE.Scene();
+
+            // 2. Camera Setup
+            bgCamera = new THREE.PerspectiveCamera(75, bgWidth / bgHeight, 0.1, 1000);
+            bgCamera.position.z = 100;
+
+            // 3. Renderer Setup
+            bgRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            bgRenderer.setSize(bgWidth, bgHeight);
+
+            // 4. Particle System (Purple and Blue Hues for background)
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+
+            const color = new THREE.Color();
+            const material = new THREE.PointsMaterial({
+                size: 0.2,
+                sizeAttenuation: true,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+
+            for (let i = 0; i < 300; i++) { // Slightly more particles
+                positions.push(
+                    (Math.random() - 0.5) * 250,
+                    (Math.random() - 0.5) * 250,
+                    (Math.random() - 0.5) * 250
+                );
+
+                // Randomly choose between violet and electric blue
+                if (Math.random() > 0.5) {
+                    color.setHSL(0.75 + (Math.random() * 0.1 - 0.05), 0.9, 0.6 + (Math.random() * 0.2)); // Violet
+                } else {
+                    color.setHSL(0.55 + (Math.random() * 0.1 - 0.05), 0.9, 0.6 + (Math.random() * 0.2)); // Electric Blue
+                }
+                colors.push(color.r, color.g, color.b);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            bgParticles = new THREE.Points(geometry, material);
+            bgScene.add(bgParticles);
+
+            window.addEventListener('resize', onBackgroundWindowResize, false);
+        }
+
+        function onBackgroundWindowResize() {
+            bgWidth = window.innerWidth;
+            bgHeight = window.innerHeight;
+            if (bgCamera) {
+                bgCamera.aspect = bgWidth / bgHeight;
+                bgCamera.updateProjectionMatrix();
+            }
+            if (bgRenderer) {
+                bgRenderer.setSize(bgWidth, bgHeight);
+            }
+        }
+
+        function animateBackground() {
+            const time = Date.now() * 0.0001;
+            bgParticles.rotation.y = time * 0.1;
+            bgParticles.rotation.z = time * 0.05;
+            bgRenderer.render(bgScene, bgCamera);
+
+            // Subtle movement for particles
+            const positions = bgParticles.geometry.attributes.position.array;
+            for (let i = 2; i < positions.length; i += 3) {
+                positions[i] += 0.05; // Move particles slowly towards the camera
+                if (positions[i] > 125) {
+                    positions[i] = -125; // Loop back when they get too close
+                }
+            }
+            bgParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // --- Farm Stack Visualization Functions (NEW LOGIC) ---
+        function createDataCloud(color, count, range, positionOffset) {
+            const geometry = new THREE.BufferGeometry();
+            const positions = [];
+            for (let i = 0; i < count; i++) {
+                positions.push(
+                    (Math.random() - 0.5) * range.x,
+                    (Math.random() - 0.5) * range.y,
+                    (Math.random() - 0.5) * range.z
+                );
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            const material = new THREE.PointsMaterial({
+                color: color,
+                size: 0.6,
+                transparent: true,
+                opacity: 0.8
+            });
+            const cloud = new THREE.Points(geometry, material);
+            cloud.position.set(positionOffset.x, positionOffset.y, positionOffset.z);
+            return cloud;
+        }
+
+        function resetInboundParticle(index) {
+            const positions = farmVizInboundParticles.geometry.attributes.position.array;
+            const colors = farmVizInboundParticles.geometry.attributes.color.array;
+
+            const sourceChoice = Math.random();
+            let sourceCloud, sourceColor;
+
+            if (sourceChoice < 0.33) {
+                sourceCloud = farmVizWebDataCloud;
+                sourceColor = farmVizDataColors.web;
+            } else if (sourceChoice < 0.66) {
+                sourceCloud = farmVizSensorDataCloud;
+                sourceColor = farmVizDataColors.sensor;
+            } else {
+                sourceCloud = farmVizCognitiveDataCloud;
+                sourceColor = farmVizDataColors.cognitive;
+            }
+
+            const cloudPositions = sourceCloud.geometry.attributes.position.array;
+            const randomIndex = Math.floor(Math.random() * (cloudPositions.length / 3)) * 3;
+
+            positions[index] = cloudPositions[randomIndex] + sourceCloud.position.x;
+            positions[index + 1] = cloudPositions[randomIndex + 1] + sourceCloud.position.y;
+            positions[index + 2] = cloudPositions[randomIndex + 2] + sourceCloud.position.z;
+
+            colors[index] = sourceColor.r;
+            colors[index + 1] = sourceColor.g;
+            colors[index + 2] = sourceColor.b;
+        }
+
+        function onFarmStackVizWindowResize() {
+            const container = document.getElementById('canvas-container');
+            if (!container || container.clientWidth === 0 || container.clientHeight === 0) return; // Prevent division by zero
+            farmVizCamera.aspect = container.clientWidth / container.clientHeight;
+            farmVizCamera.updateProjectionMatrix();
+            farmVizRenderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function initFarmStackViz() {
+            const container = document.getElementById('canvas-container');
+            if (!container) {
+                console.error("Canvas container not found for visualization!");
+                return;
+            }
+
+            // Scene
+            farmVizScene = new THREE.Scene();
+
+            // Camera
+            farmVizCamera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            farmVizCamera.position.z = 120;
+
+            // Renderer
+            farmVizRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            farmVizRenderer.setSize(container.clientWidth, container.clientHeight);
+            farmVizRenderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(farmVizRenderer.domElement);
+
+            // Light
+            const ambientLight = new THREE.AmbientLight(0x404040, 5); // soft white light
+            farmVizScene.add(ambientLight);
+
+            // 1. LLM Processing Core
+            const coreGeometry = new THREE.IcosahedronGeometry(15, 2);
+            const coreMaterial = new THREE.MeshBasicMaterial({
+                color: 0x8b5cf6, // purple-500
+                wireframe: true
+            });
+            farmVizCore = new THREE.Mesh(coreGeometry, coreMaterial);
+            farmVizScene.add(farmVizCore);
+
+            // 2. Data Source Clouds (Positions relative to labels)
+            farmVizWebDataCloud = createDataCloud(farmVizDataColors.web, 1500, { x: 150, y: 150, z: 150 }, { x: -150, y: 80, z: -50 });
+            farmVizScene.add(farmVizWebDataCloud);
+
+            farmVizSensorDataCloud = createDataCloud(farmVizDataColors.sensor, 1500, { x: 150, y: 150, z: 150 }, { x: 150, y: 50, z: -30 });
+            farmVizScene.add(farmVizSensorDataCloud);
+
+            farmVizCognitiveDataCloud = createDataCloud(farmVizDataColors.cognitive, 1500, { x: 150, y: 150, z: 150 }, { x: -100, y: -120, z: 0 });
+            farmVizScene.add(farmVizCognitiveDataCloud);
+
+            // 3. Inbound Data Stream
+            const inboundGeometry = new THREE.BufferGeometry();
+            const inboundPositions = [];
+            const inboundColors = [];
+            for (let i = 0; i < 1500; i++) {
+                inboundPositions.push(0, 0, 0);
+                inboundColors.push(1, 1, 1);
+            }
+            inboundGeometry.setAttribute('position', new THREE.Float32BufferAttribute(inboundPositions, 3));
+            inboundGeometry.setAttribute('color', new THREE.Float32BufferAttribute(inboundColors, 3));
+            const inboundMaterial = new THREE.PointsMaterial({
+                size: 0.8,
+                vertexColors: true
+            });
+            farmVizInboundParticles = new THREE.Points(inboundGeometry, inboundMaterial);
+            for (let i = 0; i < farmVizInboundParticles.geometry.attributes.position.array.length; i += 3) {
+                resetInboundParticle(i);
+            }
+            farmVizScene.add(farmVizInboundParticles);
+
+            // 4. Outbound Data Stream
+            const outboundGeometry = new THREE.BufferGeometry();
+            const outboundPositions = [];
+            const velocities = [];
+            for (let i = 0; i < 500; i++) {
+                outboundPositions.push(0, 0, 0);
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                velocities.push(
+                    Math.sin(phi) * Math.cos(theta),
+                    Math.sin(phi) * Math.sin(theta),
+                    Math.cos(phi)
+                );
+            }
+            outboundGeometry.setAttribute('position', new THREE.Float32BufferAttribute(outboundPositions, 3));
+            outboundGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+            const outboundMaterial = new THREE.PointsMaterial({ color: 0xa855f7, size: 0.8 });
+            farmVizOutboundParticles = new THREE.Points(outboundGeometry, outboundMaterial);
+            farmVizScene.add(farmVizOutboundParticles);
+
+            // Event Listeners for Farm Stack Visualization
+            window.addEventListener('resize', onFarmStackVizWindowResize, false);
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            farmVizRenderer.domElement.addEventListener('mousedown', (e) => {
+                isDragging = true;
+            });
+
+            farmVizRenderer.domElement.addEventListener('mouseup', (e) => {
+                isDragging = false;
+            });
+
+            farmVizRenderer.domElement.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - previousMousePosition.x;
+                    const deltaY = e.clientY - previousMousePosition.y;
+
+                    farmVizCore.rotation.y += deltaX * 0.005;
+                    farmVizCore.rotation.x += deltaY * 0.005;
+                }
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+        }
+
+        function animateFarmStackViz() {
+            if (!farmVizRenderer) return;
+
+            // 1. Rotate the Core
+            farmVizCore.rotation.x += 0.001;
+            farmVizCore.rotation.y += 0.002;
+
+            // 2. Rotate Data Clouds
+            farmVizWebDataCloud.rotation.y += 0.001;
+            farmVizSensorDataCloud.rotation.y -= 0.001;
+            farmVizCognitiveDataCloud.rotation.x += 0.001;
+
+            // 3. Animate Inbound Particles moving towards the core
+            const inPositions = farmVizInboundParticles.geometry.attributes.position.array;
+            for (let i = 0; i < inPositions.length; i += 3) {
+                const vec = new THREE.Vector3(inPositions[i], inPositions[i + 1], inPositions[i + 2]);
+                vec.lerp(new THREE.Vector3(0, 0, 0), 0.015); // Move towards center
+                inPositions[i] = vec.x;
+                inPositions[i + 1] = vec.y;
+                inPositions[i + 2] = vec.z;
+
+                // Reset if it gets too close
+                if (vec.length() < 10) {
+                    resetInboundParticle(i);
+                }
+            }
+            farmVizInboundParticles.geometry.attributes.position.needsUpdate = true;
+            farmVizInboundParticles.geometry.attributes.color.needsUpdate = true;
+
+            // 4. Animate Outbound Particles moving away from the core
+            const outPositions = farmVizOutboundParticles.geometry.attributes.position.array;
+            const velocities = farmVizOutboundParticles.geometry.attributes.velocity.array;
+            for (let i = 0; i < outPositions.length; i += 3) {
+                outPositions[i] += velocities[i] * 0.5;
+                outPositions[i + 1] += velocities[i + 1] * 0.5;
+                outPositions[i + 2] += velocities[i + 2] * 0.5;
+
+                const dist = Math.sqrt(outPositions[i] ** 2 + outPositions[i + 1] ** 2 + outPositions[i + 2] ** 2);
+                if (dist > 180) {
+                    outPositions[i] = 0;
+                    outPositions[i + 1] = 0;
+                    outPositions[i + 2] = 0;
+                }
+            }
+            farmVizOutboundParticles.geometry.attributes.position.needsUpdate = true;
+
+            farmVizRenderer.render(farmVizScene, farmVizCamera);
+        }
+
+        // --- Combined Animation Loop ---
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Run background animation
+            if (bgRenderer) {
+                animateBackground();
+            }
+
+            // Run Farm Stack Visualization animation
+            if (farmVizRenderer) {
+                animateFarmStackViz();
+            }
+        }
+
+        window.onload = function () {
+            // Initialize background
+            initBackground();
+
+            // Initialize Farm Stack Visualization
+            initFarmStackViz();
+
+            // Start combined animation loop
+            animate();
+
+            // Show the first step of the interactive workflow on load
+            showStep(1);
+
+            // Render the new pipeline steps
+            renderPipelineSteps();
+        }
+    </script>
+</body>
+</html>
