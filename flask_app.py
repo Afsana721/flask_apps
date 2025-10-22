@@ -244,6 +244,12 @@ def api_cart_add():
 def dataModel():
     return render_template('dataModel.html')
 
+#AI & LLM integration - llm_ai routes
+@app.route('/llm_ai')
+def llm_ai():
+    return render_template('llm_ai.html')
+
+
 
 
 if __name__ == "__main__":
