@@ -252,22 +252,22 @@
         }
 
         .pipeline-number {
-            font-size: 1.5rem;
+            font-size: 12px;
             font-weight: 800;
             line-height: 1;
             color: #9D00FF;
             /* Electric Violet */
-            margin-right: 0.75rem;
+            margin-right: 0.25rem;
         }
 
         .pipeline-name {
-            font-size: 1.125rem;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 200;
             color: #ffffff;
         }
 
         .pipeline-type {
-            font-size: 0.75rem;
+            font-size: 0.50rem;
             font-weight: 500;
             padding: 0.25rem 0.5rem;
             border-radius: 0.5rem;
@@ -355,13 +355,15 @@
     <div class="content-card w-full max-w-7xl mx-auto p-6 md:p-12 rounded-3xl shadow-2xl relative z-10 my-8">
 
         <header class="text-center mb-12">
-            <h1 class="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3">
+            <img src="{{ url_for('static', filename='aptiCraft.png') }}" alt="apticraft" class="mx-auto mb-4 w-16 h-16">
+            <span class="text-3xl font-extrabold text-emerald-400 mb-8">AptiCraft</span>
+            <h1 class="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3 mt-4">
                 AUTONOMOUS SYSTEM ARCHITECTURE
             </h1>
-            <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight gradient-accent">
+            <h2 class="text-3xl sm:text-4xl font-800 leading-tight gradient-accent ">
                 AI FARMING ASSISTANT
             </h2>
-            <p class="mt-4 text-shadow text-gray-300 max-w-4xl mx-auto">
+            <p class="mt-4 text-xl text-gray-300 max-w-4xl mx-auto">
                 Integrated intelligence stack, designed for seamless communication from natural language to field
                 execution.
             </p>
@@ -379,43 +381,86 @@
             <!-- Content Structure -->
             <div class="w-full h-full flex flex-col items-center justify-center p-0 md:p-0">
 
-                <h4 class="text-3xl sm:text-3xl font-extrabold leading-tight text-[#00D4FF] text-center mb-8">
-                    Deep Data Integration- LLM Development Core
+                <h4 class="text-2xl sm:text-3xl font-bold leading-tight text-[#046DBB] text-center mb-8">
+                    Deep Data Integration: LLM Development Core
                 </h4>
-                <p class="text-xl md:text-sm font-light text-[#70DFE0] mb-6 text-center">
+                <p class="text-xl md:text-xl font-light text-gray-300 mb-6 text-center">
                     Visualizing the flow of multi-modal farm data into the centralized AI processing unit.
                 </p>
 
                 <!-- The simulation visual area -->
                 <div id="simulation-visual-area"
-                    class="w-full max-w-6xl h-[400px] rounded-xl shadow-2xl shadow-purple-500/20 relative border border-gray-700 bg-black">
+                    class="w-full max-w-5xl h-[430px] rounded-xl shadow-2xl shadow-purple-500/20 relative border border-gray-700 bg-black">
                     <!-- The canvas will be inserted here by three.js -->
                     <div id="canvas-container" class="w-full h-full"></div>
 
                     <!-- Text labels for the simulation -->
-                    <div class="label" style="top: 15%; left: 10%; color: #17c9cf;">Satellite & Drone Imagery (Web Data)</div>
-                    <div class="label" style="top: 20%; right: 10%; color: #17c9cf;">Soil & Climate Sensor Data</div>
-                    <div class="label" style="bottom: 25%; left: 15%; color: #17c9cf;">Historical Farm ERP Data</div>
+                    <div class="label" style="top: 15%; left: 10%;">Satellite & Drone Imagery (Web Data)</div>
+                    <div class="label" style="top: 20%; right: 10%;">Soil & Climate Sensor Data</div>
+                    <div class="label" style="bottom: 25%; left: 15%;">Historical Farm ERP Data</div>
                     <div class="label"
-                        style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1rem; color: #2e0128; padding: 2px 2px; background: rgba(147, 92, 168, 0.8);">
-                        LLM Processing Core(Brain)</div>
-                    <div class="label" style="bottom: 10%; right: 10%; color: #17c9cf;">Actionable Robotic Commands</div>
+                        style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1rem; padding: 8px 12px; background: rgba(157, 0, 255, 0.8);">
+                        LLM Processing Core (The Brain)</div>
+                    <div class="label" style="bottom: 10%; right: 10%;">Actionable Robotic Commands</div>
                 </div>
             </div>
         </section>
+
         <!-- 
             ===============================================================
             END OF THE NEW VISUALIZATION SECTION
             ===============================================================
         -->
+        <!-- NEW SECTION: Interactive Query Pipeline graphs image -->
+        <!-- NEW SECTION: Interactive Query Pipeline graphs image -->
+        <section class="p-8 bg-gray-900/70 rounded-2xl border border-gray-800 mb-12">
+            <h4 class="text-3xl sm:text-2xl font-extrabold leading-tight text-[#00BCD4] text-center mb-8">
+                Agents, LLMs, RAG, Fine-tuning, LangChain with practical examples to start building
+            </h4>
+            <div class="max-w-xl mx-auto">
+                <img src="https://towardsdatascience.com/wp-content/uploads/2025/05/mind_map_final2-1-1536x815.jpg"
+                    alt="LLM Query image" class="w-full h-auto rounded-xl shadow-lg border-4 border-[#090979]">
+            </div>
+        </section>
+
+        <!-- NEW SECTION: Agents → LLMs — Short, Clear Gist (no “what is”) -->
+        <section class="p-8 bg-gray-900/60 rounded-2xl border border-gray-800 mb-12 text-[#00BCD4]">
+            <h4 class="text-2xl font-bold text-white mb-4 text-center">Agents → LLMs</h4>
+            <div class="max-w-3xl mx-auto space-y-4 leading-relaxed text-gray-100/90">
+                <p><span class="font-semibold">Agent</span>: decides next step toward a goal and <em>acts</em>. Three
+                    parts — <span class="font-semibold">model</span> (language/reasoning), <span
+                        class="font-semibold">instructions</span> (goals, rules, memory), <span
+                        class="font-semibold">tools</span> (functions/APIs, data). Loop: observe → plan → call tools →
+                    act → repeat.</p>
+                <p><span class="font-semibold">Uses an LLM</span> for language + reasoning. The model proposes plans,
+                    function calls, and responses; tools (search, DB, code) return real data. For documents, add <span
+                        class="font-semibold">RAG</span> to retrieve your own content and ground answers.</p>
+                <p><span class="font-semibold">LLM</span>: next‑token predictor you control via <span
+                        class="font-semibold">prompts</span>. Add <span class="font-semibold">RAG</span> for facts; use
+                    <span class="font-semibold">fine‑tuning</span> only when stable tone/behavior must live inside the
+                    model.</p>
+                <p><span class="font-semibold">Ship</span>: evaluate quality, latency, and cost; use guardrails to limit
+                    hallucinations.</p>
+                <p class="text-gray-100/80">Agents rely on data returned by LLMs and tools to refine each action step.
+                    This loop continues until the defined goal is achieved.</p>
+                <p class="text-gray-100/80">LLMs act as the brain inside the agent—interpreting context, generating
+                    reasoning, and shaping actions with retrieved knowledge.</p>
+                <p class="text-gray-100/80">Together they form the core of modern AI pipelines, combining autonomy with
+                    real-world data access.</p>
+            </div>
+            <div class="text-center mt-6">
+                <a href="https://towardsdatascience.com/new-to-llms-start-here/" target="_blank" rel="noopener"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-purple-700 text-black rounded-lg border-2 border-white/80 hover:border-white/40">
+                    Read more at Towards Data Science →
+                </a>
+            </div>
+        </section>
 
 
         <section class="p-8 bg-gray-900/70 rounded-2xl border border-gray-800 mb-12">
-            <h4 class="text-3xl sm:text-4xl font-extrabold leading-tight text-white text-center mb-8">
-                Interactive Query Pipeline- From Language to Action
+            <h4 class="text-3xl sm:text-3xl font-extrabold leading-tight text-[#710FA6] text-center mb-8">
+                Interactive Query Pipeline- Language to Action
             </h4>
-
-
             <div class="flex flex-wrap justify-center space-x-2 md:space-x-4 mb-8">
                 <button class="workflow-step-btn active bg-violet-500 text-white" data-step="1" onclick="showStep(1)">1.
                     User Input</button>
@@ -431,33 +476,388 @@
 
 
             <div id="workflow-content" class="bg-gray-800 rounded-xl p-6 border border-violet-500/30 relative fade-in">
-
             </div>
-
         </section>
-
         <!-- NEW SECTION: 14-Step AI Q->A Pipeline -->
         <section class="p-8 bg-gray-900/70 rounded-2xl border border-gray-800">
-            <h4 class="text-3xl sm:text-4xl font-extrabold leading-tight text-white text-center mb-6">
-                Deep Dive: The 14-Step AI Q→A Pipeline
+            <h4 class="text-xl sm:text-2xl font-extrabold leading-tight text-[#00BCD4] text-center mb-6">
+                Deep Dive-14-Step AI Q→A Pipeline
             </h4>
 
             <!-- Controls -->
-            <div class="flex justify-center space-x-4 mb-8">
-                <button class="control-btn bg-teal-600 text-white hover:bg-teal-500"
+            <div class="flex justify-center space-x-4 mb-8 text-sm">
+                <button class="control-btn bg-[#0E3386] text-white hover:bg-[#000080]"
                     onclick="toggleAllPipelineDetails(true)">Open All</button>
-                <button class="control-btn bg-pink-600 text-white hover:bg-pink-500"
+                <button class="control-btn bg-[#6F00FF] text-white hover:bg-[#4B0082]"
                     onclick="toggleAllPipelineDetails(false)">Close All</button>
             </div>
 
             <!-- Pipeline Grid -->
-            <div id="pipeline-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div id="pipeline-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-5 gap-2">
+
                 <!-- Content injected by JavaScript -->
             </div>
         </section>
 
+
+        <!-- LLM Animated Flowchart (added above Pipeline) -->
+        <section id="animated-flow" class="max-w-3xl mx-auto p-2">
+            <div
+                class="rounded-2xl border border-cyan-900/50 bg-[#0f141b] p-2 shadow-[0_10px_30px_rgba(0,255,255,0.15)]">
+                <h1 class="text-2xl font-bold text-white mb-2 text-center">LLM Decision Flow Animator</h1>
+                <p class="text-cyan-300/80 mb-4 text-center text-sm">Data flow runs automatically. Drag nodes to
+                    reorganize.</p>
+                <div
+                    class="relative w-full max-w-xl mx-auto h-44 sm:h-52 md:h-60 border border-cyan-700/50 rounded-lg overflow-hidden">
+                    <svg id="flowchart-svg" width="100%" height="100%" viewBox="0 0 700 400"
+                        preserveAspectRatio="xMidYMid meet" class="block">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <p id="status-message" class="text-xs text-cyan-400 font-semibold mt-3 text-center">Flow Active: Data
+                    Packets Moving...</p>
+            </div>
+
+            <style>
+                #animated-flow .node-circle {
+                    transition: stroke .3s, fill .3s, transform .2s;
+                    stroke-width: 3;
+                    filter: drop-shadow(0 0 5px rgba(0, 0, 0, .5))
+                }
+
+                #animated-flow .node-label {
+                    font-size: 10px;
+                    fill: #e5e7eb;
+                    user-select: none
+                }
+
+                #animated-flow .edge-path {
+                    stroke-width: 1.5;
+                    stroke: #4b5563;
+                    fill: none;
+                    marker-end: url(#arrowhead)
+                }
+
+                #animated-flow .flow-marker {
+                    fill: #00ffff;
+                    animation: flow-pulse .5s infinite alternate;
+                    pointer-events: none
+                }
+
+                @keyframes flow-pulse {
+                    from {
+                        transform: scale(1);
+                        opacity: .8
+                    }
+
+                    to {
+                        transform: scale(1.5);
+                        opacity: 1
+                    }
+                }
+
+                @keyframes node-activate {
+                    0% {
+                        transform: scale(1)
+                    }
+
+                    50% {
+                        transform: scale(1.15);
+                        fill: #00ffff
+                    }
+
+                    100% {
+                        transform: scale(1)
+                    }
+                }
+
+                #animated-flow .activated {
+                    animation: node-activate .3s ease-out
+                }
+
+                #animated-flow g.node-container {
+                    cursor: grab
+                }
+
+                #animated-flow g.node-container:active {
+                    cursor: grabbing
+                }
+            </style>
+
+            <script>
+                (function () {
+                    const NODE_RADIUS = 16, FLOW_SPEED = 2000, FLOW_MARKER_SIZE = 3;
+                    const svg = document.getElementById('flowchart-svg');
+                    const statusMessage = document.getElementById('status-message');
+                    const nodes = [
+                        { id: 'start', label: 'QEvent', x: 100, y: 200, color: '#9333ea' },
+                        { id: 'start2', label: 'Start', x: 200, y: 200, color: '#3b82f6' },
+                        { id: 'predict', label: 'Pending_Predict', x: 350, y: 100, color: '#10b981' },
+                        { id: 'decision', label: 'Trading_Decision', x: 500, y: 200, color: '#f59e0b' },
+                        { id: 'feedback', label: 'Offline/Online Feedback', x: 400, y: 330, color: '#10b981' },
+                        { id: 'trade', label: 'TradeEvent', x: 650, y: 200, color: '#f87171' }
+                    ];
+                    const edges = [
+                        { id: 'e1', source: 'start', target: 'start2' },
+                        { id: 'e2', source: 'start2', target: 'predict' },
+                        { id: 'e3', source: 'predict', target: 'decision' },
+                        { id: 'e4', source: 'decision', target: 'trade' },
+                        { id: 'e6', source: 'decision', target: 'feedback' },
+                        { id: 'e7', source: 'feedback', target: 'decision' }
+                    ];
+                    const nodeEls = {};
+                    function draw() {
+                        Array.from(svg.querySelectorAll('g.node-container, path.edge-path')).forEach(el => el.remove());
+                        // edges
+                        edges.forEach(e => {
+                            const s = nodes.find(n => n.id === e.source), t = nodes.find(n => n.id === e.target);
+                            let d;
+                            if (e.id === 'e7') {
+                                const c1x = t.x - 150, c1y = t.y + 10, c2x = s.x + 50, c2y = s.y + 50;
+                                d = `M ${s.x} ${s.y} C ${c2x} ${c2y}, ${c1x} ${c1y}, ${t.x} ${t.y}`;
+                            } else {
+                                d = `M ${s.x} ${s.y} L ${t.x} ${t.y}`;
+                            }
+                            const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            p.setAttribute('d', d); p.classList.add('edge-path'); p.id = `path-${e.id}`; svg.appendChild(p);
+                        });
+                        // nodes
+                        nodes.forEach(n => {
+                            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                            g.classList.add('node-container'); g.id = `node-${n.id}`; g.dataset.id = n.id; g.setAttribute('transform', `translate(${n.x},${n.y})`);
+                            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                            c.classList.add('node-circle'); c.setAttribute('r', NODE_RADIUS); c.setAttribute('fill', '#1f2937'); c.setAttribute('stroke', n.color); g.appendChild(c);
+                            const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                            t.classList.add('node-label'); t.setAttribute('text-anchor', 'middle'); t.setAttribute('alignment-baseline', 'middle'); t.setAttribute('y', 2); t.textContent = n.label; g.appendChild(t);
+                            svg.appendChild(g); nodeEls[n.id] = g;
+                        });
+                    }
+                    function pulse(id) { const g = nodeEls[id]; if (!g) return; const c = g.querySelector('.node-circle'); c.classList.add('activated'); setTimeout(() => c.classList.remove('activated'), 300); }
+                    function animateEdge(id) {
+                        const path = document.getElementById(`path-${id}`); if (!path) return; const len = path.getTotalLength();
+                        const m = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); m.classList.add('flow-marker'); m.setAttribute('r', FLOW_MARKER_SIZE); svg.appendChild(m);
+                        let t0; function step(ts) {
+                            if (!t0) t0 = ts; const prog = ((ts - t0) % FLOW_SPEED) / FLOW_SPEED; const pt = path.getPointAtLength(prog * len); m.setAttribute('cx', pt.x); m.setAttribute('cy', pt.y);
+                            if (prog > .98) { const e = edges.find(x => `path-${x.id}` === path.id); if (e) pulse(e.target); }
+                            requestAnimationFrame(step);
+                        } requestAnimationFrame(step);
+                    }
+                    function enableDrag() {
+                        function getSVGPoint(clientX, clientY) { const CTM = svg.getScreenCTM(); return { x: (clientX - CTM.e) / CTM.a, y: (clientY - CTM.f) / CTM.d }; }
+                        let active = null, off = { x: 0, y: 0 };
+                        Object.values(nodeEls).forEach(g => {
+                            g.addEventListener('mousedown', e => { active = g; g.style.cursor = 'grabbing'; const id = g.dataset.id; const n = nodes.find(x => x.id === id); const p = getSVGPoint(e.clientX, e.clientY); off.x = p.x - n.x; off.y = p.y - n.y; });
+                        });
+                        document.addEventListener('mousemove', e => { if (!active) return; const id = active.dataset.id; const n = nodes.find(x => x.id === id); const p = getSVGPoint(e.clientX, e.clientY); n.x = p.x - off.x; n.y = p.y - off.y; active.setAttribute('transform', `translate(${n.x},${n.y})`); redrawEdges(); });
+                        document.addEventListener('mouseup', () => { if (active) { active.style.cursor = 'grab'; active = null; } });
+                    }
+                    function redrawEdges() { edges.forEach(e => { const path = document.getElementById(`path-${e.id}`); if (!path) return; const s = nodes.find(n => n.id === e.source), t = nodes.find(n => n.id === e.target); let d; if (e.id === 'e7') { const c1x = t.x - 150, c1y = t.y + 10, c2x = s.x + 50, c2y = s.y + 50; d = `M ${s.x} ${s.y} C ${c2x} ${c2y}, ${c1x} ${c1y}, ${t.x} ${t.y}`; } else { d = `M ${s.x} ${s.y} L ${t.x} ${t.y}`; } path.setAttribute('d', d); }); }
+                    function start() { draw(); enableDrag();['e1', 'e2', 'e3', 'e4', 'e6', 'e7'].forEach((id, i) => setTimeout(() => animateEdge(id), i * 150)); statusMessage.textContent = 'Flow Active: Data Packets Moving...'; }
+                    start();
+                })();
+            </script>
+        </section>
+
+        <section id="llm-sim" class="max-w-5xl mx-auto p-6">
+            <div class="rounded-2xl border border-slate-700 bg-[#081f37] p-6 shadow-xl text-[#F5F5F5]">
+                <header class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-[#6222C3] p-2 ">LLM Data Pipeline simulation</h2>
+                </header>
+
+                <div id="pipeline-grid"
+                    class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 text-xs">
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">1.
+                        AI (Agent)<span class="ml-1 text-[10px] font-mono opacity-80">◉</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">2.
+                        Ingest (Cleaner)<span class="ml-1 text-[10px] font-mono opacity-80">⟲</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">3.
+                        Chunk (Cutter)<span class="ml-1 text-[10px] font-mono opacity-80">✂</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">4.
+                        Embed (to numbers)<span class="ml-1 text-[10px] font-mono opacity-80">⊕</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">5.
+                        Index (Vector DB)<span class="ml-1 text-[10px] font-mono opacity-80">⧉</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">6.
+                        NLP (Listener)<span class="ml-1 text-[10px] font-mono opacity-80">☊</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">7.
+                        RAG (Retriever)<span class="ml-1 text-[10px] font-mono opacity-80">⌁</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">8.
+                        ToolPlan (Planner)<span class="ml-1 text-[10px] font-mono opacity-80">⌖</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">9.
+                        Execute (Worker)<span class="ml-1 text-[10px] font-mono opacity-80">⚙</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">10.
+                        ComposePrompt (Packager)<span class="ml-1 text-[10px] font-mono opacity-80">✉</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">11.
+                        LLM (Writer)<span class="ml-1 text-[10px] font-mono opacity-80">✎</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">12.
+                        Post‑Process (Checker)<span class="ml-1 text-[10px] font-mono opacity-80">✓</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">13.
+                        Return (Messenger)<span class="ml-1 text-[10px] font-mono opacity-80">⤴</span></span>
+                    <span
+                        class="p-3 leading-snug rounded tracking-tight bg-[#081f37] border border-slate-600 text-center">14.
+                        Learn Loop (Improver)<span class="ml-1 text-[10px] font-mono opacity-80">↻</span></span>
+                </div>
+            </div>
+
+            <!-- Detail panel -->
+            <div id="llm-detail" class="mt-6 p-4 rounded border border-slate-600 bg-[#081f37]">
+                <h3 class="font-semibold">Step • Auto progression</h3>
+                <p id="llm-desc" class="text-sm mt-1 opacity-90">Waiting for question as a parameter…</p>
+                <div class="mt-3 text-xs opacity-80">Question: <span id="llm-q">—</span></div>
+            </div>
+
+            <!-- Chat input & answer -->
+            <div class="mt-4 p-4 rounded border border-slate-600 bg-[#081f37]">
+                <div class="flex gap-2">
+                    <input id="llm-input" class="flex-1 px-3 py-2 rounded bg-[#113f67] border border-slate-600"
+                        placeholder="Ask a question…" />
+                    <button id="llm-ask" class="px-3 py-2 rounded bg-[#00204a] text-white text-bold">Ask</button>
+                </div>
+                <div class="mt-3 text-sm">Answer: <span id="llm-answer">—</span></div>
+            </div>
+            <!--Footer section-->
+            <footer class="bg-dark-card border-t border-slate-800/50 mt-40" id="contact">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+                        <!-- Brand Info -->
+                        <div class="col-span-2 md:col-span-1">
+                            <a href="#" class="text-3xl font-extrabold text-white tracking-tight mb-4 block">
+                                Apti<span class="text-neon-primary">Craft</span>
+                            </a>
+                            <p class="text-sm text-slate-500">
+                                Automation meets creativity.
+                            </p>
+                        </div>
+
+                        <!-- Links Column 1 -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-white mb-4">Product</h4>
+                            <ul class="space-y-3 text-sm">
+                                <li><a href="#features" class="text-slate-400 hover:text-neon-primary">Features</a></li>
+                                <li><a href="#responsive" class="text-slate-400 hover:text-neon-primary">Showcase</a>
+                                </li>
+                                <li><a href="#consistency" class="text-slate-400 hover:text-neon-primary">Value
+                                        Promise</a></li>
+                                <li><a href="#pricing" class="text-slate-400 hover:text-neon-primary">Pricing</a></li>
+                                <li><a href="#" class="text-slate-400 hover:text-neon-primary">Integrations</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- Links Column 2 -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                            <ul class="space-y-3 text-sm">
+                                <li><a href="https://www.linkedin.com/in/afsanausa/"
+                                        class="text-slate-400 hover:text-neon-primary">LinkedIn</a></li>
+                                <li><a href="https://flask-apps-e45a.onrender.com/"
+                                        class="text-slate-400 hover:text-neon-primary">Website</a></li>
+                                <li><a href="https://github.com/Afsana721/flask_apps"
+                                        class="text-slate-400 hover:text-neon-primary">GitHub</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Copyright -->
+                    <div class="mt-12 pt-8 border-t border-slate-800 text-center">
+                        <p class="text-sm text-slate-500">
+                            &copy; 2024 AptiCraft, Inc. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </footer>
+
+            <script>
+                (function () {
+                    const steps = document.querySelectorAll('#pipeline-grid > span');
+                    const desc = document.getElementById('llm-desc');
+                    const qEl = document.getElementById('llm-q');
+                    const askBtn = document.getElementById('llm-ask');
+                    const input = document.getElementById('llm-input');
+                    const ansEl = document.getElementById('llm-answer');
+
+                    // Tiny demo dataset (single line to avoid syntax errors)
+                    const DATASET = [{
+                        match: /current\s+high\s+level\s+job\s+condition\s+in\s+usa/i,
+                        answer: "The current US high-level job situation is characterized by a slowing, yet stable, market where worker sentiment is declining despite low unemployment. Job openings have decreased compared to last year, and the pace of job growth has slowed."
+                    }];
+                    const getAnswer = q => {
+                        const hit = DATASET.find(d => d.match.test(q));
+                        return hit ? hit.answer : "Demo: generate answer from retrieved context.";
+                    };
+
+                    const info = [null,
+                        { t: '1. AI (Agent)', d: 'Receives the question and coordinates next steps.' },
+                        { t: '2. Ingest (Cleaner)', d: 'Extracts entities (time, topic, location).' },
+                        { t: '3. Chunk (Cutter)', d: 'Splits cleaned text into overlapping pieces.' },
+                        { t: '4. Embed (to numbers)', d: 'Converts each chunk to a semantic vector.' },
+                        { t: '5. Index (Vector DB)', d: 'Builds/uses ANN index for fast lookup.' },
+                        { t: '6. NLP (Listener)', d: 'Parses intent & slots; normalizes terms.' },
+                        { t: '7. RAG (Retriever)', d: 'Fetches nearest relevant docs/chunks.' },
+                        { t: '8. ToolPlan (Planner)', d: 'Chooses tools/queries & order.' },
+                        { t: '9. Execute (Worker)', d: 'Runs tools/SQL/APIs for evidence.' },
+                        { t: '10. ComposePrompt (Packager)', d: 'Packs question + context for LLM.' },
+                        { t: '11. LLM (Writer)', d: 'Generates draft grounded answer.' },
+                        { t: '12. Post-Process (Checker)', d: 'Refines, validates, formats.' },
+                        { t: '13. Return (Messenger)', d: 'Shows result in the UI.' },
+                        { t: '14. Learn Loop (Improver)', d: 'Logs feedback/telemetry for next time.' }
+                    ];
+
+                    function highlight(n) {
+                        steps.forEach(s => s.classList.remove('ring', 'ring-indigo-400'));
+                        const el = steps[n - 1];
+                        if (el) { el.classList.add('ring', 'ring-indigo-400'); }
+                    }
+                    const delay = (ms) => new Promise(r => setTimeout(r, ms));
+
+                    async function runPipeline(q) {
+                        qEl.textContent = q;
+                        ansEl.textContent = '…';
+                        for (let i = 1; i <= 14; i++) {
+                            highlight(i);
+                            desc.textContent = info[i].d;
+                            await delay(600);
+                        }
+                        const final = getAnswer(q);
+                        ansEl.textContent = final;
+                        desc.textContent = 'Done.';
+                    }
+
+                    askBtn.addEventListener('click', () => {
+                        const q = (input.value || 'What is the current high level job condition in USA').trim();
+                        input.value = '';
+                        runPipeline(q);
+                    });
+
+                    // --- Minimal tests (console) ---
+                    try {
+                        console.assert(getAnswer('What is the current high level job condition in USA').startsWith('The current US high-level job situation'), 'Test: expected match failed');
+                        console.assert(getAnswer('something else').includes('Demo:'), 'Test: expected demo fallback');
+                    } catch (e) { console.warn('Tests failed:', e); }
+                })();
+            </script>
+        </section>
+        <!--LLM simulation with behind total process-->
     </div>
+
+
     <canvas id="three-canvas"></canvas>
+
     <script>
         // --- Global Variables (Background) ---
         let bgScene, bgCamera, bgRenderer, bgParticles;
@@ -476,27 +876,27 @@
         // --- Data for Interactive Workflow ---
         const workflowSteps = {
             1: {
-                title: "1. User Input: The Natural Language Command",
-                description: "The farmer issues a conversational request, such as: **'How much water should I use on Field-3 next week?'** This input is captured via a dashboard or voice interface and sent to the LLM for initial processing.",
+                title: "1.User Input: The Natural Language Command",
+                description: "The farmer issues a conversational request, such as: **'How much water should I I use on Field 3 next week?'** This input is captured via a dashboard or voice interface and sent to the LLM for initial processing.",
                 visualization: "<span class='text-4xl font-extrabold text-violet-400'>'Water Field 3'</span> <span class='text-gray-500'>-> LLM</span>"
             },
             2: {
-                title: "2. Orchestration: LLM (The Brain)",
+                title: "2.Orchestration: LLM (The Brain)",
                 description: "The Large Language Model acts as the orchestrator. It uses **tool-calling** to break down the request into a structured action plan, identifying key parameters (Field ID, Date Range) and delegating the task to the specialized Predictive Model.",
                 visualization: "<span class='text-4xl font-extrabold text-violet-400'>LLM</span> <span class='text-gray-500'>parses request -> Calls Predictive Model (Field 3, Next Week)</span>"
             },
             3: {
-                title: "3. Data Retrieval: RAG (The Memory)",
+                title: "3.Data Retrieval: RAG (The Memory)",
                 description: "The Retrieval-Augmented Generation (RAG) tool queries the farm's central database (sensor history, ERP systems, external weather APIs). It fetches **only the most relevant, up-to-date data** (soil moisture, temperature forecasts, crop history) needed for the prediction.",
                 visualization: "<span class='text-4xl font-extrabold text-violet-400'>RAG</span> <span class='text-gray-500'>fetches data from sensors & APIs:</span> <span class='text-sm font-mono text-emerald-400'> {Soil: 18%, Temp: 25C, Rainfall: 5mm}</span>"
             },
             4: {
-                title: "4. Prediction & Planning: Specialized Models",
+                title: "4.Prediction & Planning: Specialized Models",
                 description: "The specialized **Predictive Model** consumes the RAG-retrieved data. It calculates the precise output, determining that 30mm of water is required. The result is then sent back to the LLM for synthesis and validation against historical best practices.",
                 visualization: "<span class='text-4xl font-extrabold text-violet-400'>Model</span> <span class='text-gray-500'>calculates:</span> <span class='text-4xl font-extrabold text-yellow-400'>Water = 30mm</span>"
             },
             5: {
-                title: "5. Autonomous Execution: Edge & Robotics",
+                title: "5.Autonomous Execution: Edge & Robotics",
                 description: "The LLM generates a final, human-readable response and simultaneously translates the 30mm command into a low-level **machine command packet**. This packet is sent over the Global Connectivity network for immediate execution by the farm's System & Circuitry and Robotics hardware.",
                 visualization: "<span class='text-4xl font-extrabold text-violet-400'>Output</span> <span class='text-gray-500'>-> 'Apply 30mm' & Edge Command Packet -></span> <span class='text-4xl font-extrabold text-pink-400'>Tractor Actuation</span>"
             }
@@ -504,20 +904,20 @@
 
         // --- Data for 14-Step Pipeline ---
         const pipelineStepsData = [
-            { num: 1, name: "AI (Agent)", type: "object/function", desc: "Receives question; orchestrates steps" },
-            { num: 2, name: "Ingest (Cleaner)", type: "function", desc: "Cleans the raw sentence" },
-            { num: 3, name: "Chunk (Cutter)", type: "object", desc: "Small passages for search" },
-            { num: 4, name: "Embed (to numbers)", type: "function", desc: "Text → vectors (meaning)" },
-            { num: 5, name: "Index (Vector DB)", type: "object", desc: "Find top‑K fast" },
-            { num: 6, name: "NLP (Listener)", type: "function", desc: "Intent + entities + time" },
-            { num: 7, name: "RAG (Retriever)", type: "function", desc: "Fetch facts first" },
-            { num: 8, name: "ToolPlan (Planner)", type: "function", desc: "Decide SQL / API / Predict" },
-            { num: 9, name: "Execute (Worker)", type: "function", desc: "Run tasks safely" },
-            { num: 10, name: "ComposePrompt (Packager)", type: "function", desc: "Build final packet" },
-            { num: 11, name: "LLM (Writer)", type: "model", desc: "Read + write grounded answer" },
-            { num: 12, name: "Post‑Process (Checker)", type: "function", desc: "Format + citations + safety" },
-            { num: 13, name: "Return (Messenger)", type: "function", desc: "Send to UI/DOM" },
-            { num: 14, name: "Learn Loop (Improver)", type: "object/job", desc: "Log + improve next time" },
+            { num: 1, name: "AI Agent", type: "object/function", desc: "Receives the question and coordinates next steps." },
+            { num: 2, name: "Ingest Cleaner", type: "function", desc: "Cleans input, removes noise, fixes spacing, normalizes text." },
+            { num: 3, name: "Chunk Cutter)", type: "object", desc: "Splits text into smaller readable pieces for better processing." },
+            { num: 4, name: "Embed to numbers", type: "function", desc: "Turns chunks into numerical vectors the AI can understand." },
+            { num: 5, name: "Index Vector DB", type: "object", desc: "Stores all embeddings for quick future look‑ups." },
+            { num: 6, name: "NLP Listener", type: "function", desc: "Understands user intent, entities, and language meaning." },
+            { num: 7, name: "RAG Retriever", type: "function", desc: "Finds matching data or context from the knowledge base." },
+            { num: 8, name: "ToolPlan Planner", type: "function", desc: "Decides which tools or APIs are needed to solve the task." },
+            { num: 9, name: "Execute Worker", type: "function", desc: "Runs the actual tool, query, or action based on the plan." },
+            { num: 10, name: "ComposePrompt Packager", type: "function", desc: "Combines results and context into a single prompt for LLM." },
+            { num: 11, name: "LLM Writer", type: "model", desc: "Generates the final human‑like response." },
+            { num: 12, name: "PostProcess Checker", type: "function", desc: "Checks grammar, format, or filters sensitive info." },
+            { num: 13, name: "Return Messenger", type: "object", desc: "Sends final output back to user interface." },
+            { num: 14, name: "Learn Loop Improver", type: "object", desc: "Analyzes feedback to improve next responses." },
         ];
 
         // --- Pillar Interaction Functions (Kept for compatibility, though pillar cards are removed) ---
