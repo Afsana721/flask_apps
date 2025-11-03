@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AptiCraft | 3D Engine & Robotics</title>
+  <!-- Load Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Three.js for 3D Animation and Rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Dependencies for the Helicopter Demo -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Cannon.js for Physics (Still included for other demos) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+  <style>
+    /* Custom Styles */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1117;
+      /* Dark background */
+      color: #f0f6fc;
+      /* Light text */
+    }
+
+    /* Highlight color */
+    .accent-blue {
+      color: #38bdf8;
+      /* Sky Blue 400 */
+    }
+
+    /* Ensure all canvases fill their parent container */
+    .three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: transparent;
+      /* Allows main body background to show */
+    }
+
+    /* CTA Button Style */
+    .cta-button {
+      background-color: #38bdf8;
+      color: #0d1117;
+      font-weight: 600;
+      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .cta-button:hover {
+      background-color: #0ea5e9;
+      /* Sky Blue 500 */
+      transform: translateY(-2px);
+    }
+
+    /* Utility class to hide pages */
+    .page-hidden {
+      display: none;
+    }
+
+    /* Styling for the hidden explore section */
+    .explore-content {
+      transition: max-height 0.5s ease-in-out, opacity 0.5s;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .explore-content.expanded {
+      opacity: 1;
+      /* Using a large number to ensure content fits */
+      max-height: 500px;
+    }
+
+    /* HELICOPTER DEMO-SPECIFIC STYLES (MERGED) */
+    /* Apply the gradient background only to the main page to avoid conflicts */
+    #main {
+      /* Adjusted radial gradient position to account for the larger canvas */
+      background: radial-gradient(1200px 700px at 50% 100%, #0ea5b6 0%, #0b1220 65%, #090f1a 100%);
+    }
+
+      /* --- Custom Footer Styles --- */
+        @keyframes color-shift {
+            0% {
+                border-color: #00FF7F;
+                box-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+            }
+
+            50% {
+                border-color: #33FFFF;
+                box-shadow: 0 0 15px rgba(51, 255, 255, 0.7);
+            }
+
+            100% {
+                border-color: #00FF7F;
+                box-shadow: 0 0 10px rgba(19, 218, 168, 0.5);
+            }
+        }
+
+        .animated-footer {
+            animation: color-shift 4s ease-in-out infinite;
+        }
+
+        /* --- End Custom Footer Styles --- */
+  </style>
+</head>
+
+<body>
+  <!-- Header / Navigation -->
+  <header class="border-b border-gray-800 sticky top-0 z-20 bg-[#0d1117] bg-opacity-95 backdrop-blur-sm py-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('main')">
+        <img src="../static/aptiCraft.png" alt="logo" class="bg-cyan-500  w-10 h-10">
+        <span class="text-2xl font-semibold text-emerald-500">AptiCraft Engine</span>
+      </div>
+      <nav class="flex items-center space-x-6 text-gray-400 text-sm font-medium">
+        <a href="#" class="hover:text-sky-400 transition-colors hidden sm:block">LLM</a>
+        <a href="#" class="hover:text-sky-400 transition-colors hidden sm:block">Robic</a>
+        <a href="#" class="hover:text-sky-400 transition-colors hidden sm:block">System & Circuit</a>
+        <a href="#" class="cta-button py-2 px-5 rounded-full text-sm">Health -Inside Body</a>
+      </nav>
+    </div>
+  </header>
+  <!-- Main Content Container (Page Switcher) -->
+  <main id="main-content">
+    <!-- ===== MAIN LANDING PAGE (Helicopter Simulation) ===== -->
+    <div id="main" class="min-h-screen">
+      <!-- Hero Section: Text + 3D Animation Canvas (Helicopter Demo) -->
+      <section class="py-12 lg:py-24">
+        <!-- MODIFIED GRID: Canvas 7/10, Content 3/10 -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-10 gap-8 items-center">
+          <!-- Left Side: 3D Canvas Container (70% width) -->
+          <div
+            class="lg:order-1 order-2 lg:col-span-7 w-full h-80 sm:h-96 lg:h-[600px] rounded-xl overflow-hidden shadow-2xl shadow-sky-900/50 bg-transparent relative border border-sky-600/50">
+            <!-- Canvas for the main landing page Helicopter demo -->
+            <canvas id="main-canvas" class="three-canvas"></canvas>
+            <!-- Simulation Status Overlay (Top Left) -->
+            <div id="status-overlay"
+              class="absolute top-4 left-4 p-2 bg-gray-900/70 text-sm rounded-lg text-sky-400 font-mono">
+              Status: <span id="heli-status">Loading...</span>
+            </div>
+            <!-- Control Section (FIXED inside canvas, Bottom Center) -->
+            <div id="control-section"
+              class="absolute bottom-0 left-1/2 -translate-x-1/2 mb-4 bg-gray-800/80 backdrop-blur-sm rounded-2xl px-4 sm:px-6 py-2 flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-5 shadow-2xl">
+              <button id="btnStart"
+                class="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-full shadow-md transition-all">Start</button>
+              <button id="btnFly"
+                class="px-3 py-1.5 sm:px-2 sm:py-2 text-xs sm:text-sm bg-green-600 hover:bg-green-500 text-white font-semibold rounded-full shadow-md transition-all">Take
+                Off</button>
+              <button id="btnGo"
+                class="px-3 py-1.5 sm:px-2 sm:py-2 text-xs sm:text-sm bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-full shadow-md transition-all">Fly</button>
+              <button id="btnBack"
+                class="px-3 py-1.5 sm:px-2 sm:py-2 text-xs sm:text-sm bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-full shadow-md transition-all">Return</button>
+              <button id="btnLand"
+                class="px-3 py-1.5 sm:px-2 sm:py-2 text-xs sm:text-sm bg-red-600 hover:bg-red-500 text-white font-semibold rounded-full shadow-md transition-all">Land</button>
+            </div>
+          </div>
+          <!-- Right Side: Content (30% width, smaller text) -->
+          <div class="lg:order-2 order-1 lg:col-span-3 text-center lg:text-left">
+            <!-- Smaller Title: text-4xl on desktop (was 6xl) -->
+            <h2 class="text-3xl lg:text-4xl font-extrabold tracking-tight mb-4 leading-tight">
+              <span class="accent-blue">Robotics & Physics</span> Core
+            </h2>
+            <!-- Smaller Paragraph: text-base on desktop (was lg) -->
+            <p class="text-base text-gray-400 max-w-xl mx-auto lg:mx-0 mb-6">
+              A high-fidelity simulation demonstrating rigid-body dynamics and state-based control. Command the aircraft
+              using the controls below the model.
+            </p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
+              <a href="#" class="cta-button py-2 px-6 rounded-lg text-sm shadow-xl">
+                Dive into Code
+              </a>
+              <a href="#"
+                class="bg-transparent border border-gray-600 text-gray-300 font-semibold py-2 px-6 rounded-lg text-sm hover:bg-gray-800 transition-colors">
+                View Docs
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Feature Section: Navigation to Deep Dives (Kept for navigation) -->
+      <!-- Three.js — Quick Overview (First Section only) -->
+      <section id="threejs" class="py-16 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-8 flex items-center gap-3">
+            <span class="text-sky-400 text-2xl animate-pulse">★</span>
+            <h3
+              class="text-2xl font-semibold tracking-tight bg-gradient-to-r from-sky-400 to-cyan-300 bg-clip-text text-transparent">
+              Three.js — Real‑Time 3D in the Browser
+            </h3>
+          </div>
+          <p class="text-gray-300/90 text-sm leading-relaxed mb-6">
+            Core idea: build a <span class="text-sky-300">Scene</span>, look through a <span class="text-sky-300">
+              Camera</span>, and draw with a <span class="text-sky-300">
+              WebGLRenderer</span>. Add <em>Objects</em> (Mesh/Lines/Points), animate, and render per frame.
+          </p>
+          <!-- DOM Canvas Hook -->
+          <!-- <div id="threejs-canvas"
+            class="h-80 rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-sky-500/10 shadow-lg shadow-sky-900/20 overflow-hidden">
+          </div> -->
+          <!-- DOM Canvas Hook (paste this exactly where your div should be) -->
+          <div id="threejs-canvas" style="height:500px"
+            class="rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-sky-500/10 shadow-lg shadow-sky-900/20 overflow-hidden relative mb-4">
+            <div class="hud py-2">
+              <!-- <div class="font-semibold text-xs tracking-wide mb-1">Fish controls</div> -->
+              <div>W/S: thrust • A/D: yaw • Space/Ctrl: up/down • Shift: boost • <span class="chip"
+                  id="toggleGraph">graph</span></div>
+            </div>
+            <pre id="dbg" style="display:none;"></pre>
+          </div>
+          <script>
+            /* --- Full Three.js shark + schools simulation
+              Assumes: three.r128 + OrbitControls.js + GLTFLoader.js already included on page.
+              This script mounts into #threejs-canvas and resizes to its client size. */
+            (function () {
+              // globals
+              let scene, camera, renderer, controls, clock;
+              let waterMesh, shark = null, mixer = null;
+              let tailBones = [], dorsalFins = [], pectoralFins = [];
+              let fishMesh = null, fish2Mesh = null, fish3Mesh = null;
+              const fishData = [], fish2Data = [], fish3Data = [];
+              const DROPS = [], seaweedBlades = [];
+              const dropGeo = new THREE.SphereGeometry(0.08, 10, 10);
+              const dropMat = new THREE.MeshStandardMaterial({ color: 0xaee6ff, metalness: 0.2, roughness: 0.15, transparent: true, opacity: 0.9 });
+              const state = { vel: new THREE.Vector3(), maxSpeed: 18, thrust: 12, turnRate: 1.6, lift: 6, drag: 0.96 };
+              let jawNode = null, jawBaseX = 0, jawMorphs = [];
+
+              const container = document.getElementById('threejs-canvas');
+              const WATER_COLOR = 0x113c66, GROUND_COLOR = 0x2a465f;
+
+              function init() {
+                clock = new THREE.Clock();
+                scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x0b1a29, 20, 160);
+
+                camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+                camera.position.set(26, 14, 26);
+
+                renderer = new THREE.WebGLRenderer({ antialias: true });
+                renderer.setPixelRatio(window.devicePixelRatio);
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setClearColor(0x0b1a29);
+                container.appendChild(renderer.domElement);
+
+                const hemi = new THREE.HemisphereLight(0x82b1ff, 0x0a1a26, 1.2); scene.add(hemi);
+                const dir = new THREE.DirectionalLight(0xffffff, 1.5); dir.position.set(50, 80, 30); scene.add(dir);
+
+                setupWater(); addSeabedRocks(); addSeaweed(); addSchool(); addSchool2(); addSchool3(); loadShark();
+
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true; controls.dampingFactor = 0.06;
+                controls.minDistance = 10; controls.maxDistance = 140;
+                controls.target.set(0, 5, 0); controls.update();
+
+                window.addEventListener('resize', onResize);
+                window.addEventListener('keydown', onKeyDown);
+                window.addEventListener('keyup', onKeyUp);
+                const tg = document.getElementById('toggleGraph');
+                if (tg) tg.addEventListener('click', () => { const d = document.getElementById('dbg'); d.style.display = d.style.display === 'none' ? 'block' : 'none'; });
+              }
+
+              function setupWater() {
+                const geo = new THREE.PlaneGeometry(300, 300, 200, 200);
+                const mat = new THREE.MeshPhongMaterial({ color: WATER_COLOR, specular: 0xcccccc, shininess: 120, transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+                waterMesh = new THREE.Mesh(geo, mat);
+                waterMesh.rotation.x = -Math.PI / 2; waterMesh.position.y = 5; scene.add(waterMesh);
+
+                const groundG = new THREE.PlaneGeometry(300, 300);
+                const groundM = new THREE.MeshLambertMaterial({ color: GROUND_COLOR });
+                const ground = new THREE.Mesh(groundG, groundM);
+                ground.rotation.x = -Math.PI / 2; ground.position.y = -12; scene.add(ground);
+              }
+
+              function addSeabedRocks() {
+                const mat = new THREE.MeshLambertMaterial({ color: 0x3d3532 });
+                const geo = new THREE.DodecahedronGeometry(1, 0);
+                for (let i = 0; i < 14; i++) {
+                  const s = Math.random() * 5 + 3;
+                  const m = new THREE.Mesh(geo, mat);
+                  m.scale.set(s, s, s);
+                  m.position.set((Math.random() - 0.5) * 140, -12 + s * 0.5, (Math.random() - 0.5) * 140);
+                  m.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                  scene.add(m);
+                }
+              }
+
+              function addSeaweed() {
+                const clumps = [new THREE.Vector3(28, -12, 24), new THREE.Vector3(32, -12, -26), new THREE.Vector3(-26, -12, 22)];
+                const greens = [0x19a029, 0x1A2D10, 0x3D5C2E];
+                const rng = (a, b) => a + Math.random() * (b - a);
+                clumps.forEach(base => {
+                  const group = new THREE.Group(); group.position.copy(base); scene.add(group);
+                  const count = 8 + Math.floor(Math.random() * 6);
+                  for (let i = 0; i < count; i++) {
+                    const h = rng(6, 11);
+                    const r1 = rng(0.08, 0.16), r2 = rng(0.18, 0.28);
+                    const geo = new THREE.CylinderGeometry(r1, r2, h, 8, 1, true);
+                    const mat = new THREE.MeshStandardMaterial({ color: greens[Math.floor(Math.random() * greens.length)], metalness: 0.1, roughness: 0.85 });
+                    const blade = new THREE.Mesh(geo, mat);
+                    blade.position.set(rng(-4, 4), h / 2, rng(-4, 4));
+                    blade.rotation.y = rng(0, Math.PI * 2); group.add(blade);
+                    seaweedBlades.push({ mesh: blade, baseRotX: blade.rotation.x, baseRotZ: blade.rotation.z, ampX: rng(0.08, 0.22), ampZ: rng(0.06, 0.18), freq: rng(0.4, 0.9), phase: Math.random() * Math.PI * 2 });
+                  }
+                });
+              }
+
+              function updateSeaweed(t) {
+                for (let i = 0; i < seaweedBlades.length; i++) {
+                  const b = seaweedBlades[i];
+                  b.mesh.rotation.x = b.baseRotX + Math.sin(t * b.freq + b.phase) * b.ampX;
+                  b.mesh.rotation.z = b.baseRotZ + Math.cos(t * b.freq * 1.1 + b.phase) * b.ampZ;
+                }
+              }
+
+              // schools
+              function addSchool() {
+                const body = new THREE.ConeGeometry(0.04, 0.18, 10); body.rotateX(Math.PI / 2);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, vertexColors: true, metalness: 0.9, roughness: 0.2 });
+                fishMesh = new THREE.InstancedMesh(body, mat, 10);
+                fishMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+                fishMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(10 * 3), 3);
+                scene.add(fishMesh);
+                const rng = (a, b) => a + Math.random() * (b - a); const col = new THREE.Color();
+                for (let i = 0; i < 10; i++) {
+                  const pos = new THREE.Vector3(rng(-28, 28), rng(1.2, 8.5), rng(-28, 28));
+                  const dir = rng(0, Math.PI * 2); const speed = rng(4, 9); const phase = Math.random() * Math.PI * 2; const amp = rng(0.05, 0.16);
+                  fishData.push({ pos, dir, speed, phase, amp, jumping: false, vy: 0, nextJumpAt: performance.now() + rng(800, 4000), scale: 0.55 });
+                  col.setHex(0xc0c0c0); fishMesh.setColorAt(i, col);
+                }
+                fishMesh.instanceColor.needsUpdate = true;
+              }
+              function addSchool2() {
+                const body = new THREE.CylinderGeometry(0.03, 0.045, 0.18, 10, 1, true); body.rotateX(Math.PI / 2);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, vertexColors: true, metalness: 0.85, roughness: 0.25 });
+                fish2Mesh = new THREE.InstancedMesh(body, mat, 8);
+                fish2Mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+                fish2Mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(8 * 3), 3);
+                scene.add(fish2Mesh);
+                const rng = (a, b) => a + Math.random() * (b - a); const col = new THREE.Color();
+                for (let i = 0; i < 8; i++) {
+                  const pos = new THREE.Vector3(rng(-26, 26), rng(1.0, 8.0), rng(-26, 26));
+                  const dir = rng(0, Math.PI * 2); const speed = rng(3.5, 7.5); const phase = Math.random() * Math.PI * 2; const amp = rng(0.05, 0.14);
+                  fish2Data.push({ pos, dir, speed, phase, amp, jumping: false, vy: 0, nextJumpAt: performance.now() + rng(1200, 5200), scale: 0.5 });
+                  col.setHex(0xc0c0c0); fish2Mesh.setColorAt(i, col);
+                }
+                fish2Mesh.instanceColor.needsUpdate = true;
+              }
+              function addSchool3() {
+                const body = new THREE.SphereGeometry(0.05, 12, 10);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, vertexColors: true, metalness: 0.9, roughness: 0.2 });
+                fish3Mesh = new THREE.InstancedMesh(body, mat, 6);
+                fish3Mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+                fish3Mesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(6 * 3), 3);
+                scene.add(fish3Mesh);
+                const rng = (a, b) => a + Math.random() * (b - a); const col = new THREE.Color();
+                for (let i = 0; i < 6; i++) {
+                  const pos = new THREE.Vector3(rng(-24, 24), rng(1.5, 9.0), rng(-24, 24));
+                  const dir = rng(0, Math.PI * 2); const speed = rng(3.0, 6.5); const phase = Math.random() * Math.PI * 2; const amp = rng(0.04, 0.12);
+                  fish3Data.push({ pos, dir, speed, phase, amp, jumping: false, vy: 0, nextJumpAt: performance.now() + rng(1000, 6000), scale: 0.48 });
+                  col.setHex(0xc0c0c0); fish3Mesh.setColorAt(i, col);
+                }
+                fish3Mesh.instanceColor.needsUpdate = true;
+              }
+
+              const _fishDummy = new THREE.Object3D();
+              function updateFishSchool(dt, mesh, data, bound) {
+                if (!mesh) return;
+                const follow = shark ? shark.position : new THREE.Vector3(0, 3, 0);
+                const now = performance.now();
+                for (let i = 0; i < data.length; i++) {
+                  const d = data[i];
+                  if (!d.jumping && d.pos.y > 4.6 && now > d.nextJumpAt) {
+                    d.jumping = true; d.vy = 5.5 + Math.random() * 4; d.nextJumpAt = now + 2000 + Math.random() * 5000;
+                  }
+                  const to = new THREE.Vector3().subVectors(follow, d.pos);
+                  const targetDir = Math.atan2(to.x, to.z);
+                  const turn = angleDiff(d.dir, targetDir);
+                  const steer = d.jumping ? 0.35 : 1.4;
+                  d.dir += THREE.MathUtils.clamp(turn, -steer * dt, steer * dt);
+
+                  d.pos.x += Math.sin(d.dir) * d.speed * dt;
+                  d.pos.z += Math.cos(d.dir) * d.speed * dt;
+
+                  if (d.jumping) {
+                    d.vy += -12 * dt; d.pos.y += d.vy * dt; if (d.pos.y <= 4.9) { d.pos.y = 4.9; d.vy = 0; d.jumping = false; }
+                  } else {
+                    d.phase += 4.0 * dt; d.pos.y += Math.sin(d.phase) * d.amp; d.pos.y = THREE.MathUtils.clamp(d.pos.y, 0.8, 9.8);
+                  }
+
+                  if (d.pos.x > bound) d.pos.x = -bound; if (d.pos.x < -bound) d.pos.x = bound;
+                  if (d.pos.z > bound) d.pos.z = -bound; if (d.pos.z < -bound) d.pos.z = bound;
+
+                  _fishDummy.position.copy(d.pos);
+                  const wag = Math.sin((d.phase || 0) * 2.0) * (d.jumping ? 1 : 1);
+                  _fishDummy.rotation.set(0, -d.dir + wag * 0.05, d.jumping ? 0.1 : 0);
+                  _fishDummy.updateMatrix();
+                  mesh.setMatrixAt(i, _fishDummy.matrix);
+                }
+                mesh.instanceMatrix.needsUpdate = true;
+              }
+
+              // helpers
+              function exportGraph(node) { const children = []; if (node.children && node.children.length) { for (let i = 0; i < node.children.length; i++) { children.push(exportGraph(node.children[i])); } } return { name: node.name || '(noname)', type: node.type, children }; }
+              function indexByName(root) { const out = {}; root.traverse(n => { if (n.name) out[n.name] = n; }); return out; }
+              function angleDiff(a, b) { let d = (b - a + Math.PI) % (Math.PI * 2); if (d < 0) d += Math.PI * 2; return d - Math.PI; }
+
+              function findJawTargets(root) {
+                const JAW_NAMES = ['jaw', 'lower_jaw', 'jaw_lower', 'def_jaw', 'jawbone', 'jaw_low', 'mouth', 'lowerjaw', 'jaw_lower', 'jawlow'];
+                let found = null;
+                root.traverse(n => {
+                  const nm = (n.name || '').toLowerCase();
+                  if (!found && JAW_NAMES.some(k => nm.includes(k))) found = n;
+                  if (n.isMesh && n.morphTargetDictionary) {
+                    const dict = n.morphTargetDictionary;
+                    const key = Object.keys(dict).find(k => /(jaw|mouth).*open|open.*(jaw|mouth)/i.test(k));
+                    if (key) jawMorphs.push({ mesh: n, index: dict[key] });
+                  }
+                });
+                return found;
+              }
+              function findTailBones(root) {
+                const out = [];
+                root.traverse(n => {
+                  const nm = (n.name || '').toLowerCase();
+                  if (/tail|caudal/.test(nm) && n.children && n.children.length <= 1) out.push(n);
+                });
+                out.forEach(b => { b.userData.baseRy = b.rotation.y; b.userData.baseRz = b.rotation.z; });
+                return out;
+              }
+              function findDorsalFins(root) {
+                const out = []; root.traverse(n => { const nm = (n.name || '').toLowerCase(); if (/dorsal|fin_top|fin|spine/.test(nm) && (!n.children || n.children.length <= 1)) { n.userData.baseRx = n.rotation.x; n.userData.baseRy = n.rotation.y; out.push(n); } }); return out;
+              }
+              function findPectoralFins(root) {
+                const out = []; root.traverse(n => { const nm = (n.name || '').toLowerCase(); if (/pectoral|fin_l|fin_r|fin\.l|fin\.r|sidefin|fin_left|fin_right/.test(nm) && (!n.children || n.children.length <= 1)) { n.userData.baseRx = n.rotation.x; n.userData.baseRy = n.rotation.y; n.userData.baseRz = n.rotation.z; out.push(n); } }); return out;
+              }
+
+              function setMouth(amount) {
+                const t = (typeof clock !== "undefined" ? clock.getElapsedTime() : performance.now() / 1000);
+                const chew = 0.99 * (-1 + -1 * Math.sin(t * -25));
+                const snap = (Math.sin(t * 2 + (((shark && shark.position && shark.position.x) || 0) * 0.02)) > 0.7) ? 1.0 : 0;
+                const a = THREE.MathUtils.clamp(amount + chew + snap, 0, 1);
+                if (jawNode) jawNode.rotation.x = jawBaseX + THREE.MathUtils.lerp(0, -1.1, a);
+                for (const { mesh, index } of jawMorphs) if (mesh.morphTargetInfluences) mesh.morphTargetInfluences[index] = a;
+              }
+
+              function addDrops(root) {
+                const hit = /head|jaw|spine|body|dorsal|tail/i;
+                root.traverse(m => {
+                  if (m.isMesh && hit.test(m.name || "")) {
+                    for (let i = 0; i < 3; i++) {
+                      const d = new THREE.Mesh(dropGeo, dropMat.clone());
+                      d.position.set((Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.3, (Math.random() - 0.5) * 0.6);
+                      const dir = d.position.clone(); if (dir.lengthSq() > 0.0001) dir.normalize(); d.position.addScaledVector(dir, 0.06);
+                      d.renderOrder = 2; if (d.material) d.material.depthWrite = false;
+                      d.userData.phase = Math.random() * Math.PI * 2;
+                      m.add(d); DROPS.push(d);
+                    }
+                  }
+                });
+              }
+
+              function loadShark() {
+                if (typeof THREE.GLTFLoader === 'undefined') { console.warn('GLTFLoader missing'); return; }
+                const loader = new THREE.GLTFLoader();
+                loader.load('/static/shark.glb', (gltf) => {
+                  shark = gltf.scene;
+                  shark.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+                  shark.scale.set(4, 2.4, 2); shark.position.set(0, 4.5, -18); shark.rotation.y = Math.PI; scene.add(shark);
+
+                  const graph = exportGraph(shark);
+                  const map = indexByName(shark);
+                  window.SHARK = { root: shark, map, graph, animations: gltf.animations };
+                  const dbg = document.getElementById('dbg'); if (dbg) dbg.textContent = JSON.stringify(graph, null, 2);
+
+                  jawNode = findJawTargets(shark); if (jawNode) jawBaseX = jawNode.rotation.x;
+                  if (gltf.animations && gltf.animations.length) { mixer = new THREE.AnimationMixer(shark); const action = mixer.clipAction(gltf.animations[0]); action.play(); }
+                  tailBones = findTailBones(shark);
+                  dorsalFins = findDorsalFins(shark);
+                  pectoralFins = findPectoralFins(shark);
+                  shark.updateMatrixWorld(true);
+                  for (const b of pectoralFins) { const wp = new THREE.Vector3(); b.getWorldPosition(wp); b.userData.side = (wp.x >= 0) ? 1 : -1; }
+                  controls.target.copy(shark.position); controls.update();
+                  shark.traverse(o => { if (o.isMesh && o.material && o.material.roughness !== undefined) { o.material.roughness = Math.max(0.05, o.material.roughness * 0.6); } });
+                  addDrops(shark);
+                  const fwd0 = new THREE.Vector3(0, 0, -1).applyQuaternion(shark.quaternion);
+                  state.vel.copy(fwd0.multiplyScalar(3.2)); setMouth(0.45);
+                }, undefined, (err) => { console.warn('shark load error', err); });
+              }
+
+              // input
+              const keys = { w: false, a: false, s: false, d: false, space: false, ctrl: false, shift: false };
+              function onKeyDown(e) { switch (e.code) { case 'KeyW': keys.w = true; break; case 'KeyA': keys.a = true; break; case 'KeyS': keys.s = true; break; case 'KeyD': keys.d = true; break; case 'Space': keys.space = true; break; case 'ControlLeft': case 'ControlRight': keys.ctrl = true; break; case 'ShiftLeft': case 'ShiftRight': keys.shift = true; break; } }
+              function onKeyUp(e) { switch (e.code) { case 'KeyW': keys.w = false; break; case 'KeyA': keys.a = false; break; case 'KeyS': keys.s = false; break; case 'KeyD': keys.d = false; break; case 'Space': keys.space = false; break; case 'ControlLeft': case 'ControlRight': keys.ctrl = false; break; case 'ShiftLeft': case 'ShiftRight': keys.shift = false; break; } }
+
+              function updateShark(dt) {
+                if (!shark) return;
+                const yawInput = (keys.a ? 1 : 0) - (keys.d ? 1 : 0);
+                const pitchInput = (keys.space ? 1 : 0) - (keys.ctrl ? 1 : 0);
+                shark.rotation.y += yawInput * state.turnRate * dt;
+                shark.rotation.x += pitchInput * 0.6 * state.turnRate * dt;
+                const tNow = clock.getElapsedTime();
+                const spd = state.vel.length();
+                const sway = Math.sin(tNow * 3.0) * (0.012 * (0.3 + spd * 0.03));
+                const right = new THREE.Vector3(1, 0, 0).applyQuaternion(shark.quaternion);
+                shark.position.addScaledVector(right, sway * dt * 24);
+                shark.rotation.z += Math.sin(tNow * 2.2) * (0.004 * (0.3 + spd * 0.03));
+
+                if (tailBones && tailBones.length) {
+                  const wagFreq = 6.0 + spd * 0.25;
+                  const wagAmp = 0.30 + spd * 0.02;
+                  const N = tailBones.length;
+                  for (let i = 0; i < N; i++) {
+                    const seg = tailBones[i]; const k = (i + 1) / N;
+                    seg.rotation.y = seg.userData.baseRy + Math.sin(tNow * wagFreq + k * 0.7) * wagAmp * k;
+                    seg.rotation.z = seg.userData.baseRz + Math.sin(tNow * (wagFreq * 0.8) + k * 0.5) * 0.05 * k;
+                  }
+                }
+
+                if (dorsalFins && dorsalFins.length) {
+                  const f = 5.5 + state.vel.length() * 0.2; const time = clock.getElapsedTime();
+                  for (const b of dorsalFins) { b.rotation.x = b.userData.baseRx + Math.sin(time * f) * 0.06; b.rotation.y = b.userData.baseRy + Math.sin(time * f * 0.8) * 0.03; }
+                }
+
+                if (pectoralFins && pectoralFins.length) {
+                  const spd = state.vel.length(); const time = clock.getElapsedTime(); const f = 3.5 + spd * 0.5; const amp = 0.22 + Math.min(spd / 20, 1) * 0.25; const pitchAssist = shark.rotation.x * 0.3;
+                  for (const b of pectoralFins) { const s = (b.userData.side || 1); b.rotation.z = b.userData.baseRz + Math.sin(time * f + s * 0.6) * amp * s; b.rotation.x = b.userData.baseRx + pitchAssist; }
+                }
+
+                const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(shark.quaternion);
+                const thrust = (keys.w ? state.thrust : 0) * (keys.shift ? 1.6 : 1.0);
+                state.vel.addScaledVector(fwd, thrust * dt);
+                if (keys.s) state.vel.addScaledVector(fwd, -state.thrust * 0.9 * dt);
+                const buoy = (3 - shark.position.y) * (state.lift * dt);
+                state.vel.y += buoy * dt;
+                state.vel.multiplyScalar(Math.pow(state.drag, Math.max(1, 60 * dt)));
+                const speed = state.vel.length(); const max = state.maxSpeed * (keys.shift ? 1.4 : 1.0);
+                if (speed > max) state.vel.multiplyScalar(max / speed);
+                shark.position.addScaledVector(state.vel, dt);
+                const bankTarget = THREE.MathUtils.clamp(-yawInput * 0.5, -0.6, 0.6);
+                shark.rotation.z = THREE.MathUtils.lerp(shark.rotation.z, bankTarget, 0.08);
+                shark.position.x = THREE.MathUtils.clamp(shark.position.x, -140, 140);
+                shark.position.z = THREE.MathUtils.clamp(shark.position.z, -140, 140);
+                shark.position.y = THREE.MathUtils.clamp(shark.position.y, -6, 12);
+                const camOffset = new THREE.Vector3(0, 4, 12).applyQuaternion(shark.quaternion);
+                const desired = new THREE.Vector3().copy(shark.position).add(camOffset);
+                camera.position.lerp(desired, 0.08);
+                controls.target.lerp(shark.position, 0.12);
+
+                const base = 0.12 + THREE.MathUtils.clamp(speed / state.maxSpeed, 0, 1) * 0.60;
+                const throttle = keys.w ? 0.35 : 0;
+                const t = clock.getElapsedTime(); const idlePulse = 0.25 * (0.5 + 0.5 * Math.sin(t * 6));
+                setMouth(base + throttle + idlePulse);
+              }
+
+              function animate() {
+                requestAnimationFrame(animate);
+                const dt = clock.getDelta();
+                const t = clock.getElapsedTime();
+                controls.update();
+                if (waterMesh) {
+                  const pos = waterMesh.geometry.attributes.position;
+                  for (let i = 0; i < pos.count; i++) {
+                    const x = pos.getX(i);
+                    const z = pos.getY(i);
+                    const h = Math.sin(x * 0.15 + t * 3.0) * 1.5 + Math.cos(z * 0.10 + t * 2.0) * 0.8 + Math.sin((x + z) * 0.05 + t * 1.0) * 1.0;
+                    pos.setZ(i, h);
+                  }
+                  pos.needsUpdate = true;
+                  waterMesh.geometry.computeVertexNormals();
+                }
+                if (mixer) mixer.update(dt);
+                updateShark(dt);
+                updateFishSchool(dt, fishMesh, fishData, 140);
+                updateFishSchool(dt, fish2Mesh, fish2Data, 130);
+                updateFishSchool(dt, fish3Mesh, fish3Data, 120);
+                updateSeaweed(t);
+                for (let i = 0; i < DROPS.length; i++) {
+                  const d = DROPS[i]; const tt = t + (d.userData.phase || 0);
+                  d.position.y += Math.sin(tt * 6) * 0.002;
+                  const s = 0.95 + 0.05 * Math.sin(tt * 8); d.scale.setScalar(s);
+                  const slip = Math.min(1, state.vel.length() / 10) * 0.004;
+                  d.position.z -= slip; if (d.position.z < -0.7) d.position.z = 0.7;
+                }
+                renderer.render(scene, camera);
+              }
+
+              function onResize() {
+                const w = container.clientWidth; const h = container.clientHeight;
+                camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+              }
+
+              window.addEventListener('load', () => { init(); animate(); });
+            })();
+          </script>
+
+          <!-- DOM Canvas Hook end with script -->
+
+
+          <div id="three-accordion" class="w-full col-span-full grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Scene & Camera -->
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-sky-500/40 transition h-full"
+              id="card-scene">
+              <button
+                class="acc-btn w-full text-left flex items-center justify-between text-gray-100 font-semibold mb-1 hover:text-sky-300">
+                <span>Scene & Camera</span><span class="arrow" aria-hidden>▸</span>
+              </button>
+              <p class="text-gray-400 text-xs">`THREE.Scene()`, `THREE.PerspectiveCamera(fov, aspect, near, far)`</p>
+              <div class="acc-panel mt-3 text-sm text-gray-300 hidden">
+                <div class="space-y-2">
+                  <div><strong>Object3D</strong> → base container with position/rotation/scale and parent/children (<a
+                      href="https://sbcode.net/threejs/object3d/" target="_blank"
+                      class="text-sky-300 underline">learn</a>).</div>
+                  <div><strong>Scene</strong> → root Object3D you add everything to.</div>
+                  <div><strong>Camera</strong> → Object3D with a projection. Common:
+                    <code>new THREE.PerspectiveCamera(fov, aspect, near, far)</code>; on resize set
+                    <code>camera.aspect=w/h</code> and <code>camera.updateProjectionMatrix()</code>.
+                  </div>
+                  <div><strong>Flow</strong> → make scene & camera → add stuff → render.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Renderer -->
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-sky-500/40 transition h-full"
+              id="card-renderer">
+              <button
+                class="acc-btn w-full text-left flex items-center justify-between text-gray-100 font-semibold mb-1 hover:text-sky-300">
+                <span>Renderer</span><span class="arrow" aria-hidden>▸</span>
+              </button>
+              <p class="text-gray-400 text-xs">`THREE.WebGLRenderer({ antialias:true })`</p>
+              <div class="acc-panel mt-3 text-sm text-gray-300 hidden">
+                <div class="space-y-2">
+                  <div><strong>Creates a canvas + GL context</strong> and draws frames from your scene & camera.</div>
+                  <div><strong>Key calls</strong> → <code>renderer.setSize(w,h)</code>,
+                    <code>renderer.setPixelRatio(devicePixelRatio)</code>, <code>renderer.render(scene,camera)</code>.
+                  </div>
+                  <div><strong>Where</strong> → append <code>renderer.domElement</code> to your page.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mesh -->
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-sky-500/40 transition h-full"
+              id="card-mesh">
+              <button
+                class="acc-btn w-full text-left flex items-center justify-between text-gray-100 font-semibold mb-1 hover:text-sky-300">
+                <span>Mesh</span><span class="arrow" aria-hidden>▸</span>
+              </button>
+              <p class="text-gray-400 text-xs">`THREE.Mesh(geometry, material)`</p>
+              <div class="acc-panel mt-3 text-sm text-gray-300 hidden">
+                <div class="space-y-2">
+                  <div><strong>Geometry</strong> → vertex data (box, sphere, or loaded GLB).</div>
+                  <div><strong>Material</strong> → how it looks (color, metalness, texture).</div>
+                  <div><strong>Add</strong> → <code>scene.add(mesh)</code>. Move with
+                    <code>mesh.position/rotation/scale</code>.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script>
+            (() => {
+              const root = document.getElementById('three-accordion');
+              const cards = [...root.querySelectorAll('.acc-panel')];
+              const arrows = [...root.querySelectorAll('.arrow')];
+              root.querySelectorAll('.acc-btn').forEach((btn, i) => {
+                btn.addEventListener('click', () => {
+                  cards.forEach((p, j) => {
+                    const open = i === j && p.classList.contains('hidden');
+                    p.classList.toggle('hidden', !open);
+                    arrows[j].textContent = open ? '▾' : '▸';
+                  });
+                });
+              });
+            })();
+          </script>
+          <pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto">
+    <code>// Minimal DOM-driven setup (paste your own models later)
+    const root = document.getElementById('threejs-canvas');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, root.clientWidth / root.clientHeight, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(root.clientWidth, root.clientHeight);
+    root.appendChild(renderer.domElement);
+
+    // add something to see
+    const box = new THREE.Mesh(
+      new THREE.BoxGeometry(1,1,1),
+      new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6, color: 0x22aaff })
+    );
+    scene.add(box);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const key = new THREE.DirectionalLight(0xffffff, 0.8); key.position.set(2,2,2); scene.add(key);
+
+    camera.position.set(2,1.5,3); camera.lookAt(0,0,0);
+
+    function onResize(){
+      const { clientWidth:w, clientHeight:h } = root;
+      renderer.setSize(w, h);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', onResize);
+
+    // basic loop
+    const clock = new THREE.Clock();
+    (function animate(){
+      const t = clock.getElapsedTime();
+      box.rotation.set(t*0.4, t*0.6, 0);
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    })();
+    </code>
+  </pre>
+
+          <!-- <p class="text-[11px] text-gray-500 mt-3">Tip: the renderer’s <span class="text-sky-300">domElement</span> is
+            just a canvas—append it wherever you want in your layout.</p> -->
+        </div>
+      </section>
+
+      <!-- Three.js — Extended (kept, still only Three.js) -->
+      <section id="threejs-extended" class="py-14 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 class="text-xl font-semibold mb-4 text-gray-100">Three.js — Extended</h3>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <!-- Column A: Objects & Concepts -->
+            <div class="space-y-3">
+              <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+                <h4 class="text-gray-100 font-semibold">Core Objects</h4>
+                <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                  <li><span class="text-sky-300">Scene</span> — container for objects/lights/fog.</li>
+                  <li><span class="text-sky-300">Camera</span> — Perspective/Orthographic views.</li>
+                  <li><span class="text-sky-300">Renderer</span> — WebGL drawing to a DOM canvas.</li>
+                  <li><span class="text-sky-300">Geometry/Material/Mesh</span> — visible 3D forms.</li>
+                  <li><span class="text-sky-300">Lights</span> — Ambient/Directional/Point/Spot.</li>
+                  <li><span class="text-sky-300">Loaders</span> — TextureLoader, GLTFLoader, etc.</li>
+                  <li><span class="text-sky-300">Clock</span> — time deltas for smooth animation.</li>
+                  <li><span class="text-sky-300">AnimationMixer/Action</span> — play & blend clips.</li>
+                  <li><span class="text-sky-300">Raycaster</span> — pick objects with the mouse.</li>
+                  <li><span class="text-sky-300">OrbitControls</span> — camera interaction (optional).</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+                <h4 class="text-gray-100 font-semibold">Common Functions</h4>
+                <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                  <li><code>renderer.setSize(w,h)</code>, <code>renderer.render(scene,camera)</code></li>
+                  <li><code>camera.lookAt(x,y,z)</code>, <code>camera.updateProjectionMatrix()</code></li>
+                  <li><code>scene.add(obj)</code>, <code>obj.position/rotation/scale</code></li>
+                  <li><code>mixer.update(delta)</code>, <code>action.play()/fadeIn()</code></li>
+                  <li><code>raycaster.setFromCamera(ndc,camera)</code> → <code>intersectObjects()</code></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Column B: DOM + Interactivity Examples -->
+            <div class="space-y-3">
+              <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+                <h4 class="text-gray-100 font-semibold">Bind to DOM</h4>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// Mount anywhere in your app
+const mount = document.querySelector('[data-3d="hero"]');
+mount.appendChild(renderer.domElement);
+// Toggle visibility via DOM
+mount.classList.toggle('hidden');
+</code></pre>
+              </div>
+
+              <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+                <h4 class="text-gray-100 font-semibold">Click to Select (Raycaster)</h4>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>const ray = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+renderer.domElement.addEventListener('pointerdown', (e)=>{
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top)/rect.height) * 2 + 1;
+  ray.setFromCamera(mouse, camera);
+  const hits = ray.intersectObjects(scene.children, true);
+  if(hits[0]) hits[0].object.material.emissive.setHex(0x2299ff);
+});
+</code></pre>
+              </div>
+
+              <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+                <h4 class="text-gray-100 font-semibold">Load a GLB (Models)</h4>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// assumes GLTFLoader is included
+const loader = new THREE.GLTFLoader();
+loader.load('/static/models/yourModel.glb', (gltf)=>{
+  const model = gltf.scene; scene.add(model);
+});
+</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- <p class="mt-6 text-[11px] text-gray-500">Use CSS utilities (e.g., 
+            <code>hidden</code>, <code>grid</code>,
+            <code>ring</code>) to slot canvases into any section without breaking your layout.
+          </p> -->
+        </div>
+      </section>
+
+      <!-- Cannon.js — Physics (Section) -->
+      <!-- Cannon.js — Physics (Section) -->
+      <section id="cannon" class="py-16 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-8 flex items-center gap-3">
+            <span class="text-yellow-400 text-2xl animate-pulse">💥</span>
+            <h3
+              class="text-2xl font-semibold tracking-tight bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent">
+              Cannon.js — Rigid‑Body Physics
+            </h3>
+          </div>
+          <p class="text-gray-300/90 text-sm leading-relaxed mb-6">Add gravity, collisions, materials, and constraints.
+            Step the world at a fixed rate, then sync to your visuals.</p>
+
+          <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+              <h4 class="text-gray-100 font-semibold">Core Objects</h4>
+              <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                <li><span class="text-yellow-300">World</span> — gravity, broadphase, stepping.</li>
+                <li><span class="text-yellow-300">Body</span> — dynamic/kinematic/static; <em>mass</em>, <em>shape</em>,
+                  <em>material</em>.
+                </li>
+                <li><span class="text-yellow-300">Shape</span> — Box, Sphere, Plane, ConvexPolyhedron, Trimesh.</li>
+                <li><span class="text-yellow-300">Material/ContactMaterial</span> — friction & restitution.</li>
+                <li><span class="text-yellow-300">Constraint</span> — Distance, Hinge, PointToPoint, Lock.</li>
+                <li><span class="text-yellow-300">Raycast</span> — queries for hits.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+              <h4 class="text-gray-100 font-semibold">Common Functions</h4>
+              <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                <li><code>world.step(dt, dtVar, maxSub)</code> — stable stepping.</li>
+                <li><code>body.applyForce/Impulse()</code>, <code>body.velocity</code>,
+                  <code>body.angularVelocity</code>
+                </li>
+                <li><code>world.addBody()</code>, <code>world.addConstraint()</code></li>
+                <li><code>new CANNON.ContactMaterial(matA, matB, opts)</code></li>
+                <li><code>ray.intersectBodies(bodies)</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Hidden more section -->
+          <div id="cannon-more" class="hidden mt-4 p-4 rounded-lg bg-gray-900 border border-gray-800">
+            <h4 class="text-gray-100 font-semibold">Inside more — how it works (gist)</h4>
+            <ul class="text-gray-400 text-sm mt-3 space-y-2 list-disc list-inside">
+              <li><span class="text-gray-200 font-medium">World</span> holds all bodies, gravity, and the solver. Each
+                frame you call <code>world.step()</code>; it advances time, resolves contacts/constraints, and updates
+                body states.</li>
+              <li><span class="text-gray-200 font-medium">Body</span> is a rigid object with mass and inertia.
+                Forces/impulses (<code>applyForce/Impulse</code>) and velocities (<code>velocity/angularVelocity</code>)
+                push it; integration during <code>world.step()</code> updates <em>position</em> and <em>quaternion</em>.
+              </li>
+              <li><span class="text-gray-200 font-medium">Shape</span> (Box/Sphere/Plane/Convex/Trimesh) defines the
+                collision hull attached to a body; the broadphase + narrowphase detect overlaps and create contact
+                equations.</li>
+              <li><span class="text-gray-200 font-medium">Material & ContactMaterial</span> describe surface
+                interaction. When two bodies touch, their materials combine via a <code>ContactMaterial</code>
+                (friction, restitution/bounce) that the solver uses to compute impulses.</li>
+              <li><span class="text-gray-200 font-medium">Constraint</span> (Hinge/Distance/PointToPoint/Lock) limits
+                relative motion between bodies. Added with <code>world.addConstraint()</code>; solved each step
+                alongside contacts.</li>
+              <li><span class="text-gray-200 font-medium">Raycast</span> shoots a line through the world to query hits
+                (terrain, mesh, specific bodies). Use it for picking, ground checks, or sensors; typical helper is
+                <code>ray.intersectBodies()</code>.
+              </li>
+              <li><span class="text-gray-200 font-medium">Sync to visuals</span> — after <code>world.step()</code>, copy
+                each body’s <code>position</code>/<code>quaternion</code> into your Three.js mesh so physics and
+                rendering match.</li>
+            </ul>
+            <div class="mt-3 text-xs text-gray-400 space-x-4">
+              <a href="https://schteppe.github.io/cannon.js/" target="_blank"
+                class="text-sky-400 hover:text-sky-300 underline">Cannon.js Docs</a>
+              <a href="https://github.com/pmndrs/cannon-es" target="_blank"
+                class="text-sky-400 hover:text-sky-300 underline">cannon-es (modern fork)</a>
+            </div>
+          </div>
+
+          <div class="text-center mt-4 mb-4">
+            <button id="btnMore"
+              class="px-4 py-2 bg-[#00D4FF] hover:bg-sky-600 text-[#020024] rounded-md text-sm font-semibold">Inside
+              more</button>
+          </div>
+
+          <script>
+            const btn = document.getElementById('btnMore');
+            btn.addEventListener('click', () => {
+              const sec = document.getElementById('cannon-more');
+              sec.classList.toggle('hidden');
+              const open = !sec.classList.contains('hidden');
+              btn.textContent = open ? 'Hide' : 'Inside more';
+              btn.setAttribute('aria-expanded', open);
+            });
+          </script>
+
+
+          <!-- <div id="cannon-canvas"
+            class="h-80 rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-yellow-500/10 shadow-lg shadow-yellow-900/20 overflow-hidden">
+          </div>  -->
+
+          <div id="cannon-canvas" style="height:550px"
+            class="rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-yellow-500/10 shadow-lg shadow-yellow-900/20 overflow-hidden">
+
+            <style>
+              /* Fill this container and keep your existing selectors */
+              #cannon-canvas {
+                position: relative
+              }
+
+              .app {
+                position: absolute;
+                inset: 0;
+                display: grid;
+                grid-template-columns: 320px 1fr;
+                gap: 8px;
+                font: 13px/1.4 system-ui, sans-serif;
+                color: #e6eefb
+              }
+
+              .side {
+                padding: 8px;
+                background: #0b0f1a;
+                border-right: 1px solid #1e293b;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                overflow: auto
+              }
+
+              header {
+                grid-column: 1/-1;
+                padding: 6px 10px;
+                background: #0b0f1a;
+                border-bottom: 1px solid #1e293b;
+                display: flex;
+                gap: 8px;
+                align-items: center
+              }
+
+              .badge {
+                opacity: .8;
+                font-size: 12px
+              }
+
+              #preview {
+                width: 100%;
+                height: 100%;
+                border: 0;
+                background: #0b0f1a
+              }
+
+              textarea {
+                width: 100%;
+                height: 120px;
+                background: #0f172a;
+                color: #dbeafe;
+                border: 1px solid #26344a;
+                border-radius: 8px;
+                padding: 8px;
+                resize: vertical
+              }
+
+              .row {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap
+              }
+
+              .btn {
+                background: #0ea5e9;
+                border: 0;
+                color: #06121e;
+                padding: 8px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600
+              }
+
+              .btn:hover {
+                filter: brightness(1.1)
+              }
+
+              .hint {
+                opacity: .85;
+                font-size: 12px
+              }
+            </style>
+
+            <!-- PASTE: your full page body (kept exactly as provided) -->
+            <div class="app">
+              <header>
+                <!-- <strong>Robot2 • Editable Preview Canvas</strong> -->
+                <span class="badge">Autoload: /static/robot.glb • Head aliases JSON</span>
+              </header>
+
+              <section class="side">
+                <div class="hint">Head map in use (you can edit, optional).</div>
+                <textarea id="specJson">{
+  "infer_rules": {
+    "side_hints_left": ["Left", "L", "_L", ".L", "-L"],
+    "side_hints_right": ["Right", "R", "_R", ".R", "-R"],
+    "fallback_by_position_x": "x < 0 => L, x > 0 => R",
+    "length_basis": "bbox_longest_axis_mm"
+  },
+  "parts": [
+    { "name": "Head",  "category": "head",  "side": null, "length_mm": null },
+    { "name": "Neck",  "category": "neck",  "side": null, "length_mm": null },
+    { "name": "Torso", "category": "torso", "side": null, "length_mm": null },
+
+    { "name": "UpperArm_L", "aliases": ["LeftArm","Arm.L","L_Arm"], "category": "arm_upper",  "side": "L", "length_mm": null },
+    { "name": "Forearm_L",  "aliases": ["LeftForearm","Forearm.L"], "category": "arm_lower",  "side": "L", "length_mm": null },
+    { "name": "Hand_L",     "aliases": ["LeftHand","Hand.L"],       "category": "hand",       "side": "L", "length_mm": null },
+
+    { "name": "Finger_L_Thumb",  "aliases": ["Thumb.L"],  "category": "finger", "side": "L", "digit": "thumb",  "length_mm": null },
+    { "name": "Finger_L_Index",  "aliases": ["Index.L"],  "category": "finger", "side": "L", "digit": "index",  "length_mm": null },
+    { "name": "Finger_L_Middle", "aliases": ["Middle.L"], "category": "finger", "side": "L", "digit": "middle", "length_mm": null },
+    { "name": "Finger_L_Ring",   "aliases": ["Ring.L"],   "category": "finger", "side": "L", "digit": "ring",   "length_mm": null },
+    { "name": "Finger_L_Pinky",  "aliases": ["Pinky.L"],  "category": "finger", "side": "L", "digit": "pinky",  "length_mm": null },
+
+    { "name": "UpperArm_R", "aliases": ["RightArm","Arm.R","R_Arm"], "category": "arm_upper",  "side": "R", "length_mm": null },
+    { "name": "Forearm_R",  "aliases": ["RightForearm","Forearm.R"], "category": "arm_lower",  "side": "R", "length_mm": null },
+    { "name": "Hand_R",     "aliases": ["RightHand","Hand.R"],       "category": "hand",       "side": "R", "length_mm": null },
+
+    { "name": "Finger_R_Thumb",  "aliases": ["Thumb.R"],  "category": "finger", "side": "R", "digit": "thumb",  "length_mm": null },
+    { "name": "Finger_R_Index",  "aliases": ["Index.R"],  "category": "finger", "side": "R", "digit": "index",  "length_mm": null },
+    { "name": "Finger_R_Middle", "aliases": ["Middle.R"], "category": "finger", "side": "R", "digit": "middle", "length_mm": null },
+    { "name": "Finger_R_Ring",   "aliases": ["Ring.R"],   "category": "finger", "side": "R", "digit": "ring",   "length_mm": null },
+    { "name": "Finger_R_Pinky",  "aliases": ["Pinky.R"],  "category": "finger", "side": "R", "digit": "pinky",  "length_mm": null },
+
+    { "name": "Thigh_L", "aliases": ["LeftUpLeg","Thigh.L"], "category": "leg_upper", "side": "L", "length_mm": null },
+    { "name": "Calf_L",  "aliases": ["LeftLeg","Calf.L"],    "category": "leg_lower", "side": "L", "length_mm": null },
+    { "name": "Foot_L",  "aliases": ["LeftFoot","Foot.L"],   "category": "foot",      "side": "L", "length_mm": null },
+    { "name": "Toe_L",   "aliases": ["LeftToe","Toe.L"],     "category": "toe",       "side": "L", "length_mm": null },
+
+    { "name": "Thigh_R", "aliases": ["RightUpLeg","Thigh.R"], "category": "leg_upper", "side": "R", "length_mm": null },
+    { "name": "Calf_R",  "aliases": ["RightLeg","Calf.R"],    "category": "leg_lower", "side": "R", "length_mm": null },
+    { "name": "Foot_R",  "aliases": ["RightFoot","Foot.R"],   "category": "foot",      "side": "R", "length_mm": null },
+    { "name": "Toe_R",   "aliases": ["RightToe","Toe.R"],     "category": "toe",       "side": "R", "length_mm": null }
+  ]
+}</textarea>
+                <textarea id="patch" placeholder="// JS patch to run inside viewer
+// Example: const h=headNode(); if(h) h.rotation.y+=0.15;"></textarea>
+                <div class="row">
+                  <button class="btn" id="btnRun">Run Patch ▶</button>
+                  <button class="btn" id="btnJump">Jump ↑</button>
+                  <button class="btn" id="btnReset">Reset ↺</button>
+                </div>
+                <div class="hint" id="status">Ready.</div>
+              </section>
+
+              <iframe id="preview"></iframe>
+            </div>
+
+            <script>
+              const iframe = document.getElementById('preview');
+              const GLB_ABS = location.origin + '/static/robot.glb';
+
+              // --- Viewer HTML (iframe) ---
+              const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<style>html,body{margin:0;height:100%;background:#0b0f1a;color:#e6eefb}canvas{width:100%;height:100%;display:block}#hud{position:fixed;left:10px;top:10px;font:12px ui-monospace;background:#0f1524;border:1px solid #22325a;border-radius:8px;padding:6px 8px;color:#9db0db}
+#note{position:fixed;left:10px;top:36px;font:11px ui-monospace;color:#cfe3ff;background:#112040;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;opacity:0;transition:opacity .3s ease;max-width:52vw;line-height:1.2}
+#metrics{position:fixed;left:10px;top:70px;font:11px ui-monospace;color:#9bd1ff;background:#0c1a2f;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;max-width:60vw;line-height:1.25;opacity:.95}</style>
+<script type='importmap'>{"imports":{"three":"https://unpkg.com/three@0.152.2/build/three.module.js","three/addons/":"https://unpkg.com/three@0.152.2/examples/jsm/"}}<\/script></head><body>
+<canvas id='c'></canvas><div id='hud'>Robot2 • GLB<\/div><div id='note'><\/div><div id='metrics'>Δy: 0.00 m | vᵧ: 0.00 m/s | reason: click Jump to add impulse; gravity pulls back down.<\/div>
+<script type='module'>
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+
+const canvas=document.getElementById('c');
+let renderer; try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true, powerPreference:'high-performance', failIfMajorPerformanceCaveat:false}); const ctx=renderer.getContext(); if(!ctx) throw new Error('no webgl2'); } catch(e){ const {WebGL1Renderer}=THREE; renderer=new WebGL1Renderer({canvas,antialias:true}); }
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0a1628);
+const camera=new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000); camera.position.set(2,1.2,3);
+scene.add(new THREE.HemisphereLight(0xffffff,0x333333,1)); const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(5,5,5); scene.add(dl);
+const ctl=new OrbitControls(camera, renderer.domElement);
+let robot=null; let SPEC=null; let _jumpStartY=null;
+// --- physics world ---
+const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
+const groundBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane() });
+groundBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
+world.addBody(groundBody);
+let robotBody=null, robotHalfY=0; let onGround=false;
+function ground(o){ const b=new THREE.Box3().setFromObject(o); const c=b.getCenter(new THREE.Vector3()); o.position.sub(c); o.updateMatrixWorld(true); const b2=new THREE.Box3().setFromObject(o); o.position.y -= b2.min.y; o.updateMatrixWorld(true); o.userData.floorY = o.position.y; }
+const loader=new GLTFLoader();
+(async()=>{ try{ const res=await fetch('${GLB_ABS}'); if(!res.ok) throw new Error('HTTP '+res.status); const buf=await res.arrayBuffer(); loader.parse(buf,'',(g)=>{ robot=g.scene; scene.add(robot); ground(robot); window.robot=robot;
+  const bbox = new THREE.Box3().setFromObject(robot);
+  const sz = bbox.getSize(new THREE.Vector3());
+  robotHalfY = sz.y/2;
+  const shape = new CANNON.Box(new CANNON.Vec3(Math.max(0.01,sz.x/2), Math.max(0.01,sz.y/2), Math.max(0.01,sz.z/2)));
+  robotBody = new CANNON.Body({ mass: 2, shape, linearDamping: 0.02, angularDamping: 0.95 });
+  robotBody.position.set(0, robotHalfY, 0);
+  robotBody.allowSleep = true;
+  world.addBody(robotBody);
+  robotBody.addEventListener('collide', (e)=>{ if(e.body===groundBody) onGround=true; });
+}, (e)=>{ throw e; }); }catch(e){ console.error(e); document.getElementById('hud').textContent='GLB error'; } })();
+
+// Helpers
+window.find=(name)=>{ let out=null; if(!robot) return null; robot.traverse(n=>{ if(!out && n.name===name) out=n; }); return out; };
+function headNode(){
+  if(!robot) return null;
+  let names=[];
+  try{ const parts=(SPEC?.parts||[]).filter(p=>p.category==='head');
+       names = parts.flatMap(p=>[p.name,...(p.aliases||[])]).map(s=>String(s).toLowerCase()); }catch{}
+  let node=null;
+  robot.traverse(n=>{
+    if(node) return; const nm=(n.name||'').toLowerCase();
+    if(names.length ? names.includes(nm) : /head/.test(nm)) node=n;
+  });
+  return node;
+}
+
+window.setSpec=(obj)=>{ SPEC=obj; };
+window.applyPatch=(code)=>{ try{ Function('THREE','scene','camera','renderer','robot','find','headNode', code)(THREE, scene, camera, renderer, robot, window.find, headNode); }catch(e){ console.error(e); } };
+window.addEventListener('message', (e)=>{
+  if(!e.data) return;
+  if(e.data.type==='spec') window.setSpec(e.data.obj);
+  if(e.data.type==='patch') window.applyPatch(e.data.code);
+}, false);
+
+// physics-driven jump (impulse) — only if grounded
+window._jumpCount = 0;
+window.jump = (imp=5)=>{
+  if(robotBody && onGround){
+    onGround=false; robotBody.velocity.y = 0; robotBody.applyImpulse(new CANNON.Vec3(0, imp, 0), robotBody.position); _jumpStartY = robotBody.position.y;
+    const note = document.getElementById('note');
+    const m = robotBody.mass || 1; const g = 9.82; const v0 = imp / m; const h = (v0*v0)/(2*g);
+    window._jumpCount++;
+    if(window._jumpCount===1){
+      note.textContent = 'Physics: impulse → velocity. m='+m+'kg, J='+imp+' N·s ⇒ v₀≈'+v0.toFixed(2)+' m/s';
+    } else if(window._jumpCount===2){
+      note.textContent = '2nd jump: peak height ≈ v₀²/(2g) ≈ '+h.toFixed(2)+' m (g='+g+' m/s²)';
+    } else if(window._jumpCount===3){
+      note.textContent = '3rd jump: takeoff v₀≈'+v0.toFixed(2)+' m/s; current vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
+    } else {
+      note.textContent = 'Jump #'+window._jumpCount+' — vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
+    }
+    note.style.opacity = 1; clearTimeout(window._noteHide);
+    window._noteHide = setTimeout(()=> note.style.opacity=0, 1800);
+  }
+};
+// reset to podium center
+window.resetPose = ()=>{
+  if(!robot || !robotBody) return;
+  robotBody.velocity.setZero();
+  robotBody.angularVelocity.setZero();
+  robotBody.position.set(0, robotHalfY, 0);
+  robot.position.set(0, 0, 0);
+  robot.quaternion.set(0,0,0,1);
+  ctl.target.set(0, robotHalfY, 0);
+  camera.position.set(2,1.2,3);
+  onGround=true; _jumpStartY=null;
+};
+
+let lastTime; function loop(time){ requestAnimationFrame(loop);
+  const dt = lastTime ? Math.min(1/30, (time-lastTime)/1000) : 1/60; lastTime = time;
+  world.step(1/60, dt, 3);
+  if(robotBody && robot){ robot.position.set(robotBody.position.x, robotBody.position.y - robotHalfY, robotBody.position.z); }
+  // live physics metrics
+  try{ const box=document.getElementById('metrics'); if(box && robotBody){ const vy=robotBody.velocity.y; const base=_jumpStartY ?? robotBody.position.y; const dy = robotBody.position.y - base; const reason = vy>0 ? 'up: impulse > gravity' : (robotBody.position.y>base ? 'down: gravity' : 'floor contact'); box.textContent = 'Δy: '+dy.toFixed(2)+' m | vᵧ: '+vy.toFixed(2)+' m/s | reason: '+reason; if(onGround) _jumpStartY=null; } }catch(e){}
+  renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); ctl.update(); renderer.render(scene,camera);
+} loop();
+<\/script></body></html>`;
+              // load iframe with the built HTML
+              iframe.srcdoc = html;
+
+              // Wire panel controls to the iframe once it's ready
+              iframe.addEventListener('load', () => {
+                const cw = iframe.contentWindow;
+                try { const obj = JSON.parse(document.getElementById('specJson').value); cw.setSpec && cw.setSpec(obj); } catch (e) { }
+                document.getElementById('btnRun').onclick = () => { cw.applyPatch && cw.applyPatch(document.getElementById('patch').value); };
+                document.getElementById('btnJump').onclick = () => { cw.jump && cw.jump(5); };
+                document.getElementById('btnReset').onclick = () => { cw.resetPose && cw.resetPose(); };
+              });
+            </script>
+            <!-- END PASTE -->
+
+          </div>
+
+
+
+          <pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto"><code>// Minimal Cannon.js pattern (sync with Three.js mesh by copying position/quaternion)
+const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
+const matGround = new CANNON.Material('ground');
+const matBall = new CANNON.Material('ball');
+world.addContactMaterial(new CANNON.ContactMaterial(matGround, matBall, { friction: 0.3, restitution: 0.6 }));
+
+const ground = new CANNON.Body({ mass: 0, material: matGround, shape: new CANNON.Plane() });
+// rotate plane to lie flat
+const q = new CANNON.Quaternion(); q.setFromEuler(-Math.PI/2, 0, 0); ground.quaternion.copy(q);
+world.addBody(ground);
+
+const ball = new CANNON.Body({ mass: 1, material: matBall, shape: new CANNON.Sphere(0.5), position: new CANNON.Vec3(0, 3, 0) });
+world.addBody(ball);
+
+// optional: hinge a box to a pivot
+const boxA = new CANNON.Body({ mass: 1, shape: new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5)), position: new CANNON.Vec3(2,2,0) });
+world.addBody(boxA);
+const hinge = new CANNON.HingeConstraint(boxA, new CANNON.Vec3(0,-0.5,0));
+world.addConstraint(hinge);
+
+const fixedTimeStep = 1/60, maxSubSteps = 3;
+function stepPhysics(dt){ world.step(fixedTimeStep, dt, maxSubSteps); }
+</code></pre>
+
+          <!-- Sandbox: Cannon.js (inline) -->
+          <div id="cannon-sandbox" class="mt-6 p-4 rounded-xl border border-gray-800 bg-gray-900/60">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-yellow-400">▶</span>
+              <h4 class="text-gray-100 font-semibold">Cannon.js Sandbox</h4>
+              <button id="cannon-run"
+                class="ml-auto text-xs px-3 py-1 rounded bg-yellow-700 hover:brightness-110">Run</button>
+              <button id="cannon-clear"
+                class="text-xs px-3 py-1 rounded bg-gray-700 hover:brightness-110">Clear</button>
+            </div>
+            <textarea id="cannon-editor"
+              class="w-full h-40 text-xs p-3 rounded bg-gray-950/80 text-gray-200 border border-gray-800"
+              spellcheck="false">// Step world & log height (visual sync done in your Three.js loop)
+let tLast; function tick(ts){ if(!tLast) tLast=ts; const dt=(ts-tLast)/1000; tLast=ts; stepPhysics(dt); console.log('ball y=', (world.bodies[1]?.position.y||0).toFixed(2)); requestAnimationFrame(tick);} requestAnimationFrame(tick);
+</textarea>
+          </div>
+          <script>
+            (function () {
+              const run = document.getElementById('cannon-run');
+              const clr = document.getElementById('cannon-clear');
+              const ed = document.getElementById('cannon-editor');
+              function exec() { try { new Function(ed.value)(); } catch (e) { console.error(e); alert(e.message); } }
+              run?.addEventListener('click', exec);
+              clr?.addEventListener('click', () => { ed.value = ''; });
+            })();
+          </script>
+        </div>
+      </section>
+
+      <!-- Cesium.js — Geospatial (Section) -->
+      <!-- Cesium.js — Geospatial (Section) -->
+      <section id="cesium" class="py-16 bg-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-8 flex items-center gap-3">
+            <span class="text-green-400 text-2xl animate-pulse">🌎</span>
+            <h3
+              class="text-2xl font-semibold tracking-tight bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
+              Cesium.js — Geospatial Context
+            </h3>
+          </div>
+          <p class="text-gray-300/90 text-sm leading-relaxed mb-6">Render the planet, place entities, stream
+            terrain/imagery; wire your simulation to real world coordinates.</p>
+
+          <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+              <h4 class="text-gray-100 font-semibold">Core Objects</h4>
+              <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                <li><span class="text-emerald-300">Viewer</span> — scene, clock, widgets, camera.</li>
+                <li><span class="text-emerald-300">Entity/DataSource</span> — points, models, polylines, CZML/GeoJSON.
+                </li>
+                <li><span class="text-emerald-300">ImageryLayer</span> & <span class="text-emerald-300">Terrain</span> —
+                  base maps & elevation.</li>
+                <li><span class="text-emerald-300">Camera</span> — <code>flyTo</code>, <code>setView</code>, tracking.
+                </li>
+                <li><span class="text-emerald-300">SampledPositionProperty</span> — time-dynamic paths.</li>
+                <li><span class="text-emerald-300">Event handlers</span> — input, entity selection.</li>
+              </ul>
+            </div>
+            <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
+              <h4 class="text-gray-100 font-semibold">Common Functions</h4>
+              <ul class="text-gray-400 text-sm mt-2 list-disc list-inside space-y-1">
+                <li><code>new Cesium.Viewer(container, opts)</code></li>
+                <li><code>viewer.entities.add({...})</code>, <code>viewer.dataSources.add(...)</code></li>
+                <li><code>viewer.camera.flyTo({destination, orientation})</code></li>
+                <li><code>viewer.scene.globe.depthTestAgainstTerrain = true</code></li>
+                <li><code>Cesium.GeoJsonDataSource.load(url)</code></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- <div id="cesium-container" style="height:550px"
+            class=" rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-green-500/10 shadow-lg shadow-green-900/20 overflow-hidden">
+          </div> -->
+          <div id="cesium-container" style="height: 550px;"
+            class="rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-green-500/10 shadow-lg shadow-green-900/20 overflow-hidden">
+            <!-- Cesium Flight Tracker (inline, no <head>/<body>) -->
+            <link href="https://cesium.com/downloads/cesiumjs/releases/1.134/Build/Cesium/Widgets/widgets.css"
+              rel="stylesheet" />
+            <script src="https://cesium.com/downloads/cesiumjs/releases/1.134/Build/Cesium/Cesium.js"></script>
+
+            <!-- Inline sample data (edit or replace) -->
+            <script id="flightData" type="application/json">[
+    {"time":"2024-01-01T12:00:00Z","lon":-122.389,"lat":37.615,"alt":300},
+    {"time":"2024-01-01T12:02:00Z","lon":-122.360,"lat":37.700,"alt":800},
+    {"time":"2024-01-01T12:04:00Z","lon":-122.320,"lat":37.760,"alt":1200},
+    {"time":"2024-01-01T12:06:00Z","lon":-122.280,"lat":37.790,"alt":1500},
+    {"time":"2024-01-01T12:08:00Z","lon":-122.340,"lat":37.740,"alt":1100},
+    {"time":"2024-01-01T12:10:00Z","lon":-122.389,"lat":37.615,"alt":300}
+  ]</script>
+
+            <script>
+              // Ion token
+              Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlNmQzM2IzYy1iNmZmLTQzOTAtODI5NC00MzE2MzY1MTdmOGQiLCJpZCI6MjQxODYyLCJpYXQiOjE3MjY0NTk1MjJ9.XhN4UNgKITt-KoENllwyeEe5CCfcr5QZ1L90ToHUt14';
+
+              // Create viewer on THIS div
+              const viewer = new Cesium.Viewer('cesium-container', {
+                terrain: Cesium.Terrain.fromWorldTerrain(),
+                animation: true,
+                timeline: true,
+                baseLayerPicker: true
+              });
+
+              // Build from inline JSON and run slowly
+              const position = new Cesium.SampledPositionProperty();
+              let data; const fdEl = document.getElementById('flightData');
+              data = fdEl ? JSON.parse(fdEl.textContent) : [
+                { time: '2024-01-01T12:00:00Z', lon: -122.389, lat: 37.615, alt: 300 },
+                { time: '2024-01-01T12:03:00Z', lon: -122.360, lat: 37.700, alt: 800 },
+                { time: '2024-01-01T12:06:00Z', lon: -122.320, lat: 37.760, alt: 1200 },
+                { time: '2024-01-01T12:09:00Z', lon: -122.389, lat: 37.615, alt: 300 }
+              ];
+
+              const first = Cesium.JulianDate.fromDate(new Date(data[0].time));
+              const last = Cesium.JulianDate.fromDate(new Date(data[data.length - 1].time));
+              viewer.clock.startTime = first.clone();
+              viewer.clock.stopTime = last.clone();
+              viewer.clock.currentTime = first.clone();
+              viewer.clock.clockRange = Cesium.ClockRange.LOOP_STOP;
+              viewer.clock.shouldAnimate = true; // auto-run
+              viewer.clock.multiplier = 0.5;     // slow playback
+              viewer.timeline.zoomTo(first, last);
+
+              for (const d of data) {
+                const t = Cesium.JulianDate.fromDate(new Date(d.time));
+                const p = Cesium.Cartesian3.fromDegrees(d.lon, d.lat, d.alt ?? 1000);
+                position.addSample(t, p);
+              }
+
+              const airplane = viewer.entities.add({
+                position,
+                orientation: new Cesium.VelocityOrientationProperty(position),
+                model: { uri: '/static/plane.glb', minimumPixelSize: 64, maximumScale: 200 },
+                path: { width: 3, leadTime: 0, trailTime: 180, material: Cesium.Color.LIGHTGRAY.withAlpha(0.025) }
+              });
+              viewer.trackedEntity = airplane;
+            </script>
+          </div>
+
+
+
+<pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto">
+  <code>// Minimal Cesium bootstrap (token/config assumed loaded elsewhere)
+    const viewer = new Cesium.Viewer('cesium-container', { timeline:false, animation:false, geocoder:false, baseLayerPicker:true });
+    viewer.entities.add({ position: Cesium.Cartesian3.fromDegrees(-97.7431, 30.2672, 120), point:{ pixelSize: 10, color: Cesium.Color.LIME } });
+    viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(-97.7431, 30.2672, 1200), orientation:{ heading:0, pitch: -0.9, roll:0 } });
+    // Optional: add GeoJSON
+    // Cesium.GeoJsonDataSource.load('/static/data/roads.geojson').then(ds => viewer.dataSources.add(ds));
+  </code>
+</pre>
+
+          <!-- Sandbox: Cesium (inline) -->
+          <div id="cesium-sandbox" class="mt-6 p-4 rounded-xl border border-gray-800 bg-gray-900/60">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-green-400">▶</span>
+              <h4 class="text-gray-100 font-semibold">Cesium Sandbox</h4>
+              <button id="cesium-run"
+                class="ml-auto text-xs px-3 py-1 rounded bg-green-700 hover:brightness-110">Run</button>
+              <button id="cesium-clear"
+                class="text-xs px-3 py-1 rounded bg-gray-700 hover:brightness-110">Clear</button>
+            </div>
+            <textarea id="cesium-editor"
+              class="w-full h-40 text-xs p-3 rounded bg-gray-950/80 text-gray-200 border border-gray-800"
+              spellcheck="false">// Add a moving entity along a simple path
+    const pts = [
+      Cesium.Cartesian3.fromDegrees(-97.75, 30.27, 50),
+      Cesium.Cartesian3.fromDegrees(-97.74, 30.27, 50)
+    ];
+    viewer.entities.add({ polyline: { positions: pts, width: 3, material: Cesium.Color.CYAN } });
+    viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(-97.745, 30.27, 1800) });
+    </textarea>
+          </div>
+          <script>
+            (function () {
+              const run = document.getElementById('cesium-run');
+              const clr = document.getElementById('cesium-clear');
+              const ed = document.getElementById('cesium-editor');
+              function exec() { try { new Function(ed.value)(); } catch (e) { console.error(e); alert(e.message); } }
+              run?.addEventListener('click', exec);
+              clr?.addEventListener('click', () => { ed.value = ''; });
+            })();
+          </script>
+        </div>
+      </section>
+
+      <!-- Explore Core Engine Capabilities (single-column cards) -->
+       
+
+<!-- ===== BABYLON.JS Section (separate, matches other sections) ===== -->
+<section id="babylon" class="py-16 bg-transparent">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-8 flex items-center gap-3">
+      <span class="text-purple-400 text-2xl animate-pulse">★</span>
+      <h3 class="text-2xl font-semibold tracking-tight bg-gradient-to-r from-purple-400 to-pink-300 bg-clip-text text-transparent">
+        Babylon.js — Engine • what it does
+      </h3>
+    </div>
+    <p class="text-gray-300/90 text-sm leading-relaxed mb-6">
+      The <span class="text-purple-300">Engine</span> creates the WebGL/WebGPU context, owns the render loop, handles resize & timing; the <span class="text-purple-300">Scene</span> holds cameras/lights/meshes/effects that the engine renders each frame.
+    </p>
+
+    <!-- Babylon.js • Feature cards (like your other sections) -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+        <h4 class="text-gray-100 font-semibold mb-2">Core Objects</h4>
+        <ul class="text-gray-400 text-sm space-y-1 list-disc list-inside">
+          <li><span class="text-purple-300">Engine</span> — WebGL/WebGPU context bound to a canvas.</li>
+          <li><span class="text-purple-300">Scene</span> — holds cameras, lights, meshes, effects.</li>
+          <li><span class="text-purple-300">Camera</span> — ArcRotate, Universal, Follow; input controls.</li>
+          <li><span class="text-purple-300">Light</span> — Hemispheric, Directional, Point, Spot.</li>
+          <li><span class="text-purple-300">Mesh/Material</span> — Standard/PBR, Node Material.</li>
+          <li><span class="text-purple-300">Systems</span> — Particles, GlowLayer, GUI, Physics.</li>
+        </ul>
+      </div>
+      <div class="p-6 rounded-xl bg-gray-900 border border-gray-800">
+        <h4 class="text-gray-100 font-semibold mb-2">Common Functions</h4>
+        <ul class="text-gray-400 text-sm space-y-1 list-disc list-inside">
+          <li><code>new BABYLON.Engine(canvas, antialias)</code> → create engine.</li>
+          <li><code>const scene = new BABYLON.Scene(engine)</code> → scene graph.</li>
+          <li><code>new BABYLON.ArcRotateCamera(...).attachControl(canvas,true)</code></li>
+          <li><code>new BABYLON.HemisphericLight(...)</code> / <code>DirectionalLight</code></li>
+          <li><code>BABYLON.MeshBuilder.CreateSphere/Box/Ground(...)</code></li>
+          <li><code>engine.runRenderLoop(() =&gt; scene.render())</code></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Code — Babylon Sun Simulation (same code used below) -->
+    <div class="mb-8 p-4 rounded-xl bg-gray-900 border border-gray-800 overflow-auto">
+      <h4 class="text-gray-100 font-semibold mb-3">Code (Babylon Sun Simulation)</h4>
+      <pre class="text-xs leading-5 text-gray-300"><code>// Create engine + scene on the canvas
+const canvas = document.getElementById('babylon-stage2');
+const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer:true, stencil:true });
+const scene  = new BABYLON.Scene(engine);
+const camera = new BABYLON.ArcRotateCamera('cam', Math.PI*1.2, Math.PI*0.4, 10, BABYLON.Vector3.Zero(), scene);
+camera.attachControl(canvas, true);
+new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0,1,0), scene);
+
+// Sun layers
+const core  = BABYLON.MeshBuilder.CreateSphere('core',{ diameter:2.6, segments:64 }, scene);
+const coreMat = new BABYLON.StandardMaterial('coreMat', scene);
+coreMat.emissiveColor = new BABYLON.Color3(1.0, 0.65, 0.15);
+core.material = coreMat;
+const glow = new BABYLON.GlowLayer('glow', scene, { blurKernelSize: 64 });
+glow.intensity = 1.4;
+const shell = BABYLON.MeshBuilder.CreateSphere('shell',{ diameter:3.0, segments:64 }, scene);
+const shellMat = new BABYLON.StandardMaterial('shellMat', scene);
+shellMat.emissiveColor = new BABYLON.Color3(1.0,0.3,0.05); shellMat.alpha = 0.25;
+shell.material = shellMat;
+
+// Soft particles
+const ps = new BABYLON.ParticleSystem('ps', 800, scene);
+ps.particleTexture = new BABYLON.Texture('https://playground.babylonjs.com/textures/flare.png', scene);
+ps.emitter = core; ps.emitRate = 400; ps.minSize = 0.05; ps.maxSize = 0.25; ps.start();
+
+// Animate
+scene.onBeforeRenderObservable.add(()=>{ const dt=engine.getDeltaTime()*0.001; core.rotation.y+=0.1*dt; shell.rotation.y-=0.05*dt; });
+engine.runRenderLoop(()=>scene.render());</code></pre>
+    </div>
+
+    <div id="babylon-sim" class="rounded-xl border border-gray-800 bg-gray-900/60 ring-1 ring-purple-500/10 shadow-lg shadow-purple-900/20 overflow-hidden" 
+    style="height:550px; position:relative;">
+      <!-- Babylon CDN (scoped to this section) -->
+      <script src="https://cdn.babylonjs.com/babylon.js"></script>
+      <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+      <script src="https://cdn.babylonjs.com/particles/babylon.particleHelper.min.js"></script>
+
+      <style>#babylon-stage2{position:absolute;inset:0;width:100%;height:100%;display:block}</style>
+      <canvas id="babylon-stage2"></canvas>
+
+      <!-- Demo adapted from Babylon Playground (self-contained) -->
+      <script>
+        (function(){
+          const canvas = document.getElementById('babylon-stage2');
+
+          // Wait until CDN loads
+          function boot(){
+            if(!window.BABYLON){ return setTimeout(boot,50); }
+
+            const engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer:true, stencil:true });
+
+            function createScene(){
+              const scene = new BABYLON.Scene(engine);
+              scene.clearColor = new BABYLON.Color4(0,0,0,1); // deep space bg
+
+              // Camera
+              const camera = new BABYLON.ArcRotateCamera('cam', Math.PI*1.15, Math.PI*0.45, 16, BABYLON.Vector3.Zero(), scene);
+              camera.attachControl(canvas, true);
+
+              // --- SUN like Babylon demo (surface + flare + corona + stars) ---
+              // Core sphere (emissive)
+              const coreSphere = BABYLON.MeshBuilder.CreateSphere('coreSphere', { diameter: 6, segments: 64 }, scene);
+              const coreMat = new BABYLON.StandardMaterial('coreMat', scene);
+              coreMat.diffuseColor  = new BABYLON.Color3(0,0,0);
+              coreMat.emissiveColor = new BABYLON.Color3(1.0, 0.58, 0.10); // warm sun
+              coreMat.specularColor = new BABYLON.Color3(0,0,0);
+              coreSphere.material = coreMat;
+
+              // Glow around emissive surfaces
+              const glow = new BABYLON.GlowLayer('sunGlow', scene, { blurKernelSize: 96 });
+              glow.intensity = 1.6;
+
+              // Emitter (center)
+              const emitter = coreSphere;
+
+              // Particle textures
+              const texFlare   = new BABYLON.Texture('https://playground.babylonjs.com/textures/flare.png', scene);
+              const texStar    = new BABYLON.Texture('https://playground.babylonjs.com/textures/flare.png', scene);
+
+              // Surface particles (boiling texture right on the surface)
+              const surfaceParticles = new BABYLON.ParticleSystem('surface', 2000, scene);
+              surfaceParticles.particleTexture = texFlare;
+              surfaceParticles.emitter = emitter;
+              surfaceParticles.minEmitBox = new BABYLON.Vector3(0,0,0);
+              surfaceParticles.maxEmitBox = new BABYLON.Vector3(0,0,0);
+              surfaceParticles.minSize = 0.05; surfaceParticles.maxSize = 0.25;
+              surfaceParticles.minLifeTime = 0.4; surfaceParticles.maxLifeTime = 1.2;
+              surfaceParticles.emitRate = 1200;
+              surfaceParticles.direction1 = new BABYLON.Vector3(-0.5,-0.5,-0.5);
+              surfaceParticles.direction2 = new BABYLON.Vector3(0.5,0.5,0.5);
+              surfaceParticles.color1 = new BABYLON.Color4(1.0,0.6,0.1,0.9);
+              surfaceParticles.color2 = new BABYLON.Color4(1.0,0.35,0.05,0.6);
+              surfaceParticles.updateSpeed = 0.01; surfaceParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+              surfaceParticles.start();
+
+              // Flare particles (small arcs hugging the surface)
+              const flareParticles = new BABYLON.ParticleSystem('flare', 800, scene);
+              flareParticles.particleTexture = texFlare;
+              flareParticles.emitter = emitter;
+              flareParticles.minEmitBox = new BABYLON.Vector3(-0.2,-0.2,-0.2);
+              flareParticles.maxEmitBox = new BABYLON.Vector3(0.2,0.2,0.2);
+              flareParticles.minSize = 0.08; flareParticles.maxSize = 0.35;
+              flareParticles.minLifeTime = 0.8; flareParticles.maxLifeTime = 2.2;
+              flareParticles.emitRate = 300;
+              flareParticles.direction1 = new BABYLON.Vector3(-1,-1,-1);
+              flareParticles.direction2 = new BABYLON.Vector3(1,1,1);
+              flareParticles.color1 = new BABYLON.Color4(1.0,0.6,0.1,0.7);
+              flareParticles.color2 = new BABYLON.Color4(1.0,0.35,0.05,0.4);
+              flareParticles.updateSpeed = 0.008; flareParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+              flareParticles.start();
+
+              // Corona particles (large faint haze around)
+              const coronaParticles = new BABYLON.ParticleSystem('corona', 1200, scene);
+              coronaParticles.particleTexture = texFlare;
+              coronaParticles.emitter = emitter;
+              coronaParticles.minSize = 0.15; coronaParticles.maxSize = 0.6;
+              coronaParticles.minLifeTime = 1.5; coronaParticles.maxLifeTime = 3.5;
+              coronaParticles.emitRate = 250;
+              coronaParticles.direction1 = new BABYLON.Vector3(-1.2,-1.2,-1.2);
+              coronaParticles.direction2 = new BABYLON.Vector3(1.2,1.2,1.2);
+              coronaParticles.color1 = new BABYLON.Color4(1.0,0.8,0.4,0.18);
+              coronaParticles.color2 = new BABYLON.Color4(1.0,0.6,0.2,0.10);
+              coronaParticles.updateSpeed = 0.006; coronaParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+              coronaParticles.start();
+
+              // Stars background
+              const starsParticles = new BABYLON.ParticleSystem('stars', 600, scene);
+              starsParticles.particleTexture = texStar;
+              starsParticles.emitter = new BABYLON.Vector3(0,0,0);
+              starsParticles.minEmitBox = new BABYLON.Vector3(-50,-30,-50);
+              starsParticles.maxEmitBox = new BABYLON.Vector3(50,30,50);
+              starsParticles.minSize = 0.03; starsParticles.maxSize = 0.06;
+              starsParticles.emitRate = 0; // burst only
+              starsParticles.color1 = new BABYLON.Color4(1,1,1,0.9);
+              starsParticles.color2 = new BABYLON.Color4(0.7,0.8,1,0.9);
+              starsParticles.updateSpeed = 0.01; starsParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+              starsParticles.start();
+
+              // Slow rotations for parallax
+              scene.onBeforeRenderObservable.add(()=>{
+                const dt = engine.getDeltaTime()*0.001;
+                coreSphere.rotation.y += 0.03*dt;
+              });
+
+              return scene;
+            }
+
+            const scene = createScene();
+            engine.runRenderLoop(()=> scene.render());
+            addEventListener('resize', ()=> engine.resize());
+          }
+          boot();
+        })();
+      </script>
+    </div>
+  </div>
+</section>
+</main>
+
+  <!-- Footer -->
+ <!-- NEW FOOTER -->
+    <footer class="w-full bg-[#28272b] border-t-1 border-transparent animated-footer mt-16">
+        <div
+            class="max-w-7xl mx-auto p-8 flex flex-col md:flex-row justify-between items-center text-primary-text/80 text-sm">
+
+            <!-- Logo and Copyright -->
+            <div class="mb-4 mt-18 md:mb-0 text-center md:text-left">
+                <h1
+                    class="text-xl font-bold text-accent-glow font-title-serif tracking-widest transition duration-500 hover:text-cyan-300">
+                    <span class="text-3xl text-cyan-900">AptiCraft</span> Design Twin
+                </h1>
+                <p class="mt-2 text-xs">&copy; 2025 Every Circuit, Inc. All rights reserved.</p>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-accent-glow transition duration-200">Privacy Policy</a>
+                <a href="#" class="hover:text-accent-glow transition duration-200">Terms of Use</a>
+                <a href="mailto:support@apticraft.com"
+                    class="hover:text-accent-glow transition duration-200">Support</a>
+            </div>
+        </div>
+    </footer>
+    <!-- END NEW FOOTER -->
+
+
+  <!-- NOTE: The fixed control bar section has been REMOVED. Controls are now inside the canvas container. -->
+
+  <!-- Helicopter Config (Provided by user) -->
+  <script id="heli-config" type="application/json">
+    {
+        "modelUrl": "./static/plain.glb", 
+        "targetHeight": 5,
+        "liftSpeed": 0.03,
+        "spinAccel": 0.002,
+        "accelUp": 1.2,
+        "accelDown": 2.0,
+        "stopFriction": 0.96,
+        "stopThreshold": 0.001,
+        "rotors": [ 
+            { "name": "MainRotor", "axis": "y", "speed": 1.0 }, 
+            { "name": "TailRotor", "axis": "x", "speed": 2.0 } 
+        ]
+    }
+    </script>
+
+  <!-- JavaScript for Page Switching, Three.js, and Cannon.js Logic -->
+  <script>
+    // --- 1. GLOBAL STATE & UTILITIES ---
+    // Firebase Initialization (MANDATORY for Canvas environment)
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+    let currentAnimation = null;
+    let renderer, scene, camera;
+    let controls; // OrbitControls instance
+    let meshes = [];
+    let canvasElement = null;
+
+    // State for Helicopter Demo (based on user's code)
+    const cfg = JSON.parse(document.getElementById('heli-config').textContent);
+    let heli = null;
+    let rotorParts = []; // {node, axis, speed}
+    let rotorSpeed = 0;  // current spin speed
+    let targetSpeed = 0; // desired spin speed
+    let state = 'idle';  // idle | spin | fly | land | go | return
+    const travel = { distance: 20, speed: 3 };
+    let forwardLocal = new THREE.Vector3(0, 0, 1); // default based on analysis of the user's logic
+    let homePos = new THREE.Vector3();
+    let farPos = null;
+
+    /** Utility to update status text in the canvas overlay. */
+    function updateStatus(newStatus) {
+      document.getElementById('heli-status').textContent = newStatus;
+    }
+
+    /** Helper: helicopter forward (nose) direction flattened to ground plane */
+    function forwardFlat() {
+      if (!heli) return new THREE.Vector3(0, 0, -1);
+      const wPos = heli.getWorldPosition(new THREE.Vector3());
+      const tip = heli.localToWorld(forwardLocal.clone());
+      const dir = tip.sub(wPos); // world forward from chosen local axis
+      dir.y = 0; // keep level
+      return dir.normalize();
+    }
+
+    const pageConfigs = {
+      'main': { init: initMainDemo, canvasId: 'main-canvas', animate: animateMain },
+      'threejs': { init: initThreeJsDemo, canvasId: 'threejs-canvas', animate: animateThreeJs },
+      'cannon': { init: initCannonJsDemo, canvasId: 'cannon-canvas', animate: animateCannonJs },
+      'cesium': { init: initCesiumDemo, canvasId: 'cesium-canvas', animate: animateCesium }
+    };
+
+    /** Toggles the "Explore More" hidden content using max-height for smooth transition. */
+    function toggleExplore(contentId, buttonElement) {
+      const content = document.getElementById(contentId);
+      const icon = buttonElement.querySelector('svg');
+
+      if (content.classList.contains('expanded')) {
+        // Collapse
+        content.style.maxHeight = '0px';
+        icon.style.transform = 'rotate(0deg)';
+        content.classList.remove('expanded');
+      } else {
+        // Expand
+        content.classList.add('expanded');
+        content.style.maxHeight = content.scrollHeight + 50 + 'px';
+        icon.style.transform = 'rotate(90deg)';
+      }
+    }
+
+    /**
+     * Cleans up and switches the active page/canvas.
+     */
+    function showPage(pageId) {
+      // Stop current animation
+      if (currentAnimation) {
+        cancelAnimationFrame(currentAnimation);
+        currentAnimation = null;
+      }
+
+      // Cleanup previous canvas resources
+      if (renderer) {
+        renderer.dispose();
+        renderer = null;
+      }
+      meshes = [];
+
+      // Clear all canvases visually
+      document.querySelectorAll('.three-canvas').forEach(canvas => {
+        const context = canvas.getContext('webgl');
+        if (context) context.clear(context.COLOR_BUFFER_BIT | context.DEPTH_BUFFER_BIT);
+      });
+
+      // Hide all pages
+      document.querySelectorAll('#main-content > div').forEach(page => {
+        page.classList.add('page-hidden');
+      });
+
+      // Show the requested page
+      const pageElement = document.getElementById(pageId);
+      if (pageElement) {
+        pageElement.classList.remove('page-hidden');
+
+        // Toggle visibility of the controls (now internal to canvas)
+        const controlSection = document.getElementById('control-section');
+        if (controlSection) {
+          // Controls are only visible on the main page
+          controlSection.style.display = (pageId === 'main') ? 'flex' : 'none';
+        }
+
+        // Initialize and render the static empty scene for the new page
+        const config = pageConfigs[pageId];
+        if (config) {
+          canvasElement = document.getElementById(config.canvasId);
+          config.init(canvasElement);
+          // Only start animation loop for the main demo
+          if (pageId === 'main') {
+            config.animate();
+          } else {
+            // For static pages, just render once
+            renderer.render(scene, camera);
+          }
+        }
+      }
+    }
+
+    // --- 2. MAIN PAGE DEMO (Helicopter Simulation Logic) ---
+
+    function initMainDemo(canvas) {
+      updateStatus('Initializing...');
+
+      // --- scene ---
+      scene = new THREE.Scene();
+      scene.background = null; // Use CSS background
+
+      // Camera Setup
+      camera = new THREE.PerspectiveCamera(70, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.set(0, 2, 6);
+
+      // Renderer Setup
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      // Controls Setup
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.target.set(0, 2, 0); // Focus on potential flight height
+      controls.update();
+
+      // Lighting (User's lights)
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x333333, 0.7));
+      const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+      sun.position.set(6, 8, 4);
+      sun.castShadow = true;
+      sun.shadow.mapSize.set(1024, 1024);
+      sun.shadow.camera.near = 0.5;
+      sun.shadow.camera.far = 50;
+      sun.shadow.camera.left = -10;
+      sun.shadow.camera.right = 10;
+      sun.shadow.camera.top = 10;
+      sun.shadow.camera.bottom = -10;
+      scene.add(sun);
+
+      // soft ground shadow
+      const groundGeo = new THREE.PlaneGeometry(50, 50);
+      const groundMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -0.001;
+      ground.receiveShadow = true;
+      scene.add(ground);
+
+      // subtle grid for scale
+      const grid = new THREE.GridHelper(20, 20, 0x2dd4bf, 0x1f2937);
+      grid.position.y = 0;
+      grid.material.opacity = 0.15;
+      grid.material.transparent = true;
+      scene.add(grid);
+
+      // fix GridHelper materials transparency across versions
+      (function () {
+        const mats = Array.isArray(grid.material) ? grid.material : [grid.material];
+        mats.forEach(m => { m.opacity = 0.15; m.transparent = true; });
+      })();
+
+
+      // --- model loader (using user's logic) ---
+      new THREE.GLTFLoader().load(
+        cfg.modelUrl, // Expects "./static/plain.glb"
+        (gltf) => {
+          heli = gltf.scene; scene.add(heli);
+          console.log('GLB model loaded successfully.');
+
+          // enable soft shadows on meshes
+          heli.traverse(obj => { if (obj.isMesh) { obj.castShadow = true; obj.receiveShadow = false; } });
+
+          // center and frame (User's logic)
+          const box = new THREE.Box3().setFromObject(heli);
+          const center = box.getCenter(new THREE.Vector3());
+          heli.position.sub(center);
+          const size = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const fitDist = maxDim / (2 * Math.tan((camera.fov * Math.PI) / 360));
+          camera.position.set(0.8, maxDim * 0.35, fitDist * 1.25);
+          controls.update();
+
+          // choose local forward axis based on model dimensions (User's logic)
+          forwardLocal = (size.x > size.z)
+            ? new THREE.Vector3(-1, 0, 0)   // nose along -X if body is wider on X
+            : new THREE.Vector3(0, 0, 1);  // nose along +Z otherwise
+
+          // mark home position after centering
+          homePos.copy(heli.position);
+
+          // prefer explicit rotors from cfg (User's logic)
+          const wanted = (cfg.rotors || []);
+          if (wanted.length) {
+            wanted.forEach(r => {
+              let node = heli.getObjectByName(r.name) || null;
+              if (!node) {
+                // case-insensitive contains fallback
+                const key = (r.name || '').toLowerCase();
+                heli.traverse(ch => { if (!node && (ch.name || '').toLowerCase().includes(key)) node = ch; });
+              }
+              if (node) rotorParts.push({ node, axis: (r.axis || 'y'), speed: r.speed || 1 });
+            });
+          }
+          // if nothing matched, auto-detect by name hints (User's logic)
+          if (!rotorParts.length) {
+            heli.traverse(ch => { const n = (ch.name || '').toLowerCase(); if (/rotor|prop|blade/.test(n)) rotorParts.push({ node: ch, axis: 'y', speed: 1 }); });
+          }
+          // visually emphasize rotors slightly (User's logic)
+          for (const r of rotorParts) {
+            r.node.traverse(child => {
+              if (child.isMesh) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(m => { if (m && 'emissive' in m) { m.emissive = new THREE.Color(0x22d3ee); m.emissiveIntensity = 0.25; } });
+              }
+            });
+          }
+          updateStatus('Ready (Idle)');
+        },
+        undefined,
+        (err) => {
+          console.error('GLB load error:', err);
+          updateStatus('ERROR: Model not found. Check console.');
+          console.warn('NOTE: External files like GLB models at relative paths (./static/plain.glb) CANNOT be loaded in this single-file environment.');
+          console.warn('The simulation logic is running, but the helicopter model will not be visible.');
+        }
+      );
+
+      // --- controls (User's logic) ---
+      document.getElementById('btnStart').onclick = () => { state = 'spin'; targetSpeed = 0.10; updateStatus('Spinning Up'); };
+      document.getElementById('btnFly').onclick = () => { state = 'fly'; targetSpeed = 0.28; updateStatus('Taking Off'); };
+      document.getElementById('btnLand').onclick = () => { state = 'land'; targetSpeed = 0.02; updateStatus('Landing...'); };
+
+      document.getElementById('btnGo').onclick = () => {
+        if (!heli) return;
+        state = 'go';
+        targetSpeed = Math.max(targetSpeed, 0.22);
+        farPos = heli.position.clone().add(forwardFlat().multiplyScalar(travel.distance));
+        updateStatus('Traveling to Target');
+      };
+      document.getElementById('btnBack').onclick = () => {
+        if (!heli) return;
+        state = 'return';
+        targetSpeed = Math.max(targetSpeed, 0.22);
+        updateStatus('Returning Home');
+      };
+    }
+
+    // Clock for consistent framerate independent movement
+    const clock = new THREE.Clock();
+
+    function animateMain() {
+      currentAnimation = requestAnimationFrame(animateMain);
+      const dt = Math.min(clock.getDelta(), 0.05); // clamp big frame gaps
+
+      if (heli) {
+        // time-based smoothing: different ramp for spin-up vs spin-down (User's logic)
+        const accelUp = (cfg.accelUp != null) ? cfg.accelUp : 1.2; // per second
+        const accelDown = (cfg.accelDown != null) ? cfg.accelDown : 2.0; // per second (faster stop)
+        const accel = (targetSpeed > rotorSpeed) ? accelUp : accelDown;
+        const t = 1 - Math.exp(-accel * dt); // smooth factor 0..1
+        rotorSpeed += (targetSpeed - rotorSpeed) * t;
+
+        // spin only rotor parts (User's logic)
+        if (rotorParts.length) {
+          for (const r of rotorParts) {
+            const s = rotorSpeed * (r.speed || 1);
+            if (r.axis === 'x') r.node.rotation.x += s;
+            else if (r.axis === 'z') r.node.rotation.z += s;
+            else r.node.rotation.y += s; // default y
+          }
+        }
+
+        // fly/land/go/return profile (User's logic)
+        const liftSpeed = cfg.liftSpeed * dt * 60; // Scale speed by frame rate (0.03 default)
+
+        if (state === 'fly' && heli.position.y < cfg.targetHeight) {
+          heli.position.y += liftSpeed;
+        }
+        if (state === 'go' && farPos) {
+          const to = farPos.clone().sub(heli.position); const d = to.length();
+          if (d < 0.05) { state = 'fly'; updateStatus('Reached Target'); } else { to.normalize(); heli.position.add(to.multiplyScalar(travel.speed * dt)); }
+        }
+        if (state === 'return') {
+          const to = homePos.clone().sub(heli.position); const d = to.length();
+          if (d < 0.05) { state = 'fly'; updateStatus('Returned Home'); } else { to.normalize(); heli.position.add(to.multiplyScalar(travel.speed * dt)); }
+        }
+        if (state === 'land') {
+          if (heli.position.y > 0) {
+            heli.position.y -= liftSpeed;
+            if (heli.position.y <= 0) {
+              heli.position.y = 0; state = 'idle'; targetSpeed = 0; // request full stop after touchdown
+              updateStatus('Landed (Idle)');
+            }
+          }
+        }
+
+        // when idle and target is zero, bleed down to a stop (User's logic)
+        if (state === 'idle' && targetSpeed === 0 && Math.abs(rotorSpeed) < (cfg.stopThreshold || 0.001)) {
+          rotorSpeed = 0;
+        }
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // --- 3. THREE.JS DEEP DIVE DEMO (Empty Scene) ---
+    function initThreeJsDemo(canvas) {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0d1117);
+      camera = new THREE.PerspectiveCamera(50, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.z = 4;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+    }
+
+    function animateThreeJs() {
+      if (renderer && scene && camera) {
+        controls.update();
+        renderer.render(scene, camera);
+      }
+    }
+
+    // --- 4. CANNON.JS DEEP DIVE DEMO (Empty Scene) ---
+    function initCannonJsDemo(canvas) {
+      meshes = [];
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0d1117);
+      camera = new THREE.PerspectiveCamera(70, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.set(0, 5, 10);
+      camera.lookAt(0, 0, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+    }
+
+    function animateCannonJs() {
+      if (renderer && scene && camera) {
+        controls.update();
+        renderer.render(scene, camera);
+      }
+    }
+
+    // --- 5. CESIUM.JS DEEP DIVE DEMO (Empty Scene) ---
+    function initCesiumDemo(canvas) {
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0d1117);
+      camera = new THREE.PerspectiveCamera(40, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+      camera.position.z = 7;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+    }
+
+    function animateCesium() {
+      if (renderer && scene && camera) {
+        controls.update();
+        renderer.render(scene, camera);
+      }
+    }
+
+    // --- 6. INITIALIZATION & RESIZE HANDLER ---
+
+    function onWindowResize() {
+      const visiblePageId = Object.keys(pageConfigs).find(id => !document.getElementById(id).classList.contains('page-hidden'));
+      const config = pageConfigs[visiblePageId];
+
+      if (config && renderer && camera) {
+        const canvas = document.getElementById(config.canvasId);
+        if (canvas) {
+          camera.aspect = canvas.clientWidth / canvas.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+          // Re-render/animate the scene after resize
+          if (visiblePageId === 'main') {
+            config.animate();
+          } else {
+            renderer.render(scene, camera);
+          }
+        }
+      }
+    }
+
+    window.addEventListener('resize', onWindowResize);
+
+    // Initial Firebase/Auth setup (mandatory)
+    window.onload = function () {
+      // Placeholder for auth logic
+      if (typeof __initial_auth_token !== 'undefined') { /* signInWithCustomToken */ } else { /* signInAnonymously */ }
+
+      // Show the main page on load
+      showPage('main');
+    }
+  </script>
+</body>
+
+</html>
