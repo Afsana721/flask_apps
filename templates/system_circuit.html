@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AptiCraft: The Design Nexus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght[300;400;700]&display=swap"
+        rel="stylesheet">
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.umd.js"></script>
+
+    <script>
+        // Customizing the Tailwind configuration for the AptiCraft Circuit/Neon Green theme
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'background': '#151515',
+                        'surface': '#262626',
+                        'primary-text': '#E5E7EB',
+                        'accent-glow': '#00FF7F',   // Electric Mint/Neon Green
+                        'title-color': '#FFFFFF',
+                        'trace': '#007F40',
+                        'electron': '#33FF99',      // Bright current flow
+                        'source-red': '#FF4500',    // Red for positive side of source
+                        'source-blue': '#1E90FF',   // Blue for negative side of source
+                        'inductor-coil': '#FFD700', // Gold/Yellow for Inductor field
+                        'ic-chip': '#8A2BE2',       // Blue Violet for IC
+                        'mem-color': '#FF8C00',     // Dark Orange for Memory
+                        'cpu-color': '#DC143C',     // Crimson for CPU
+                        'io-color': '#00BFFF',      // Deep Sky Blue for I/O
+                        'von-neumann': '#33FF99',   // Neon green for combined bus
+                        'harvard-inst': '#1E90FF',  // Deep blue for instruction bus (Particles)
+                        'harvard-data': '#FF4500',  // Orange-red for data bus (Particles)
+                        'diagram-frame': '#E0E0E0', // Light gray for the frame
+                        'diagram-bus-line': '#A0A0A0', // Gray for bus lines
+                        'diagram-box': '#FFFFFF',   // White for component boxes
+                        'diagram-text': '#000000',  // Black for text inside boxes
+                        'data-particle': '#FF8C00', // Orange for data particles
+                        'instruction-particle': '#1E90FF', // Blue for instruction particles
+                        'arch-background': '#1A1A1A', // New dark background for arch diagram
+                    },
+                    fontFamily: {
+                        'title-serif': ['Cinzel', 'serif'],
+                        'sans': ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #151515;
+            font-family: 'Inter', sans-serif;
+            color: #E5E7EB;
+            overflow-x: hidden;
+        }
+
+        /* Hero Text Styles: Large, Centered, High Contrast */
+        .hero-title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            line-height: 1.1;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Application Button Styling */
+        .app-button {
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            filter: grayscale(100%);
+        }
+
+        .app-button:hover {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
+        }
+
+        /* Simulation Interface Panel - Container for the circuit editor */
+        .simulation-interface {
+            height: 60vh;
+            min-height: 400px;
+            background-color: #000000;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* Canvas specific styling */
+        #circuitCanvas {
+            cursor: grab;
+            display: block;
+            background-color: #050505;
+            border-radius: 4px;
+        }
+
+        /* NEW: Style for the Architecture Canvas (2D) */
+        #architectureCanvas {
+            display: block;
+            width: 100%;
+            height: 400px;
+            /* Fixed height for the 2D view */
+            background-color: #1A1A1A;
+            /* Dark background as requested */
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+        }
+
+        /* Styling for the draggable components in the palette */
+        .palette-item {
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        .palette-item:hover {
+            background-color: rgba(0, 255, 127, 0.1);
+            color: #00FF7F;
+        }
+
+        .palette-item.disabled {
+            color: #444;
+            cursor: not-allowed;
+        }
+
+        /* --- Custom Styles for Attiny85 SVG Animation --- */
+        #attinyWrap svg {
+            width: 100%;
+            height: 500px;
+            background: radial-gradient(circle at center, #0a0f1f 0%, #000 100%)
+        }
+
+        .chip {
+            fill: #0f172a;
+            stroke: #60a5fa;
+            stroke-width: 2
+        }
+
+        .pin {
+            fill: #1e293b;
+            stroke: #93c5fd;
+            stroke-width: 1.5
+        }
+
+        .text {
+            fill: #e2e8f0;
+            font-weight: 700;
+            font-size: 14px
+        }
+
+        .wire {
+            fill: none;
+            stroke: #3b82f6;
+            stroke-width: 4;
+            stroke-dasharray: 8 14;
+            animation: flow 1.2s linear infinite
+        }
+
+        .wire-red {
+            stroke: #ef4444;
+            stroke-width: 4;
+            stroke-dasharray: 8 14;
+            animation: flow 1.2s linear infinite
+        }
+
+        .led {
+            fill: #0f172a;
+            stroke: #22d3ee;
+            stroke-width: 2
+        }
+
+        .led-glow {
+            fill: url(#glow);
+            opacity: 0.2
+        }
+
+        .led-on {
+            animation: blink 1.8s ease-in-out infinite
+        }
+
+        .button {
+            fill: #d1d5db;
+            stroke: #9ca3af;
+            stroke-width: 2;
+            animation: press 3s ease-in-out infinite
+        }
+
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -24
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            70%,
+            100% {
+                opacity: .2
+            }
+
+            50% {
+                opacity: 1
+            }
+        }
+
+        @keyframes press {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0)
+            }
+
+            40% {
+                transform: translateY(3px)
+            }
+        }
+
+        .marquee {
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap
+        }
+
+        .marquee .track {
+            display: inline-block;
+            padding-left: 100%;
+            will-change: transform;
+            animation: marqueeX 12s linear infinite
+        }
+
+        @keyframes marqueeX {
+            from {
+                transform: translateX(0)
+            }
+
+            to {
+                transform: translateX(-100%)
+            }
+        }
+
+        /* --- End Attiny85 Styles --- */
+
+        /* --- Custom Footer Styles --- */
+        @keyframes color-shift {
+            0% {
+                border-color: #00FF7F;
+                box-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+            }
+
+            50% {
+                border-color: #33FFFF;
+                box-shadow: 0 0 15px rgba(51, 255, 255, 0.7);
+            }
+
+            100% {
+                border-color: #00FF7F;
+                box-shadow: 0 0 10px rgba(0, 255, 127, 0.5);
+            }
+        }
+
+        .animated-footer {
+            animation: color-shift 4s ease-in-out infinite;
+        }
+
+        /* --- End Custom Footer Styles --- */
+    </style>
+</head>
+
+<body class="bg-background min-h-screen">
+
+
+
+    <header class="w-full bg-background border-b border-surface sticky top-0 z-20">
+        <div class="max-w-7xl mx-auto flex justify-between items-center p-4 md:p-6">
+            <h1 class="text-xl font-bold text-accent-glow font-title-serif tracking-widest">
+                <span class="text-3xl text-cyan-200">AptiCraft </span>Every Circuit
+            </h1>
+
+
+            <input type="text" placeholder="Search..."
+                class="hidden md:block px-4 py-2 bg-surface text-primary-text rounded-md border border-gray-600 w-64 focus:border-accent-glow focus:outline-none">
+
+            <nav class="flex space-x-4 md:space-x-8 text-sm font-medium uppercase text-primary-text">
+                <a href="#" class="hover:text-accent-glow transition duration-200">Home</a>
+                <a href="#" class="hover:text-accent-glow transition duration-200">Others</a>
+                <a href="#" class="hover:text-accent-glow transition duration-200">Info</a>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <main class="max-w-7xl mx-auto p-4 md:p-12 space-y-16">
+
+
+
+        <section class="text-center pt-8 md:pt-16">
+
+
+            <div
+                class="max-w-3xl mx-auto mb-16 p-4 bg-surface/50 rounded-lg border-l-4 border-accent-glow/50 text-sm text-primary-text/80 leading-relaxed">
+                <p>
+                    <strong class="text-accent-glow">PROGRAM UPDATE:</strong> EveryCircuit is dedicated to supporting
+                    academic institutions. We are offering very affordable pricing for education. Please click here for
+                    licensing details or contact us at <a href="mailto:info@everycircuit.com"
+                        class="text-accent-glow hover:underline">info@everycircuit.com</a>.
+                </p>
+            </div>
+
+
+
+            <div class="flex flex-wrap justify-center space-x-4 md:space-x-8 mt-12 mb-16">
+                <img src="https://placehold.co/120x40/151515/FFFFFF?text=App+Store"
+                    class="app-button w-32 h-10 object-contain rounded-md" alt="App Store download button">
+                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Google+Play"
+                    class="app-button w-32 h-10 object-contain rounded-md" alt="Google Play download button">
+                <img src="https://placehold.co/120x40/151515/FFFFFF?text=chrome"
+                    class="app-button w-32 h-10 object-contain rounded-md" alt="Chrome extension button">
+                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Firefox"
+                    class="app-button w-32 h-10 object-contain rounded-md" alt="Firefox extension button">
+                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Edge"
+                    class="app-button w-32 h-10 object-contain rounded-md" alt="Microsoft Edge extension button">
+            </div>
+        </section>
+
+
+
+        <section class="pb-8">
+            <div class="simulation-interface mx-auto max-w-6xl">
+                <div class="flex justify-between items-center mb-2 p-4">
+                    <span class="text-xs text-accent-glow font-mono uppercase">EveryCircuit v5.2 Console</span>
+                    <div class="flex space-x-2">
+                        <div class="w-3 h-3 bg-red-600 rounded-full"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                </div>
+
+
+                <div class="h-6 bg-surface border-b border-gray-700 flex items-center px-2 space-x-4 text-xs">
+                    <span class="text-primary-text/70">FILE</span>
+                    <span class="text-primary-text/70">EDIT</span>
+                    <span class="text-accent-glow">SIMULATE</span>
+                    <span class="text-primary-text/70">ANALYZE</span>
+                </div>
+
+
+
+                <div class="flex h-[80%] pt-2">
+
+
+                    <div id="component-palette"
+                        class="w-1/6 bg-surface p-2 rounded-lg text-xs text-primary-text/70 overflow-y-auto">
+                        <p class="font-bold mb-2 text-accent-glow uppercase tracking-wider">Palette</p>
+                        <ul class="space-y-1">
+                            <li class="palette-item" data-type="resistor">Resistor (R)</li>
+                            <li class="palette-item" data-type="capacitor">Capacitor (C)</li>
+                            <li class="palette-item" data-type="source">DC Source (V)</li>
+                            <li class="palette-item" data-type="inductor">Inductor (L)</li>
+                            <li class="palette-item disabled" data-type="ic">IC Chips</li>
+                        </ul>
+
+                        <p class="font-bold mt-4 mb-2 text-accent-glow uppercase tracking-wider">Info</p>
+                        <p class="text-[10px] text-primary-text/60">
+                            Drag components to move them. Electron flow animation indicates current direction.
+                        </p>
+                    </div>
+
+
+
+                    <div class="flex-1 bg-black p-2 relative">
+                        <canvas id="circuitCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="mb-16 max-w-6xl mx-auto">
+            <div class="p-6 bg-surface rounded-lg shadow-xl border border-gray-700">
+                <h3
+                    class="text-xl md:text-2xl font-bold font-title-serif text-accent-glow mb-4 uppercase tracking-wider border-b border-gray-700 pb-2">
+                    SYSTEM AND CIRCUIT FUNDAMENTALS
+                </h3>
+
+
+
+                <h4 class="text-lg font-bold text-primary-text mt-6 mb-2">High-Performance Processor: Data Flow
+                    Animation</h4>
+                <div class="relative w-full overflow-hidden mb-4">
+                    <canvas id="architectureCanvas" class="border border-diagram-frame"></canvas>
+                    <div
+                        class="absolute bottom-2 left-2 right-2 text-xs text-center p-1 bg-black/50 text-white rounded">
+                        Binary data streams into the central processor in real-time.
+                    </div>
+                </div>
+
+
+                <p class="text-sm text-primary-text/90 leading-relaxed">
+                    A **circuit** is a closed loop that allows electrical energy (in the form of electrons) to flow
+                    from a power source, through components that perform a function, and back to the source.
+                    **Hardware** refers to the physical components like chips, wires, and the Central
+                    Processing Unit (**CPU**).
+                </p>
+                <p class="text-sm text-primary-text/90 leading-relaxed mt-4">
+                    This hardware operates using **binary logic**, communicating in **bits** where a high electrical
+                    signal is **1** and a low signal is **0** . Tiny electronic switches called
+                    **transistors** are arranged into logic gates (AND, OR, NOT) to perform millions of binary
+                    calculations per second, which is the foundation of all digital computation.
+                </p>
+
+                <h4 class="text-lg font-bold text-primary-text mt-6 mb-2">The Role of the Operating System (OS)</h4>
+                <p class="text-sm text-primary-text/90 leading-relaxed">
+                    While circuits handle the raw logic, the **Operating System (OS)** acts as the critical bridge
+                    between the hardware and the applications you use. It is a collection of software that manages the
+                    computer's resources—including the CPU, memory, and input/output devices—by allocating them
+                    efficiently to various running programs.
+                </p>
+                <ul class="list-disc list-inside space-y-1 text-sm text-primary-text/80 mt-3 ml-4">
+                    <li>**Process Management:** The OS manages multiple programs and tasks simultaneously, ensuring they
+                        run smoothly without interfering with one another.</li>
+                    <li>**Memory Management:** It controls how much primary memory (RAM) and auxiliary storage is
+                        assigned to each process, moving data between them as needed.</li>
+                    <li>**File Management:** The OS organizes and secures files, controlling directories, file naming,
+                        and user access permissions.</li>
+                </ul>
+                <div class="mt-6">
+                    <a href="https://www.ibm.com/think/topics/operating-systems" target="_blank"
+                        class="inline-block px-4 py-2 bg-accent-glow text-surface font-bold rounded-md text-sm hover:bg-opacity-90 transition duration-300 shadow-md">
+                        Read More on Operating Systems &rarr;
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="mb-16 max-w-6xl mx-auto">
+            <div class="p-6 bg-surface rounded-lg shadow-xl border border-gray-700">
+                <h3
+                    class="text-xl md:text-2xl font-bold font-title-serif text-accent-glow mb-4 uppercase tracking-wider border-b border-gray-700 pb-2">
+                    FROM CIRCUITRY TO CODE: THE LOGIC CHAIN
+                </h3>
+                <p class="text-sm text-primary-text/90 leading-relaxed">
+                    At its core, all computer programming, from high-level languages like Python to assembly code, is
+                    translated back into the simple electrical states of a circuit. This translation process is built
+                    upon fundamental digital logic:
+                </p>
+
+                <h4 class="text-lg font-bold text-primary-text mt-6 mb-2">The Binary Bridge (Logic Gates)</h4>
+                <p class="text-sm text-primary-text/90 leading-relaxed">
+                    Computer hardware only understands two states: ON (high voltage, representing a **1**) and OFF (low
+                    voltage, representing a **0**). Tiny physical circuits called **Logic Gates** (such as AND, OR, and
+                    NOT) combine these binary inputs to produce a single binary output. These gates are the foundational
+                    "vocabulary" of the computer's language.
+                </p>
+
+                <h4 class="text-lg font-bold text-primary-text mt-6 mb-2">Machine Language and High-Level Abstraction
+                </h4>
+                <p class="text-sm text-primary-text/90 leading-relaxed">
+                    The simplest language understood by the CPU is **Machine Language**, which consists of binary
+                    instructions (streams of 1s and 0s) that directly command the hardware's internal registers and
+                    memory. Because writing in binary is impractical for humans, **Assembly Language** was created as a
+                    symbolic representation (e.g., "ADD," "MOV") of machine code. Higher-level languages (like C++,
+                    Java, or JavaScript) then further abstract this process, using compilers or interpreters to
+                    translate human-readable syntax into the machine-level instructions the circuits can execute.
+                </p>
+
+                <div class="mt-6">
+                    <a href="http://www.electricalfun.com/workbenchfun/multilabs_basic_programming.htm" target="_blank"
+                        class="inline-block px-4 py-2 bg-accent-glow text-surface font-bold rounded-md text-sm hover:bg-opacity-90 transition duration-300 shadow-md">
+                        Read More on Basic Programming &rarr;
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="mb-16 max-w-6xl mx-auto p-6 bg-surface/50 rounded-lg shadow-xl border border-accent-glow/50">
+            <h3
+                class="text-xl md:text-2xl font-bold font-title-serif text-cyan-300 mb-4 uppercase tracking-wider border-b border-gray-700 pb-2">
+                MICROCONTROLLER LOGIC: INTERRUPT SIMULATION
+            </h3>
+
+            <h2 class="text-xl font-bold mb-2 mt-4 text-cyan-300">Attiny85 Interrupt Animation</h2>
+            <div id="attinyWrap" class="relative w-full mx-auto">
+                <svg viewBox="0 0 900 500">
+                    <defs>
+                        <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#22d3ee" />
+                            <stop offset="100%" stop-color="#22d3ee" stop-opacity="0" />
+                        </radialGradient>
+                    </defs>
+                    <!-- chip -->
+                    <rect x="100" y="160" width="130" height="180" rx="10" class="chip" />
+                    <text x="115" y="150" class="text">Attiny85</text>
+                    <!-- pins -->
+                    <rect x="90" y="180" width="10" height="16" class="pin" /><text x="60" y="192" class="text"
+                        font-size="10">B5</text>
+                    <rect x="90" y="210" width="10" height="16" class="pin" /><text x="60" y="222" class="text"
+                        font-size="10">B3</text>
+                    <rect x="90" y="240" width="10" height="16" class="pin" /><text x="60" y="252" class="text"
+                        font-size="10">B4</text>
+                    <rect x="90" y="270" width="10" height="16" class="pin" /><text x="55" y="282" class="text"
+                        font-size="10">GND</text>
+                    <rect x="230" y="180" width="10" height="16" class="pin" /><text x="245" y="192" class="text"
+                        font-size="10">VCC</text>
+                    <rect x="230" y="210" width="10" height="16" class="pin" /><text x="245" y="222" class="text"
+                        font-size="10">B2</text>
+                    <rect x="230" y="240" width="10" height="16" class="pin" /><text x="245" y="252" class="text"
+                        font-size="10">B1</text>
+                    <rect x="230" y="270" width="10" height="16" class="pin" /><text x="245" y="282" class="text"
+                        font-size="10">B0</text>
+                    <!-- wires -->
+                    <path d="M240 190 C300 190 350 190 420 190 V 130 H 760" class="wire-red" />
+                    <rect x="420" y="110" width="40" height="40" rx="5" class="button" />
+                    <text x="470" y="100" class="text" font-size="16">Interrupt</text>
+                    <!-- resistors -->
+                    <path d="M240 250 H 430" class="wire" />
+                    <rect x="430" y="240" width="60" height="20" rx="3" fill="#1e1b4b" stroke="#fca5a5"
+                        stroke-width="2" />
+                    <text x="440" y="235" class="text" font-size="12" fill="#fca5a5">100Ω</text>
+                    <path d="M490 250 H 620" class="wire" />
+                    <path d="M240 280 H 430" class="wire" />
+                    <rect x="430" y="270" width="60" height="20" rx="3" fill="#1e1b4b" stroke="#fca5a5"
+                        stroke-width="2" />
+                    <text x="440" y="265" class="text" font-size="12" fill="#fca5a5">100Ω</text>
+                    <path d="M490 280 H 620" class="wire" />
+                    <!-- LEDs -->
+                    <circle cx="650" cy="250" r="18" class="led" />
+                    <circle cx="650" cy="250" r="60" class="led-glow led-on" />
+                    <circle cx="650" cy="280" r="18" class="led" />
+                    <circle cx="650" cy="280" r="60" class="led-glow led-on" style="animation-delay:1s" />
+                    <!-- ground -->
+                    <path d="M670 250 H 800 V 350 H 820" class="wire" />
+                    <line x1="820" y1="350" x2="820" y2="380" stroke="#94a3b8" stroke-width="4" />
+                    <line x1="805" y1="380" x2="835" y2="380" stroke="#94a3b8" stroke-width="3" />
+                    <line x1="810" y1="388" x2="830" y2="388" stroke="#94a3b8" stroke-width="3" />
+                </svg>
+
+                <!-- how-it-works inline caption (inside canvas, bottom, non-blocking) -->
+                <div id="attinyCaption" class="pointer-events-none absolute inset-x-0 bottom-0 mx-auto max-w-5xl">
+                    <div
+                        class="m-2 rounded-md border border-cyan-300/20 bg-slate-900/60 text-left shadow-lg shadow-cyan-500/10">
+                        <div class="marquee text-[11px] leading-relaxed text-cyan-100/90 px-3 py-1">
+                            <span class="track"><b class="text-emerald-300">Flow</b>: Interrupt rises → MCU B2 ISR →
+                                toggles B1/B0 → through <span class="text-rose-300">100Ω</span> → LEDs light → return to
+                                GND • <b class="text-emerald-300">Flow</b>: Interrupt rises → MCU B2 ISR → toggles B1/B0
+                                → through <span class="text-rose-300">100Ω</span> → LEDs light → return to GND • </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END NEW SECTION -->
+
+
+
+
+        <section class="pb-20">
+            <h2 class="text-3xl font-bold text-title-color font-title-serif mb-6 border-b border-surface pb-2">
+                The Nexus: Advanced Design Resources
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+
+                <div
+                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
+                    <h3 class="text-xl font-bold text-accent-glow mb-2">Library & Specs</h3>
+                    <p class="text-sm text-primary-text/70 mb-4">
+                        Access the full AptiCraft component library, datasheets, and compliance specifications for
+                        high-reliability design.
+                    </p>
+                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Explore Documentation
+                        &rarr;</a>
+                </div>
+
+
+
+                <div
+                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
+                    <h3 class="text-xl font-bold text-accent-glow mb-2">Design Tutorials</h3>
+                    <p class="text-sm text-primary-text/70 mb-4">
+                        Video guides and interactive lessons on advanced topics like CMOS logic, FPGA programming, and
+                        power electronics.
+                    </p>
+                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Start Learning &rarr;</a>
+                </div>
+
+
+
+                <div
+                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
+                    <h3 class="text-xl font-bold text-accent-glow mb-2">Collaboration Hub</h3>
+                    <p class="text-sm text-primary-text/70 mb-4">
+                        Connect with other engineers, share circuit designs, and get peer reviews on your latest
+                        projects.
+                    </p>
+                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Join Community &rarr;</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- NEW FOOTER -->
+    <footer class="w-full bg-surface border-t-1 border-transparent animated-footer mt-16">
+        <div
+            class="max-w-7xl mx-auto p-8 flex flex-col md:flex-row justify-between items-center text-primary-text/80 text-sm">
+
+            <!-- Logo and Copyright -->
+            <div class="mb-4 md:mb-0 text-center md:text-left">
+                <h1
+                    class="text-xl font-bold text-accent-glow font-title-serif tracking-widest transition duration-500 hover:text-cyan-300">
+                    <span class="text-3xl text-cyan-200">AptiCraft</span> Design Nexus
+                </h1>
+                <p class="mt-2 text-xs">&copy; 2025 Every Circuit, Inc. All rights reserved.</p>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-accent-glow transition duration-200">Privacy Policy</a>
+                <a href="#" class="hover:text-accent-glow transition duration-200">Terms of Use</a>
+                <a href="mailto:support@apticraft.com"
+                    class="hover:text-accent-glow transition duration-200">Support</a>
+            </div>
+        </div>
+    </footer>
+    <!-- END NEW FOOTER -->
+
+    <script>
+        // ====================================================================
+        // EXISTING 2D CIRCUIT SIMULATION LOGIC (on #circuitCanvas) - REMAINS ANIMATED
+        // ====================================================================
+        const canvas = document.getElementById('circuitCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = canvas.parentElement;
+
+        let componentCounter = 1;
+
+        // --- Component Data ---
+        // Initial setup for a simple RLC series circuit
+        let components = [
+            { id: 'V1', type: 'source', x: 100, y: 200, width: 40, height: 40, isDragging: false, charge: 1, color: 'source-red' },
+            { id: 'R1', type: 'resistor', x: 250, y: 200, width: 80, height: 20, isDragging: false, color: '#FFFFFF' },
+            { id: 'C1', type: 'capacitor', x: 400, y: 200, width: 60, height: 30, isDragging: false, charge: 0, color: '#FFFFFF' },
+            { id: 'L1', type: 'inductor', x: 550, y: 200, width: 80, height: 20, isDragging: false, charge: 0, color: '#FFFFFF' }
+        ];
+
+        // --- Electron Animation Data ---
+        let electrons = [];
+        const ELECTRON_COUNT = 30;
+        const ELECTRON_SPEED = 2;
+        const ELECTRON_RADIUS = 2.5;
+        let animationTime = 0;
+
+        // --- Initialization and Resizing ---
+        function resizeCircuitCanvas() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCircuitCanvas);
+        resizeCircuitCanvas();
+
+        // Initialize electrons
+        for (let i = 0; i < ELECTRON_COUNT; i++) {
+            electrons.push({
+                t: i / ELECTRON_COUNT,
+                speed: ELECTRON_SPEED * (0.8 + Math.random() * 0.4)
+            });
+        }
+
+        // --- Drawing Helper Functions (2D) ---
+
+        function drawComponent(comp, drawFn) {
+            ctx.save();
+            ctx.translate(comp.x, comp.y);
+            drawFn(comp);
+
+            // Draw label
+            ctx.fillStyle = comp.isDragging ? tailwind.config.theme.extend.colors['accent-glow'] : '#FFFFFF';
+            ctx.font = '12px Inter';
+            ctx.textAlign = 'center';
+            ctx.fillText(comp.id, 0, -comp.height / 2 - 10);
+
+            ctx.restore();
+        }
+
+        // --- Component Drawing Logic (2D) ---
+
+        function drawResistor(comp) {
+            const w = comp.width;
+            const h = comp.height;
+            const lineW = 2;
+
+            // Draw leads
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = lineW;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 - 10, 0); ctx.lineTo(-w / 2, 0);
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2 + 10, 0);
+            ctx.stroke();
+
+            // Draw zig-zag body
+            ctx.strokeStyle = comp.isDragging ? tailwind.config.theme.extend.colors['accent-glow'] : '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(-w / 2, 0);
+            const segments = 6;
+            for (let i = 1; i <= segments; i++) {
+                const px = -w / 2 + (i * w) / segments;
+                const py = (i % 2 === 0 ? 0 : (i % 4 === 1 ? h / 2 : -h / 2));
+                ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+        }
+
+        function drawCapacitor(comp) {
+            const w = comp.width;
+            const h = comp.height;
+            const plateGap = 5;
+            const lineW = 2;
+
+            // Draw leads
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = lineW;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 - 10, 0); ctx.lineTo(-w / 2, 0);
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2 + 10, 0);
+            ctx.stroke();
+
+            // Plate 1 (Static)
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(-plateGap / 2, -h / 2);
+            ctx.lineTo(-plateGap / 2, h / 2);
+            ctx.stroke();
+
+            // Plate 2 (Animation: Glow indicates charge accumulation)
+            const glow = Math.sin(animationTime * 0.05) * 0.5 + 0.5; // Oscillates 0 to 1
+            ctx.shadowColor = `rgba(0, 255, 127, ${glow})`;
+            ctx.shadowBlur = 15 * glow;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.5 + glow * 0.5})`;
+            ctx.beginPath();
+            ctx.moveTo(plateGap / 2, -h / 2);
+            ctx.lineTo(plateGap / 2, h / 2);
+            ctx.stroke();
+
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        function drawSource(comp) {
+            const w = comp.width;
+            const h = comp.height;
+            const lineW = 2;
+
+            // Draw leads
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = lineW;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 - 10, 0); ctx.lineTo(-w / 2, 0);
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2 + 10, 0);
+            ctx.stroke();
+
+            // Positive Plate (Longer, Red)
+            ctx.strokeStyle = tailwind.config.theme.extend.colors['source-red'];
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 + 5, -h / 2);
+            ctx.lineTo(-w / 2 + 5, h / 2);
+            ctx.stroke();
+
+            // Negative Plate (Shorter, Blue)
+            ctx.strokeStyle = tailwind.config.theme.extend.colors['source-blue'];
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(w / 2 - 5, -h / 4);
+            ctx.lineTo(w / 2 - 5, h / 4);
+            ctx.stroke();
+        }
+
+        function drawInductor(comp) {
+            const w = comp.width;
+            const h = comp.height;
+            const lineW = 2;
+            const coilH = h / 2;
+
+            // Draw leads
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = lineW;
+            ctx.beginPath();
+            ctx.moveTo(-w / 2 - 10, 0); ctx.lineTo(-w / 2, 0);
+            ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2 + 10, 0);
+            ctx.stroke();
+
+            // Draw coil (Animation: Glow indicates magnetic field energy)
+            const glow = Math.abs(Math.sin(animationTime * 0.025)); // Pulses 0 to 1
+            ctx.shadowColor = tailwind.config.theme.extend.colors['inductor-coil'];
+            ctx.shadowBlur = 10 * glow;
+            ctx.strokeStyle = `rgba(255, 255, 0, ${0.5 + glow * 0.5})`;
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(-w / 2, 0);
+            const loops = 4;
+            const loopW = w / loops;
+            for (let i = 0; i < loops; i++) {
+                // First half arc
+                ctx.arcTo(-w / 2 + i * loopW + loopW / 2, coilH, -w / 2 + (i + 1) * loopW, 0, loopW / 2);
+                // Second half arc
+                ctx.arcTo(-w / 2 + i * loopW + loopW * 1.5, -coilH, -w / 2 + (i + 2) * loopW, 0, loopW / 2);
+            }
+            ctx.lineTo(w / 2, 0);
+            ctx.stroke();
+
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        function drawICChip(comp) {
+            // IC Chips are disabled in the palette but we keep the draw function for completeness
+            const w = 50;
+            const h = 40;
+            ctx.fillStyle = tailwind.config.theme.extend.colors['ic-chip'];
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 1;
+
+            // Chip body
+            ctx.fillRect(-w / 2, -h / 2, w, h);
+            ctx.strokeRect(-w / 2, -h / 2, w, h);
+
+            // Pins (Mockup)
+            ctx.fillStyle = '#FFFFFF';
+            for (let i = 0; i < 4; i++) {
+                ctx.beginPath();
+                ctx.arc(-w / 2 - 5, -h / 2 + 5 + i * 10, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(w / 2 + 5, -h / 2 + 5 + i * 10, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawWires() {
+            ctx.strokeStyle = '#333333';
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+
+            // Connect all components in a series loop
+            components.forEach((comp, index) => {
+                const nextComp = components[(index + 1) % components.length];
+                const startX = comp.x + comp.width / 2 + 10;
+                const startY = comp.y;
+                const endX = nextComp.x - nextComp.width / 2 - 10;
+                const endY = nextComp.y;
+
+                if (index === 0) {
+                    ctx.moveTo(startX, startY);
+                } else {
+                    // Draw segment from previous component to current component
+                    ctx.moveTo(components[index - 1].x + components[index - 1].width / 2 + 10, components[index - 1].y);
+                }
+
+                // Simplified L-shaped connection for demonstration
+                ctx.lineTo(startX, startY);
+
+                // Draw connecting wire
+                const midX = (startX + endX) / 2;
+                ctx.lineTo(midX, startY);
+                ctx.lineTo(midX, endY);
+                ctx.lineTo(endX, endY);
+            });
+
+            // Close the loop from the last component back to the first
+            const firstComp = components[0];
+            const lastComp = components[components.length - 1];
+            const startX = lastComp.x + lastComp.width / 2 + 10;
+            const startY = lastComp.y;
+            const endX = firstComp.x - firstComp.width / 2 - 10;
+            const endY = firstComp.y;
+
+            const midX1 = (startX + endX) / 2;
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(midX1, startY);
+            ctx.lineTo(midX1, endY);
+            ctx.lineTo(endX, endY);
+
+            ctx.stroke();
+        }
+
+        function drawElectrons() {
+            ctx.fillStyle = tailwind.config.theme.extend.colors['electron'];
+            ctx.shadowColor = tailwind.config.theme.extend.colors['electron'];
+            ctx.shadowBlur = 8;
+
+            // Dynamic path points based on current component layout
+            let dynamicPath = [];
+            components.forEach((comp, index) => {
+                const nextComp = components[(index + 1) % components.length];
+                // Start of the connection wire
+                dynamicPath.push({ x: comp.x + comp.width / 2, y: comp.y });
+
+                const startX = comp.x + comp.width / 2 + 10;
+                const startY = comp.y;
+                const endX = nextComp.x - nextComp.width / 2 - 10;
+                const endY = nextComp.y;
+
+                // Add points for the wire segment (Component Out -> Next Component In)
+                const midX = (startX + endX) / 2;
+                dynamicPath.push({ x: startX, y: startY });
+                dynamicPath.push({ x: midX, y: startY });
+                dynamicPath.push({ x: midX, y: endY });
+                dynamicPath.push({ x: endX, y: endY });
+
+                // End of the connection wire (at the component boundary)
+                dynamicPath.push({ x: nextComp.x - nextComp.width / 2, y: nextComp.y });
+            });
+
+            // Normalize total path length
+            let distances = [0];
+            let totalLength = 0;
+            for (let i = 0; i < dynamicPath.length - 1; i++) {
+                const p1 = dynamicPath[i];
+                const p2 = dynamicPath[i + 1];
+                const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+                totalLength += dist;
+                distances.push(totalLength);
+            }
+
+            electrons.forEach(e => {
+                // Use cosine to simulate an oscillating current flow (AC behavior for better animation)
+                const currentMultiplier = (Math.cos(animationTime * 0.05) + 2) / 3; // Always positive
+                e.t += (e.speed * 0.0005 * currentMultiplier);
+                if (e.t > 1) e.t = 0;
+
+                const targetDist = e.t * totalLength;
+
+                let p1 = null;
+                let p2 = null;
+                let segmentStartDist = 0;
+                let segmentEndDist = totalLength;
+
+                for (let i = 0; i < dynamicPath.length - 1; i++) {
+                    if (targetDist >= distances[i] && targetDist <= distances[i + 1]) {
+                        p1 = dynamicPath[i];
+                        p2 = dynamicPath[i + 1];
+                        segmentStartDist = distances[i];
+                        segmentEndDist = distances[i + 1];
+                        break;
+                    }
+                    if (targetDist < distances[i]) break; // Optimization: path is sorted
+                }
+
+                // Fallback for last segment (if loop logic misses)
+                if (!p1 && dynamicPath.length > 1) { // Ensure there are points to connect
+                    p1 = dynamicPath[dynamicPath.length - 1];
+                    p2 = dynamicPath[0];
+                    segmentStartDist = distances[dynamicPath.length - 1];
+                    segmentEndDist = totalLength + Math.sqrt(Math.pow(dynamicPath[0].x - dynamicPath[dynamicPath.length - 1].x, 2) + Math.pow(dynamicPath[0].y - dynamicPath[dynamicPath.length - 1].y, 2)); // Add wrap-around distance
+                }
+
+
+                if (p1 && p2) {
+                    const segmentLength = segmentEndDist - segmentStartDist;
+                    const tInSegment = (targetDist - segmentStartDist) / segmentLength;
+
+                    const x = p1.x + (p2.x - p1.x) * tInSegment;
+                    const y = p1.y + (p2.y - p1.y) * tInSegment;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, ELECTRON_RADIUS, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            ctx.shadowBlur = 0; // Reset shadow for other drawings
+        }
+
+        // --- Main Render Loop (2D) ---
+        function renderCircuit(timestamp) {
+            animationTime = timestamp / 1000;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawWires();
+
+            // Draw all components
+            components.forEach(comp => {
+                if (comp.type === 'resistor') {
+                    drawComponent(comp, drawResistor);
+                } else if (comp.type === 'capacitor') {
+                    drawComponent(comp, drawCapacitor);
+                } else if (comp.type === 'source') {
+                    drawComponent(comp, drawSource);
+                } else if (comp.type === 'inductor') {
+                    drawComponent(comp, drawInductor);
+                } else if (comp.type === 'ic') {
+                    drawComponent(comp, drawICChip);
+                }
+            });
+
+            drawElectrons();
+
+            requestAnimationFrame(renderCircuit);
+        }
+
+        // --- Interaction Logic (2D) ---
+        let dragComp = null;
+        let offset = { x: 0, y: 0 };
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function isPointInComponent(x, y, comp) {
+            const hitPadding = 20;
+            return x >= comp.x - comp.width / 2 - hitPadding &&
+                x <= comp.x + comp.width / 2 + comp.width + hitPadding && // Adjusted width check
+                y >= comp.y - comp.height / 2 - hitPadding &&
+                y <= comp.y + comp.height / 2 + hitPadding;
+        }
+
+        function handleDown(pos) {
+            for (let i = components.length - 1; i >= 0; i--) {
+                const comp = components[i];
+                if (isPointInComponent(pos.x, pos.y, comp)) {
+                    dragComp = comp;
+                    offset.x = pos.x - comp.x;
+                    offset.y = pos.y - comp.y;
+                    canvas.style.cursor = 'grabbing';
+                    return;
+                }
+            }
+        }
+
+        function handleMove(pos) {
+            if (dragComp) {
+                // Move the component
+                dragComp.x = pos.x - offset.x;
+                dragComp.y = pos.y - offset.y;
+                // Clamp position to canvas bounds
+                dragComp.x = Math.max(50, Math.min(canvas.width - 50, dragComp.x));
+                dragComp.y = Math.max(50, Math.min(canvas.height - 50, dragComp.y));
+            } else {
+                // Change cursor if hovering over a draggable component
+                let found = false;
+                for (const comp of components) {
+                    if (isPointInComponent(pos.x, pos.y, comp)) {
+                        canvas.style.cursor = 'grab';
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    canvas.style.cursor = 'default';
+                }
+            }
+        }
+
+        function handleUp() {
+            dragComp = null;
+            canvas.style.cursor = 'default';
+        }
+
+        // Mouse Listeners
+        canvas.addEventListener('mousedown', (e) => handleDown(getMousePos(e)));
+        window.addEventListener('mousemove', (e) => handleMove(getMousePos(e)));
+        window.addEventListener('mouseup', handleUp);
+
+        // Touch Listeners (for mobile/touch devices)
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDown(getMousePos(e));
+        }, { passive: false });
+        window.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handleMove(getMousePos(e));
+        }, { passive: false });
+        window.addEventListener('touchend', handleUp);
+
+        // --- Palette Logic (Drag and Drop Mockup) ---
+        const palette = document.getElementById('component-palette');
+        palette.addEventListener('click', (e) => {
+            const target = e.target.closest('.palette-item');
+            if (!target || target.classList.contains('disabled')) return;
+
+            const type = target.getAttribute('data-type');
+            if (type === 'ic') return; // IC is disabled
+
+            const newId = type.substring(0, 1).toUpperCase() + componentCounter++;
+            let newComp;
+
+            // Default properties for a new component, placed near the center
+            const defaultX = canvas.width / 2;
+            const defaultY = canvas.height / 2;
+
+            if (type === 'resistor') {
+                newComp = { id: newId, type, x: defaultX, y: defaultY, width: 80, height: 20, isDragging: false, color: '#FFFFFF' };
+            } else if (type === 'capacitor') {
+                newComp = { id: newId, type, x: defaultX, y: defaultY, width: 60, height: 30, isDragging: false, charge: 0, color: '#FFFFFF' };
+            } else if (type === 'source') {
+                newComp = { id: newId, type, x: defaultX, y: defaultY, width: 40, height: 40, isDragging: false, charge: 1, color: 'source-red' };
+            } else if (type === 'inductor') {
+                newComp = { id: newId, type, x: defaultX, y: defaultY, width: 80, height: 20, isDragging: false, charge: 0, color: '#FFFFFF' };
+            }
+
+            // Add the new component near the center and initiate dragging
+            if (newComp) {
+                components.push(newComp);
+                dragComp = newComp;
+                offset.x = 0; // Center the offset on spawn
+                offset.y = 0;
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+
+
+        // ====================================================================
+        // NEW ANIMATION: High-Performance Processor (replaces Architecture Diagram)
+        // ====================================================================
+        const archCanvas = document.getElementById('architectureCanvas');
+        const archCtx = archCanvas.getContext('2d');
+
+        const colors = tailwind.config.theme.extend.colors; // Access tailwind colors
+
+        // --- Processor Animation Config ---
+        const PROCESSOR = {
+            centerX: 0, // Will be set on resize
+            centerY: 0, // Will be set on resize
+            size: 150, // Base size, scales with canvas
+            color: '#2A2A2A', // Dark gray body
+            glowColor: colors['accent-glow'], // Neon green glow
+            borderColor: '#00FF7F', // Neon green border
+            traceColor: '#007F40', // Darker green for internal traces
+            pinCount: 10, // Number of pins on each side
+            pinLength: 30,
+            pinWidth: 4,
+            topGridColor: 'rgba(0, 255, 127, 0.2)', // Lighter green for top grid
+        };
+
+        const BINARY_PARTICLE = {
+            count: 200,
+            speed: 1.5,
+            radius: 2,
+            colors: ['#00FFFF', '#00FF7F'], // Cyan and Neon Green
+            font: '14px Arial',
+            binaryChars: ['0', '1'],
+            flowRadius: 200, // How far binary numbers originate from center
+            flowSpeed: 0.8,
+            flowOffset: 50, // How far above the processor they start
+            gridTrailColor: 'rgba(0, 255, 127, 0.1)', // Light green faint trails
+        };
+
+        let binaryParticles = []; // Array to hold binary characters/particles
+        let processorAnimationTime = 0;
+
+        function resizeArchCanvas() {
+            // Keep a fixed width/height ratio (approx 800x400)
+            const aspectRatio = 800 / 400;
+            const parentWidth = archCanvas.parentElement.clientWidth;
+
+            archCanvas.width = Math.min(parentWidth, 800);
+            archCanvas.height = archCanvas.width / aspectRatio;
+
+            // Adjust processor and particle properties based on new size
+            PROCESSOR.centerX = archCanvas.width / 2;
+            PROCESSOR.centerY = archCanvas.height / 2;
+            PROCESSOR.size = archCanvas.width * 0.18; // Scale processor size
+            PROCESSOR.pinLength = archCanvas.width * 0.04;
+            PROCESSOR.pinWidth = Math.max(1, archCanvas.width * 0.005);
+
+            BINARY_PARTICLE.flowRadius = archCanvas.width * 0.3;
+            BINARY_PARTICLE.flowOffset = archCanvas.height * 0.1;
+            BINARY_PARTICLE.speed = archCanvas.height * 0.004;
+            BINARY_PARTICLE.radius = Math.max(1, archCanvas.width * 0.003);
+            BINARY_PARTICLE.font = `${Math.max(10, archCanvas.width * 0.015)}px monospace`;
+
+            // Re-initialize particles to adapt to new canvas size
+            initializeProcessorParticles();
+        }
+
+        // Initialize particles for the new processor animation
+        function initializeProcessorParticles() {
+            binaryParticles = [];
+            for (let i = 0; i < BINARY_PARTICLE.count; i++) {
+                binaryParticles.push({
+                    x: PROCESSOR.centerX + (Math.random() - 0.5) * BINARY_PARTICLE.flowRadius * 2,
+                    y: PROCESSOR.centerY - BINARY_PARTICLE.flowOffset - Math.random() * archCanvas.height / 2, // Start high
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: Math.random() * BINARY_PARTICLE.speed * 0.5 + BINARY_PARTICLE.speed * 0.5,
+                    char: BINARY_PARTICLE.binaryChars[Math.floor(Math.random() * 2)],
+                    color: BINARY_PARTICLE.colors[Math.floor(Math.random() * BINARY_PARTICLE.colors.length)],
+                    opacity: 1,
+                    size: Math.random() * 0.5 + 0.5, // Scale character size
+                    targetX: PROCESSOR.centerX + (Math.random() - 0.5) * PROCESSOR.size * 0.8,
+                    targetY: PROCESSOR.centerY + (Math.random() - 0.5) * PROCESSOR.size * 0.8,
+                    phase: Math.random() * Math.PI * 2 // For oscillating movement
+                });
+            }
+        }
+
+        function drawProcessor() {
+            const size = PROCESSOR.size;
+            const centerX = PROCESSOR.centerX;
+            const centerY = PROCESSOR.centerY;
+
+            // Base processor body
+            archCtx.fillStyle = PROCESSOR.color;
+            archCtx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+
+            // Inner grid pattern (similar to image)
+            archCtx.strokeStyle = PROCESSOR.topGridColor;
+            archCtx.lineWidth = 1;
+            const gridSize = 10;
+            for (let i = 0; i < size; i += gridSize) {
+                archCtx.beginPath();
+                archCtx.moveTo(centerX - size / 2 + i, centerY - size / 2);
+                archCtx.lineTo(centerX - size / 2 + i, centerY + size / 2);
+                archCtx.moveTo(centerX - size / 2, centerY - size / 2 + i);
+                archCtx.lineTo(centerX + size / 2, centerY - size / 2 + i);
+                archCtx.stroke();
+            }
+
+
+            // Glow effect for the top surface and edges
+            archCtx.shadowColor = PROCESSOR.glowColor;
+            archCtx.shadowBlur = 25 * (0.8 + Math.sin(processorAnimationTime * 0.05) * 0.2); // Pulsing glow
+            archCtx.strokeStyle = PROCESSOR.borderColor;
+            archCtx.lineWidth = 3;
+            archCtx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
+            archCtx.shadowBlur = 0; // Reset shadow
+
+
+            // Draw "pins" / data lines coming out from the sides
+            archCtx.strokeStyle = PROCESSOR.glowColor;
+            archCtx.lineWidth = PROCESSOR.pinWidth;
+
+            const pinOffset = size / PROCESSOR.pinCount;
+
+            for (let i = 0; i < PROCESSOR.pinCount; i++) {
+                const yPos = centerY - size / 2 + i * pinOffset + pinOffset / 2;
+                const xPosLeft = centerX - size / 2;
+                const xPosRight = centerX + size / 2;
+
+                // Left pins
+                archCtx.beginPath();
+                archCtx.moveTo(xPosLeft, yPos);
+                archCtx.lineTo(xPosLeft - PROCESSOR.pinLength, yPos);
+                archCtx.stroke();
+
+                // Right pins
+                archCtx.beginPath();
+                archCtx.moveTo(xPosRight, yPos);
+                archCtx.lineTo(xPosRight + PROCESSOR.pinLength, yPos);
+                archCtx.stroke();
+            }
+
+            // Central light source effect
+            const lightGlow = 40 * (0.8 + Math.sin(processorAnimationTime * 0.05) * 0.2);
+            const gradient = archCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, size * 0.4);
+            gradient.addColorStop(0, `rgba(0, 255, 127, ${lightGlow / 100})`); // Center is brighter
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            archCtx.fillStyle = gradient;
+            archCtx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+        }
+
+        function drawBinaryParticles() {
+            archCtx.font = BINARY_PARTICLE.font;
+            archCtx.textAlign = 'center';
+            archCtx.textBaseline = 'middle';
+
+            binaryParticles.forEach(p => {
+                // Animate particles flowing down and converging towards the center
+                p.x += p.vx * BINARY_PARTICLE.flowSpeed + Math.sin(processorAnimationTime * 0.1 + p.phase) * 0.5;
+                p.y += p.vy * BINARY_PARTICLE.flowSpeed;
+
+                // Simple attraction towards the center to create funnel effect
+                const dx = PROCESSOR.centerX - p.x;
+                const dy = (PROCESSOR.centerY - BINARY_PARTICLE.flowOffset) - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < BINARY_PARTICLE.flowRadius) { // Start converging closer to processor
+                    p.x += dx * 0.01; // Gentle pull towards center X
+                    p.y += dy * 0.01; // Gentle pull towards center Y (above processor)
+                }
+
+                // Fade out as they get close to the processor
+                const fadeDistance = PROCESSOR.size * 0.7;
+                const distanceToProcessorCenter = Math.sqrt(
+                    Math.pow(p.x - PROCESSOR.centerX, 2) + Math.pow(p.y - PROCESSOR.centerY, 2)
+                );
+
+                if (distanceToProcessorCenter < fadeDistance) {
+                    p.opacity = Math.max(0, (distanceToProcessorCenter - (PROCESSOR.size / 2)) / (fadeDistance - (PROCESSOR.size / 2)));
+                    if (p.opacity < 0.1) {
+                        // Reset particle once it "enters" the processor
+                        p.x = PROCESSOR.centerX + (Math.random() - 0.5) * BINARY_PARTICLE.flowRadius * 2;
+                        p.y = PROCESSOR.centerY - BINARY_PARTICLE.flowOffset - Math.random() * archCanvas.height / 2;
+                        p.vx = (Math.random() - 0.5) * 0.5;
+                        p.vy = Math.random() * BINARY_PARTICLE.speed * 0.5 + BINARY_PARTICLE.speed * 0.5;
+                        p.char = BINARY_PARTICLE.binaryChars[Math.floor(Math.random() * 2)];
+                        p.color = BINARY_PARTICLE.colors[Math.floor(Math.random() * BINARY_PARTICLE.colors.length)];
+                        p.opacity = 1;
+                        p.size = Math.random() * 0.5 + 0.5;
+                        p.phase = Math.random() * Math.PI * 2;
+                    }
+                } else {
+                    p.opacity = 1;
+                }
+
+                archCtx.fillStyle = p.color;
+                archCtx.globalAlpha = p.opacity;
+                archCtx.shadowColor = p.color;
+                archCtx.shadowBlur = 8;
+                archCtx.fillText(p.char, p.x, p.y);
+                archCtx.globalAlpha = 1; // Reset alpha
+            });
+            archCtx.shadowBlur = 0; // Reset shadow
+        }
+
+        function renderArchitecture(timestamp) {
+            processorAnimationTime = timestamp / 1000;
+            archCtx.clearRect(0, 0, archCanvas.width, archCanvas.height);
+
+            // Draw a dark background
+            archCtx.fillStyle = '#000000';
+            archCtx.fillRect(0, 0, archCanvas.width, archCanvas.height);
+
+            // Draw background grid/trails (faint)
+            archCtx.strokeStyle = BINARY_PARTICLE.gridTrailColor;
+            archCtx.lineWidth = 1;
+            const tileRes = archCanvas.width / 20; // Example resolution for tiles
+            for (let i = 0; i < archCanvas.width; i += tileRes) {
+                for (let j = 0; j < archCanvas.height; j += tileRes) {
+                    if (Math.random() < 0.1) { // Randomly draw faint squares
+                        const rectSize = tileRes * (0.2 + Math.random() * 0.6);
+                        archCtx.globalAlpha = 0.05 + Math.random() * 0.05;
+                        archCtx.strokeRect(i + (tileRes - rectSize) / 2, j + (tileRes - rectSize) / 2, rectSize, rectSize);
+                        archCtx.globalAlpha = 1;
+                    }
+                }
+            }
+
+
+            drawBinaryParticles(); // Draw the flowing binary numbers
+            drawProcessor();       // Draw the central processor
+
+            requestAnimationFrame(renderArchitecture);
+        }
+
+        // --- Global Initialization ---
+        window.onload = function () {
+            // Circuit Simulation Init
+            resizeCircuitCanvas();
+            renderCircuit(0);
+
+            // Processor Animation Init
+            resizeArchCanvas();
+            initializeProcessorParticles();
+            renderArchitecture(0);
+        }
+
+        // Handle resize event for the new animation
+        window.addEventListener('resize', resizeArchCanvas);
+    </script>
+</body>
+
+</html>
