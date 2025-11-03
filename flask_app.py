@@ -250,6 +250,15 @@ def llm_ai():
     return render_template('llm_ai.html')
 
 
+#robotics routes
+@app.route('/robot')
+def robot():
+    return render_template('Robits.html')
+
+#system_circuit routes
+@app.route('/system_circuit')
+def system_circuit():
+    return render_template('system_circuit.html')
 
 
 if __name__ == "__main__":
