@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApitCraft Anatomy - Digital Medical Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Load Three.js, GLTFLoader, and OrbitControls for 3D visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <script>
+    // New Professional/Digital Color Scheme and Font Configuration
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#06B6D4', // Electric Cyan
+            accent: '#EC4899', // Vibrant Pink/Magenta
+            background_dark: '#1F2937', // Deep Slate
+            background_light: '#F3F4F6', // Off-White/Light Gray
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Montserrat', 'sans-serif'], 
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Custom CSS for subtle animations/effects on the new section -->
+  <style>
+    /* Ensures the image fills its area */
+    #interactive-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        cursor: pointer;
+    }
+    
+    /* Styles for the 3D canvas containers to ensure they respect aspect ratio */
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        height: 500px; /* Fixed height for consistent 3D view */
+        background-color: #111827; /* Dark background matching the scene */
+        border-radius: 12px;
+    }
+    canvas {
+        display: block;
+    }
+
+    /* Subtle Digital Text Shadow for headings in dark sections */
+    .digital-heading {
+        text-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-background_dark text-gray-100 font-sans">
+
+  <!-- Navigation Bar (Sleek Dark Theme) -->
+  <nav class="bg-background_dark/95 backdrop-blur-sm shadow-xl fixed top-0 left-0 right-0 z-50 border-b border-primary/20">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <img src="static/aptiCraft.png" alt="ApitCraft Logo" class="bg-gray-300 h-12 w-12 object-contain"/>
+        <span class="font-heading text-3xl font-bold tracking-wide 
+             text-[#4f46e5] drop-shadow-[0_0_6px_rgba(79,70,229,0.6)]
+             animate-pulse">
+            AptiCraft 
+            <span class="text-[#06b6d4] animate-bounce">Health</span>
+        </span>
+
+      </div>
+      <div class="hidden md:flex space-x-8 font-medium">
+        <a href="#video-hub" class="text-gray-300 hover:text-primary transition duration-200">Video Lab</a>
+        <a href="#blood-system-hub" class="text-gray-300 hover:text-primary transition duration-200">Blood Flow</a>
+        <a href="#three-d-hub" class="text-gray-300 hover:text-primary transition duration-200">3D Hub</a>
+        <a href="#brain-hub" class="text-gray-300 hover:text-primary transition duration-200">Brain Hub</a>
+        <a href="#hero" class="text-gray-300 hover:text-primary transition duration-200">2D View</a>
+      </div>
+      <div class="space-x-4">
+        <a href="https://www.linkedin.com/in/afsanausa/" target="_blank" class="bg-[#074064] hover:bg-indigo-700 
+        text-[#00D4FF] px-2 py-2 rounded-lg font-semibold transition duration-300 shadow-md ring-1 ring-indigo-300/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Developer Profile</a>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section (Dark Digital Focus) -->
+  <section id="hero" class="mt-36 bg-background_dark text-white relative border-b border-primary/10">
+    <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-center py-24 px-6">
+      <div class="text-left">
+        <h1 class="text-4xl md:text-5xl leading-tight font-heading font-bold digital-heading text-transparent bg-clip-text 
+            bg-gradient-to-r from-cyan-200 via-sky-200 to-indigo-200 drop-shadow-[0_0_10px_rgba(56,189,248,0.25)] 
+            animate-pulse">Visualize <span class="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-100 via-pink-200 to-cyan-300">Inside</span> 
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-100 to-cyan-100">Ours</span></h1>
+
+        <p class="mt-4 text-lg text-gray-300 max-w-xl">Leveraging 3D models and interactive interfaces for superior medical education and patient communication.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a href="#three-d-hub" class="bg-primary hover:bg-cyan-600 text-background_dark px-6 py-3 rounded-lg font-bold shadow-lg shadow-primary/50 transition duration-300">Open 3D Hub</a>
+          <a href="#video-hub" class="bg-white/10 hover:bg-white/20 border border-primary/50 text-white px-6 py-3 rounded-lg font-medium backdrop-blur transition duration-300">Watch Video Lab</a>
+        </div>
+      </div>
+      
+        <!-- THE SINGLE CONTAINER DIV HOLDING ALL LOGIC, STYLES, AND OUTPUT (No background or padding) -->
+        <div class="relative w-full max-w-sm sm:max-w-md lg:max-w-lg mx-auto flex flex-col items-center p-4 border border-primary/20 rounded-xl bg-background_dark/50 shadow-xl" id="main-interactive-app">
+
+            <!-- STYLES (Scoped for internal elements) --><style>
+                /* Ensures the image fills its area */
+                #interactive-image {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                    cursor: pointer;
+                }
+            </style>
+
+            <!-- Relative container for the image, marker, and popup -->
+            <div class="relative w-full mb-4">
+                <h4 class="text-sm text-[#365466] text-center tracking-wider">Click organ hotspots below</h4>
+                <!-- NEW WRAPPER DIV AROUND THE IMAGE ONLY -->
+                <div>
+                    <!-- Image URL updated to static/skeleton.png as requested -->
+                    <img src="static/skeleton.png" 
+                        onerror="this.onerror=null; this.src='https://placehold.co/500x500/1F2937/06B6D4?text=Human+Anatomy+View';"
+                        alt="Human Internal Organs" 
+                        id="interactive-image"
+                        class=" object-contain drop-shadow-xl rounded-xl border border-gray-700 hover:shadow-primary/30 transition duration-300"/>
+                </div>
+                
+                <!-- Dynamic marker: positioned absolutely relative to its parent 'div.relative' -->
+                <div id="click-marker" class="absolute w-3 h-3 bg-accent rounded-full pointer-events-none opacity-0 transition-opacity duration-1000 transform -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-accent/50" style="z-index: 10;"></div>
+
+                <!-- DATA OUTPUT POPUP -->
+                <div id="data-output" class="absolute bg-transparent backdrop-blur-lg text-slate-200 text-xs p-2 rounded-lg shadow-2xl shadow-cyan-400/10 opacity-0 pointer-events-none transition-opacity duration-300 transform -translate-x-1/2 -translate-y-full border border-slate-300/20 ring-1 ring-white/10" style="z-index: 20; min-width: 120px; max-width: 220px; text-align: center;">
+                    <p id="part-name" class="font-semibold text-slate-100"></p>
+                    <p id="part-description" class="mt-0.5 italic text-[#020024] font-bold></p>
+                    <!-- Pointer, transparent with subtle border -->
+                    <div class="absolute w-3 h-3 bg-transparent border-b border-r border-slate-300/20 transform rotate-45 -bottom-[7px] left-1/2 -translate-x-1/2"></div>
+                </div>
+            </div>
+
+            <!-- SCRIPT (Interaction Logic, Hotspot JSON, and New Metadata JSON) -->
+            <script>
+                // --- IMAGE SLIDER CONFIGURATION: THREE BLOOD CELL IMAGES ---
+                // Updated to use the three specified local image paths for the slider.
+                const IMAGE_SLIDER_URLS = [
+                    "static/blood1.png",
+                    "static/blood2.png",
+                    "static/blood3.png"
+                ];
+
+
+                // --- 1. CONFIGURATION: JSON Metadata (3D Model) ---
+                const METADATA_JSON = {"success_count":1,"total_count":1,"version":"3.1.1","pages":[{"angle":0,"page_id":2,"image_id":"page/page_2.png","height":500.0,"width":500.0,"content":[]}],"catalog":{"toc":[]},"metrics":[{"angle":0,"page_id":2,"image_id":"page/page_2.png","page_image_width":500,"page_image_height":500}],"detail":[]};
+
+                // --- 2. CONFIGURATION: Hotspot Data (2D Skeleton) ---
+                const HOTSPOTS_DATA = [
+                    { name: "Heart", x: 50, y: 35, tolerance: 10, data: { function: "Circulatory System", description: "Pumps blood throughout the body.", id: "HRT-100" } },
+                    { name: "Right Lung", x: 60, y: 30, tolerance: 10, data: { function: "Respiratory System", description: "Oxygenates blood and removes CO2.", id: "LUN-101" } },
+                    { name: "Left Lung", x: 40, y: 30, tolerance: 10, data: { function: "Respiratory System", description: "Oxygenates blood and removes CO2.", id: "LUN-102" } },
+                    { name: "Stomach", x: 50, y: 50, tolerance: 10, data: { function: "Digestive System", description: "Breaks down food using acid and enzymes.", id: "STM-200" } },
+                    { name: "Liver", x: 60, y: 45, tolerance: 10, data: { function: "Digestive/Detoxification", description: "Detoxifies chemicals and metabolizes drugs.", id: "LVR-201" } },
+                    { name: "Spleen", x: 40, y: 48, tolerance: 8, data: { function: "Immune System", description: "Filters blood and stores blood cells.", id: "SPL-300" } },
+                    { name: "Right Kidney", x: 60, y: 65, tolerance: 8, data: { function: "Excretory System", description: "Filters waste products from the blood.", id: "KNY-301" } },
+                    { name: "Left Kidney", x: 40, y: 65, tolerance: 8, data: { function: "Excretory System", description: "Filters waste products from the blood.", id: "KNY-302" } },
+                    { name: "Large Intestine", x: 50, y: 60, tolerance: 10, data: { function: "Digestive System", description: "Absorbs water and forms feces.", id: "LGI-202" } },
+                    { name: "Small Intestine", x: 50, y: 56, tolerance: 10, data: { function: "Digestive System", description: "Absorbs nutrients from food.", id: "SMI-203" } },
+                    { name: "Bladder", x: 50, y: 78, tolerance: 10, data: { function: "Excretory System", description: "Stores urine before disposal by urination.", id: "BLD-400" } },
+                ];
+
+                // --- 3. INTERACTION SCRIPT (2D Hotspot) ---
+                const image = document.getElementById('interactive-image');
+                const dataOutputPopup = document.getElementById('data-output');
+                const nameOutput = document.getElementById('part-name');
+                const descOutput = document.getElementById('part-description');
+                const marker = document.getElementById('click-marker');
+                let hidePopupTimeout; 
+
+                function showMarker(xPercent, yPercent) {
+                    marker.style.left = `${xPercent}%`;
+                    marker.style.top = `${yPercent}%`;
+                    marker.style.opacity = '1';
+                    clearTimeout(marker.hideTimeout); 
+                    marker.hideTimeout = setTimeout(() => marker.style.opacity = '0', 700);
+                }
+
+                function hideMarker() {
+                    marker.style.opacity = '0';
+                    clearTimeout(marker.hideTimeout);
+                }
+
+                function showPopup(xPercent, yPercent) {
+                    clearTimeout(hidePopupTimeout); 
+
+                    dataOutputPopup.style.left = `${xPercent}%`;
+                    dataOutputPopup.style.top = `${yPercent}%`; 
+                    dataOutputPopup.style.opacity = '1';
+                    dataOutputPopup.style.pointerEvents = 'auto'; 
+                    
+                    hidePopupTimeout = setTimeout(hidePopup, 3000); 
+                }
+
+                function hidePopup() {
+                    dataOutputPopup.style.opacity = '0';
+                    dataOutputPopup.style.pointerEvents = 'none'; 
+                }
+
+
+                image.addEventListener('click', (event) => {
+                    const rect = image.getBoundingClientRect();
+                    const clickX = event.clientX - rect.left;
+                    const clickY = event.clientY - rect.top;
+
+                    const normalizedX = (clickX / rect.width) * 100;
+                    const normalizedY = (clickY / rect.height) * 100;
+
+                    let foundHotspot = null;
+
+                    for (const hotspot of HOTSPOTS_DATA) {
+                        const distanceX = normalizedX - hotspot.x;
+                        const distanceY = normalizedY - hotspot.y;
+                        const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+                        if (distance < hotspot.tolerance) {
+                            foundHotspot = hotspot;
+                            break;
+                        }
+                    }
+
+                    if (foundHotspot) {
+                        nameOutput.textContent = foundHotspot.name;
+                        descOutput.textContent = foundHotspot.data.description;
+                        showPopup(normalizedX, normalizedY);
+                        showMarker(normalizedX, normalizedY);
+                    } else {
+                        hidePopup(); 
+                        hideMarker();
+                    }
+                });
+
+
+                // --- THREE.JS UTILITY FUNCTION (shared by all models) ---
+                /**
+                 * Cleans up a raw Three.js object name (e.g., 'Cylinder001' or 'Lobe_Superior') to a more user-friendly string (e.g., 'Cylinder' or 'Lobe Superior').
+                 * Implements robust logic to aggressively remove numbers and generic 3D export terms while preserving anatomical clues.
+                 * @param {string} name - The original object name.
+                 * @returns {string} The cleaned anatomical component name.
+                 */
+                function getAnatomicalName(name) {
+                    if (!name) return "Anatomical Part";
+
+                    const rawName = name.trim();
+                    // Normalize name: Replace separators with spaces and convert to lowercase for easy searching
+                    let cleanName = rawName.replace(/[._-]/g, ' ');
+                    let lowerClean = cleanName.toLowerCase();
+                    
+                    // Specific anatomical term detection list (used to confirm a good term exists)
+                    const specificTerms = [
+                        'frontal', 'parietal', 'temporal', 'occipital', 'cerebellum', 'brainstem', 'cortex', 'limbic', 'thalamus', 'hypothalamus', 
+                        'trachea', 'bronchi', 'larynx', 'pharynx', 'alveoli', 'lung', 'pleura', 'diaphragm',
+                        'superior', 'middle', 'inferior', 'right', 'left', 'lobe' // Descriptive modifiers
+                    ];
+                    
+                    // Check if the raw name contains any specific term
+                    let foundTerm = false;
+                    for (const term of specificTerms) {
+                        if (lowerClean.includes(term)) {
+                            foundTerm = true;
+                            break;
+                        }
+                    }
+
+                    // 1. Remove all numbers aggressively
+                    cleanName = cleanName.replace(/[0-9]+/g, ''); 
+
+                    // 2. Remove common generic 3D file export terms
+                    const genericTermsRegex = /(mesh|gltf|material|surface|lod|object|cube|default|layer|geometry|part|scene|node|group|empty|plane|sphere|cylinder|pasted|model|component)/gi;
+                    cleanName = cleanName.replace(genericTermsRegex, ' ');
+                    
+                    // 3. Final cleanup for spaces and trim
+                    cleanName = cleanName.replace(/\s+/g, ' ').trim();
+                    
+                    // 4. Fallback: If after cleaning, it's still empty or generic, use a specific contextual fallback
+                    if (cleanName.length === 0 || cleanName.toLowerCase() === 'default') {
+                        // Check original name for context and provide a distinct name
+                        if (rawName.toLowerCase().includes('brain') || rawName.toLowerCase().includes('cortex') || rawName.toLowerCase().includes('cereb')) {
+                            // If the source model had a lot of identical "default" names, we must return a distinct name.
+                            // The actual Three.js object reference is unique, but the name string is identical.
+                            return "Brain Lobe/Region";
+                        }
+                        if (rawName.toLowerCase().includes('lung') || rawName.toLowerCase().includes('bronchi') || rawName.toLowerCase().includes('trachea')) {
+                            return "Airway Segment";
+                        }
+                        // If all else fails, use a non-specific capitalized term
+                        return "Anatomical Structure"; 
+                    }
+
+                    // 5. Title case the final string
+                    return cleanName.split(' ').map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ');
+                }
+
+                // --- THREE.JS INITIALIZATION FUNCTIONS ---
+
+                /**
+                 * Initializes and runs the Three.js scene for a specific GLTF model.
+                 * @param {string} canvasId - The ID of the canvas element.
+                 * @param {string} gltfPath - The path to the GLTF model.
+                 * @param {string} dataOutputId - The ID of the data output popup.
+                 * @param {string} nameId - The ID for the name element in the popup.
+                 * @param {number} scale - Model scale (all axes).
+                 * @param {number} yPosition - Model Y position.
+                 */
+                function initThreeDModel(canvasId, gltfPath, dataOutputId, nameId, scale, yPosition) {
+                    const canvas = document.getElementById(canvasId);
+                    if (!canvas || typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined' || typeof THREE.OrbitControls === 'undefined') {
+                        // Fallback message for missing libraries
+                        if(canvas) {
+                            const ctx = canvas.getContext('2d');
+                            ctx.font = '16px Inter';
+                            ctx.fillStyle = '#EC4899'; // Use new accent color for error
+                            ctx.textAlign = 'center';
+                            ctx.fillText('3D Libraries failed to load.', canvas.width / 2, canvas.height / 2);
+                        }
+                        return;
+                    }
+
+                    // Setup Scene, Camera, Renderer
+                    const scene = new THREE.Scene();
+                    const parent = canvas.parentElement;
+                    const width = parent.clientWidth;
+                    const height = parent.clientHeight;
+
+                    const camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 1000);
+                    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false }); 
+
+                    renderer.setSize(width, height);
+                    // This sets the background color of the 3D scene to dark blue (0x0b1e4a) - Kept as is for visual consistency with model lighting
+                    renderer.setClearColor(0x0b1e4a); 
+
+                    // Lighting
+                    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); 
+                    scene.add(ambientLight);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0); 
+                    directionalLight.position.set(8, 8, 8).normalize();
+                    scene.add(directionalLight);
+                    
+                    // Orbit Controls setup
+                    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enabled = true; 
+                    controls.enableDamping = true; 
+                    controls.dampingFactor = 0.05;
+                    controls.screenSpacePanning = false;
+                    controls.minDistance = 0.5;
+                    controls.maxDistance = 2; 
+                    controls.target.set(0, 0, 0); 
+                    camera.position.set(0.1, -4, 0.5); 
+                    controls.update();
+
+                    // GLTF Loading
+                    const loader = new THREE.GLTFLoader();
+                    let loadedModel;
+                    const gltfDataOutput = document.getElementById(dataOutputId);
+                    const gltfNameOutput = document.getElementById(nameId);
+
+                    const loadingText = document.createElement('div');
+                    loadingText.textContent = 'Loading 3D Model...';
+                    loadingText.style.position = 'absolute';
+                    loadingText.style.top = '50%';
+                    loadingText.style.left = '50%';
+                    loadingText.style.transform = 'translate(-50%, -50%)';
+                    loadingText.style.color = '#06B6D4'; // New primary color
+                    loadingText.style.fontSize = '0.75rem';
+                    parent.appendChild(loadingText);
+
+                    loader.load(
+                        gltfPath, 
+                        function (gltf) {
+                            if (parent.contains(loadingText)) {
+                                parent.removeChild(loadingText);
+                            }
+
+                            loadedModel = gltf.scene;
+                            // yPosition set to 0.0 for vertical centering
+                            loadedModel.position.set(0, yPosition, 0); 
+                            loadedModel.scale.set(scale, scale, scale); 
+                            scene.add(loadedModel);
+                            render(); 
+                        },
+                        function (xhr) {
+                            const percentage = Math.round((xhr.loaded / xhr.total) * 100);
+                            loadingText.textContent = `Loading 3D Model... ${percentage}%`;
+                        },
+                        function (error) {
+                            console.error('An error happened loading the GLTF model:', error);
+                            if (parent.contains(loadingText)) {
+                                parent.removeChild(loadingText);
+                            }
+                            const errorText = document.createElement('div');
+                            errorText.textContent = `Model not found or failed to load. (${gltfPath})`;
+                            errorText.style.position = 'absolute';
+                            errorText.style.top = '50%';
+                            errorText.style.left = '50%';
+                            errorText.style.transform = 'translate(-50%, -50%)';
+                            errorText.style.color = '#EC4899'; // New accent color
+                            errorText.style.textAlign = 'center';
+                            parent.appendChild(errorText);
+                        }
+                    );
+                    
+                    // Raycasting for click interaction
+                    const raycaster = new THREE.Raycaster();
+                    const mouse = new THREE.Vector2();
+                    
+                    function onMouseClick(event) {
+                        const rect = renderer.domElement.getBoundingClientRect();
+                        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+                        raycaster.setFromCamera(mouse, camera);
+
+                        if (loadedModel) {
+                            const intersects = raycaster.intersectObjects(loadedModel.children, true);
+
+                            if (intersects.length > 0) {
+                                const hitObject = intersects[0].object;
+                                
+                                gltfNameOutput.textContent = getAnatomicalName(hitObject.name);
+                                
+                                // Position the popup based on the click coordinates (in screen space)
+                                gltfDataOutput.style.left = `${event.clientX - rect.left}px`;
+                                gltfDataOutput.style.top = `${event.clientY - rect.top}px`;
+                                gltfDataOutput.style.opacity = '1';
+
+                                // Hide popup after a timeout
+                                clearTimeout(window[canvasId + 'HideTimeout']);
+                                window[canvasId + 'HideTimeout'] = setTimeout(() => {
+                                    gltfDataOutput.style.opacity = '0';
+                                }, 2500);
+
+                            } else {
+                                gltfDataOutput.style.opacity = '0'; // Hide if clicking empty space
+                            }
+                        }
+                    }
+                    
+                    canvas.addEventListener('click', onMouseClick, false);
+
+                    // Animation/Render loop
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        controls.update(); 
+                        renderer.render(scene, camera);
+                    }
+                    
+                    // Handle resizing
+                    function onWindowResize() {
+                        const parent = canvas.parentElement;
+                        camera.aspect = parent.clientWidth / parent.clientHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(parent.clientWidth, parent.clientHeight);
+                        renderer.render(scene, camera);
+                    }
+
+                    onWindowResize(); 
+                    window.addEventListener('resize', onWindowResize, false);
+                    
+                    // Start the render loop
+                    animate(); 
+                }
+
+                // --- BLOOD SLIDER LOGIC ---
+
+                // function initBloodSlider() {
+                //     const sliderTrack = document.getElementById('blood-slider-track');
+                //     const sliderDotsContainer = document.getElementById('slider-dots');
+                //     const sliderContainer = document.getElementById('blood-slider-container');
+                    
+                //     if (!sliderTrack || !sliderContainer) return;
+
+                //     let currentSlide = 0;
+                //     let slideInterval;
+                //     const intervalTime = 4000; // 4 seconds interval
+
+                //     // 1. Populate the slider with images and dots
+                //     IMAGE_SLIDER_URLS.forEach((url, index) => {
+                //         // Create Image Element
+                //         const imgDiv = document.createElement('div');
+                //         imgDiv.className = 'w-full flex-shrink-0';
+                //         imgDiv.style.width = '100%'; // Important for proper sliding math
+                //         imgDiv.innerHTML = `<img src="${url}" 
+                //                                 alt="Blood Microscopic View ${index + 1}" 
+                //                                 class="w-full h-full object-cover" 
+                //                                 onerror="this.onerror=null;this.src='https://placehold.co/700x320/D32F2F/FFFFFF?text=Microscopic+Blood+View+${index + 1}+FAILED+TO+LOAD'">`;
+                //         sliderTrack.appendChild(imgDiv);
+
+                //         // Create Dot Element
+                //         const dot = document.createElement('button');
+                //         dot.className = 'w-3 h-3 rounded-full bg-gray-400 opacity-70 transition-all duration-300 focus:outline-none';
+                //         dot.setAttribute('data-index', index);
+                //         dot.addEventListener('click', () => {
+                //             currentSlide = index;
+                //             showSlide();
+                //             pauseSlider();
+                //             // Optional: Resume slider after a few seconds of manual interaction
+                //             setTimeout(resumeSlider, 5000); 
+                //         });
+                //         sliderDotsContainer.appendChild(dot);
+                //     });
+
+                //     const slidesCount = IMAGE_SLIDER_URLS.length;
+                //     sliderTrack.style.width = `${slidesCount * 100}%`; // Set track width
+
+                //     // 2. Core logic to display the current slide
+                //     function showSlide() {
+                //         const translateX = -currentSlide * (100 / slidesCount);
+                //         sliderTrack.style.transform = `translateX(${translateX}%)`;
+                        
+                //         // Update dots
+                //         Array.from(sliderDotsContainer.children).forEach((dot, index) => {
+                //             dot.classList.remove('bg-primary', 'w-5');
+                //             dot.classList.add('bg-gray-400', 'w-3');
+                //             if (index === currentSlide) {
+                //                 dot.classList.add('bg-primary', 'w-5');
+                //                 dot.classList.remove('bg-gray-400', 'w-3');
+                //             }
+                //         });
+                //     }
+
+                //     // 3. Logic to advance slide
+                //     function nextSlide() {
+                //         currentSlide = (currentSlide + 1) % slidesCount;
+                //         showSlide();
+                //     }
+
+                //     // 4. Autoplay control
+                //     function startSlider() {
+                //         if (slidesCount > 1) {
+                //             slideInterval = setInterval(nextSlide, intervalTime);
+                //         }
+                //     }
+
+                //     function pauseSlider() {
+                //         clearInterval(slideInterval);
+                //     }
+
+                //     function resumeSlider() {
+                //         pauseSlider(); // Ensure any existing interval is cleared
+                //         startSlider();
+                //     }
+
+                //     // 5. Interaction (Pause on Touch/Hover)
+                //     sliderContainer.addEventListener('mouseenter', pauseSlider);
+                //     sliderContainer.addEventListener('mouseleave', resumeSlider);
+                //     // Add touch listeners for mobile devices
+                //     sliderContainer.addEventListener('touchstart', pauseSlider);
+                //     sliderContainer.addEventListener('touchend', resumeSlider);
+                    
+                //     // Initial setup
+                //     showSlide();
+                //     resumeSlider(); // Start the slider
+                // }
+
+
+                // --- MAIN WINDOW LOAD ENTRY POINT (UPDATED TO INCLUDE SLIDER) ---
+                window.onload = function () {
+                    // 1. Initialize Respiratory Model (Existing)
+                    initThreeDModel(
+                        'respiratoryCanvas', 
+                        'static/respiratory.gltf', 
+                        'gltf-data-output', 
+                        'gltf-name', 
+                        8.0, // Scale
+                        0.0 // Y Position adjusted to 0.0 for vertical centering
+                    );
+
+                    // 2. Initialize Human Brain Model (NEW)
+                    initThreeDModel(
+                        'brainCanvas', 
+                        'static/brain.glb', 
+                        'brain-data-output', 
+                        'brain-name', 
+                        8.0, // Scale
+                        0.0 // Y Position adjusted to 0.0 for vertical centering
+                    );
+                    
+                    // 3. Initialize Blood Image Slider (NEW)
+                    initBloodSlider();
+                };
+
+            </script>
+        </div>
+    </div>
+    <!-- Chatbot Toggle Button (Existing - NO TOUCH) -->
+    <button id="chatbotToggle" class="fixed bottom-6 right-6 bg-accent text-white shadow-xl rounded-full p-4 text-2xl hover:bg-pink-600 transition duration-300">🔬</button>
+
+    <!-- Chatbot Panel (Existing - NO TOUCH) -->
+    <div id="chatbotPanel" class="hidden fixed bottom-20 right-6 w-80 h-[500px] bg-white shadow-2xl rounded-lg flex flex-col overflow-hidden">
+      <div class="bg-primary text-white p-3 font-semibold">Health Assistant</div>
+      <div id="chatHistory" class="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
+        <!-- Chat messages will appear here -->
+      </div>
+      <div class="border-t p-2 flex items-center space-x-2">
+        <input id="chatInput" type="text" placeholder="Ask me anything..." class="flex-1 border rounded-md p-2 text-sm" />
+        <button id="sendBtn" class="bg-accent text-white px-3 py-2 rounded-md">Send</button>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Video Introduction Section (Dark Background) -->
+  <section id="video-hub" class="py-24 bg-background_dark border-t border-primary/10">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-4xl md:text-4xl font-heading font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 drop-shadow-[0_0_12px_rgba(99,102,241,0.45)] animate-pulse">Dynamic Insight: Human Body Systems in Motion</h2>
+<p class="text-lg leading-relaxed max-w-3xl mx-auto mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-sky-300 to-purple-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.35)] animate-pulse">Explore the intricate mechanisms of life, from how the <strong>human body works</strong> at a cellular level to the incredible <strong>adaptability</strong> of the brain.</p>
+
+
+          <!-- Centered Video Container -->
+          <div class="flex justify-center w-full">
+              <!-- Using autoplay, loop, and muted for reliable background playback without controls/branding -->
+              <video 
+                  src="https://videos.openai.com/az/vg-assets/task_01k99cjgkdf5atb5zc6aabjges%2Ftask_01k99cjgkdf5atb5zc6aabjges_genid_d4957fa5-3324-4afc-a63b-250f7fea7e56_25_11_05_06_52_881287%2Fvideos%2F00000_529047526%2Fsource.mp4?se=2025-11-08T00%3A00%3A00Z&sp=r&sv=2024-08-04&sr=b&skoid=1af02b11-169c-463d-b441-d2ccfc9f02c8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-11-05T01%3A07%3A47Z&ske=2025-11-12T01%3A12%3A47Z&sks=b&skv=2024-08-04&sig=mzuhdNvMGaBkB5wHTk6jjv2TbI3LLVLQ%2ByBxyE%2BkYMg%3D&ac=oaivgprodscus2"
+                  class="rounded-xl shadow-2xl w-full max-w-4xl border-4 border-primary/50"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="auto"
+              >
+                  Your browser does not support the video tag.
+              </video>
+          </div>
+      </div>
+  </section>
+  <!-- End of Video Introduction Section -->
+
+  <!-- Blood System Section (Light Background for Contrast) -->
+<section id="blood-img-section" class="py-24 border-t border-gray-300"><div class="max-w-7xl mx-auto px-6"><h2 class="text-4xl font-heading font-bold text-center text-gray-100 mb-12">Hematic Fluid Composition and Circulation</h2>
+  <h2 class="text-2xl md:text-3xl font-bold text-slate-100 mb-6">Blood Components</h2>
+  <div class="grid md:grid-cols-2 gap-12 items-center">
+    <div id="blood-left" class="space-y-6 p-4 text-gray-200">
+      <h3 class="text-xl font-semibold">Blood Basics</h3>
+      <p>Blood is a specialized body fluid. It has four main components: plasma, red blood cells, white blood cells, and platelets. The blood that runs through the veins, arteries, and capillaries is known as whole blood—a mixture of about 55% plasma and 45% blood cells. About 7% to 8% of your total body weight is blood. An average-sized man has about 12 pints of blood in his body, and an average-sized woman has about 9 pints.</p>
+      <h4 class="font-semibold">Plasma</h4>
+      <p>The liquid component of blood is called plasma, a mixture of water, sugar, fat, protein, and salts. The main job of plasma is to transport blood cells throughout the body along with nutrients, waste products, antibodies, clotting proteins, chemical messengers (such as hormones), and proteins that help maintain the body's fluid balance.</p>
+      <p class="opacity-80 text-xs">Source: <a href="https://www.hematology.org/education/patients/blood-basics" target="_blank" rel="noopener" class="underline">hematology.org — Blood Basics</a></p>
+      <p class="opacity-80">Click the image to reveal details for each part.</p>
+    </div>
+    <div class="flex justify-center md:justify-end"><div id="blood-img-container" class="relative overflow-hidden rounded-xl shadow-2xl shadow-gray-400/50 bg-white w-full max-w-sm md:max-w-md h-80 md:h-96">
+    <img id="blood-img" src="static/blood.jpeg" alt="Blood components" class="w-full h-full object-cover select-none"/>
+
+    <!-- Transparent info panel (hidden until click) -->
+    <div id="blood-img-info" class="hidden absolute left-3 bottom-3 max-w-[92%] text-xs md:text-sm bg-[rgba(2,6,23,.45)] text-slate-100 border border-slate-300/30 rounded-lg backdrop-blur-[6px] p-2 md:p-3 pointer-events-none">
+      <div class="font-semibold" id="blood-img-title"></div>
+      <div class="opacity-90" id="blood-img-desc"></div>
+    </div>
+  </div>
+
+  <!-- Scoped styles for THIS section only -->
+  <style>
+    #blood-img-section #blood-img-container{transition:box-shadow .18s ease}
+    #blood-img-section #blood-img{will-change:transform;transform-style:preserve-3d;transition:transform .18s ease}
+    #blood-img-section .blood-hot{position:absolute;width:14px;height:14px;border-radius:9999px;transform:translate(-50%,-50%);cursor:pointer;background:radial-gradient(circle at 35% 35%, #ff6b6b, #b30000);box-shadow:0 0 12px rgba(255,0,0,.55);animation:b_pulse 2s infinite;z-index:2}
+    #blood-img-section .blood-hot.selected{outline:3px solid rgba(0,204,204,.9);box-shadow:0 0 18px rgba(0,204,204,.9)}
+    #blood-img-section #blood-img-info{z-index:3}
+    @keyframes b_pulse{0%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.15)}100%{transform:translate(-50%,-50%) scale(1)}}
+  </style>
+
+  <!-- Scoped script for THIS section only -->
+  <script>
+  (()=>{
+    // Data — nothing auto-displays; only used after click
+    const DATA=[
+      {label:'Red Blood Cells (Erythrocytes)', desc:'Most abundant; carry oxygen via hemoglobin. Biconcave discs increase surface area.'},
+      {label:'Neutrophil (a type of Granulocyte)', desc:'Common WBC phagocyte that engulfs bacteria; multilobed nucleus.'},
+      {label:'Lymphocyte (a type of Agranulocyte)', desc:'Adaptive immunity; B/T cells and antibodies.'},
+      {label:'Platelets (Thrombocytes)', desc:'Cell fragments that initiate clotting and wound healing.'},
+      {label:'Fibrin Strands', desc:'Protein mesh that stabilizes clots by trapping cells.'},
+      {label:'Plasma (Fluid Matrix)', desc:'Liquid matrix transporting cells, proteins, salts, hormones, nutrients.'}
+    ];
+
+    const root = document.getElementById('blood-img-section');
+    const elC = root.querySelector('#blood-img-container');
+    const elI = root.querySelector('#blood-img-info');
+    const elT = root.querySelector('#blood-img-title');
+    const elD = root.querySelector('#blood-img-desc');
+    const img  = root.querySelector('#blood-img');
+
+    // Hotspot positions (percent of image box)
+    const POS=[
+      {label:DATA[0].label, x:52, y:56},
+      {label:DATA[1].label, x:24, y:59},
+      {label:DATA[2].label, x:62, y:46},
+      {label:DATA[3].label, x:47, y:41},
+      {label:DATA[4].label, x:50, y:50},
+      {label:DATA[5].label, x:78, y:22}
+    ];
+
+    // Build hotspots
+    POS.forEach(p=>{const d=document.createElement('div');d.className='blood-hot';d.style.left=p.x+'%';d.style.top=p.y+'%';d.title=p.label;d.dataset.label=p.label;elC.appendChild(d);});
+
+    function show(label){
+      const item=DATA.find(x=>label.toLowerCase().includes(x.label.split(' (')[0].toLowerCase())||x.label.toLowerCase().includes(label.toLowerCase()));
+      if(!item) return;
+      elT.textContent=item.label; elD.textContent=item.desc; elI.classList.remove('hidden');
+      elC.querySelectorAll('.blood-hot').forEach(h=>h.classList.toggle('selected', h.dataset.label===label));
+    }
+
+    // Click anywhere → nearest hotspot info
+    elC.addEventListener('click',(e)=>{
+      const r=elC.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width*100; const py=(e.clientY-r.top)/r.height*100;
+      let n=null,b=1e9; elC.querySelectorAll('.blood-hot').forEach(h=>{const dx=px-parseFloat(h.style.left);const dy=py-parseFloat(h.style.top);const d=dx*dx+dy*dy;if(d<b){b=d;n=h;}});
+      if(n) show(n.dataset.label);
+    });
+    // Direct hotspot click (no bubble)
+    elC.querySelectorAll('.blood-hot').forEach(h=>h.addEventListener('click',ev=>{ev.stopPropagation(); show(h.dataset.label);}));
+
+    // Subtle tilt on the image only
+    elC.addEventListener('mousemove',(e)=>{const r=elC.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5; img.style.transform=`perspective(800px) rotateX(${-y*8}deg) rotateY(${x*8}deg) scale(1.02)`;});
+    elC.addEventListener('mouseleave',()=>{img.style.transform='perspective(800px) rotateX(0) rotateY(0) scale(1)';});
+  })();
+  </script>
+    </div>
+  </div>
+</div></div></section>
+
+  <!-- End of Blood System Section -->
+  <!-- 3D Visualization Hub Section (Dark Background - Respiratory Model) -->
+  <section id="three-d-hub" class="py-24 bg-background_dark border-t border-primary/10">
+      <div class="max-w-7xl mx-auto px-6">
+          <h2 class="text-4xl font-heading font-bold text-center text-white mb-12 digital-heading">Interactive 3D Medical Model Hub</h2>
+          
+          <div class="grid md:grid-cols-2 gap-12 items-start">
+              
+              <!-- LEFT COLUMN: 3D Canvas with GLTF Model -->
+              <div class="space-y-4">
+                  <h3 class="font-heading text-2xl font-semibold text-primary mb-2">Respiratory System (3D GLTF)</h3>
+
+                  <div class="canvas-container shadow-2xl shadow-primary/30">
+                      <canvas id="respiratoryCanvas" class="w-full h-full"></canvas>
+                      
+                      <!-- 3D Data Output Popup (Cleaned - only name remains) -->
+                      <div id="gltf-data-output" class="absolute bg-background_dark text-white text-sm p-4 rounded-xl shadow-lg shadow-primary/50 border border-primary/50 opacity-0 pointer-events-none transition-opacity duration-300" style="z-index: 30; max-width: 200px; text-align: center;">
+                          <p id="gltf-name" class="font-extrabold text-primary">Component Name</p>
+                          <a href="https://www.biodigital.com/" target="_blank" class="text-xs text-accent hover:underline mt-2 inline-block">Learn More</a>
+                          <!-- Pointer matching the new dark background and border -->
+                          <div class="absolute w-3 h-3 bg-background_dark border-b border-r border-primary/50 transform rotate-45 -bottom-[7px] left-1/2 -translate-x-1/2"></div>
+                      </div>
+
+                  </div>
+                  <a href="https://www.biodigital.com/" target="_blank" class="text-sm text-primary hover:text-cyan-600 font-bold underline mt-4 inline-block transition duration-300">Visit BioDigital for more models →</a>
+              </div>
+
+              <!-- RIGHT COLUMN: Professional Narrative -->
+              <div class="space-y-8 p-4">
+                  <h3 class="font-heading text-3xl font-bold text-white mb-4 border-b pb-3 border-primary/30">Driving Medical Insight and Development</h3>
+                  <div>
+                      <h4 class="font-heading text-xl font-semibold text-primary">Precision Visualization for Patient Acknowledgment</h4>
+                      <p class="text-gray-400">Empower doctors to clearly communicate **treatment policies** and ensure **patient acknowledgment** by precisely showing the location and methodology inside the human body. This fosters trust and provides a clear, actionable idea for patients regarding their care.</p>
+                  </div>
+                  <div>
+                      <h4 class="font-heading text-xl font-semibold text-primary">Accelerating Global Health Development</h4>
+                      <p class="text-gray-400">The platform allows professional teams to **analyze diverse medical situations** globally and collaboratively, accelerating scientific development and increasing the reach of advanced medical insights for the benefit of all mankind.</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+  <!-- End of 3D Hub Section -->
+
+
+  <!-- 3D Visualization Section (Light Background for Contrast - Human Brain Model) -->
+  <section id="brain-hub" class="py-24 bg-[#CCBEE6] text-gray-800 border-t border-gray-300">
+      <div class="max-w-7xl mx-auto px-6">
+         <h2 class="text-4xl md:text-4xl font-heading font-bold text-center mb-12 bg-gradient-to-r from-[#090979] via-[#3B0C7D] to-[#19083B] bg-clip-text text-transparent drop-shadow-[0_0_14px_rgba(139,92,246,0.35)] animate-pulse">The Human Brain: Cognitive and Neurological Architecture</h2>
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+              
+              <!-- LEFT COLUMN: Text Paragraphs (Dark text on light background) -->
+              <div class="space-y-8 p-4 md:order-1 order-2">
+                  <h3 class="font-heading text-3xl font-bold text-gray-900 mb-4 border-b pb-3 border-primary/30">Exploring the Mind's Complexities</h3>
+                  <div>
+                      <h4 class="font-heading text-xl font-semibold text-primary">The Seat of Consciousness</h4>
+                      <p class="text-gray-600">The brain is the most complex organ, governing everything from motor skills and sensory processing to **consciousness, memory, and emotional regulation**. Understanding its intricate architecture is key to advancing neuroscience and treating neurological disorders.</p>
+                  </div>
+                  <div>
+                      <h4 class="font-heading text-xl font-semibold text-primary">Neurological Development and Disease</h4>
+                      <p class="text-gray-600">Interactive 3D models allow researchers and students to visualize the impact of **developmental changes, trauma, and diseases** like Alzheimer's or Parkinson's on specific brain regions. This facilitates superior diagnostics and surgical planning.</p>
+                  </div>
+              </div>
+
+              <!-- RIGHT COLUMN: 3D Canvas (Container background matched to Respiratory Hub) -->
+              <div class="space-y-4 md:order-2 order-1">
+                  <h3 class="font-heading text-2xl font-semibold text-primary mb-2">Human Brain Anatomy (3D GLB)</h3>
+
+                  <div class="canvas-container shadow-2xl shadow-primary/30">
+                      <canvas id="brainCanvas" class="w-full h-full"></canvas>
+                      
+                      <!-- 3D Data Output Popup -->
+                      <div id="brain-data-output" class="absolute bg-background_dark text-white text-sm p-4 rounded-xl shadow-lg shadow-primary/50 border border-primary/50 opacity-0 pointer-events-none transition-opacity duration-300" style="z-index: 30; max-width: 200px; text-align: center;">
+                          <p id="brain-name" class="font-extrabold text-primary">Component Name</p>
+                          <a href="https://www.biodigital.com/" target="_blank" class="text-xs text-accent hover:underline mt-2 inline-block">Explore Region</a>
+                          <!-- Pointer matching the dark background and border -->
+                          <div class="absolute w-3 h-3 bg-background_dark border-b border-r border-primary/50 transform rotate-45 -bottom-[7px] left-1/2 -translate-x-1/2"></div>
+                      </div>
+
+                  </div>
+                  <a href="https://www.biodigital.com/" target="_blank" class="text-sm text-primary hover:text-cyan-600 font-bold underline mt-4 inline-block transition duration-300">Source models for research →</a>
+              </div>
+          </div>
+      </div>
+  </section>
+  <!-- End of Human Brain Section -->
+
+  <!--Human nerve section start-->
+    <!-- Video Introduction Section (Dark Background) -->
+  <section id="video-hub" class="py-24 bg-background_dark border-t border-primary/10">
+      <div class="max-w-7xl mx-auto px-6 text-center">
+        <h2 class="text-4xl md:text-4xl font-heading font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 drop-shadow-[0_0_12px_rgba(99,102,241,0.45)] animate-pulse">Dynamic Insight: Human Body Systems in Motion</h2>
+<p class="text-lg leading-relaxed max-w-3xl mx-auto mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-100 via-sky-300 to-purple-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.35)] animate-pulse">Explore the intricate mechanisms of life, from how the <strong>human body works</strong> at a cellular level to the incredible <strong>adaptability</strong> of the brain.</p>
+
+
+          <!-- Centered Video Container -->
+          <div class="flex justify-center w-full">
+              <!-- Using autoplay, loop, and muted for reliable background playback without controls/branding -->
+              <video 
+                  src="https://videos.openai.com/az/vg-assets/task_01k9by6q2qeeeax5em0dhn5skz%2Ftask_01k9by6q2qeeeax5em0dhn5skz_genid_f9b360f8-5d18-485e-81be-eca63db72a5c_25_11_06_06_39_089135%2Fvideos%2F00000_741443654%2Fsource.mp4?se=2025-11-08T00%3A00%3A00Z&sp=r&sv=2024-08-04&sr=b&skoid=8ebb0df1-a278-4e2e-9c20-f2d373479b3a&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-11-06T01%3A48%3A57Z&ske=2025-11-13T01%3A53%3A57Z&sks=b&skv=2024-08-04&sig=Hfevy52chdw9f%2Bkg0p%2BcEPbrTpIALRXnPRaMmEhTMLU%3D&ac=oaivgprodscus2"
+                  class="rounded-xl shadow-2xl w-full max-w-4xl border-4 border-primary/50"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="auto"
+              >
+                  Your browser does not support the video tag.
+              </video>
+          </div>
+      </div>
+      <h4 class="background_dark" text-center mt-8 text-sm text-gray-300 italic>
+        <a href="https://www.britannica.com/science/human-nervous-system" target="_blank" class="bg-cyan-900 ml-96 mt-8 " >Read more</a></h4>
+  </section>
+  <!-- End of Video Introduction Section -->
+
+  <!--Human nerve section end -->
+
+  <!-- Professional Footer (New) -->
+  <footer id="contact" class="bg-gray-900 border-t-4 border-primary/70 text-gray-300 py-12">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <!-- Brand/Mission -->
+        <div class="col-span-2 md:col-span-1">
+          <h3 class="text-2xl font-heading font-bold text-white mb-4">ApitCraft Medical</h3>
+          <p class="text-sm">Innovating medical visualization through interactive 3D modeling and data integration for education and professional development.</p>
+        </div>
+
+        <!-- Quick Links (Placeholder for structure) -->
+        <div>
+          <h4 class="text-lg font-semibold text-primary mb-4">Navigation</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#video-hub" class="hover:text-white transition duration-200">Video Lab</a></li>
+            <li><a href="#three-d-hub" class="hover:text-white transition duration-200">3D Hub</a></li>
+            <li><a href="#brain-hub" class="hover:text-white transition duration-200">Brain Hub</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-span-2 md:col-span-2">
+          <h4 class="text-lg font-semibold text-primary mb-4">Connect with the Developer</h4>
+          <ul class="space-y-3 text-sm">
+            <!-- Website -->
+            <li>
+              <a href="https://flask-apps-e45a.onrender.com/" target="_blank" class="flex items-center space-x-2 hover:text-white transition duration-200">
+                <i class="fa-solid fa-globe w-5 text-accent"></i>
+                <span>Website: flask-apps-e45a.onrender.com</span>
+              </a>
+            </li>
+            <!-- Email -->
+            <li>
+              <a href="mailto:afsanaafroze21@gmail.com" class="flex items-center space-x-2 hover:text-white transition duration-200">
+                <i class="fa-solid fa-envelope w-5 text-accent"></i>
+                <span>Email: afsanaafroze21@gmail.com</span>
+              </a>
+            </li>
+            <!-- LinkedIn -->
+            <li>
+              <a href="https://www.linkedin.com/in/afsanausa/" target="_blank" class="flex items-center space-x-2 hover:text-white transition duration-200">
+                <i class="fa-brands fa-linkedin w-5 text-accent"></i>
+                <span>LinkedIn: afsanausa</span>
+              </a>
+            </li>
+            <!-- GitHub -->
+            <li>
+              <a href="https://github.com/Afsana721/flask_apps" target="_blank" class="flex items-center space-x-2 hover:text-white transition duration-200">
+                <i class="fa-brands fa-github w-5 text-accent"></i>
+                <span>GitHub: Afsana721/flask_apps</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="mt-10 border-t border-gray-700 pt-6 text-center text-xs text-gray-500">
+      <p>&copy; 2025 ApitCraft. All rights reserved. Design and Development by Afsana Afroze.</p>
+    </div>
+  </footer>
+  <!-- End of Professional Footer -->
+</body>
+</html>
