@@ -260,6 +260,13 @@ def robot():
 def system_circuit():
     return render_template('system_circuit.html')
 
+#health routes
+@app.route('/health')
+def health():
+    return render_template('health.html')
+
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
