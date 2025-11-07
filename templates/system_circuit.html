@@ -9,9 +9,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght[300;400;700]&display=swap"
         rel="stylesheet">
-
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.umd.js"></script>
 
@@ -281,16 +278,14 @@
 </head>
 
 <body class="bg-background min-h-screen">
-
-
-
     <header class="w-full bg-background border-b border-surface sticky top-0 z-20">
         <div class="max-w-7xl mx-auto flex justify-between items-center p-4 md:p-6">
             <h1 class="text-xl font-bold text-accent-glow font-title-serif tracking-widest">
-                <span class="text-3xl text-cyan-200">AptiCraft </span>Every Circuit
+
+                <span class="text-3xl text-cyan-200">
+                    <img src="./static/aptiCraft.png" alt="log" class="inline bg-gray-300 w-10 h-10 rounded-full mr-2">
+                    AptiCraft</span>Every Circuit
             </h1>
-
-
             <input type="text" placeholder="Search..."
                 class="hidden md:block px-4 py-2 bg-surface text-primary-text rounded-md border border-gray-600 w-64 focus:border-accent-glow focus:outline-none">
 
@@ -301,44 +296,271 @@
             </nav>
         </div>
     </header>
-
-
-
     <main class="max-w-7xl mx-auto p-4 md:p-12 space-y-16">
-
-
-
         <section class="text-center pt-8 md:pt-16">
-
-
             <div
                 class="max-w-3xl mx-auto mb-16 p-4 bg-surface/50 rounded-lg border-l-4 border-accent-glow/50 text-sm text-primary-text/80 leading-relaxed">
                 <p>
-                    <strong class="text-accent-glow">PROGRAM UPDATE:</strong> EveryCircuit is dedicated to supporting
-                    academic institutions. We are offering very affordable pricing for education. Please click here for
-                    licensing details or contact us at <a href="mailto:info@everycircuit.com"
-                        class="text-accent-glow hover:underline">info@everycircuit.com</a>.
+                    <strong class="text-accent-glow">PROGRAM UPDATE:</strong> EveryCircuit is an online and mobile app
+                    to design,
+                    simulate, share, and discover electronic circuits. <a href="https://everycircuit.com/"
+                        class="text-accent-glow hover:underline text-sm"> Every Circuit</a>.
                 </p>
             </div>
+            <!-- ===== EC Stats Strip (drop-in snippet) ===== -->
+            <section id="ec-stats" class="ec-section">
+                <div class="ec-row relative overflow-hidden">
+
+                    <!-- Card 1: Circuits -->
+                    <button class="ec-card ec-left" type="button" onclick="onClickStatsCircuits()">
+                        <div
+                            class="ec-card-inner transition-transform duration-300 ease-out hover:scale-[1.04] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                            <div><span class="ec-gradient ec-strong">2.9&nbsp;M</span> circuits<br>made in EveryCircuit
+                            </div>
+                        </div>
+                    </button>
+
+                    <div class="ec-sep" aria-hidden="true"></div>
+
+                    <!-- Card 2: Easy animated -->
+                    <button class="ec-card" type="button" onclick="onClickStatsAnimated()">
+                        <div
+                            class="ec-card-inner transition-transform duration-300 ease-out hover:scale-[1.04] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                            <div><span class="ec-gradient ec-strong">Easy</span> animated<br>interactive simulation
+                            </div>
+                        </div>
+                    </button>
+
+                    <div class="ec-sep" aria-hidden="true"></div>
+
+                    <!-- Card 3: Platforms -->
+                    <div class="ec-card">
+                        <div
+                            class="ec-card-inner transition-transform duration-300 ease-out hover:scale-[1.04] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                            <div>
+                                <span class="ec-gradient ec-strong">3</span> platforms<br>
+                                <a class="ec-link" target="_blank" href="/app">Online</a>,&thinsp;
+                                <a class="ec-link" target="_blank"
+                                    href="https://play.google.com/store/apps/details?id=com.everycircuit.free">Android</a>,&thinsp;
+                                <a class="ec-link" target="_blank"
+                                    href="https://apps.apple.com/us/app/everycircuit/id797157761">iOS</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ec-sep" aria-hidden="true"></div>
+                    <!-- Card 4: Class license -->
+                    <button class="ec-card ec-right" type="button" onclick="onClickClassLicense()">
+                        <div
+                            class="ec-card-inner transition-transform duration-300 ease-out hover:scale-[1.04] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                            <div><span class="ec-gradient ec-strong">Class</span><br>license for educators</div>
+                        </div>
+                    </button>
+
+                </div>
+            </section>
+            <style>
+                /* --- Scoped styles for #ec-stats --- */
+                :root {
+                    --ec-bg: #151515;
+                    /* page background reference */
+                    --ec-card: #151515;
+                    /* card background */
+                    --ec-border: rgba(255, 255, 255, .08);
+                    --ec-border-strong: rgba(255, 255, 255, .16);
+                    --ec-text: #d8deff;
+                    /* light text */
+                    --ec-muted: #9aa3c7;
+                    /* secondary text */
+                    --ec-accent-orange: #ff9b3d;
+                    /* warm accent */
+                    --ec-accent-amber: #f59e0b;
+                    /* secondary warm */
+                    --ec-accent-green: #22ff88;
+                    /* glow green */
+                }
+
+                #ec-stats.ec-section {
+                    padding: 24px 0
+                }
+
+                #ec-stats .ec-row {
+                    position: relative;
+                    display: flex;
+                    align-items: stretch;
+                    justify-content: center;
+                    gap: 0;
+                    max-width: 1100px;
+                    margin: 0 auto;
+                    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
+                    border: 1px solid var(--ec-border);
+                    border-radius: 14px;
+                    box-shadow: 0 30px 90px rgba(0, 0, 0, .55), 0 20px 60px rgba(0, 0, 0, .35) inset, 0 0 0 1px rgba(34, 255, 136, .08);
+                }
+
+                /* subtle orange/indigo perimeter glow */
+                #ec-stats .ec-row::after {
+                    content: "";
+                    position: absolute;
+                    inset: -2px;
+                    border-radius: 16px;
+                    pointer-events: none;
+                    z-index: 0;
+                    background: conic-gradient(from 220deg at 50% 50%, rgba(106, 128, 255, .25), rgba(58, 214, 255, .18), rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0) 55%, rgba(255, 155, 61, .25) 75%, rgba(245, 158, 11, .22) 90%, rgba(106, 128, 255, .25) 1turn);
+                    filter: blur(14px);
+                    opacity: .6;
+                }
+
+                #ec-stats .ec-card {
+                    background: transparent;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    cursor: pointer;
+                    flex: 1 1 0;
+                }
+
+                #ec-stats .ec-card:where(:focus-visible) {
+                    outline: 2px solid #6ea8ff;
+                    outline-offset: 2px;
+                    border-radius: 12px
+                }
 
 
+                #ec-stats .ec-card-inner {
+                    height: 100%;
+                    padding: 22px 28px;
+                    color: var(--ec-text);
+                    background: var(--ec-card);
+                    border-top: 1px solid var(--ec-border-strong);
+                    border-bottom: 1px solid var(--ec-border-strong);
+                    position: relative;
+                    overflow: hidden;
+                }
 
-            <div class="flex flex-wrap justify-center space-x-4 md:space-x-8 mt-12 mb-16">
-                <img src="https://placehold.co/120x40/151515/FFFFFF?text=App+Store"
-                    class="app-button w-32 h-10 object-contain rounded-md" alt="App Store download button">
-                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Google+Play"
-                    class="app-button w-32 h-10 object-contain rounded-md" alt="Google Play download button">
-                <img src="https://placehold.co/120x40/151515/FFFFFF?text=chrome"
-                    class="app-button w-32 h-10 object-contain rounded-md" alt="Chrome extension button">
-                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Firefox"
-                    class="app-button w-32 h-10 object-contain rounded-md" alt="Firefox extension button">
-                <img src="https://placehold.co/120x40/151515/FFFFFF?text=Edge"
-                    class="app-button w-32 h-10 object-contain rounded-md" alt="Microsoft Edge extension button">
-            </div>
+                /* warm corner sparkle */
+                #ec-stats .ec-card-inner::before {
+                    content: "";
+                    position: absolute;
+                    right: -14%;
+                    top: -14%;
+                    width: 180px;
+                    height: 180px;
+                    border-radius: 50%;
+                    background: radial-gradient(closest-side, rgba(247, 69, 38, 0.35), rgba(255, 155, 61, .08) 60%, transparent 70%);
+                    filter: blur(16px);
+                    opacity: .0;
+                    transition: opacity .3s ease;
+                }
+
+                #ec-stats .ec-card:hover .ec-card-inner::before {
+                    opacity: .9
+                }
+
+                #ec-stats .ec-left .ec-card-inner {
+                    border-radius: 12px 0 0 12px
+                }
+
+                #ec-stats .ec-right .ec-card-inner {
+                    border-radius: 0 12px 12px 0
+                }
+
+                #ec-stats .ec-sep {
+                    width: 1px;
+                    background: linear-gradient(180deg, transparent, var(--ec-border-strong), transparent)
+                }
+
+                /* luminous backlight */
+                #ec-stats .ec-row::before {
+                    content: "";
+                    position: absolute;
+                    inset: -40% -20% -20% -20%;
+                    background:
+                        radial-gradient(60% 50% at 50% -10%, rgba(80, 120, 255, .25), rgba(58, 214, 255, .12) 35%, transparent 70%),
+                        radial-gradient(40% 30% at 80% 120%, rgba(182, 3, 107, 0.12), transparent 60%),
+                        radial-gradient(55% 35% at 50% 120%, rgba(5, 114, 56, 0.18), transparent 60%);
+                    filter: blur(44px);
+                    opacity: .7;
+                    pointer-events: none;
+                    z-index: 0;
+                    animation: ec-breathe 6s ease-in-out infinite;
+                }
+
+                #ec-stats .ec-card,
+                #ec-stats .ec-sep {
+                    position: relative;
+                    z-index: 1
+                }
+
+                @keyframes ec-breathe {
+
+                    0%,
+                    100% {
+                        opacity: .55;
+                        transform: translateY(0)
+                    }
+
+                    50% {
+                        opacity: .85;
+                        transform: translateY(6px)
+                    }
+                }
+
+                #ec-stats .ec-gradient {
+                    background: linear-gradient(90deg, #3ad6ff, #6f8dff 40%, #9a6dff 62%, var(--ec-accent-orange) 85%, var(--ec-accent-green) 100%);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent
+                }
+
+                #ec-stats .ec-strong {
+                    font-weight: 800
+                }
+
+                #ec-stats .ec-link {
+                    color: #9ec7ff;
+                    text-decoration: none;
+                    border-bottom: 1px dotted rgba(158, 199, 255, .5);
+                    transition: color .2s ease, border-color .2s ease
+                }
+
+                /* Typography */
+                #ec-stats .ec-card-inner div {
+                    font: 600 18px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", sans-serif
+                }
+
+                #ec-stats .ec-card-inner div br {
+                    line-height: 1
+                }
+
+                /* Responsive: stack on small screens */
+                @media (max-width:900px) {
+                    #ec-stats .ec-row {
+                        flex-direction: column
+                    }
+
+                    #ec-stats .ec-sep {
+                        height: 1px;
+                        width: auto
+                    }
+
+                    #ec-stats .ec-left .ec-card-inner {
+                        border-radius: 12px 12px 0 0
+                    }
+
+                    #ec-stats .ec-right .ec-card-inner {
+                        border-radius: 0 0 12px 12px
+                    }
+                }
+            </style>
+
+            <script>
+                // Optional click handlers (replace with your real functions)
+                function onClickStatsCircuits() { console.log('Circuits clicked'); }
+                function onClickStatsAnimated() { console.log('Animated clicked'); }
+                function onClickClassLicense() { console.log('Class license clicked'); }
+            </script>
+            <!-- ===== /EC Stats Strip ===== -->
         </section>
-
-
-
         <section class="pb-8">
             <div class="simulation-interface mx-auto max-w-6xl">
                 <div class="flex justify-between items-center mb-2 p-4">
@@ -349,20 +571,13 @@
                         <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                     </div>
                 </div>
-
-
                 <div class="h-6 bg-surface border-b border-gray-700 flex items-center px-2 space-x-4 text-xs">
                     <span class="text-primary-text/70">FILE</span>
                     <span class="text-primary-text/70">EDIT</span>
                     <span class="text-accent-glow">SIMULATE</span>
                     <span class="text-primary-text/70">ANALYZE</span>
                 </div>
-
-
-
                 <div class="flex h-[80%] pt-2">
-
-
                     <div id="component-palette"
                         class="w-1/6 bg-surface p-2 rounded-lg text-xs text-primary-text/70 overflow-y-auto">
                         <p class="font-bold mb-2 text-accent-glow uppercase tracking-wider">Palette</p>
@@ -373,22 +588,172 @@
                             <li class="palette-item" data-type="inductor">Inductor (L)</li>
                             <li class="palette-item disabled" data-type="ic">IC Chips</li>
                         </ul>
-
                         <p class="font-bold mt-4 mb-2 text-accent-glow uppercase tracking-wider">Info</p>
                         <p class="text-[10px] text-primary-text/60">
                             Drag components to move them. Electron flow animation indicates current direction.
                         </p>
                     </div>
-
-
-
                     <div class="flex-1 bg-black p-2 relative">
                         <canvas id="circuitCanvas" class="w-full h-full"></canvas>
                     </div>
                 </div>
             </div>
         </section>
+        <!--system related text-->
+        {% raw %}
+        <!-- ===== System Intro (drop-in, place above system animation) ===== -->
+        <section id="system-intro" class="ec-section">
+            <div class="si-wrap relative overflow-hidden">
+                <header class="si-head">
+                    <h2 class="si-title text-accent-glow">System Behind the Screen</h2>
+                    <p class="si-sub text-[#00A550]">Low‑level engine that catches your input, schedules work, moves
+                        data, and drives hardware.</p>
+                </header>
+                <div class="si-grid">
+                    <article
+                        class="si-card transition-transform duration-300 ease-out hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                        <h3 class="si-h3"><span class="ec-gradient ec-strong font-weight text-[#3FFF00]">What System
+                                does</span></h3>
+                        <p>A computer system takes input, processes it according to instructions, stores the data, and
+                            produces an output. It consists of physical hardware components
+                            like the CPU and memory, and software components like the operating system that manage the
+                            hardware and
+                            run applications to perform specific tasks.</p>
+                        <a href="https://www.geeksforgeeks.org/computer-science-fundamentals/basics-of-computer-and-its-operations/"
+                            target="_blank" class="font-weight text-shadow text-accent-glow"><u>more info.</u></a>
+                    </article>
+                    <article
+                        class="si-card transition-transform duration-300 ease-out hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                        <h3 class="si-h3"><span class="ec-gradient ec-strong font-weight text-[#3FFF00]">How System
+                                works</span></h3>
+                        <div class="pipeline" aria-hidden="false">
+                            <div class="step">
+                                <div class="dot">Input</div>
+                            </div>
+                            <div class="connector">
+                                <div class="bus">
+                                    <div class="byte"></div>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="dot">Fetch</div>
+                            </div>
+                            <div class="connector small">
+                                <div class="bus">
+                                    <div class="byte delay"></div>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="dot">Decode</div>
+                            </div>
+                            <div class="connector small">
+                                <div class="bus">
+                                    <div class="byte delay2"></div>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="dot">Execute</div>
+                            </div>
+                            <div class="connector">
+                                <div class="bus">
+                                    <div class="byte delay3"></div>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="dot">Write</div>
+                            </div>
+                        </div>
+                        <p class="si-vis-caption">Visual: bytes (small glowing dots) travel along buses between pipeline
+                            stages.</p>
+                        <a href="https://homepage.cs.uri.edu/faculty/wolfe/book/Readings/Reading04.htm" target="_blank"
+                            class="font-weight text-shadow text-accent-glow"><u>more info.</u></a>
+                    </article>
+                    <article
+                        class="si-card transition-transform duration-300 ease-out hover:scale-[1.03] hover:-translate-y-0.5 hover:shadow-[0_28px_90px_rgba(34,255,136,.25),0_18px_55px_rgba(255,155,61,.28)]">
+                        <h3 class="si-h3"><span class="ec-gradient ec-strong font-weight text-[#3FFF00]">Why System
+                                matters</span></h3>
+                        <p>Computer systems are the most important due to their ability to increase efficiency, enhance
+                            communication, and manage vast amounts of information.</p>
+                        <a href="https://gbs.edu.mt/blog/understanding-the-fundamentals-of-computer-systems/"
+                            target="_blank" class="font-weight text-shadow text-accent-glow"><u>more info.</u></a>
+                    </article>
+                </div>
+            </div>
+        </section>
+        <!-- ===== /System Intro ===== -->
 
+        <style>
+            /* System extra section style Scoped styles for #system-intro — follows existing palette */
+            #system-intro .si-wrap {
+                max-width: 1100px;
+                margin: 0 auto;
+                padding: 32px;
+                border: 1px solid var(--ec-border);
+                border-radius: 14px;
+                background: linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .02));
+                box-shadow: 0 25px 80px rgba(0, 0, 0, .45), 0 20px 60px rgba(0, 0, 0, .35) inset, 0 0 0 1px rgba(34, 255, 136, .08)
+            }
+
+            #system-intro .si-wrap::before {
+                content: "";
+                position: absolute;
+                inset: -40% -20% -20% -20%;
+                background: radial-gradient(50% 40% at 15% -10%, rgba(34, 255, 136, .18), transparent 60%), radial-gradient(40% 30% at 90% 120%, rgba(255, 155, 61, .12), transparent 60%);
+                filter: blur(44px);
+                opacity: .7;
+                pointer-events: none;
+                z-index: 0;
+                animation: ec-breathe 6s ease-in-out infinite
+            }
+
+            #system-intro .si-head {
+                position: relative;
+                z-index: 1;
+                margin-bottom: 18px
+            }
+
+            #system-intro .si-title {
+                margin: 0 0 6px;
+                font: 800 26px/1.2 system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+                color: var(--ec-text)
+            }
+
+            #system-intro .si-sub {
+                margin: 0;
+                color: var(--ec-muted);
+                font: 500 15px/1.5 system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif
+            }
+
+            #system-intro .si-grid {
+                position: relative;
+                z-index: 1;
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 14px
+            }
+
+            #system-intro .si-card {
+                background: var(--ec-card);
+                border: 1px solid var(--ec-border-strong);
+                border-radius: 12px;
+                padding: 18px;
+                color: var(--ec-text)
+            }
+
+            #system-intro .si-h3 {
+                margin: 0 0 8px;
+                font: 700 16px/1.3 system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif
+            }
+
+            @media (max-width:900px) {
+                #system-intro .si-grid {
+                    grid-template-columns: 1fr
+                }
+            }
+        </style>
+        {% endraw %}
+
+        <!--End of system related text-->
 
 
         <section class="mb-16 max-w-6xl mx-auto">
@@ -397,9 +762,6 @@
                     class="text-xl md:text-2xl font-bold font-title-serif text-accent-glow mb-4 uppercase tracking-wider border-b border-gray-700 pb-2">
                     SYSTEM AND CIRCUIT FUNDAMENTALS
                 </h3>
-
-
-
                 <h4 class="text-lg font-bold text-primary-text mt-6 mb-2">High-Performance Processor: Data Flow
                     Animation</h4>
                 <div class="relative w-full overflow-hidden mb-4">
@@ -448,7 +810,9 @@
             </div>
         </section>
 
+        <!--TCP how works-->
 
+        <!--TCP End section-->
 
         <section class="mb-16 max-w-6xl mx-auto">
             <div class="p-6 bg-surface rounded-lg shadow-xl border border-gray-700">
@@ -1389,5 +1753,4 @@
         window.addEventListener('resize', resizeArchCanvas);
     </script>
 </body>
-
 </html>
