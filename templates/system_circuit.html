@@ -296,7 +296,7 @@
             </nav>
         </div>
     </header>
-    <main class="max-w-7xl mx-auto p-4 md:p-12 space-y-16">
+    <main class="max-w-7xl mx-auto p-4 md:p-12 space-y-56">
         <section class="text-center pt-8 md:pt-16">
             <div
                 class="max-w-3xl mx-auto mb-16 p-4 bg-surface/50 rounded-lg border-l-4 border-accent-glow/50 text-sm text-primary-text/80 leading-relaxed">
@@ -810,10 +810,6 @@
             </div>
         </section>
 
-        <!--TCP how works-->
-
-        <!--TCP End section-->
-
         <section class="mb-16 max-w-6xl mx-auto">
             <div class="p-6 bg-surface rounded-lg shadow-xl border border-gray-700">
                 <h3
@@ -854,7 +850,108 @@
             </div>
         </section>
 
+        <!-- ===== MICROCONTROLLER LOGIC • INTERRUPT SIMULATION (drop‑in section) ===== -->
+        <section id="mc-interrupts" class="mx-auto my-16 max-w-6xl">
+        <style>
+            /* Scoped to #mc-interrupts to avoid leaks */
+            #mc-interrupts{--smoke:#0d0f14;--panel:#1a1f29;--ink:#e8ecff;--muted:#9aa7c7;--neon:#00ff88;--cyan:#00cccc;--amber:#ff9a00}
+            #mc-interrupts{background:radial-gradient(900px 320px at 30% 0, rgba(0,204,204,.05), transparent 60%),
+                        radial-gradient(800px 280px at 80% -10%, rgba(255,154,0,.05), transparent 60%),
+                        var(--smoke);border:1px solid rgba(255,255,255,.08);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+            #mc-interrupts .wrap{padding:28px}
+            #mc-interrupts .title{margin:0 0 8px;font:800 22px/1.15 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;letter-spacing:.3px}
+            #mc-interrupts .title span{color:var(--neon);text-shadow:0 0 10px rgba(0,255,136,.45)}
+            #mc-interrupts .sub{margin:0 0 18px;color:var(--muted)}
+            #mc-interrupts .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+            #mc-interrupts .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px}
+            #mc-interrupts h3{margin:0 0 8px;font:700 14px/1.3 system-ui;color:var(--ink)}
+            #mc-interrupts p, #mc-interrupts li{color:var(--muted);font:600 12px/1.5 system-ui;margin:0}
+            #mc-interrupts ul{margin:0;padding-left:18px}
+            #mc-interrupts .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(0,255,136,.12);color:var(--neon);font:800 11px/1 system-ui;letter-spacing:.4px}
+            #mc-interrupts canvas{width:100%;height:auto;display:block;background:radial-gradient(700px 240px at 50% 0, rgba(0,204,204,.05), transparent 60%), var(--panel);border:1px solid #243045;border-radius:10px}
+            #mc-interrupts .legend{margin-top:6px;font:600 11px/1.2 system-ui;color:var(--muted)}
+            #mc-interrupts .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 6px 0 10px}
+            #mc-interrupts .c1{background:var(--neon)} .c2{background:var(--cyan)} .c3{background:var(--amber)}
+        </style>
 
+        <div class="wrap border border-accent-glow/50">
+            <h2 class="title"><span>MICROCONTROLLER LOGIC:</span> INTERRUPT SIMULATION</h2>
+            <p class="sub">How an MCU stops normal code, saves context, and services higher‑priority events — then returns exactly where it left off.</p>
+
+            <div class="grid">
+            <!-- Left: concise explainer -->
+            <article class="card">
+                <h3><span class="badge">How it works</span></h3>
+                <ul>
+                <li><b>Pending</b>: hardware lines (IRQ1/2/3) pulse when peripherals need attention.</li>
+                <li><b>Arbitrate</b>: a priority encoder chooses the highest active IRQ.</li>
+                <li><b>Context push</b>: CPU auto‑saves PC/flags to the stack.</li>
+                <li><b>Vector jump</b>: it branches to that ISR address (vector table).</li>
+                <li><b>Service</b>: ISR clears the source, maybe queues data.</li>
+                <li><b>Return</b>: POP context; resume main loop like nothing happened.</li>
+                </ul>
+            </article>
+
+            <!-- Right: tiny animation -->
+            <article class="card">
+                <h3>Live timing diagram</h3>
+                <canvas id="irqSim" width="560" height="170"></canvas>
+                <div class="legend"><span class="dot c1"></span>IRQ1  <span class="dot c2"></span>IRQ2  <span class="dot c3"></span>IRQ3  ·  <b>CPU</b>: green=RUN, amber=ISR  ·  <b>STACK</b>: bars = push/pop</div>
+            </article>
+            </div>
+        </div>
+
+        <script>
+        (function(){
+            const cvs=document.getElementById('irqSim'); if(!cvs) return; const ctx=cvs.getContext('2d');
+            const DPR=window.devicePixelRatio||1; cvs.width*=DPR; cvs.height*=DPR; ctx.scale(DPR,DPR);
+            const W=cvs.width/DPR,H=cvs.height/DPR, row=28, top=18;
+            const lanes=[{y:top+row*0,col:'#00ff88'},{y:top+row*1,col:'#00cccc'},{y:top+row*2,col:'#ff9a00'}];
+            let t=0, cpuISR=0, stack=0, seed=1;
+            function rnd(){seed=(seed*1664525+1013904223)|0; return (seed>>>0)/4294967296}
+            const pulses=[[],[],[]];
+            function addPulse(i){const w=30+Math.floor(rnd()*40); pulses[i].push({x:W+10,w});}
+            for(let i=0;i<3;i++) for(let k=0;k<3;k++) addPulse(i);
+
+            function step(dt){t+=dt; const speed=60; // px/s
+            // scroll pulses
+            for(let i=0;i<3;i++){
+                for(const p of pulses[i]) p.x-=dt*speed;
+                while(pulses[i].length && pulses[i][0].x<-80) pulses[i].shift();
+                if(rnd()<0.02) addPulse(i);
+            }
+            // IRQ arbitration: if any pulse crosses center window, enter ISR
+            const center=120; let active=-1; // higher index lower priority
+            for(let i=0;i<3;i++){const hit=pulses[i].some(p=>p.x<center && p.x+p.w>center); if(hit){active=i; break}}
+            if(active!==-1){cpuISR=1; stack=Math.min(6, stack+10*dt);} else {cpuISR=Math.max(0,cpuISR-3*dt); stack=Math.max(0, stack-12*dt);}  
+            }
+
+            function draw(){ctx.clearRect(0,0,W,H);
+            // grid
+            ctx.strokeStyle='rgba(255,255,255,.06)'; ctx.lineWidth=1; for(let y=top-12;y<H-20;y+=row){ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(W-10,y);ctx.stroke()}
+            // lanes
+            lanes.forEach((ln,i)=>{ctx.fillStyle='rgba(255,255,255,.6)'; ctx.font='11px system-ui'; ctx.fillText('IRQ'+(i+1), 10, ln.y-6);
+                for(const p of pulses[i]){ctx.fillStyle=ln.col; ctx.shadowColor=ln.col; ctx.shadowBlur=10; ctx.fillRect(p.x, ln.y-10, p.w, 20);}
+                ctx.shadowBlur=0;
+            });
+            // CPU state bar
+            ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fillText('CPU', 10, top+row*3+20);
+            ctx.fillStyle= cpuISR>0.5? 'rgba(255,154,0,1)' : 'rgba(0,255,136,1)';
+            ctx.shadowColor= ctx.fillStyle; ctx.shadowBlur=16; ctx.fillRect(60, top+row*3+8, 120, 14); ctx.shadowBlur=0;
+            // stack bars
+            ctx.fillStyle='rgba(255,255,255,.8)'; ctx.fillText('STACK', 10, top+row*4+20);
+            ctx.strokeStyle='rgba(148,163,184,.6)'; ctx.strokeRect(60, top+row*4+8, 140, 14);
+            ctx.fillStyle='rgba(0,204,204,.9)'; ctx.fillRect(60, top+row*4+8, stack*20, 14);
+            // center service window
+            ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.setLineDash([5,6]); ctx.beginPath(); ctx.moveTo(120,10); ctx.lineTo(120,H-10); ctx.stroke(); ctx.setLineDash([]);
+            }
+
+            let last=performance.now();
+            (function loop(now){const dt=(now-last)/1000; last=now; step(dt); draw(); requestAnimationFrame(loop)})(last);
+        })();
+        </script>
+        </section>
+        <!-- ===== /MICROCONTROLLER LOGIC • INTERRUPT SIMULATION ===== -->
 
         <section class="mb-16 max-w-6xl mx-auto p-6 bg-surface/50 rounded-lg shadow-xl border border-accent-glow/50">
             <h3
@@ -935,76 +1032,327 @@
         <!-- END NEW SECTION -->
 
 
+        <!-- ===== MICROCONTROLLER LOGIC • INTERRUPT SIMULATION (Info‑only, no animation) ===== -->
+        <section id="mc-interrupts" class="mx-auto my-16 max-w-6xl ">
+        <style>
+            /* Scoped to #mc-interrupts to avoid leaks */
+            #mc-interrupts{--smoke:#0d0f14;--panel:#1a1f29;--ink:#e8ecff;--muted:#9aa7c7;--neon:#00ff88;--cyan:#00cccc;--amber:#ff9a00}
+            #mc-interrupts{background:radial-gradient(900px 320px at 30% 0, rgba(0,204,204,.05), transparent 60%),
+                        radial-gradient(800px 280px at 80% -10%, rgba(255,154,0,.05), transparent 60%),
+                        var(--smoke);border:1px solid rgba(255,255,255,.08);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+            #mc-interrupts .wrap{padding:28px}
+            #mc-interrupts .title{margin:0 0 8px;font:800 22px/1.15 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;letter-spacing:.3px}
+            #mc-interrupts .title span{color:var(--neon);text-shadow:0 0 10px rgba(0,255,136,.45)}
+            #mc-interrupts .sub{margin:0 0 18px;color:var(--muted)}
+            #mc-interrupts .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+            #mc-interrupts .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
+            #mc-interrupts h3{margin:0 0 8px;font:700 14px/1.3 system-ui;color:var(--ink)}
+            #mc-interrupts p, #mc-interrupts li{color:var(--muted);font:600 12px/1.55 system-ui;margin:0}
+            #mc-interrupts ul{margin:0;padding-left:18px}
+            #mc-interrupts .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(0,255,136,.12);color:var(--neon);font:800 11px/1 system-ui;letter-spacing:.4px}
+            #mc-interrupts a{color:var(--cyan);text-decoration:underline;text-underline-offset:2px}
+            #mc-interrupts .note{border-left:3px solid var(--amber);padding-left:10px;margin-top:10px}
+        </style>
 
+        <div class="wrap border border-[#ff5d00]">
+            <h2 class="title"><span>MICROCONTROLLER LOGIC:</span> INTERRUPT SIMULATION</h2>
+            <p class="sub">What interrupts are, how they work inside the CPU, and how to design reliable ISRs. Info‑only block — drop your own image or animation where indicated.</p>
 
-        <section class="pb-20">
-            <h2 class="text-3xl font-bold text-title-color font-title-serif mb-6 border-b border-surface pb-2">
-                The Nexus: Advanced Design Resources
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid">
+            <article class="card">
+                <h3><span class="badge">Concept & Flow</span></h3>
+                <ul>
+                <li><b>Event → Pending</b>: Peripherals raise an <i>IRQ</i> line (timer tick, GPIO edge, UART RX).</li>
+                <li><b>Priority & Masking</b>: The controller (e.g., NVIC on ARM) checks <i>enable</i>/<i>mask</i> bits and selects the highest priority source.</li>
+                <li><b>Auto Context Save</b>: CPU pushes PC/PSR (+ regs on some cores) to the stack.</li>
+                <li><b>Vector Fetch</b>: It jumps to the address stored in the vector table for that IRQ.</li>
+                <li><b>ISR Duties</b>: Service hardware fast, acknowledge/clear the flag, queue work for later.</li>
+                <li><b>Return</b>: A special instruction pops context and resumes the interrupted code.</li>
+                </ul>
+                <p class="note"><b>Tip:</b> Keep ISRs tiny. Do just the minimum, hand off heavy work to a queue or task.</p>
+            </article>
 
+            <article class="card">
+                <h3><span class="badge">Types & Patterns</span></h3>
+                <ul>
+                <li><b>Level vs Edge</b>: Level stays active until cleared; edge fires on transitions (less CPU time).</li>
+                <li><b>Nested / Preemptive</b>: Higher‑priority IRQs can preempt lower ones; set priorities carefully to avoid starvation.</li>
+                <li><b>Debounce</b>: Mechanical inputs need filtering (RC, timer deferral, or digital debounce) to avoid IRQ storms.</li>
+                <li><b>DMA + IRQ</b>: Use DMA for large transfers; the completion IRQ just switches buffers or signals a task.</li>
+                <li><b>Critical Sections</b>: Briefly disable interrupts only around shared data updates (or use lock‑free ring buffers).</li>
+                </ul>
+            </article>
 
-                <div
-                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
-                    <h3 class="text-xl font-bold text-accent-glow mb-2">Library & Specs</h3>
-                    <p class="text-sm text-primary-text/70 mb-4">
-                        Access the full AptiCraft component library, datasheets, and compliance specifications for
-                        high-reliability design.
-                    </p>
-                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Explore Documentation
-                        &rarr;</a>
-                </div>
+            <article class="card">
+                <h3><span class="badge">Design Checklist</span></h3>
+                <ul>
+                <li>Define a clear <b>vector table</b> and document each source.</li>
+                <li>Choose <b>stack size</b> for worst‑case nesting + RTOS context.</li>
+                <li>Bound <b>latency</b>: measure from event to ISR entry; keep below your real‑time budget.</li>
+                <li>Make ISRs <b>reentrant‑safe</b> or guard shared state.</li>
+                <li>Use <b>volatile</b> for flags shared with main/RTOS tasks.</li>
+                <li>Log rare faults (missed deadlines, overflowed FIFOs) to catch corner cases.</li>
+                </ul>
+            </article>
 
-
-
-                <div
-                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
-                    <h3 class="text-xl font-bold text-accent-glow mb-2">Design Tutorials</h3>
-                    <p class="text-sm text-primary-text/70 mb-4">
-                        Video guides and interactive lessons on advanced topics like CMOS logic, FPGA programming, and
-                        power electronics.
-                    </p>
-                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Start Learning &rarr;</a>
-                </div>
-
-
-
-                <div
-                    class="bg-surface p-6 rounded-lg shadow-xl border border-gray-700 hover:border-accent-glow transition duration-300">
-                    <h3 class="text-xl font-bold text-accent-glow mb-2">Collaboration Hub</h3>
-                    <p class="text-sm text-primary-text/70 mb-4">
-                        Connect with other engineers, share circuit designs, and get peer reviews on your latest
-                        projects.
-                    </p>
-                    <a href="#" class="text-sm text-cyan-400 hover:text-cyan-200 font-medium">Join Community &rarr;</a>
-                </div>
-            </div>
-        </section>
-    </main>
-    <!-- NEW FOOTER -->
-    <footer class="w-full bg-surface border-t-1 border-transparent animated-footer mt-16">
-        <div
-            class="max-w-7xl mx-auto p-8 flex flex-col md:flex-row justify-between items-center text-primary-text/80 text-sm">
-
-            <!-- Logo and Copyright -->
-            <div class="mb-4 md:mb-0 text-center md:text-left">
-                <h1
-                    class="text-xl font-bold text-accent-glow font-title-serif tracking-widest transition duration-500 hover:text-cyan-300">
-                    <span class="text-3xl text-cyan-200">AptiCraft</span> Design Nexus
-                </h1>
-                <p class="mt-2 text-xs">&copy; 2025 Every Circuit, Inc. All rights reserved.</p>
-            </div>
-
-            <!-- Footer Links -->
-            <div class="flex space-x-6">
-                <a href="#" class="hover:text-accent-glow transition duration-200">Privacy Policy</a>
-                <a href="#" class="hover:text-accent-glow transition duration-200">Terms of Use</a>
-                <a href="mailto:support@apticraft.com"
-                    class="hover:text-accent-glow transition duration-200">Support</a>
+            <article class="card">
+                <h3><span class="badge">Good References</span> (official + respected)</h3>
+                <ul>
+                <li>ARM Cortex‑M <b>NVIC</b> & vectoring (Arm Developer): <a href="https://developer.arm.com/documentation/dui0552/a/the-cortex-m3-processor/exception-model/nested-vectored-interrupt-controller--nvic" target="_blank">NVIC overview</a></li>
+                <li>AVR/ATmega datasheet — external interrupts & pin‑change (Microchip): <a href="https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7810-Automotive-Microcontrollers-ATmega328P_Datasheet.pdf" target="_blank">ATmega328P</a></li>
+                <li>FreeRTOS: <a href="https://www.freertos.org/RTOS-Cortex-M3-M4.html" target="_blank">Interrupts on Cortex‑M & ISR safe APIs</a></li>
+                <li>TI app note on <b>interrupt latency</b>: <a href="https://www.ti.com/lit/an/spraai5/spraai5.pdf" target="_blank">Measuring & minimizing</a></li>
+                <li>Embedded Artistry: <a href="https://embeddedartistry.com/blog/2017/10/19/interrupts-a-primer/" target="_blank">Interrupts — a primer</a></li>
+                </ul>
+                <p class="note">Place your <b>image/diagram</b> here: replace this card with an &lt;img&gt; or embed your own waveform/oscilloscope snapshot.</p>
+            </article>
             </div>
         </div>
-    </footer>
-    <!-- END NEW FOOTER -->
+        </section>
+        <!-- ===== /MICROCONTROLLER LOGIC • INTERRUPT SIMULATION (Info‑only) ===== -->
+
+        {% raw %}
+        <!-- ===== System & Circuit • Compact Visualization Row (Smoky Black) ===== -->
+       <section id="system-circuit-viz" aria-label="System & Circuit visualization"
+            class="mt-40 lg:mt-56 xl:mt-[160px] mb-40 max-w-6xl mx-auto rounded-lg shadow-xl border border-[#ff5d00]">
+            <style>
+                /* Scoped styles — paste anywhere safely */
+                #system-circuit-viz {
+                    --smoke: #0d0f14;
+                    --panel: #0f172a;
+                    --ink: #e8ecff;
+                    --muted: #9aa7c7;
+                    --cyn: #00cccc;
+                    --amb: #f59e0b;
+                    --grn: #10b981;
+                    --blu: #3b82f6;
+                    --red: #ef4444
+                }
+
+                #system-circuit-viz {
+                    position: relative;
+                    padding: 32px 16px;
+                    background:
+                        radial-gradient(1200px 420px at 10% -10%, rgba(0, 204, 204, .06), transparent 60%),
+                        radial-gradient(900px 360px at 90% -20%, rgba(245, 158, 11, .05), transparent 60%),
+                        linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, 0)),
+                        var(--smoke);
+                    color: var(--ink)
+                }
+
+                #system-circuit-viz:before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    background:
+                        radial-gradient(800px 280px at 50% 0, rgba(0, 0, 0, .35), transparent 70%);
+                    pointer-events: none
+                }
+
+                #system-circuit-viz .wrap {
+                    max-width: 1100px;
+                    margin: 0 auto
+                }
+
+                #system-circuit-viz .title {
+                    margin: 0 0 6px;
+                    text-align: center;
+                    font: 800 28px/1.15 system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif
+                }
+
+                #system-circuit-viz .brand {
+                    background: linear-gradient(90deg, var(--cyn), #6366f1, var(--amb), #22c55e);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    background-size: 200% 100%;
+                    animation: sc-shimmer 3.5s linear infinite
+                }
+
+                @keyframes sc-shimmer {
+                    to {
+                        background-position: 200% 0
+                    }
+                }
+
+                #system-circuit-viz .sub {
+                    margin: 0 0 20px;
+                    text-align: center;
+                    color: var(--muted)
+                }
+
+                #system-circuit-viz .grid {
+                    display: grid;
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                    gap: 14px
+                }
+
+                @media(max-width:1024px) {
+                    #system-circuit-viz .grid {
+                        grid-template-columns: repeat(2, minmax(0, 1fr))
+                    }
+                }
+
+                @media(max-width:640px) {
+                    #system-circuit-viz .grid {
+                        grid-template-columns: 1fr
+                    }
+                }
+
+                #system-circuit-viz .card {
+                    display: flex;
+                    flex-direction: column;
+                    background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .02));
+                    border: 1px solid rgba(255, 255, 255, .08);
+                    border-radius: 12px;
+                    padding: 12px;
+                    min-height: 240px;
+                    box-shadow: 0 20px 50px rgba(0, 0, 0, .45), inset 0 0 0 1px rgba(0, 204, 204, .05);
+                    transition: transform .25s ease, box-shadow .25s ease
+                }
+
+                #system-circuit-viz .card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 34px 80px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 204, 204, .06)
+                }
+
+                #system-circuit-viz h3 {
+                    margin: 0 0 6px;
+                    font: 700 15px/1.25 system-ui
+                }
+
+                #system-circuit-viz p.desc {
+                    margin: 0 0 10px;
+                    color: var(--muted);
+                    font: 600 11px/1.35 system-ui
+                }
+
+                #system-circuit-viz .canvas-wrap {
+                    position: relative
+                }
+
+                #system-circuit-viz canvas {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                    background: radial-gradient(700px 260px at 50% 0, rgba(0, 204, 204, .05), transparent 60%), var(--panel);
+                    border: 1px solid #1e293b;
+                    border-radius: 8px
+                }
+            </style>
+
+            <div class="wrap">
+                <header class="head">
+                    <h2 class="title"><span class="brand">System &amp; Circuit</span> — Visualization Suite</h2>
+                    <p class="sub">Four compact live demos: signal flow, MOSFET I–V, AC Bode sweep, and oscillator phase
+                        orbit.</p>
+                </header>
+
+                <div id="sc-grid" class="grid">
+                    <div id="module-waveform" class="card"></div>
+                    <div id="module-iv" class="card"></div>
+                    <div id="module-bode" class="card"></div>
+                    <div id="module-orbit" class="card"></div>
+                </div>
+            </div>
+
+            <script>
+                // === Config ===
+                const CANVAS_WIDTH = 200, CANVAS_HEIGHT = 90, SCHEMATIC_HEIGHT = 80;
+                const BG_COLOR = '#0f172a', GRID_COLOR = '#1e293b', AXIS_COLOR = '#94a3b8';
+                const TRACE_COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
+
+                // === Helpers ===
+                const drawGrid = (ctx, w, h, xd, yd) => { ctx.strokeStyle = GRID_COLOR; ctx.lineWidth = 0.5; for (let i = 0; i <= yd; i++) { const y = i * h / yd; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke() } for (let j = 0; j <= xd; j++) { const x = j * w / xd; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke() } };
+                const drawText = (ctx, txt, x, y, col = AXIS_COLOR, align = 'left', size = 9) => { ctx.font = `${size}px Inter,system-ui,sans-serif`; ctx.fillStyle = col; ctx.textAlign = align; ctx.fillText(txt, x, y) };
+                const createCanvas = (parentId, id, w, h) => { const c = document.createElement('canvas'); c.id = id; c.width = w; c.height = h; document.getElementById(parentId).appendChild(c); return c.getContext('2d') };
+                const createSchematic = (parentId, staticId, dragId, w, h) => { const parent = document.getElementById(parentId); const wrap = document.createElement('div'); wrap.className = 'canvas-wrap'; wrap.style.height = `${h}px`; const s = document.createElement('canvas'); s.id = staticId; s.width = w; s.height = h; s.className = 'absolute'; wrap.appendChild(s); const d = document.createElement('canvas'); d.id = dragId; d.width = w; d.height = h; d.className = 'absolute'; wrap.appendChild(d); parent.appendChild(wrap); return { staticCtx: s.getContext('2d'), dragCtx: d.getContext('2d'), dragCanvas: d } };
+
+                class Draggable { constructor(canvas, draw, x, y, b) { this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.drawComp = draw; this.x = x; this.y = y; this.bounds = b; this.drag = false; this.offX = 0; this.offY = 0; canvas.addEventListener('mousedown', this.md); canvas.addEventListener('mousemove', this.mm); canvas.addEventListener('mouseup', this.mu); canvas.addEventListener('mouseleave', this.mu); this.redraw() } in(mx, my) { const { x, y, w, h } = this.bounds; return mx >= this.x + x && mx <= this.x + x + w && my >= this.y + y && my <= this.y + y + h } md = (e) => { const r = this.canvas.getBoundingClientRect(); const mx = (e.clientX - r.left) * (this.canvas.width / r.width); const my = (e.clientY - r.top) * (this.canvas.height / r.height); if (this.in(mx, my)) { this.drag = true; this.offX = mx - this.x; this.offY = my - this.y; this.canvas.style.cursor = 'grabbing' } }; mm = (e) => { const r = this.canvas.getBoundingClientRect(); const mx = (e.clientX - r.left) * (this.canvas.width / r.width); const my = (e.clientY - r.top) * (this.canvas.height / r.height); if (this.drag) { this.x = mx - this.offX; this.y = my - this.offY; this.redraw() } else { this.canvas.style.cursor = this.in(mx, my) ? 'grab' : 'default' } }; mu = () => { this.drag = false; this.canvas.style.cursor = 'default' }; redraw() { this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); this.ctx.save(); this.ctx.translate(this.x, this.y); this.drawComp(this.ctx); this.ctx.restore() } }
+
+                // === Module 1: Signal Flow (Analog↔Digital) ===
+                const setupWaveform = (parentId) => { const plot = createCanvas(parentId, 'wave-plot', CANVAS_WIDTH, CANVAS_HEIGHT); const sch = createSchematic(parentId, 'wave-sch-s', 'wave-sch-d', CANVAS_WIDTH, SCHEMATIC_HEIGHT); const staticCtx = sch.staticCtx, movingCtx = sch.dragCtx; const MCU_W = 100, MCU_H = 60; const baseX = (CANVAS_WIDTH - MCU_W) / 2, baseY = (SCHEMATIC_HEIGHT - MCU_H) / 2; let mcuX = baseX, mcuY = baseY, t = 0, hist = []; const traces = [{ color: TRACE_COLORS[0], off: 15 }, { color: TRACE_COLORS[1], off: 30 }, { color: TRACE_COLORS[2], off: 45 }]; const drawMCU = (ctx, x, y) => { ctx.save(); ctx.translate(x, y); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; ctx.strokeRect(0, 0, MCU_W, MCU_H); drawText(ctx, 'MCU', 5, 10, AXIS_COLOR, 'left', 10); traces.forEach(tr => { ctx.beginPath(); ctx.moveTo(MCU_W, tr.off); ctx.lineTo(MCU_W + 5, tr.off); ctx.stroke() }); ctx.restore() }; const wires = (ctx, x, y) => { ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, CANVAS_WIDTH, SCHEMATIC_HEIGHT); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; const start = MCU_W + 5; traces.forEach((tr, i) => { const py = y + tr.off; ctx.beginPath(); ctx.moveTo(x + start, py); ctx.lineTo(x + start + 25, py); ctx.stroke(); ctx.fillStyle = tr.color; ctx.beginPath(); ctx.arc(x + start + 10, py, 3, 0, 6.283); ctx.fill(); drawText(ctx, ['OUT_A', 'OUT_D', 'OUT_R'][i], x + start + 20, py + 3, tr.color, 'left', 9) }) }; const drawPlot = (ctx) => { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); drawGrid(ctx, w, h, 8, 5); const fns = [tt => 2.5 + 2 * Math.sin(2 * Math.PI * 1 * tt), tt => 1.5 * Math.sign(Math.sin(2 * Math.PI * 2 * tt)) + 2.5, tt => 4.5 - (tt * 5) % 3];[0, 1, 2].forEach(i => { if (hist.length < 2) return; ctx.strokeStyle = traces[i].color; ctx.lineWidth = 2; ctx.beginPath(); hist.forEach((d, idx) => { const v = fns[i](d.t), x = idx / hist.length * w, y = h * (1 - v / 5); idx ? ctx.lineTo(x, y) : ctx.moveTo(x, y) }); ctx.stroke() }) }; (function loop() { t += 1 / 60; mcuX = baseX + 25 * Math.sin(t * 1.5); mcuY = baseY + 15 * Math.cos(t * 1.0); hist.push({ t }); if (hist.length > 180) hist.shift(); wires(staticCtx, mcuX, mcuY); movingCtx.clearRect(0, 0, CANVAS_WIDTH, SCHEMATIC_HEIGHT); drawMCU(movingCtx, mcuX, mcuY); drawPlot(plot); requestAnimationFrame(loop) })() };
+
+                // === Module 2: I–V Curve (Drag MOSFET) ===
+                const Vt = 1.0, VMAX = 5.0, IMAX = 5.0, MS = 25; const Id = (Vgs, Vds) => Vgs < Vt ? 0 : (Vds < (Vgs - Vt) ? 0.5 * (Vgs - Vt) * Vds - 0.1 * Vds * Vds : 0.5 * (Vgs - Vt) * (Vgs - Vt));
+                const setupIV = (parentId) => { const plot = createCanvas(parentId, 'iv-plot', CANVAS_WIDTH, CANVAS_HEIGHT); const sch = createSchematic(parentId, 'iv-sch-s', 'iv-sch-d', CANVAS_WIDTH, SCHEMATIC_HEIGHT); const sctx = sch.staticCtx, dcv = sch.dragCanvas; const drawMOS = (ctx) => { ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-MS / 2, -MS); ctx.lineTo(-MS / 2, MS); ctx.moveTo(MS / 2, -MS); ctx.lineTo(MS / 2, MS); ctx.moveTo(-MS, 0); ctx.lineTo(-MS / 2, 0); ctx.stroke(); drawText(ctx, 'D', MS / 2 + 3, -MS - 5); drawText(ctx, 'S', MS / 2 + 3, MS + 10); drawText(ctx, 'G', -MS - 5, 5) }; const wires = (ctx, x, y) => { ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, CANVAS_WIDTH, SCHEMATIC_HEIGHT); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + MS / 2, y - MS); ctx.lineTo(x + MS / 2 + 15, y - MS); ctx.moveTo(x + MS / 2, y + MS); ctx.lineTo(x + MS / 2 + 15, y + MS); ctx.moveTo(x - MS, y); ctx.lineTo(x - MS - 15, y); ctx.stroke() }; const mos = new Draggable(dcv, drawMOS, (CANVAS_WIDTH - MS) / 2, SCHEMATIC_HEIGHT / 2, { x: -MS - 5, y: -MS - 10, w: MS * 2 + 15, h: MS * 2 + 20 }); let sweep = 0; function drawPlot(ctx, vd) { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); drawGrid(ctx, w, h, 5, 5); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, h); ctx.lineTo(w, h); ctx.moveTo(0, 0); ctx.lineTo(0, h); ctx.stroke(); for (let Vgs = 1; Vgs <= 5; Vgs++) { ctx.strokeStyle = TRACE_COLORS[2]; ctx.lineWidth = 2; ctx.beginPath(); const maxVds = Math.min(vd, VMAX); for (let Vds = 0; Vds <= maxVds; Vds += 0.1) { const I = Math.min(Id(Vgs, Vds) * 3, IMAX); const x = Vds * (w / VMAX); const y = h * (1 - I / IMAX); Vds ? ctx.lineTo(x, y) : ctx.moveTo(x, y) } ctx.stroke(); drawText(ctx, `Vgs=${Vgs}V`, 5, h * (1 - 0.5 - Vgs * 0.05), '#93c5fd', 'left', 7) } const cx = (performance.now() / 12) % w; ctx.setLineDash([4, 6]); ctx.strokeStyle = 'rgba(245,158,11,.9)'; ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke(); ctx.setLineDash([]) } (function loop() { sweep = (sweep + 0.05) % (VMAX * 2); const vd = sweep <= VMAX ? sweep : VMAX; wires(sctx, mos.x, mos.y); drawPlot(plot, vd); if (!mos.drag) mos.redraw(); requestAnimationFrame(loop) })() };
+
+                // === Module 3: AC Bode (Live Sweep) ===
+                const bodeY = (x, h) => { const H = h / 2, fc = CANVAS_WIDTH / 3; let mag = H * (1 - 0.5 * Math.atan(x / fc) / (Math.PI / 2)) - H / 4; mag = Math.max(H / 4, Math.min(H * 0.75, mag)); const ph = H * (1 + 0.5 * Math.atan(x / fc) / (Math.PI / 2)); return { magY: mag, phaseY: ph } };
+                const setupBode = (parentId) => { const plot = createCanvas(parentId, 'bode-plot', CANVAS_WIDTH, CANVAS_HEIGHT); const sch = createCanvas(parentId, 'bode-sch', CANVAS_WIDTH, SCHEMATIC_HEIGHT); let cx = 0; const drawSch = (ctx) => { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; const Cx = w / 2, Cy = h / 2, R = 25; ctx.beginPath(); ctx.moveTo(Cx - 70, Cy); ctx.lineTo(Cx - 35, Cy); ctx.stroke(); drawText(ctx, 'V_in', Cx - 60, Cy - 10); ctx.strokeRect(Cx - 35, Cy - 8, R, 16); drawText(ctx, 'R1', Cx - 30, Cy - 15); ctx.beginPath(); ctx.moveTo(Cx - 10, Cy); ctx.lineTo(Cx + 5, Cy); ctx.stroke(); ctx.beginPath(); ctx.moveTo(Cx + 5, Cy - 16); ctx.lineTo(Cx + 5, Cy + 16); ctx.moveTo(Cx + 15, Cy - 16); ctx.lineTo(Cx + 15, Cy + 16); ctx.stroke(); drawText(ctx, 'C1', Cx + 10, Cy - 20, '#94a3b8', 'center'); ctx.beginPath(); ctx.moveTo(Cx + 15, Cy); ctx.lineTo(Cx + 45, Cy); ctx.stroke(); drawText(ctx, 'V_out', Cx + 25, Cy - 10); ctx.beginPath(); ctx.moveTo(Cx + 10, Cy + 16); ctx.lineTo(Cx + 10, Cy + 30); ctx.moveTo(Cx - 5, Cy + 30); ctx.lineTo(Cx + 25, Cy + 30); ctx.stroke() }; const draw = (ctx, x) => { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); const H = h / 2; ctx.save(); ctx.rect(0, 0, w, H); ctx.clip(); drawGrid(ctx, w, H, 5, 3); drawText(ctx, 'Mag (dB)', 5, 10); drawText(ctx, '0 dB', 5, H / 2); ctx.strokeStyle = TRACE_COLORS[2]; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= w; i++) { const { magY } = bodeY(i, h); i ? ctx.lineTo(i, magY) : ctx.moveTo(i, magY) } ctx.stroke(); ctx.restore(); ctx.save(); ctx.translate(0, H); ctx.rect(0, 0, w, H); ctx.clip(); drawGrid(ctx, w, H, 5, 3); drawText(ctx, 'Phase (°)', 5, 10); drawText(ctx, '0°', 5, H / 2); drawText(ctx, '-90°', 5, H - 10); ctx.strokeStyle = TRACE_COLORS[3]; ctx.lineWidth = 2; ctx.beginPath(); for (let i = 0; i <= w; i++) { const { phaseY } = bodeY(i, h); i ? ctx.lineTo(i, phaseY - H) : ctx.moveTo(i, phaseY - H) } ctx.stroke(); ctx.restore(); drawText(ctx, 'Freq (Hz)', w - 5, h - 5, AXIS_COLOR, 'right'); ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); ctx.setLineDash([]); const c = bodeY(x, h); ctx.fillStyle = TRACE_COLORS[2]; ctx.beginPath(); ctx.arc(x, c.magY, 3, 0, 6.283); ctx.fill(); ctx.fillStyle = TRACE_COLORS[3]; ctx.beginPath(); ctx.arc(x, c.phaseY, 3, 0, 6.283); ctx.fill() }; (function loop() { cx = (cx + 1) % CANVAS_WIDTH; draw(plot, cx); drawSch(sch); requestAnimationFrame(loop) })() };
+
+                // === Module 4: XY Orbit ===
+                const setupOrbit = (parentId) => { const plot = createCanvas(parentId, 'orb-plot', CANVAS_WIDTH, CANVAS_HEIGHT); const sch = createCanvas(parentId, 'orb-sch', CANVAS_WIDTH, SCHEMATIC_HEIGHT); let t = 0, path = []; const drawSch = (ctx) => { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 2; const Cx = w / 2, Cy = h / 2, opW = 60, opH = 40; ctx.strokeRect(Cx - opW / 2, Cy - opH / 2, opW, opH); drawText(ctx, 'Oscillator', Cx, Cy + 5, AXIS_COLOR, 'center'); ctx.beginPath(); ctx.arc(Cx - 40, Cy, 8, 0, 6.283); ctx.moveTo(Cx + opW / 2, Cy); ctx.lineTo(Cx + 80, Cy); ctx.stroke(); drawText(ctx, 'V1', Cx - 48, Cy, TRACE_COLORS[0]); drawText(ctx, 'V2', Cx + 40, Cy - 40, TRACE_COLORS[1], 'center') }; const draw = (ctx, pts) => { const w = ctx.canvas.width, h = ctx.canvas.height; ctx.fillStyle = BG_COLOR; ctx.fillRect(0, 0, w, h); drawGrid(ctx, w, h, 5, 5); const Cx = w / 2, Cy = h / 2; ctx.strokeStyle = AXIS_COLOR; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(Cx, 0); ctx.lineTo(Cx, h); ctx.moveTo(0, Cy); ctx.lineTo(w, Cy); ctx.stroke(); drawText(ctx, 'V1', w - 10, Cy - 5); drawText(ctx, 'V2', Cx + 5, 10); if (pts.length < 2) return; ctx.strokeStyle = TRACE_COLORS[3]; ctx.lineWidth = 2; ctx.beginPath(); pts.forEach((p, i) => { const x = Cx + p.v1 * Cx * 0.9, y = Cy - p.v2 * Cy * 0.9; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y) }); ctx.stroke(); const last = pts[pts.length - 1]; ctx.fillStyle = TRACE_COLORS[3]; ctx.beginPath(); ctx.arc(Cx + last.v1 * Cx * 0.9, Cy - last.v2 * Cy * 0.9, 3, 0, 6.283); ctx.fill() }; (function loop() { t += 1 / 60; const v1 = Math.cos(t * 1.0), v2 = Math.sin(t * 1.5); path.push({ v1, v2 }); if (path.length > 500) path.shift(); draw(plot, path); drawSch(sch); requestAnimationFrame(loop) })() };
+
+                // === Boot ===
+                (function init() { setupWaveform('module-waveform'); setupIV('module-iv'); setupBode('module-bode'); setupOrbit('module-orbit') })();
+            </script>
+        </section>
+        <!-- ===== /System & Circuit Section ===== -->
+        {% endraw %}
+
+    </main>
+   <!-- Professional Footer (New) -->
+  <footer id="contact" class="w-full bg-surface border-t-1 border-transparent animated-footer mt-56">
+    <div class="max-w-7xl mx-auto p-8 text-primary-text/80 text-sm">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <!-- Brand/Mission -->
+        <div class="col-span-2 md:col-span-1">
+          <h3 class="text-2xl font-title-serif font-bold text-accent-glow tracking-widest transition duration-500 hover:text-cyan-300 mb-4">ApitCraft Medical</h3>
+          <p class="text-sm">Innovating medical visualization through interactive 3D modeling and data integration for education and professional development.</p>
+        </div>
+
+        <!-- Quick Links (Placeholder for structure) -->
+        <div>
+          <h4 class="text-lg font-semibold text-accent-glow">Navigation</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#video-hub" class="hover:text-accent-glow transition duration-200">Video Lab</a></li>
+            <li><a href="#three-d-hub" class="hover:text-accent-glow transition duration-200">3D Hub</a></li>
+            <li><a href="#brain-hub" class="hover:text-accent-glow transition duration-200">Brain Hub</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-span-2 md:col-span-2">
+          <h4 class="text-lg font-semibold text-accent-glow">Connect with the Developer</h4>
+          <ul class="space-y-3 text-sm">
+            <!-- Website -->
+            <li>
+              <a href="https://flask-apps-e45a.onrender.com/" target="_blank" class="flex items-center space-x-2 hover:text-accent-glow transition duration-200">
+                <i class="fa-solid fa-globe w-5 text-accent-glow"></i>
+                <span>Website: flask-apps-e45a.onrender.com</span>
+              </a>
+            </li>
+            <!-- Email -->
+            <li>
+              <a href="mailto:afsanaafroze21@gmail.com" class="flex items-center space-x-2 hover:text-accent-glow transition duration-200">
+                <i class="fa-solid fa-envelope w-5 text-accent-glow"></i>
+                <span>Email: afsanaafroze21@gmail.com</span>
+              </a>
+            </li>
+            <!-- LinkedIn -->
+            <li>
+              <a href="https://www.linkedin.com/in/afsanausa/" target="_blank" class="flex items-center space-x-2 hover:text-accent-glow transition duration-200">
+                <i class="fa-brands fa-linkedin w-5 text-accent-glow"></i>
+                <span>LinkedIn: afsanausa</span>
+              </a>
+            </li>
+            <!-- GitHub -->
+            <li>
+              <a href="https://github.com/Afsana721/flask_apps" target="_blank" class="flex items-center space-x-2 hover:text-accent-glow transition duration-200">
+                <i class="fa-brands fa-github w-5 text-accent-glow"></i>
+                <span>GitHub: Afsana721/flask_apps</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="mt-10 border-t border-primary-text/20 pt-6 text-center text-xs text-primary-text/60">
+      <p>&copy; 2025 ApitCraft. All rights reserved. Design and Development by Afsana Afroze.</p>
+    </div>
+  </footer>
+  <!-- End of Professional Footer -->
 
     <script>
         // ====================================================================
