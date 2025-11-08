@@ -1057,7 +1057,7 @@ loader.load('/static/models/yourModel.glb', (gltf)=>{
 
             <script>
               const iframe = document.getElementById('preview');
-              const GLB_ABS = location.origin + '/static/robot.glb';
+              const GLB_ABS = location.origin + '/static/alien.glb';
 
               // --- Viewer HTML (iframe) ---
               const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
@@ -1186,28 +1186,28 @@ let lastTime; function loop(time){ requestAnimationFrame(loop);
 
 
           <pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto"><code>// Minimal Cannon.js pattern (sync with Three.js mesh by copying position/quaternion)
-const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
-const matGround = new CANNON.Material('ground');
-const matBall = new CANNON.Material('ball');
-world.addContactMaterial(new CANNON.ContactMaterial(matGround, matBall, { friction: 0.3, restitution: 0.6 }));
-
-const ground = new CANNON.Body({ mass: 0, material: matGround, shape: new CANNON.Plane() });
-// rotate plane to lie flat
-const q = new CANNON.Quaternion(); q.setFromEuler(-Math.PI/2, 0, 0); ground.quaternion.copy(q);
-world.addBody(ground);
-
-const ball = new CANNON.Body({ mass: 1, material: matBall, shape: new CANNON.Sphere(0.5), position: new CANNON.Vec3(0, 3, 0) });
-world.addBody(ball);
-
-// optional: hinge a box to a pivot
-const boxA = new CANNON.Body({ mass: 1, shape: new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5)), position: new CANNON.Vec3(2,2,0) });
-world.addBody(boxA);
-const hinge = new CANNON.HingeConstraint(boxA, new CANNON.Vec3(0,-0.5,0));
-world.addConstraint(hinge);
-
-const fixedTimeStep = 1/60, maxSubSteps = 3;
-function stepPhysics(dt){ world.step(fixedTimeStep, dt, maxSubSteps); }
-</code></pre>
+          const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
+          const matGround = new CANNON.Material('ground');
+          const matBall = new CANNON.Material('ball');
+          world.addContactMaterial(new CANNON.ContactMaterial(matGround, matBall, { friction: 0.3, restitution: 0.6 }));
+          
+          const ground = new CANNON.Body({ mass: 0, material: matGround, shape: new CANNON.Plane() });
+          // rotate plane to lie flat
+          const q = new CANNON.Quaternion(); q.setFromEuler(-Math.PI/2, 0, 0); ground.quaternion.copy(q);
+          world.addBody(ground);
+          
+          const ball = new CANNON.Body({ mass: 1, material: matBall, shape: new CANNON.Sphere(0.5), position: new CANNON.Vec3(0, 3, 0) });
+          world.addBody(ball);
+          
+          // optional: hinge a box to a pivot
+          const boxA = new CANNON.Body({ mass: 1, shape: new CANNON.Box(new CANNON.Vec3(0.5,0.5,0.5)), position: new CANNON.Vec3(2,2,0) });
+          world.addBody(boxA);
+          const hinge = new CANNON.HingeConstraint(boxA, new CANNON.Vec3(0,-0.5,0));
+          world.addConstraint(hinge);
+          
+          const fixedTimeStep = 1/60, maxSubSteps = 3;
+          function stepPhysics(dt){ world.step(fixedTimeStep, dt, maxSubSteps); }
+          </code></pre>
 
           <!-- Sandbox: Cannon.js (inline) -->
           <div id="cannon-sandbox" class="mt-6 p-4 rounded-xl border border-gray-800 bg-gray-900/60">
@@ -1222,8 +1222,9 @@ function stepPhysics(dt){ world.step(fixedTimeStep, dt, maxSubSteps); }
             <textarea id="cannon-editor"
               class="w-full h-40 text-xs p-3 rounded bg-gray-950/80 text-gray-200 border border-gray-800"
               spellcheck="false">// Step world & log height (visual sync done in your Three.js loop)
-let tLast; function tick(ts){ if(!tLast) tLast=ts; const dt=(ts-tLast)/1000; tLast=ts; stepPhysics(dt); console.log('ball y=', (world.bodies[1]?.position.y||0).toFixed(2)); requestAnimationFrame(tick);} requestAnimationFrame(tick);
-</textarea>
+            let tLast; function tick(ts){ if(!tLast) tLast=ts; const dt=(ts-tLast)/1000; tLast=ts; stepPhysics(dt); 
+              console.log('ball y=', (world.bodies[1]?.position.y||0).toFixed(2)); requestAnimationFrame(tick);} requestAnimationFrame(tick);
+        </textarea>
           </div>
           <script>
             (function () {
