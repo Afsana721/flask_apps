@@ -677,42 +677,42 @@
             })();
           </script>
           <pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto">
-    <code>// Minimal DOM-driven setup (paste your own models later)
-    const root = document.getElementById('threejs-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, root.clientWidth / root.clientHeight, 0.1, 100);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(root.clientWidth, root.clientHeight);
-    root.appendChild(renderer.domElement);
-
-    // add something to see
-    const box = new THREE.Mesh(
-      new THREE.BoxGeometry(1,1,1),
-      new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6, color: 0x22aaff })
-    );
-    scene.add(box);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const key = new THREE.DirectionalLight(0xffffff, 0.8); key.position.set(2,2,2); scene.add(key);
-
-    camera.position.set(2,1.5,3); camera.lookAt(0,0,0);
-
-    function onResize(){
-      const { clientWidth:w, clientHeight:h } = root;
-      renderer.setSize(w, h);
-      camera.aspect = w/h; camera.updateProjectionMatrix();
-    }
-    window.addEventListener('resize', onResize);
-
-    // basic loop
-    const clock = new THREE.Clock();
-    (function animate(){
-      const t = clock.getElapsedTime();
-      box.rotation.set(t*0.4, t*0.6, 0);
-      renderer.render(scene, camera);
-      requestAnimationFrame(animate);
-    })();
-    </code>
-  </pre>
+            <code>// Minimal DOM-driven setup (paste your own models later)
+            const root = document.getElementById('threejs-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, root.clientWidth / root.clientHeight, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(root.clientWidth, root.clientHeight);
+            root.appendChild(renderer.domElement);
+        
+            // add something to see
+            const box = new THREE.Mesh(
+              new THREE.BoxGeometry(1,1,1),
+              new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6, color: 0x22aaff })
+            );
+            scene.add(box);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const key = new THREE.DirectionalLight(0xffffff, 0.8); key.position.set(2,2,2); scene.add(key);
+        
+            camera.position.set(2,1.5,3); camera.lookAt(0,0,0);
+        
+            function onResize(){
+              const { clientWidth:w, clientHeight:h } = root;
+              renderer.setSize(w, h);
+              camera.aspect = w/h; camera.updateProjectionMatrix();
+            }
+            window.addEventListener('resize', onResize);
+        
+            // basic loop
+            const clock = new THREE.Clock();
+            (function animate(){
+              const t = clock.getElapsedTime();
+              box.rotation.set(t*0.4, t*0.6, 0);
+              renderer.render(scene, camera);
+              requestAnimationFrame(animate);
+            })();
+            </code>
+        </pre>
 
           <!-- <p class="text-[11px] text-gray-500 mt-3">Tip: the renderer’s <span class="text-sky-300">domElement</span> is
             just a canvas—append it wherever you want in your layout.</p> -->
@@ -760,37 +760,40 @@
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Bind to DOM</h4>
                 <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// Mount anywhere in your app
-const mount = document.querySelector('[data-3d="hero"]');
-mount.appendChild(renderer.domElement);
-// Toggle visibility via DOM
-mount.classList.toggle('hidden');
-</code></pre>
+                  const mount = document.querySelector('[data-3d="hero"]');
+                  mount.appendChild(renderer.domElement);
+                  // Toggle visibility via DOM
+                  mount.classList.toggle('hidden');
+                  </code>
+                </pre>
               </div>
 
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Click to Select (Raycaster)</h4>
                 <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>const ray = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-renderer.domElement.addEventListener('pointerdown', (e)=>{
-  const rect = renderer.domElement.getBoundingClientRect();
-  mouse.x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
-  mouse.y = -((e.clientY - rect.top)/rect.height) * 2 + 1;
-  ray.setFromCamera(mouse, camera);
-  const hits = ray.intersectObjects(scene.children, true);
-  if(hits[0]) hits[0].object.material.emissive.setHex(0x2299ff);
-});
-</code></pre>
+                  const mouse = new THREE.Vector2();
+                  
+                  renderer.domElement.addEventListener('pointerdown', (e)=>{
+                    const rect = renderer.domElement.getBoundingClientRect();
+                    mouse.x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
+                    mouse.y = -((e.clientY - rect.top)/rect.height) * 2 + 1;
+                    ray.setFromCamera(mouse, camera);
+                    const hits = ray.intersectObjects(scene.children, true);
+                    if(hits[0]) hits[0].object.material.emissive.setHex(0x2299ff);
+                  });
+                  </code>
+                </pre>
               </div>
 
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Load a GLB (Models)</h4>
                 <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// assumes GLTFLoader is included
-const loader = new THREE.GLTFLoader();
-loader.load('/static/models/yourModel.glb', (gltf)=>{
-  const model = gltf.scene; scene.add(model);
-});
-</code></pre>
+                  const loader = new THREE.GLTFLoader();
+                  loader.load('/static/models/yourModel.glb', (gltf)=>{
+                    const model = gltf.scene; scene.add(model);
+                  });
+                  </code>
+                </pre>
               </div>
             </div>
           </div>
@@ -994,54 +997,55 @@ loader.load('/static/models/yourModel.glb', (gltf)=>{
             <div class="app">
               <header>
                 <!-- <strong>Robot2 • Editable Preview Canvas</strong> -->
-                <span class="badge">Autoload: /static/robot.glb • Head aliases JSON</span>
+                <span class="badge">Autoload: /static/alien.glb • Head aliases JSON</span>
               </header>
 
               <section class="side">
                 <div class="hint">Head map in use (you can edit, optional).</div>
                 <textarea id="specJson">{
-  "infer_rules": {
-    "side_hints_left": ["Left", "L", "_L", ".L", "-L"],
-    "side_hints_right": ["Right", "R", "_R", ".R", "-R"],
-    "fallback_by_position_x": "x < 0 => L, x > 0 => R",
-    "length_basis": "bbox_longest_axis_mm"
-  },
-  "parts": [
-    { "name": "Head",  "category": "head",  "side": null, "length_mm": null },
-    { "name": "Neck",  "category": "neck",  "side": null, "length_mm": null },
-    { "name": "Torso", "category": "torso", "side": null, "length_mm": null },
-
-    { "name": "UpperArm_L", "aliases": ["LeftArm","Arm.L","L_Arm"], "category": "arm_upper",  "side": "L", "length_mm": null },
-    { "name": "Forearm_L",  "aliases": ["LeftForearm","Forearm.L"], "category": "arm_lower",  "side": "L", "length_mm": null },
-    { "name": "Hand_L",     "aliases": ["LeftHand","Hand.L"],       "category": "hand",       "side": "L", "length_mm": null },
-
-    { "name": "Finger_L_Thumb",  "aliases": ["Thumb.L"],  "category": "finger", "side": "L", "digit": "thumb",  "length_mm": null },
-    { "name": "Finger_L_Index",  "aliases": ["Index.L"],  "category": "finger", "side": "L", "digit": "index",  "length_mm": null },
-    { "name": "Finger_L_Middle", "aliases": ["Middle.L"], "category": "finger", "side": "L", "digit": "middle", "length_mm": null },
-    { "name": "Finger_L_Ring",   "aliases": ["Ring.L"],   "category": "finger", "side": "L", "digit": "ring",   "length_mm": null },
-    { "name": "Finger_L_Pinky",  "aliases": ["Pinky.L"],  "category": "finger", "side": "L", "digit": "pinky",  "length_mm": null },
-
-    { "name": "UpperArm_R", "aliases": ["RightArm","Arm.R","R_Arm"], "category": "arm_upper",  "side": "R", "length_mm": null },
-    { "name": "Forearm_R",  "aliases": ["RightForearm","Forearm.R"], "category": "arm_lower",  "side": "R", "length_mm": null },
-    { "name": "Hand_R",     "aliases": ["RightHand","Hand.R"],       "category": "hand",       "side": "R", "length_mm": null },
-
-    { "name": "Finger_R_Thumb",  "aliases": ["Thumb.R"],  "category": "finger", "side": "R", "digit": "thumb",  "length_mm": null },
-    { "name": "Finger_R_Index",  "aliases": ["Index.R"],  "category": "finger", "side": "R", "digit": "index",  "length_mm": null },
-    { "name": "Finger_R_Middle", "aliases": ["Middle.R"], "category": "finger", "side": "R", "digit": "middle", "length_mm": null },
-    { "name": "Finger_R_Ring",   "aliases": ["Ring.R"],   "category": "finger", "side": "R", "digit": "ring",   "length_mm": null },
-    { "name": "Finger_R_Pinky",  "aliases": ["Pinky.R"],  "category": "finger", "side": "R", "digit": "pinky",  "length_mm": null },
-
-    { "name": "Thigh_L", "aliases": ["LeftUpLeg","Thigh.L"], "category": "leg_upper", "side": "L", "length_mm": null },
-    { "name": "Calf_L",  "aliases": ["LeftLeg","Calf.L"],    "category": "leg_lower", "side": "L", "length_mm": null },
-    { "name": "Foot_L",  "aliases": ["LeftFoot","Foot.L"],   "category": "foot",      "side": "L", "length_mm": null },
-    { "name": "Toe_L",   "aliases": ["LeftToe","Toe.L"],     "category": "toe",       "side": "L", "length_mm": null },
-
-    { "name": "Thigh_R", "aliases": ["RightUpLeg","Thigh.R"], "category": "leg_upper", "side": "R", "length_mm": null },
-    { "name": "Calf_R",  "aliases": ["RightLeg","Calf.R"],    "category": "leg_lower", "side": "R", "length_mm": null },
-    { "name": "Foot_R",  "aliases": ["RightFoot","Foot.R"],   "category": "foot",      "side": "R", "length_mm": null },
-    { "name": "Toe_R",   "aliases": ["RightToe","Toe.R"],     "category": "toe",       "side": "R", "length_mm": null }
-  ]
-}</textarea>
+              "infer_rules": {
+                "side_hints_left": ["Left", "L", "_L", ".L", "-L"],
+                "side_hints_right": ["Right", "R", "_R", ".R", "-R"],
+                "fallback_by_position_x": "x < 0 => L, x > 0 => R",
+                "length_basis": "bbox_longest_axis_mm"
+              },
+              "parts": [
+                { "name": "Head",  "category": "head",  "side": null, "length_mm": null },
+                { "name": "Neck",  "category": "neck",  "side": null, "length_mm": null },
+                { "name": "Torso", "category": "torso", "side": null, "length_mm": null },
+            
+                { "name": "UpperArm_L", "aliases": ["LeftArm","Arm.L","L_Arm"], "category": "arm_upper",  "side": "L", "length_mm": null },
+                { "name": "Forearm_L",  "aliases": ["LeftForearm","Forearm.L"], "category": "arm_lower",  "side": "L", "length_mm": null },
+                { "name": "Hand_L",     "aliases": ["LeftHand","Hand.L"],       "category": "hand",       "side": "L", "length_mm": null },
+            
+                { "name": "Finger_L_Thumb",  "aliases": ["Thumb.L"],  "category": "finger", "side": "L", "digit": "thumb",  "length_mm": null },
+                { "name": "Finger_L_Index",  "aliases": ["Index.L"],  "category": "finger", "side": "L", "digit": "index",  "length_mm": null },
+                { "name": "Finger_L_Middle", "aliases": ["Middle.L"], "category": "finger", "side": "L", "digit": "middle", "length_mm": null },
+                { "name": "Finger_L_Ring",   "aliases": ["Ring.L"],   "category": "finger", "side": "L", "digit": "ring",   "length_mm": null },
+                { "name": "Finger_L_Pinky",  "aliases": ["Pinky.L"],  "category": "finger", "side": "L", "digit": "pinky",  "length_mm": null },
+            
+                { "name": "UpperArm_R", "aliases": ["RightArm","Arm.R","R_Arm"], "category": "arm_upper",  "side": "R", "length_mm": null },
+                { "name": "Forearm_R",  "aliases": ["RightForearm","Forearm.R"], "category": "arm_lower",  "side": "R", "length_mm": null },
+                { "name": "Hand_R",     "aliases": ["RightHand","Hand.R"],       "category": "hand",       "side": "R", "length_mm": null },
+            
+                { "name": "Finger_R_Thumb",  "aliases": ["Thumb.R"],  "category": "finger", "side": "R", "digit": "thumb",  "length_mm": null },
+                { "name": "Finger_R_Index",  "aliases": ["Index.R"],  "category": "finger", "side": "R", "digit": "index",  "length_mm": null },
+                { "name": "Finger_R_Middle", "aliases": ["Middle.R"], "category": "finger", "side": "R", "digit": "middle", "length_mm": null },
+                { "name": "Finger_R_Ring",   "aliases": ["Ring.R"],   "category": "finger", "side": "R", "digit": "ring",   "length_mm": null },
+                { "name": "Finger_R_Pinky",  "aliases": ["Pinky.R"],  "category": "finger", "side": "R", "digit": "pinky",  "length_mm": null },
+            
+                { "name": "Thigh_L", "aliases": ["LeftUpLeg","Thigh.L"], "category": "leg_upper", "side": "L", "length_mm": null },
+                { "name": "Calf_L",  "aliases": ["LeftLeg","Calf.L"],    "category": "leg_lower", "side": "L", "length_mm": null },
+                { "name": "Foot_L",  "aliases": ["LeftFoot","Foot.L"],   "category": "foot",      "side": "L", "length_mm": null },
+                { "name": "Toe_L",   "aliases": ["LeftToe","Toe.L"],     "category": "toe",       "side": "L", "length_mm": null },
+            
+                { "name": "Thigh_R", "aliases": ["RightUpLeg","Thigh.R"], "category": "leg_upper", "side": "R", "length_mm": null },
+                { "name": "Calf_R",  "aliases": ["RightLeg","Calf.R"],    "category": "leg_lower", "side": "R", "length_mm": null },
+                { "name": "Foot_R",  "aliases": ["RightFoot","Foot.R"],   "category": "foot",      "side": "R", "length_mm": null },
+                { "name": "Toe_R",   "aliases": ["RightToe","Toe.R"],     "category": "toe",       "side": "R", "length_mm": null }
+              ]
+            }
+          </textarea>
                 <textarea id="patch" placeholder="// JS patch to run inside viewer
 // Example: const h=headNode(); if(h) h.rotation.y+=0.15;"></textarea>
                 <div class="row">
@@ -1061,90 +1065,91 @@ loader.load('/static/models/yourModel.glb', (gltf)=>{
 
               // --- Viewer HTML (iframe) ---
               const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
-<style>html,body{margin:0;height:100%;background:#0b0f1a;color:#e6eefb}canvas{width:100%;height:100%;display:block}#hud{position:fixed;left:10px;top:10px;font:12px ui-monospace;background:#0f1524;border:1px solid #22325a;border-radius:8px;padding:6px 8px;color:#9db0db}
-#note{position:fixed;left:10px;top:36px;font:11px ui-monospace;color:#cfe3ff;background:#112040;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;opacity:0;transition:opacity .3s ease;max-width:52vw;line-height:1.2}
-#metrics{position:fixed;left:10px;top:70px;font:11px ui-monospace;color:#9bd1ff;background:#0c1a2f;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;max-width:60vw;line-height:1.25;opacity:.95}</style>
-<script type='importmap'>{"imports":{"three":"https://unpkg.com/three@0.152.2/build/three.module.js","three/addons/":"https://unpkg.com/three@0.152.2/examples/jsm/"}}<\/script></head><body>
-<canvas id='c'></canvas><div id='hud'>Robot2 • GLB<\/div><div id='note'><\/div><div id='metrics'>Δy: 0.00 m | vᵧ: 0.00 m/s | reason: click Jump to add impulse; gravity pulls back down.<\/div>
-<script type='module'>
-import * as THREE from 'three';
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+          <style>html,body{margin:0;height:100%;background:#0b0f1a;color:#e6eefb}canvas{width:100%;height:100%;display:block}#hud{position:fixed;left:10px;top:10px;font:12px ui-monospace;background:#0f1524;border:1px solid #22325a;border-radius:8px;padding:6px 8px;color:#9db0db}
+          #note{position:fixed;left:10px;top:36px;font:11px ui-monospace;color:#cfe3ff;background:#112040;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;opacity:0;transition:opacity .3s ease;max-width:52vw;line-height:1.2}
+          #metrics{position:fixed;left:10px;top:70px;font:11px ui-monospace;color:#9bd1ff;background:#0c1a2f;border:1px solid #1f335a;border-radius:8px;padding:6px 8px;max-width:60vw;line-height:1.25;opacity:.95}</style>
+          <script type='importmap'>{"imports":{"three":"https://unpkg.com/three@0.152.2/build/three.module.js","three/addons/":"https://unpkg.com/three@0.152.2/examples/jsm/"}}<\/script></head><body>
+          <canvas id='c'></canvas><div id='hud'>Robot2 • GLB<\/div><div id='note'><\/div><div id='metrics'>Δy: 0.00 m | vᵧ: 0.00 m/s | reason: click Jump to add impulse; gravity pulls back down.<\/div>
+          <script type='module'>
+          import * as THREE from 'three';
+          import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+          import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+          import * as CANNON from 'https://cdn.skypack.dev/cannon-es';
+          
+          const canvas=document.getElementById('c');
+          let renderer; try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true, powerPreference:'high-performance', failIfMajorPerformanceCaveat:false}); const ctx=renderer.getContext(); if(!ctx) throw new Error('no webgl2'); } catch(e){ const {WebGL1Renderer}=THREE; renderer=new WebGL1Renderer({canvas,antialias:true}); }
+          const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0a1628);
+          const camera=new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000); camera.position.set(2,1.2,3);
+          scene.add(new THREE.HemisphereLight(0xffffff,0x333333,1)); const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(5,5,5); scene.add(dl);
+          const ctl=new OrbitControls(camera, renderer.domElement);
+          let robot=null; let SPEC=null; let _jumpStartY=null;
+          // --- physics world ---
+          const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
+          world.broadphase = new CANNON.SAPBroadphase(world);
+          world.allowSleep = true;
+          const groundBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane() });
+          groundBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
+          world.addBody(groundBody);
+          let robotBody=null, robotHalfY=0; let onGround=false;
+          function ground(o){ const b=new THREE.Box3().setFromObject(o); const c=b.getCenter(new THREE.Vector3()); o.position.sub(c); o.updateMatrixWorld(true); const b2=new THREE.Box3().setFromObject(o); o.position.y -= b2.min.y; o.updateMatrixWorld(true); o.userData.floorY = o.position.y; }
+          const loader=new GLTFLoader();
+          (async()=>{ try{ const res=await fetch('${GLB_ABS}'); if(!res.ok) throw new Error('HTTP '+res.status); const buf=await res.arrayBuffer(); loader.parse(buf,'',(g)=>{ robot=g.scene; scene.add(robot); ground(robot); window.robot=robot;
+            const bbox = new THREE.Box3().setFromObject(robot);
+            const sz = bbox.getSize(new THREE.Vector3());
+            robotHalfY = sz.y/2;
+            const shape = new CANNON.Box(new CANNON.Vec3(Math.max(0.01,sz.x/2), Math.max(0.01,sz.y/2), Math.max(0.01,sz.z/2)));
+            robotBody = new CANNON.Body({ mass: 2, shape, linearDamping: 0.02, angularDamping: 0.95 });
+            robotBody.position.set(0, robotHalfY, 0);
+            robotBody.allowSleep = true;
+            world.addBody(robotBody);
+            robotBody.addEventListener('collide', (e)=>{ if(e.body===groundBody) onGround=true; });
+          }, (e)=>{ throw e; }); }catch(e){ console.error(e); document.getElementById('hud').textContent='GLB error'; } })();
+          
+          // Helpers
+          window.find=(name)=>{ let out=null; if(!robot) return null; robot.traverse(n=>{ if(!out && n.name===name) out=n; }); return out; };
+          function headNode(){
+            if(!robot) return null;
+            let names=[];
+            try{ const parts=(SPEC?.parts||[]).filter(p=>p.category==='head');
+                 names = parts.flatMap(p=>[p.name,...(p.aliases||[])]).map(s=>String(s).toLowerCase()); }catch{}
+            let node=null;
+            robot.traverse(n=>{
+              if(node) return; const nm=(n.name||'').toLowerCase();
+              if(names.length ? names.includes(nm) : /head/.test(nm)) node=n;
+            });
+            return node;
+          }
+          
+          window.setSpec=(obj)=>{ SPEC=obj; };
+          window.applyPatch=(code)=>{ try{ Function('THREE','scene','camera','renderer','robot','find','headNode', code)
+          (THREE, scene, camera, renderer, robot, window.find, headNode); }catch(e){ console.error(e); } };
+          window.addEventListener('message', (e)=>{
+            if(!e.data) return;
+            if(e.data.type==='spec') window.setSpec(e.data.obj);
+            if(e.data.type==='patch') window.applyPatch(e.data.code);
+          }, false);
 
-const canvas=document.getElementById('c');
-let renderer; try{ renderer=new THREE.WebGLRenderer({canvas,antialias:true, powerPreference:'high-performance', failIfMajorPerformanceCaveat:false}); const ctx=renderer.getContext(); if(!ctx) throw new Error('no webgl2'); } catch(e){ const {WebGL1Renderer}=THREE; renderer=new WebGL1Renderer({canvas,antialias:true}); }
-const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0a1628);
-const camera=new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000); camera.position.set(2,1.2,3);
-scene.add(new THREE.HemisphereLight(0xffffff,0x333333,1)); const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(5,5,5); scene.add(dl);
-const ctl=new OrbitControls(camera, renderer.domElement);
-let robot=null; let SPEC=null; let _jumpStartY=null;
-// --- physics world ---
-const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -9.82, 0) });
-world.broadphase = new CANNON.SAPBroadphase(world);
-world.allowSleep = true;
-const groundBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane() });
-groundBody.quaternion.setFromEuler(-Math.PI/2, 0, 0);
-world.addBody(groundBody);
-let robotBody=null, robotHalfY=0; let onGround=false;
-function ground(o){ const b=new THREE.Box3().setFromObject(o); const c=b.getCenter(new THREE.Vector3()); o.position.sub(c); o.updateMatrixWorld(true); const b2=new THREE.Box3().setFromObject(o); o.position.y -= b2.min.y; o.updateMatrixWorld(true); o.userData.floorY = o.position.y; }
-const loader=new GLTFLoader();
-(async()=>{ try{ const res=await fetch('${GLB_ABS}'); if(!res.ok) throw new Error('HTTP '+res.status); const buf=await res.arrayBuffer(); loader.parse(buf,'',(g)=>{ robot=g.scene; scene.add(robot); ground(robot); window.robot=robot;
-  const bbox = new THREE.Box3().setFromObject(robot);
-  const sz = bbox.getSize(new THREE.Vector3());
-  robotHalfY = sz.y/2;
-  const shape = new CANNON.Box(new CANNON.Vec3(Math.max(0.01,sz.x/2), Math.max(0.01,sz.y/2), Math.max(0.01,sz.z/2)));
-  robotBody = new CANNON.Body({ mass: 2, shape, linearDamping: 0.02, angularDamping: 0.95 });
-  robotBody.position.set(0, robotHalfY, 0);
-  robotBody.allowSleep = true;
-  world.addBody(robotBody);
-  robotBody.addEventListener('collide', (e)=>{ if(e.body===groundBody) onGround=true; });
-}, (e)=>{ throw e; }); }catch(e){ console.error(e); document.getElementById('hud').textContent='GLB error'; } })();
-
-// Helpers
-window.find=(name)=>{ let out=null; if(!robot) return null; robot.traverse(n=>{ if(!out && n.name===name) out=n; }); return out; };
-function headNode(){
-  if(!robot) return null;
-  let names=[];
-  try{ const parts=(SPEC?.parts||[]).filter(p=>p.category==='head');
-       names = parts.flatMap(p=>[p.name,...(p.aliases||[])]).map(s=>String(s).toLowerCase()); }catch{}
-  let node=null;
-  robot.traverse(n=>{
-    if(node) return; const nm=(n.name||'').toLowerCase();
-    if(names.length ? names.includes(nm) : /head/.test(nm)) node=n;
-  });
-  return node;
-}
-
-window.setSpec=(obj)=>{ SPEC=obj; };
-window.applyPatch=(code)=>{ try{ Function('THREE','scene','camera','renderer','robot','find','headNode', code)(THREE, scene, camera, renderer, robot, window.find, headNode); }catch(e){ console.error(e); } };
-window.addEventListener('message', (e)=>{
-  if(!e.data) return;
-  if(e.data.type==='spec') window.setSpec(e.data.obj);
-  if(e.data.type==='patch') window.applyPatch(e.data.code);
-}, false);
-
-// physics-driven jump (impulse) — only if grounded
-window._jumpCount = 0;
-window.jump = (imp=5)=>{
-  if(robotBody && onGround){
-    onGround=false; robotBody.velocity.y = 0; robotBody.applyImpulse(new CANNON.Vec3(0, imp, 0), robotBody.position); _jumpStartY = robotBody.position.y;
-    const note = document.getElementById('note');
-    const m = robotBody.mass || 1; const g = 9.82; const v0 = imp / m; const h = (v0*v0)/(2*g);
-    window._jumpCount++;
-    if(window._jumpCount===1){
-      note.textContent = 'Physics: impulse → velocity. m='+m+'kg, J='+imp+' N·s ⇒ v₀≈'+v0.toFixed(2)+' m/s';
-    } else if(window._jumpCount===2){
-      note.textContent = '2nd jump: peak height ≈ v₀²/(2g) ≈ '+h.toFixed(2)+' m (g='+g+' m/s²)';
-    } else if(window._jumpCount===3){
-      note.textContent = '3rd jump: takeoff v₀≈'+v0.toFixed(2)+' m/s; current vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
-    } else {
-      note.textContent = 'Jump #'+window._jumpCount+' — vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
-    }
-    note.style.opacity = 1; clearTimeout(window._noteHide);
-    window._noteHide = setTimeout(()=> note.style.opacity=0, 1800);
-  }
-};
+      // physics-driven jump (impulse) — only if grounded
+      window._jumpCount = 0;
+      window.jump = (imp=5)=>{
+        if(robotBody && onGround){
+          onGround=false; robotBody.velocity.y = 0; robotBody.applyImpulse(new CANNON.Vec3(0, imp, 0), robotBody.position); _jumpStartY = robotBody.position.y;
+          const note = document.getElementById('note');
+          const m = robotBody.mass || 1; const g = 9.82; const v0 = imp / m; const h = (v0*v0)/(2*g);
+          window._jumpCount++;
+          if(window._jumpCount===1){
+            note.textContent = 'Physics: impulse → velocity. m='+m+'kg, J='+imp+' N·s ⇒ v₀≈'+v0.toFixed(2)+' m/s';
+          } else if(window._jumpCount===2){
+            note.textContent = '2nd jump: peak height ≈ v₀²/(2g) ≈ '+h.toFixed(2)+' m (g='+g+' m/s²)';
+          } else if(window._jumpCount===3){
+            note.textContent = '3rd jump: takeoff v₀≈'+v0.toFixed(2)+' m/s; current vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
+          } else {
+            note.textContent = 'Jump #'+window._jumpCount+' — vᵧ='+robotBody.velocity.y.toFixed(2)+' m/s';
+          }
+          note.style.opacity = 1; clearTimeout(window._noteHide);
+          window._noteHide = setTimeout(()=> note.style.opacity=0, 1800);
+        }
+      };
 // reset to podium center
 window.resetPose = ()=>{
   if(!robot || !robotBody) return;
