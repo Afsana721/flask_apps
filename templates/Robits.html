@@ -1003,48 +1003,48 @@
               <section class="side">
                 <div class="hint">Head map in use (you can edit, optional).</div>
                 <textarea id="specJson">{
-  "infer_rules": {
-    "side_hints_left": ["Left", "L", "_L", ".L", "-L"],
-    "side_hints_right": ["Right", "R", "_R", ".R", "-R"],
-    "fallback_by_position_x": "x < 0 => L, x > 0 => R",
-    "length_basis": "bbox_longest_axis_mm"
-  },
-  "parts": [
-    { "name": "Head",  "category": "head",  "side": null, "length_mm": null },
-    { "name": "Neck",  "category": "neck",  "side": null, "length_mm": null },
-    { "name": "Torso", "category": "torso", "side": null, "length_mm": null },
-
-    { "name": "UpperArm_L", "aliases": ["LeftArm","Arm.L","L_Arm"], "category": "arm_upper",  "side": "L", "length_mm": null },
-    { "name": "Forearm_L",  "aliases": ["LeftForearm","Forearm.L"], "category": "arm_lower",  "side": "L", "length_mm": null },
-    { "name": "Hand_L",     "aliases": ["LeftHand","Hand.L"],       "category": "hand",       "side": "L", "length_mm": null },
-
-    { "name": "Finger_L_Thumb",  "aliases": ["Thumb.L"],  "category": "finger", "side": "L", "digit": "thumb",  "length_mm": null },
-    { "name": "Finger_L_Index",  "aliases": ["Index.L"],  "category": "finger", "side": "L", "digit": "index",  "length_mm": null },
-    { "name": "Finger_L_Middle", "aliases": ["Middle.L"], "category": "finger", "side": "L", "digit": "middle", "length_mm": null },
-    { "name": "Finger_L_Ring",   "aliases": ["Ring.L"],   "category": "finger", "side": "L", "digit": "ring",   "length_mm": null },
-    { "name": "Finger_L_Pinky",  "aliases": ["Pinky.L"],  "category": "finger", "side": "L", "digit": "pinky",  "length_mm": null },
-
-    { "name": "UpperArm_R", "aliases": ["RightArm","Arm.R","R_Arm"], "category": "arm_upper",  "side": "R", "length_mm": null },
-    { "name": "Forearm_R",  "aliases": ["RightForearm","Forearm.R"], "category": "arm_lower",  "side": "R", "length_mm": null },
-    { "name": "Hand_R",     "aliases": ["RightHand","Hand.R"],       "category": "hand",       "side": "R", "length_mm": null },
-
-    { "name": "Finger_R_Thumb",  "aliases": ["Thumb.R"],  "category": "finger", "side": "R", "digit": "thumb",  "length_mm": null },
-    { "name": "Finger_R_Index",  "aliases": ["Index.R"],  "category": "finger", "side": "R", "digit": "index",  "length_mm": null },
-    { "name": "Finger_R_Middle", "aliases": ["Middle.R"], "category": "finger", "side": "R", "digit": "middle", "length_mm": null },
-    { "name": "Finger_R_Ring",   "aliases": ["Ring.R"],   "category": "finger", "side": "R", "digit": "ring",   "length_mm": null },
-    { "name": "Finger_R_Pinky",  "aliases": ["Pinky.R"],  "category": "finger", "side": "R", "digit": "pinky",  "length_mm": null },
-
-    { "name": "Thigh_L", "aliases": ["LeftUpLeg","Thigh.L"], "category": "leg_upper", "side": "L", "length_mm": null },
-    { "name": "Calf_L",  "aliases": ["LeftLeg","Calf.L"],    "category": "leg_lower", "side": "L", "length_mm": null },
-    { "name": "Foot_L",  "aliases": ["LeftFoot","Foot.L"],   "category": "foot",      "side": "L", "length_mm": null },
-    { "name": "Toe_L",   "aliases": ["LeftToe","Toe.L"],     "category": "toe",       "side": "L", "length_mm": null },
-
-    { "name": "Thigh_R", "aliases": ["RightUpLeg","Thigh.R"], "category": "leg_upper", "side": "R", "length_mm": null },
-    { "name": "Calf_R",  "aliases": ["RightLeg","Calf.R"],    "category": "leg_lower", "side": "R", "length_mm": null },
-    { "name": "Foot_R",  "aliases": ["RightFoot","Foot.R"],   "category": "foot",      "side": "R", "length_mm": null },
-    { "name": "Toe_R",   "aliases": ["RightToe","Toe.R"],     "category": "toe",       "side": "R", "length_mm": null }
-  ]
-}</textarea>
+                  "infer_rules": {
+                    "side_hints_left": ["Left", "L", "_L", ".L", "-L"],
+                    "side_hints_right": ["Right", "R", "_R", ".R", "-R"],
+                    "fallback_by_position_x": "x < 0 => L, x > 0 => R",
+                    "length_basis": "bbox_longest_axis_mm"
+                  },
+                  "parts": [
+                    { "name": "Head",  "category": "head",  "side": null, "length_mm": null },
+                    { "name": "Neck",  "category": "neck",  "side": null, "length_mm": null },
+                    { "name": "Torso", "category": "torso", "side": null, "length_mm": null },
+                
+                    { "name": "UpperArm_L", "aliases": ["LeftArm","Arm.L","L_Arm"], "category": "arm_upper",  "side": "L", "length_mm": null },
+                    { "name": "Forearm_L",  "aliases": ["LeftForearm","Forearm.L"], "category": "arm_lower",  "side": "L", "length_mm": null },
+                    { "name": "Hand_L",     "aliases": ["LeftHand","Hand.L"],       "category": "hand",       "side": "L", "length_mm": null },
+                
+                    { "name": "Finger_L_Thumb",  "aliases": ["Thumb.L"],  "category": "finger", "side": "L", "digit": "thumb",  "length_mm": null },
+                    { "name": "Finger_L_Index",  "aliases": ["Index.L"],  "category": "finger", "side": "L", "digit": "index",  "length_mm": null },
+                    { "name": "Finger_L_Middle", "aliases": ["Middle.L"], "category": "finger", "side": "L", "digit": "middle", "length_mm": null },
+                    { "name": "Finger_L_Ring",   "aliases": ["Ring.L"],   "category": "finger", "side": "L", "digit": "ring",   "length_mm": null },
+                    { "name": "Finger_L_Pinky",  "aliases": ["Pinky.L"],  "category": "finger", "side": "L", "digit": "pinky",  "length_mm": null },
+                
+                    { "name": "UpperArm_R", "aliases": ["RightArm","Arm.R","R_Arm"], "category": "arm_upper",  "side": "R", "length_mm": null },
+                    { "name": "Forearm_R",  "aliases": ["RightForearm","Forearm.R"], "category": "arm_lower",  "side": "R", "length_mm": null },
+                    { "name": "Hand_R",     "aliases": ["RightHand","Hand.R"],       "category": "hand",       "side": "R", "length_mm": null },
+                
+                    { "name": "Finger_R_Thumb",  "aliases": ["Thumb.R"],  "category": "finger", "side": "R", "digit": "thumb",  "length_mm": null },
+                    { "name": "Finger_R_Index",  "aliases": ["Index.R"],  "category": "finger", "side": "R", "digit": "index",  "length_mm": null },
+                    { "name": "Finger_R_Middle", "aliases": ["Middle.R"], "category": "finger", "side": "R", "digit": "middle", "length_mm": null },
+                    { "name": "Finger_R_Ring",   "aliases": ["Ring.R"],   "category": "finger", "side": "R", "digit": "ring",   "length_mm": null },
+                    { "name": "Finger_R_Pinky",  "aliases": ["Pinky.R"],  "category": "finger", "side": "R", "digit": "pinky",  "length_mm": null },
+                
+                    { "name": "Thigh_L", "aliases": ["LeftUpLeg","Thigh.L"], "category": "leg_upper", "side": "L", "length_mm": null },
+                    { "name": "Calf_L",  "aliases": ["LeftLeg","Calf.L"],    "category": "leg_lower", "side": "L", "length_mm": null },
+                    { "name": "Foot_L",  "aliases": ["LeftFoot","Foot.L"],   "category": "foot",      "side": "L", "length_mm": null },
+                    { "name": "Toe_L",   "aliases": ["LeftToe","Toe.L"],     "category": "toe",       "side": "L", "length_mm": null },
+                
+                    { "name": "Thigh_R", "aliases": ["RightUpLeg","Thigh.R"], "category": "leg_upper", "side": "R", "length_mm": null },
+                    { "name": "Calf_R",  "aliases": ["RightLeg","Calf.R"],    "category": "leg_lower", "side": "R", "length_mm": null },
+                    { "name": "Foot_R",  "aliases": ["RightFoot","Foot.R"],   "category": "foot",      "side": "R", "length_mm": null },
+                    { "name": "Toe_R",   "aliases": ["RightToe","Toe.R"],     "category": "toe",       "side": "R", "length_mm": null }
+                  ]
+                }</textarea>
                 <textarea id="patch" placeholder="// JS patch to run inside viewer
 // Example: const h=headNode(); if(h) h.rotation.y+=0.15;"></textarea>
                 <div class="row">
@@ -1060,7 +1060,7 @@
 
             <script>
               const iframe = document.getElementById('preview');
-              const GLB_ABS = location.origin + '/static/alien2.glb';
+              const GLB_ABS = location.origin + '/static/alien1.glb';
 
               // --- Viewer HTML (iframe) ---
               const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
