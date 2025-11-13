@@ -595,8 +595,6 @@
           </script>
 
           <!-- DOM Canvas Hook end with script -->
-
-
           <div id="three-accordion" class="w-full col-span-full grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Scene & Camera -->
             <div class="p-4 rounded-lg bg-gray-900 border border-gray-800 hover:border-sky-500/40 transition h-full"
@@ -677,42 +675,42 @@
             })();
           </script>
           <pre class="mt-6 text-xs bg-gray-950/80 text-gray-200 p-4 rounded-lg border border-gray-800 overflow-auto">
-    <code>// Minimal DOM-driven setup (paste your own models later)
-    const root = document.getElementById('threejs-canvas');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, root.clientWidth / root.clientHeight, 0.1, 100);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(root.clientWidth, root.clientHeight);
-    root.appendChild(renderer.domElement);
-
-    // add something to see
-    const box = new THREE.Mesh(
-      new THREE.BoxGeometry(1,1,1),
-      new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6, color: 0x22aaff })
-    );
-    scene.add(box);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const key = new THREE.DirectionalLight(0xffffff, 0.8); key.position.set(2,2,2); scene.add(key);
-
-    camera.position.set(2,1.5,3); camera.lookAt(0,0,0);
-
-    function onResize(){
-      const { clientWidth:w, clientHeight:h } = root;
-      renderer.setSize(w, h);
-      camera.aspect = w/h; camera.updateProjectionMatrix();
-    }
-    window.addEventListener('resize', onResize);
-
-    // basic loop
-    const clock = new THREE.Clock();
-    (function animate(){
-      const t = clock.getElapsedTime();
-      box.rotation.set(t*0.4, t*0.6, 0);
-      renderer.render(scene, camera);
-      requestAnimationFrame(animate);
-    })();
-    </code>
-  </pre>
+            <code>// Minimal DOM-driven setup (paste your own models later)
+            const root = document.getElementById('threejs-canvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(60, root.clientWidth / root.clientHeight, 0.1, 100);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(root.clientWidth, root.clientHeight);
+            root.appendChild(renderer.domElement);
+        
+            // add something to see
+            const box = new THREE.Mesh(
+              new THREE.BoxGeometry(1,1,1),
+              new THREE.MeshStandardMaterial({ metalness: 0.2, roughness: 0.6, color: 0x22aaff })
+            );
+            scene.add(box);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const key = new THREE.DirectionalLight(0xffffff, 0.8); key.position.set(2,2,2); scene.add(key);
+        
+            camera.position.set(2,1.5,3); camera.lookAt(0,0,0);
+        
+            function onResize(){
+              const { clientWidth:w, clientHeight:h } = root;
+              renderer.setSize(w, h);
+              camera.aspect = w/h; camera.updateProjectionMatrix();
+            }
+            window.addEventListener('resize', onResize);
+        
+            // basic loop
+            const clock = new THREE.Clock();
+            (function animate(){
+              const t = clock.getElapsedTime();
+              box.rotation.set(t*0.4, t*0.6, 0);
+              renderer.render(scene, camera);
+              requestAnimationFrame(animate);
+            })();
+            </code>
+        </pre>
 
           <!-- <p class="text-[11px] text-gray-500 mt-3">Tip: the renderer’s <span class="text-sky-300">domElement</span> is
             just a canvas—append it wherever you want in your layout.</p> -->
@@ -759,38 +757,44 @@
             <div class="space-y-3">
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Bind to DOM</h4>
-                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// Mount anywhere in your app
-const mount = document.querySelector('[data-3d="hero"]');
-mount.appendChild(renderer.domElement);
-// Toggle visibility via DOM
-mount.classList.toggle('hidden');
-</code></pre>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto">
+                  <code>// Mount anywhere in your app
+                    const mount = document.querySelector('[data-3d="hero"]');
+                    mount.appendChild(renderer.domElement);
+                    // Toggle visibility via DOM
+                    mount.classList.toggle('hidden');
+                  </code>
+                </pre>
               </div>
 
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Click to Select (Raycaster)</h4>
-                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>const ray = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-renderer.domElement.addEventListener('pointerdown', (e)=>{
-  const rect = renderer.domElement.getBoundingClientRect();
-  mouse.x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
-  mouse.y = -((e.clientY - rect.top)/rect.height) * 2 + 1;
-  ray.setFromCamera(mouse, camera);
-  const hits = ray.intersectObjects(scene.children, true);
-  if(hits[0]) hits[0].object.material.emissive.setHex(0x2299ff);
-});
-</code></pre>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto">
+                  <code>const ray = new THREE.Raycaster();
+                    const mouse = new THREE.Vector2();
+                    
+                    renderer.domElement.addEventListener('pointerdown', (e)=>{
+                      const rect = renderer.domElement.getBoundingClientRect();
+                      mouse.x = ((e.clientX - rect.left)/rect.width) * 2 - 1;
+                      mouse.y = -((e.clientY - rect.top)/rect.height) * 2 + 1;
+                      ray.setFromCamera(mouse, camera);
+                      const hits = ray.intersectObjects(scene.children, true);
+                      if(hits[0]) hits[0].object.material.emissive.setHex(0x2299ff);
+                    });
+                  </code>
+                </pre>
               </div>
 
               <div class="p-4 rounded-lg bg-gray-900 border border-gray-800">
                 <h4 class="text-gray-100 font-semibold">Load a GLB (Models)</h4>
-                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto"><code>// assumes GLTFLoader is included
-const loader = new THREE.GLTFLoader();
-loader.load('/static/models/yourModel.glb', (gltf)=>{
-  const model = gltf.scene; scene.add(model);
-});
-</code></pre>
+                <pre class="text-xs text-gray-200 mt-2 p-3 bg-gray-950/80 rounded border border-gray-800 overflow-auto">
+                  <code>// assumes GLTFLoader is included
+                    const loader = new THREE.GLTFLoader();
+                    loader.load('/static/alien1.glb', (gltf)=>{
+                      const model = gltf.scene; scene.add(model);
+                    });
+                  </code>
+                </pre>
               </div>
             </div>
           </div>
@@ -802,7 +806,6 @@ loader.load('/static/models/yourModel.glb', (gltf)=>{
         </div>
       </section>
 
-      <!-- Cannon.js — Physics (Section) -->
       <!-- Cannon.js — Physics (Section) -->
       <section id="cannon" class="py-16 bg-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
