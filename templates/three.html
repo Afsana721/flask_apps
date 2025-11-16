@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three.js Learning Canvas</title>
+
+    <!-- Google Font --><link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap"
+      rel="stylesheet"/>
+
+    <!-- Tailwind CSS CDN --><script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+          'Segoe UI', sans-serif;
+        background: #0d0d0d;
+      }
+      canvas {
+        display: block;
+      }
+      #scene-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #ui-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #loading-indicator {
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        color: white; 
+        background: rgba(0,0,0,0.6); 
+        padding: 10px 20px; 
+        border-radius: 8px; 
+        z-index: 10;
+        font-weight: bold;
+      }
+      @keyframes navGlow {
+        0% { box-shadow: 0 0 0 rgba(16,185,129,0.0); border-color: rgba(16,185,129,0.4); }
+        50% { box-shadow: 0 0 24px rgba(56,189,248,0.7); border-color: rgba(56,189,248,0.85); }
+        100% { box-shadow: 0 0 0 rgba(16,185,129,0.0); border-color: rgba(16,185,129,0.4); }
+      }
+      .nav-glow-border {
+        animation: navGlow 6s ease-in-out infinite;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+          "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-900 text-slate-100">
+    
+      <!-- Top navigation bar -->
+       <nav class="w-full flex items-center justify-between px-10 py-4 bg-slate-900 border-b border-slate-700 shadow-sm mb-10">
+  <div class="flex items-center gap-4">
+    <img src="static/apticraft.png" class="w-10 h-10 object-contain drop-shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+
+    <span class="text-3xl font-bold tracking-wide bg-gradient-to-r from-emerald-300 via-cyan-300 to-purple-400 bg-clip-text text-transparent">
+      AptiCraft
+    </span>
+
+    <span class="ml-6 text-xl font-semibold text-slate-300 tracking-wide">
+      Three.js Inside
+    </span>
+  </div>
+
+  <div class="flex items-center gap-8 text-base">
+    <a href="index.html" class="relative text-slate-200 hover:text-emerald-300 transition-colors duration-300">
+      ← Home
+    </a>
+  </div>
+</nav>
+
+    <!-- MAIN CONTENT WRAPPER -->
+     <main class="w-full h-[95vh] p-4 flex flex-col items-center">
+
+      <!-- SIMULATION SECTION (Now constrained width and centered) -->
+       <div class="w-full max-w-7xl h-full border border-slate-700 rounded-xl overflow-hidden shadow-2xl">
+          <div id="scene-container">
+            <div id="ui-overlay" class="flex flex-col items-center justify-between p-8">
+              <h1 class="text-blue-300 text-3xl font-bold tracking-wider opacity-90">
+                3D Abstract Studio
+              </h1>
+            </div>
+          </div>
+      </div>
+
+    </main>
+      
+    <!-- Simulation Summary (clean text) -->
+     <div class="px-10 mt-6 mb-6 p-4 bg-slate-900/60 border border-slate-700/70 rounded-xl shadow-lg w-full max-w-7xl mx-auto">
+      <h3 class="text-lg font-semibold text-slate-200">Simulation Summary</h3>
+      <p class="text-sm md:text-base text-slate-300 mt-2 leading-relaxed">
+        For this simulation we use a main scene that holds the world, camera, lights, and all visible objects. A second hidden scene is used only as a mask layer so we can cut, blend, or reveal areas such as special effects or zombie layers using its alpha channel. The simulation uses a main scene for the world, camera, lights, and meshes. A hidden mask scene can be used only if we need to blend or reveal effects through alpha. Shadows stay consistent across everything by enabling <code>renderer.shadowMap.enabled = true;</code>, so the lighting remains stable and realistic.
+      </p>
+
+      <!-- Import Explanation -->
+       <div class="mt-6 pt-4 border-t border-slate-700/60">
+        <p class="text-sm md:text-base leading-relaxed text-slate-300">
+          <span class="text-green-300 font-bold">import * as <span class='text-emerald-300'>THREE</span></span> brings in the full Three.js engine — the core classes like Scene, Camera, Mesh, Geometry, Materials, and Lights that build the 3D world. <br/><br/>
+          <span class="text-sky-300 font-bold"><!-- TSL removed because CDN/Flask cannot load node materials --><br/><br/>
+          <span class="text-purple-300 font-bold">import { <span class='text-purple-300'>OrbitControls</span> }</span> gives camera rotation, zoom, and panning to explore the scene interactively.
+        </p>
+      </div>
+    </div>
+
+    <!-- Now start the Three.js Practice Playground text -->
+     <header class="text-left w-full mt-10 px-10 max-w-7xl mx-auto">
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 text-left">
+          Three.js Practice Playground
+        </h1>
+        <p class="text-sm md:text-base text-slate-300 text-left">
+          Three.js is a JavaScript library for creating 3D graphics in the browser
+          using WebGL. WebGL is a JavaScript API that gives access to the GPU
+          for fast 2D/3D rendering.
+          <br/><br/>
+          Three.js is a JavaScript library that uses modern ES6 classes instead of
+          older function prototypes. That means it defines objects and structures in
+          a class-based format.
+        </p>
+
+        <h3 class="text-lg font-semibold mt-4 text-left text-slate-200">How it built its library</h3>
+        <p class="text-sm md:text-base text-slate-300 text-left mt-1">
+          Three.js uses ES6 (ECMAScript 6) classes to build its library, so each feature is a class
+          with its own constructor and extendable structure. This makes it easy to inherit behavior,
+          reuse logic, and work with clean, modern class-based architecture.
+        </p>
+
+        <p class="text-sm md:text-base text-left mt-3 text-blue-300 font-semibold">
+          <span class="font-bold">Note:</span> In short, Three.js is often mistaken for WebGL itself, but it’s actually a higher-level library that makes using WebGL much easier. Instead of writing all the low-level code yourself to handle scenes, lights, and materials, Three.js does that heavy lifting for you on top of WebGL.
+        </p>
+              <h3 class="text-lg font-semibold mt-16 text-left text-slate-200">How Three.js uses its underlying data structure</h3>
+        <p class="text-sm md:text-base text-slate-300 text-left mt-1">
+          Here is a simple example showing how Three.js structures parts of its system using ES6 classes.
+          This example wraps the WebGLRenderer inside a class so you can see how a renderer instance
+          can be created from any method whenever needed.
+        </p>
+        <pre class="text-xs md:text-sm bg-gray-900 border border-gray-600 rounded-lg p-4 mt-2 text-green-300 font-mono shadow-inner">
+            class Tree {
+              createRenderer() {
+                return new THREE.WebGLRenderer();
+              }
+            }
+
+            const myTree = new Tree();
+            const renderer = myTree.createRenderer();
+        </pre>
+        <p class="text-sm md:text-base text-slate-300 text-left mt-3">
+          In the structure above, the <span class="font-mono">WebGLRenderer</span> is the main object: you give it a
+          <span class="font-mono">Scene</span> and a <span class="font-mono">Camera</span>, and it renders the visible part
+          of the 3D world to a canvas.
+          <br/><br/>
+          The scenegraph is a tree of objects such as <span class="font-mono">Scene</span>, <span class="font-mono">Object3D</span>,
+          <span class="font-mono">Group</span>, <span class="font-mono">Mesh</span>, <span class="font-mono">Light</span>, and
+          <span class="font-mono">Camera</span>. Children move and rotate with their parent (for example, wheels as children
+          of a car object).
+          <br/><br/>
+          A <span class="font-mono">Mesh</span> combines a <span class="font-mono">Geometry</span> (vertex data) and a
+          <span class="font-mono">Material</span> (surface look, often with a <span class="font-mono">Texture</span> image),
+          while different <span class="font-mono">Light</span> objects control how everything is lit.
+        </p>
+        <p class="text-sm md:text-base text-left mt-4 text-blue-300 font-semibold">
+          <span class="font-bold text-emerald-300">Renderer</span> – takes a <span class="font-mono">Scene</span> and a <span class="font-mono">Camera</span> and draws the visible part onto a canvas.
+          <br/><br/>
+          <span class="font-bold text-indigo-300">Scenegraph</span> – a tree of <span class="font-mono">Scene</span>, <span class="font-mono">Object3D</span>, <span class="font-mono">Group</span>, <span class="font-mono">Mesh</span>, <span class="font-mono">Light</span>, and <span class="font-mono">Camera</span>. Children follow their parent’s movement.
+          <br/><br/>
+          <span class="font-bold text-pink-300">Mesh</span> – made of <span class="font-mono">Geometry</span> + <span class="font-mono">Material</span>. You can reuse one geometry and one material for many meshes.
+          <br/><br/>
+          <span class="font-bold text-yellow-300">Geometry</span> – holds vertex data (cube, sphere, model, etc).
+          <br/><br/>
+          <span class="font-bold text-cyan-300">Material</span> – defines surface look (color, shine) and can use <span class="font-mono">Texture</span> images.
+          <br/><br/>
+          <span class="font-bold text-orange-300">Light</span> – different light objects illuminate everything.
+        </p>
+        <h3 class="text-lg font-semibold mt-20 text-left text-slate-200">From code to scene</h3>
+        <pre class="text-xs md:text-sm bg-gray-900 border border-gray-600 rounded-lg p-4 mt-2 text-green-300 font-mono shadow-inner">
+        const renderer = new THREE.WebGLRenderer({ canvas });
+        const camera   = new THREE.PerspectiveCamera(75, 2, 0.1, 5);
+        const scene    = new THREE.Scene();
+        
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+        const cube     = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+        
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        light.position.set(-1, 2, 4);
+        scene.add(light);
+        
+        function render(time) {
+          cube.rotation.x = time * 0.001;
+          cube.rotation.y = time * 0.001;
+          renderer.render(scene, camera);
+          requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render);
+        </pre>
+        <p class="text-sm md:text-base text-slate-300 text-left mt-3">
+          This code shows the full data path: we create a <span class="font-mono">Renderer</span>,
+          <span class="font-mono">Camera</span>, and <span class="font-mono">Scene</span>, then add a
+          <span class="font-mono">Mesh</span> (geometry + material) and a
+          <span class="font-mono">DirectionalLight</span>. In the loop we rotate the cube and ask the
+          renderer to draw the scene from the camera.
+        </p>
+        <div class="mt-20 w-full bg-slate-900/70 border border-slate-700 rounded-2xl p-6 space-y-8 shadow-xl">
+          <!-- Structure diagram --><div class="space-y-3">
+            <img src="https://threejs.org/manual/resources/images/threejs-structure.svg"
+              alt="Three.js class structure illustration"
+              class="w-1/2 mx-auto block rounded-xl bg-slate-950/70 border border-slate-700/80 shadow-lg object-contain p-4"/>
+            <pre class="text-xs md:text-sm bg-gray-900 border border-gray-600 rounded-lg p-4 text-green-300 font-mono shadow-inner overflow-x-auto">
+                    const renderer = new THREE.WebGLRenderer({ canvas });
+                    const scene    = new THREE.Scene();
+                    const camera   = new THREE.PerspectiveCamera(60, 2, 0.1, 100);
+
+                    // Scenegraph root
+                    //  Scene
+                    //    ├─ Mesh (Geometry + Material)
+                    //    ├─ Light
+                    //    └─ Camera
+            </pre>
+          </div>
+
+          <!-- One cube + directional light --><div class="space-y-3">
+            <img
+              src="https://threejs.org/manual/resources/images/threejs-1cube-with-directionallight.svg"
+              alt="One cube with directional light"
+              class="w-1/2 mx-auto block rounded-xl bg-slate-950/70 border border-slate-700/80 shadow-lg object-contain p-4"/>
+            <pre class="text-xs md:text-sm bg-gray-900 border border-gray-600 rounded-lg p-4 text-green-300 font-mono shadow-inner overflow-x-auto">
+                const geometry = new THREE.BoxGeometry(1, 1, 1);
+                const material = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+                const cube     = new THREE.Mesh(geometry, material);
+                scene.add(cube);
+
+                const light = new THREE.DirectionalLight(0xffffff, 3);
+                light.position.set(-1, 2, 4);
+                scene.add(light);
+            </pre>
+          </div>
+
+          <!-- Three cubes sharing geometry + material --><div class="space-y-3">
+            <img
+              src="https://threejs.org/manual/resources/images/threejs-3cubes-scene.svg"
+              alt="Three cubes scene"
+              class="w-1/2 mx-auto block rounded-xl bg-slate-950/70 border border-slate-700/80 shadow-lg object-contain p-4"/>
+            <pre class="text-xs md:text-sm bg-gray-900 border border-gray-600 rounded-lg p-4 text-green-300 font-mono shadow-inner overflow-x-auto">
+                    const sharedGeometry = new THREE.BoxGeometry(1, 1, 1);
+                    const sharedMaterial = new THREE.MeshPhongMaterial({ color: 0x2196f3 });
+
+                    [-2, 0, 2].forEach((x) => {
+                    const mesh = new THREE.Mesh(sharedGeometry, sharedMaterial);
+                    mesh.position.x = x;
+                    scene.add(mesh);
+                    });
+            </pre>
+          </div>
+        </div>
+       
+      </header>
+      <div class="h-6 w-full"></div>
+     
+    
+    <!-- Three.js Studio Environment -->
+     <script type="module">
+      import * as THREE from 'three';
+      import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+      import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+
+      let scene, camera, renderer, controls;
+      let mainObject = new THREE.Object3D();
+      let mixer;
+      const clock = new THREE.Clock();
+
+      let pulsatingLight; // For the flashing effect
+
+      const modelUrl = 'https://corsproxy.io/?https://drive.google.com/uc?export=download&id=1LBmK_Mx5TfXU1z7XJEhRHRU3FF_fikXQ';
+
+      function setupRenderer() {
+        const container = document.getElementById('scene-container');
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+      }
+
+      function setupCameraAndControls() {
+        const container = document.getElementById('scene-container');
+        camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 3, 5);
+        camera.lookAt(0, 1.5, 0);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.minDistance = 2;
+        controls.maxDistance = 15;
+        controls.target.set(0, 1.5, 0);
+        controls.update();
+      }
+
+      function setupSceneAndLighting() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a1a); // Darker background to make flashes more visible
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7); // Slightly reduced as other lights are more prominent
+        scene.add(ambientLight);
+
+        // Key Spotlight (White)
+        const spotLight = new THREE.SpotLight(0xffffff, 60, 15, Math.PI / 8, 0.5, 2);
+        spotLight.position.set(2, 8, 5);
+        spotLight.target.position.set(0, 1.5, 0);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        spotLight.shadow.camera.near = 1;
+        spotLight.shadow.camera.far = 20;
+        scene.add(spotLight);
+        scene.add(spotLight.target);
+
+        // Pulsating/Flashing Spotlight (Blue)
+        pulsatingLight = new THREE.SpotLight(0x00aaff, 30, 10, Math.PI / 10, 0.7, 1);
+        pulsatingLight.position.set(-5, 7, -2);
+        pulsatingLight.target.position.set(0, 1.5, 0);
+        scene.add(pulsatingLight);
+        scene.add(pulsatingLight.target);
+
+        // Colored Fill Light (Green)
+        const fillLight = new THREE.DirectionalLight(0x00ff7f, 3); // Greenish fill
+        fillLight.position.set(25, 25, -25);
+        scene.add(fillLight);
+        
+        // Rim Light 1 (Purple) - creates outline
+        const rimLight1 = new THREE.PointLight(0x5b92e5, 5, 10);
+        rimLight1.position.set(-3, 4, -4);
+        scene.add(rimLight1);
+
+        // Rim Light 2 (Orange) - creates outline
+        const rimLight2 = new THREE.PointLight(0xffff00 , 25, 40);
+        rimLight2.position.set(3, 4, -4);
+        scene.add(rimLight2);
+
+        // Hemisphere Light (for overall softer light, slightly stronger)
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x00ffff, 1.8);
+        scene.add(hemiLight);
+      }
+
+      function setupEnvironment() {
+        const floorGeometry = new THREE.PlaneGeometry(30, 30);
+        const floorMaterial = new THREE.MeshPhongMaterial({
+          color: 0x7b33ff, // Darker floor to contrast with model and lights
+          side: THREE.FrontSide,
+          specular: 0x7bffff, // More specular for floor reflections
+          shininess: 50 // Shinier floor
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.position.y = 0;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const cycloramaGeometry = new THREE.CylinderGeometry(15, 15, 15, 64, 1, false, 0, Math.PI);
+        const cycloramaMaterial = new THREE.MeshPhongMaterial({
+          color: 0x434b65, // Darker wall for contrast
+          side: THREE.BackSide,
+          specular: 0xa7adba,
+          shininess: 50
+        });
+        const cyclorama = new THREE.Mesh(cycloramaGeometry, cycloramaMaterial);
+        cyclorama.position.set(0, 7.5, 0);
+        cyclorama.rotation.y = Math.PI / 2;
+        scene.add(cyclorama);
+      }
+
+      async function loadModel() {
+        const container = document.getElementById('scene-container');
+        const loadingDiv = document.createElement('div');
+        loadingDiv.textContent = 'Loading 3D Model...';
+        loadingDiv.id = 'loading-indicator';
+        container.appendChild(loadingDiv);
+
+        try {
+          const fbxLoader = new FBXLoader();
+          const model = await fbxLoader.loadAsync(modelUrl, (xhr) => {
+            if (xhr.total) {
+              const percentage = Math.round((xhr.loaded / xhr.total) * 100);
+              loadingDiv.textContent = `Loading 3D Model: ${percentage}%`;
+            }
+          });
+
+          mainObject = model;
+          mainObject.scale.setScalar(0.018);
+          mainObject.position.y = 0;
+
+          mainObject.traverse((c) => {
+            if (c.isMesh) {
+              c.castShadow = true;
+              c.receiveShadow = true;
+              // Enhance material properties for better highlights/flashes
+              if (c.material) {
+                if (Array.isArray(c.material)) {
+                  c.material.forEach(m => {
+                    if (m.isMeshPhongMaterial || m.isMeshStandardMaterial) {
+                      m.specular = new THREE.Color(0xffffff); // White specular for strong highlights
+                      m.shininess = 100; // Increase shininess
+                      m.needsUpdate = true;
+                    }
+                  });
+                } else if (c.material.isMeshPhongMaterial || c.material.isMeshStandardMaterial) {
+                  c.material.specular = new THREE.Color(0xffffff); // White specular for strong highlights
+                  c.material.shininess = 150; // Increase shininess
+                  c.material.needsUpdate = true;
+                }
+              }
+            }
+          });
+
+          mixer = new THREE.AnimationMixer(mainObject);
+          if (mainObject.animations && mainObject.animations.length > 0) {
+            const action = mixer.clipAction(mainObject.animations[0]);
+            action.play();
+          }
+
+          scene.add(mainObject);
+
+          controls.target.set(mainObject.position.x, mainObject.position.y + 1.5, mainObject.position.z);
+          controls.update();
+        } catch (error) {
+          console.error('Failed to load FBX model:', error);
+          loadingDiv.textContent = 'Error loading model. Check console (CORS or file issue).';
+          return false;
+        } finally {
+          loadingDiv.remove();
+        }
+        return true;
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        controls.update();
+        const delta = clock.getDelta();
+        const elapsedTime = clock.getElapsedTime(); // Get total elapsed time
+
+        mainObject.rotation.y += 0.005;
+
+        // Pulsating light effect
+        if (pulsatingLight) {
+          pulsatingLight.intensity = 30 + Math.sin(elapsedTime * 3) * 15; // Pulsates between 15 and 45
+        }
+
+        if (mixer) {
+          mixer.update(delta);
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      function onWindowResize() {
+        const container = document.getElementById('scene-container');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+      }
+
+      async function main() {
+        setupRenderer();
+        setupCameraAndControls();
+        setupSceneAndLighting();
+        setupEnvironment();
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        const modelLoaded = await loadModel();
+        if (modelLoaded) {
+          animate();
+        }
+      }
+      main();
+    </script>
+    <!-- Footer (Updated Tailwind Styled) -->
+  <footer class="w-full bg-[#0d0f12] border-t border-slate-800/70 mt-20">
+  <div class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-10">
+
+    <!-- LEFT: Brand -->
+    <div class="space-y-2">
+      <h2 class="text-2xl font-extrabold tracking-wide text-emerald-300">AptiCraft</h2>
+      <p class="text-sm text-slate-400 font-medium">Full Stack Development</p>
+    </div>
+
+    <!-- EMPTY CENTER FOR BALANCE -->
+    <div></div>
+
+    <!-- RIGHT: Developer Info -->
+    <div class="space-y-3">
+      <h3 class="text-base font-semibold text-emerald-300">Connect with the Developer</h3>
+      <ul class="space-y-2 text-[13px] text-slate-300">
+        <li>
+          <span class="font-medium text-slate-100">Website:</span>
+          <a href="https://flask-apps-e45a.onrender.com" class="hover:text-emerald-300 transition">flask-apps-e45a.onrender.com</a>
+        </li>
+        <li>
+          <span class="font-medium text-slate-100">Email:</span>
+          <a href="mailto:afsanaafroze21@gmail.com" class="hover:text-emerald-300 transition">afsanaafroze21@gmail.com</a>
+        </li>
+        <li>
+          <span class="font-medium text-slate-100">LinkedIn:</span>
+          <a href="https://www.linkedin.com/in/afsanausa" target="_blank" class="hover:text-emerald-300 transition">afsanausa</a>
+        </li>
+        <li>
+          <span class="font-medium text-slate-100">GitHub:</span>
+          <a href="https://github.com/Afsana721/flask_apps" target="_blank" class="hover:text-emerald-300 transition">Afsana721/flask_apps</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-slate-800/60 py-4 text-[11px] text-center text-slate-500 bg-[#0b0d11]">
+    © 2025 ApitCraft Robotic • All rights reserved.
+  </div>
+</footer>
+
+</body>
+</html>
