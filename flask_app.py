@@ -265,7 +265,9 @@ def system_circuit():
 def health():
     return render_template('health.html')
 
-
+@app.route('/three')
+def three():
+    return render_template('three.html')
 
 
 if __name__ == "__main__":
