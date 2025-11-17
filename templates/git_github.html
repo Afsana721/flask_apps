@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AptiCraft - FullStack Portfolio</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Google Fonts (Inter) and Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <!-- Three.js Libraries are loaded at the end of the body for performance -->
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // New High-Contrast, Futuristic Palette
+                        'background': '#0b1426',    // Deep Indigo/Navy for main body
+                        'surface': '#1b2a40',        // Darker surface for header/cards
+                        'highlight': '#00ffff',      // Electric Cyan for accent and borders
+                        'memorable-warm': '#ffbf00', // Gold/Yellow for the badge (Warm color principle)
+                        'linux-green': '#39ff14',    // Neon Green for Linux theme
+                        'gemini-purple': '#a855f7',  // Purple for Gemini features
+                        'git-gold': '#ffbf00', // New color for the Git section
+                        'git-command': '#4ade80', // Tailwind green-400 for commands
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Animation for the Header Border */
+        @keyframes subtlePulse {
+            0% { border-color: theme('colors.highlight'); }
+            50% { border-color: rgba(0, 255, 255, 0.3); }
+            100% { border-color: theme('colors.highlight'); }
+        }
+        .animate-pulse-subtle {
+            animation: subtlePulse 3s infinite alternate;
+        }
+
+        /* Custom styles for the 3D Canvas containers */
+        .three-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem; /* rounded-xl */
+            background-color: transparent;
+        }
+        
+        /* Custom style for the memorable badge (Warm color, glowing) */
+        .memorable-badge {
+            background-color: theme('colors.memorable-warm');
+            color: theme('colors.surface'); 
+            box-shadow: 0 0 10px theme('colors.memorable-warm'), 0 0 20px theme('colors.memorable-warm');
+            font-weight: 900;
+            padding: 0.6rem 1.5rem;
+        }
+
+        /* Responsive hover effects for the nav links */
+        .nav-link {
+            transition: color 0.3s, transform 0.3s;
+        }
+        .nav-link:hover {
+            color: theme('colors.highlight');
+            transform: translateY(-2px);
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        
+        /* Binary stream overlay for bus animation */
+        .binary-stream {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: pre;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: theme('colors.linux-green');
+            text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+            opacity: 0.7;
+            pointer-events: none;
+            line-height: 1;
+            user-select: none;
+            z-index: 5;
+        }
+
+        /* Ensure the main container for the canvas is relative for absolute children */
+        #canvas-container-cpu {
+            position: relative;
+        }
+
+        /* Custom styling for Linux section to distinguish it */
+        .linux-wrapper {
+            background-color: #1a3239; /* Dark teal/forest green shade */
+            border-color: theme('colors.linux-green');
+        }
+        
+        /* Custom styling for OS Link section to distinguish it */
+        .os-link-wrapper {
+            background-color: #142a39; /* Darker blue shade */
+            border-color: theme('colors.highlight');
+        }
+        
+        /* Custom styling for Git Section */
+        .git-wrapper {
+            background-color: #392c14; /* Darker gold shade */
+            border-color: theme('colors.git-gold');
+        }
+
+
+        /* Custom spinner */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid theme('colors.gemini-purple');
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-background text-gray-100 min-h-screen flex flex-col font-sans">
+
+    <!-- HEADER & NAV (Taller, Animated, High-Tech) -->
+    <header class="sticky top-0 z-20 bg-surface shadow-2xl border-b-1 border-highlight py-10 animate-pulse-subtle bg-surface shadow-2xlpy-8 animate-pulse-subtle">
+        <nav class="container mx-auto px-4 flex items-center justify-between" aria-label="Main Navigation">
+            
+            <!-- Left Side: Logo and Title -->
+            <div class="flex items-center space-x-3">
+                <img src="static/aptiCraft.png" class="h-12 w-12 bg-gray-300 object-contain rounded-md" alt="AptiCraft Logo">
+                <a href="#" class="text-3xl font-bold text-cyan-300 transition duration-300">AptiCraft</a>
+            </div>
+
+            <!-- Center: The Memorable Statement (Warm Colors, Glowing Badge) -->
+            <div class="flex-grow flex justify-center mx-4 sm:mx-0">
+                <span class="memorable-badge text-highlight sm:text-xl font-black px-4 py-2 rounded-full transition duration-500 tracking-widest uppercase hover:scale-110">
+                    GIT to GITHUB
+                </span>
+            </div>
+            
+            <!-- Right Side: Navigation Links -->
+            <div class="hidden md:flex space-x-8 text-lg font-bold text-blue-400">
+                <a href="/index" class="nav-link">Home</a>
+                <a href="#github" class="nav-link">GitHub</a>
+                <a href="#git" class="nav-link">Git</a>
+            </div>
+            
+        </nav>
+    </header>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="container mx-auto p-4 flex-grow mt-24">
+        
+        <!-- SECTION 1: Computing System Flow (Main 3D Animation) -->
+        <section aria-labelledby="three-d-skills-model" class="mt-12">
+            <article class="bg-surface p-8 rounded-2xl shadow-2xl min-h-[450px] border border-highlight/20">
+                <h2 id="three-d-skills-model" class="text-2xl font-bold mb-6 text-highlight text-center uppercase tracking-wider">
+                    Computing System Flow
+                </h2>
+                
+                <!-- START OF COMPUTING ANIMATION SECTION -->
+                <div id="canvas-container-cpu" class="mt-6 h-[50vh] min-h-[300px] flex flex-col md:flex-row items-center md:items-start justify-start relative p-2 md:p-4 space-y-4 md:space-y-0 md:space-x-8">
+                    
+                    <!-- Left side: The 3D Canvas area (60% width on desktop) -->
+                    <div id="animation-wrapper-cpu" class="w-full md:w-3/5 h-full relative border border-highlight/30 rounded-xl overflow-hidden">
+                        
+                        <!-- Info Text (Z-10, Pointer-events: none) -->
+                        <div id="info" class="absolute top-4 left-0 right-0 text-center text-gray-300 z-10 pointer-events-none">
+                            <h1 class="text-xl font-bold">The Computing Bus System Model</h1>
+                            <p class="text-sm text-gray-400">Data packets flow along bus lines. Drag to rotate</p>
+                        </div>
+                        
+                        <!-- Tiny text explaining the action -->
+                        <p id="subtle-action-text" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-memorable-warm opacity-90 z-10 tracking-wider transition-all duration-1000 bg-surface/70 px-3 py-1 rounded-full shadow-lg">
+                            Core processing cycle running...
+                        </p>
+                        
+                        <!-- Binary Stream Overlay -->
+                        <pre id="binaryStream" class="binary-stream"></pre>
+                        
+                        <!-- The 3D Canvas -->
+                        <canvas id="threeJsCanvasCpu" class="three-canvas"></canvas>
+                    </div>
+
+                    <!-- Right side: Explanation Text (40% width on desktop) -->
+                    <div class="md:w-2/5 w-full flex flex-col justify-center space-y-3 p-4 bg-surface/50 rounded-lg h-full">
+                        <h3 class="text-xl font-bold text-highlight">CPU Bus Activity</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            This model visualizes the **CPU's central role** in managing the flow of data packets (the white/colored spheres) across the system bus. White packets leave the CPU (Instruction/Data fetch); colored packets return to the CPU (Result/Feedback). This is the engine of all software execution.
+                        </p>
+                        <p class="text-sm text-gray-400 font-medium">
+                            *Components: RAM, Storage, I/O*
+                        </p>
+                    </div>
+                </div>
+                <!-- END OF COMPUTING ANIMATION SECTION -->
+
+                <div class="flex flex-col items-center gap-4 mt-6">
+                    <div class="w-full flex justify-center">
+                    <img src="https://i.ytimg.com/vi/GtVDTp826DE/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBLPMfgLsC3hYJIw4M2nqgO4kxBCQ"
+                        class="w-[60%] h-auto rounded-xl border border-highlight/20 cursor-pointer transition-all duration-300 max-h-[380px] object-cover image-toggle"
+                        onerror="this.src='https://placehold.co/800x400/1b2a40/ffffff?text=Block+Diagram+of+Computer'"
+                        onclick="this.classList.toggle('expanded-image')"/>
+
+                    </div>
+                    <div class="w-full text-slate-200 leading-relaxed space-y-3 mt-2">
+                        <p><strong>Input → Processing → Output</strong></p>
+                        <p><strong>Input:</strong> Your action (key press or mouse click) becomes an electrical signal and is converted into binary (1s/0s).</p>
+                        <p><strong>Processing:</strong> The CPU fetches an instruction from RAM, decodes it, and executes it—billions of times per second using the ALU.</p>
+                        <p><strong>Output:</strong> Processed data is sent to the monitor (via GPU) or speakers (via sound card) to display or play the final result.</p>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+
+        <!-- SECTION 2: Linux is Everywhere (3D Animation and Text) -->
+        <section aria-labelledby="linux-everywhere" class="mt-24">
+            <article class="linux-wrapper p-8 rounded-2xl shadow-2xl min-h-[320px] border-4 border-linux-green/50">
+                <h2 id="linux-everywhere" class="text-3xl font-bold mb-6 text-linux-green text-center uppercase tracking-wider">
+                    Linux is Everywhere
+                </h2>
+                
+                <!-- START OF LINUX ANIMATION SECTION -->
+                <div id="canvas-container-linux" class="h-[40vh] min-h-[250px] flex flex-col md:flex-row items-center md:items-start justify-start relative p-2 md:p-4 space-y-4 md:space-y-0 md:space-x-8">
+                    
+                    <!-- Left side: The 3D Canvas area (60% width on desktop) -->
+                    <div id="animation-wrapper-linux" class="w-full md:w-3/5 h-full relative border border-linux-green/30 rounded-xl overflow-hidden">
+                        
+                        <!-- Info Text (Z-10, Pointer-events: none) -->
+                        <div class="absolute top-4 left-0 right-0 text-center text-gray-300 z-10 pointer-events-none">
+                            <h1 class="text-xl font-bold">The Kernel & Its Ecosystem</h1>
+                            <p class="text-sm text-gray-400">Tux, the kernel, powers the digital world. Drag to rotate</p>
+                        </div>
+                        
+                        <!-- The 3D Canvas -->
+                        <canvas id="threeJsCanvasLinux" class="three-canvas"></canvas>
+                    </div>
+
+                    <!-- Right side: Explanation Text (40% width on desktop) -->
+                    <div class="md:w-2/5 w-full flex flex-col justify-center space-y-3 p-4 bg-[#1a3239]/70 rounded-lg h-full">
+                        <p class="text-sm text-gray-200 leading-relaxed">
+                            Linux is used all around the world because it is **free, open-source, stable, and secure**. The central mascot (Tux) represents the Kernel, which manages resources for the orbiting environments: **Cloud Servers, Mobile Devices (Android), and IoT/Embedded Systems.**
+                        </p>
+                        <p class="text-sm text-linux-green font-medium">
+                            *The backbone of the modern internet and data centers.*
+                        </p>
+                    </div>
+                </div>
+                <!-- END OF LINUX ANIMATION SECTION -->
+                
+                <!-- START OF LINUX SUMMARY TEXT -->
+                <div class="mt-8 pt-6 border-t border-linux-green/20">
+                    <h3 class="text-2xl font-bold text-linux-green mb-4">Full Linux Gist (Short Summary)</h3>
+                    <ul id="linux-gist-list" class="space-y-4 text-gray-200">
+                        <li>
+                            <strong class="text-memorable-warm">1.1 Linux Is Everywhere:</strong>
+                            Linux runs on **servers, phones, routers, TVs, cars, and supercomputers** because it’s stable, secure, and easy to customize.
+                        </li>
+                        <li>
+                            <strong class="text-memorable-warm">1.2 Linux Is a Kernel:</strong>
+                            Linux is the **core part of the OS** that controls hardware. Most people say “Linux” but actually use **GNU/Linux**, which combines the Linux kernel with GNU tools.
+                        </li>
+                        <li>
+                            <strong class="text-memorable-warm">1.3 Linux Is Open Source:</strong>
+                            The code is **free to view, modify, and share**. Developers worldwide improve it, fix bugs, and build new systems from it.
+                        </li>
+                        <li>
+                            <strong class="text-memorable-warm">1.4 Linux Has Distributions:</strong>
+                            Different groups package Linux + software into **“distros”** like Ubuntu, Fedora, Debian, Arch, and Kali, each designed for different needs.
+                        </li>
+                        <li>
+                            <strong class="text-memorable-warm">1.5 Linux Embraces the CLI:</strong>
+                            Linux is built around the **command line (CLI)** because it gives fast, powerful, direct control—perfect for managing systems, automation, and server work.
+                        </li>
+                    </ul>
+                    
+                    <!-- GEMINI INTEGRATION 1: Code Summary -->
+                    <div class="mt-8">
+                        <button id="generateSummaryBtn" class="bg-gemini-purple text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:bg-purple-600 transition duration-300 flex items-center justify-center space-x-2">
+                            <i class="fas fa-sparkles"></i>
+                            <span>Generate Professional Summary</span>
+                        </button>
+                        <div id="summaryOutput" class="mt-4 p-4 bg-purple-900/50 border border-gemini-purple rounded-lg hidden">
+                            <p class="text-sm font-semibold text-purple-200 mb-2">Project Summary Draft:</p>
+                            <div id="summaryText" class="text-white"></div>
+                        </div>
+                        <div id="summaryLoading" class="hidden mt-4 text-gemini-purple">
+                            <div class="spinner inline-block mr-2"></div> Generating draft...
+                        </div>
+                    </div>
+                </div>
+                <!-- END OF LINUX SUMMARY TEXT -->
+
+            </article>
+        </section>
+        
+        <!-- SECTION 3: OS and Kernel Link -->
+        <section aria-labelledby="os-kernel-link" class="mt-24">
+            <article class="os-link-wrapper p-8 rounded-2xl shadow-2xl min-h-[300px] border-4 border-highlight/50">
+                <h2 id="os-kernel-link" class="text-3xl font-bold mb-6 text-highlight text-center uppercase tracking-wider">
+                    The Operating System Layer (Q&A)
+                </h2>
+                
+                <!-- START OF OS LINK ANIMATION SECTION -->
+                <div id="canvas-container-os" class="h-[40vh] min-h-[250px] flex flex-col md:flex-row-reverse items-center md:items-start justify-start relative p-2 md:p-4 space-y-4 md:space-y-0 md:space-x-8">
+                    
+                    <!-- Right side: The 3D Canvas area (60% width on desktop) -->
+                    <div id="animation-wrapper-os" class="w-full md:w-3/5 h-full relative border border-highlight/30 rounded-xl overflow-hidden">
+                        
+                        <!-- Info Text (Z-10, Pointer-events: none) -->
+                        <div class="absolute top-4 left-0 right-0 text-center text-gray-300 z-10 pointer-events-none">
+                            <h1 class="text-xl font-bold">User Space to Kernel Space</h1>
+                            <p class="text-sm text-gray-400">UI actions trigger calls through the OS layer. Drag to rotate</p>
+                        </div>
+                        
+                        <!-- The 3D Canvas -->
+                        <canvas id="threeJsCanvasOS" class="three-canvas"></canvas>
+                    </div>
+
+                    <!-- Left side: Explanation Text (40% width on desktop) -->
+                    <div class="md:w-2/5 w-full flex flex-col justify-center space-y-3 p-4 bg-[#142a39]/70 rounded-lg h-full">
+                        <p class="text-base text-gray-100 leading-relaxed">
+                            The **Linux kernel** is the core engine of the operating system — it manages CPU, memory, storage, processes, and device I/O.
+                        </p>
+                        <p class="text-base text-gray-100 leading-relaxed">
+                            The OS (GNU/Linux) adds **tools, file systems, shells, UI, and applications** on top of the kernel, so users can interact with the system.
+                        </p>
+                        <p class="text-base text-highlight font-medium">
+                            Together, the kernel handles the hardware, and the OS layer handles everything the user sees and controls.
+                        </p>
+                    </div>
+                </div>
+                <!-- END OF OS LINK ANIMATION SECTION -->
+                
+                <!-- GEMINI INTEGRATION 2: Tech Q&A Chatbot -->
+                <div class="mt-8 pt-6 border-t border-highlight/20">
+                    <h3 class="text-2xl font-bold text-highlight mb-4 flex items-center space-x-2">
+                        <i class="fas fa-microchip text-gemini-purple"></i>
+                        <span>Tech Guru Q&A ✨</span>
+                    </h3>
+                    <div id="qa-output" class="p-3 bg-surface rounded-lg mb-4 h-48 overflow-y-auto border border-highlight/30 space-y-3">
+                        <p class="text-sm text-gray-400">Ask me anything about operating systems, kernels, or Linux!</p>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <input type="text" id="qaInput" class="flex-grow p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:border-gemini-purple focus:ring focus:ring-gemini-purple/50" placeholder="e.g., What is a system call?" onkeydown="if (event.key === 'Enter') document.getElementById('qaSendBtn').click()">
+                        <button id="qaSendBtn" class="bg-gemini-purple text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:bg-purple-600 transition duration-300 flex items-center justify-center disabled:opacity-50">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!--GIT section -->
+        <!-- SECTION 4: Git and Version Control -->
+        <section id="git-version-control" class="mt-24" aria-labelledby="git-version-control-title">
+            <article class="git-wrapper p-8 rounded-2xl shadow-2xl min-h-[300px] border-4 border-git-gold/50">
+                <h2 id="git-version-control-title" class="text-3xl font-bold mb-6 text-git-gold text-center uppercase tracking-wider">
+                    GIT & Version Control
+                </h2>
+                
+                <!-- START OF GIT ANIMATION SECTION -->
+                <div id="canvas-container-git" class="h-[40vh] min-h-[250px] flex flex-col md:flex-row items-center md:items-start justify-start relative p-2 md:p-4 space-y-4 md:space-y-0 md:space-x-8">
+                    
+                    <!-- Left side: The 3D Canvas area (60% width on desktop) -->
+                    <div id="animation-wrapper-git" class="w-full md:w-3/5 h-full relative border border-git-gold/30 rounded-xl overflow-hidden">
+                        
+                        <!-- Info Text (Z-10, Pointer-events: none) -->
+                        <div class="absolute top-4 left-0 right-0 text-center text-gray-300 z-10 pointer-events-none">
+                            <h1 class="text-xl font-bold">Branching & Merging Workflow</h1>
+                            <p class="text-sm text-gray-400">Main, Feature, and Commit History. Drag to rotate</p>
+                        </div>
+                        
+                        <!-- The 3D Canvas -->
+                        <canvas id="threeJsCanvasGit" class="three-canvas"></canvas>
+                    </div>
+
+                    <!-- Right side: Your Text (40% width on desktop) -->
+                    <div class="md:w-2/5 w-full flex flex-col justify-center space-y-4 p-4 bg-[#392c14]/70 rounded-lg h-full">
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-white tracking-wider">
+                            ENGINEERED FOR EXCELLENCE
+                        </h3>
+                        <p class="text-lg text-gray-300 leading-relaxed">
+                            My approach is to treat every project as a self-sustaining system—reliable, scalable, and beautifully engineered.
+                        </p>
+                        <p class="text-base text-git-gold font-medium">
+                            *Mastery in Gitflow, semantic versioning, and collaborative workflows.*
+                        </p>
+                    </div>
+                </div>
+                <!-- END OF GIT ANIMATION SECTION -->
+            </article>
+        </section>
+        
+        <!-- details of GIT section -->
+         <section id="gitDetails" class="mt-8">
+            <article class="git-wrapper p-8 rounded-2xl shadow-2xl border-4 border-git-gold/50">
+                <h3 class="text-3xl font-bold mb-6 text-git-gold text-center uppercase tracking-wider">
+                    The Inner Workings of Git (The .git/ Directory)
+                </h3>
+                <div class="space-y-6 text-gray-200 text-lg leading-relaxed">
+                    <p>
+                        <strong class="text-git-gold">Git (Global Information Tracker)</strong> is a distributed version control system (DVCS) that operates by storing your entire project history as compressed snapshots inside its internal <code class="bg-surface/50 text-linux-green p-1 rounded-md">.git/</code> folder. This folder is the heart of the repository, containing the essential elements: the **object database**, the **index** (or staging area), all **references** such as branches and tags, and the **HEAD pointer**.
+                    </p>
+                    <p>
+                        Git's architecture is based on three main object types. File content is saved as **blob objects** (Binary Large OBjects). The organization of folders and files is captured by **tree objects**. Finally, each snapshot is recorded as a **commit object** that points to its corresponding tree and its parent commit(s). Every single object in Git is immutable, stored as raw bytes, and uniquely identified by a secure <strong class="text-git-gold">SHA-1 hash</strong>.
+                    </p>
+                    <p>
+                        The workflow is tightly managed: when you execute <code class="bg-surface/50 text-highlight p-1 rounded-md">git add</code>, Git converts the file’s content into a blob and registers it in the index. A subsequent <code class="bg-surface/50 text-highlight p-1 rounded-md">git commit</code> then creates the necessary tree and commit objects, finalizing the snapshot and advancing the current branch pointer to the new commit ID. For efficiency, Git optimizes storage using **packfiles**, storing the complete latest version of a file and representing older versions only as compressed differences, or **deltas**.
+                    </p>
+                    <p class="text-git-gold font-semibold">
+                        In essence, Git functions as a highly sophisticated, content-addressable mini-filesystem. It uses lightweight <strong class="text-git-gold">references</strong> (branches and tags) mapped to commit IDs for navigation, and communicates using a <strong class="text-git-gold">smart protocol</strong> to ensure only the absolutely necessary objects are transferred during remote operations.
+                    </p>
+                </div>
+            </article>
+         </section>
+         
+         <!-- New section for Git Commands and Concepts -->
+         <section id="git-commands" class="mt-8">
+            <article class="git-wrapper p-8 rounded-2xl shadow-2xl border-4 border-git-gold/50">
+                <h3 class="text-3xl font-bold mb-8 text-git-gold text-center uppercase tracking-wider">
+                    Essential Git Commands: The Terminal Workflow
+                </h3>
+                
+                <!-- Commands List Container (Rendered by JS) -->
+                <div id="gitCommandsList" class="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                    <!-- Commands will be injected here -->
+                </div>
+
+                <!-- Core Concepts Section -->
+                <div class="mt-12 pt-6 border-t border-git-gold/30 space-y-6">
+                    <h3 class="text-2xl font-bold text-white mb-4">Core Concepts Explained</h3>
+                    <div id="gitConcepts" class="space-y-4 text-gray-300">
+                        <!-- Concepts will be injected here -->
+                    </div>
+                </div>
+
+            </article>
+         </section>
+         <!--inportant info about Git--> 
+         <section style="margin-top:2rem; padding:1.5rem; border-radius:0.75rem; background:#0b1220; color:#e5e7eb; font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+            <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:0.75rem; color:#38bdf8;">Git → GitHub &amp; How It Works Inside</h2>
+
+            <p style="margin-bottom:0.75rem;">
+                <strong>Git</strong> (Global Information Tracker) is a <strong>distributed version control system (DVCS)</strong> that runs locally and stores your project history inside the hidden <strong>.git</strong> folder. It saves your work as snapshots using internal objects and uses the operating system only for disk, memory and shell access.
+            </p>
+
+            <p style="margin-bottom:0.75rem;">
+                The <strong>.git</strong> directory is Git&rsquo;s brain: it holds the <strong>object database</strong>, the <strong>index</strong> (staging area), <strong>refs</strong> for branches and tags, and the <strong>HEAD</strong> pointer. When you stage changes, Git stores file content as a <strong>blob</strong> (Binary Large OBject), tracks folder structure as a <strong>tree</strong>, and records snapshots as a <strong>commit</strong> that links to previous commits. Every object is named by a <strong>SHA‑1</strong> (Secure Hash Algorithm&nbsp;1) fingerprint of its raw bytes.
+            </p>
+
+            <p style="margin-bottom:0.75rem;">
+                Your core loop is simple: <strong>add</strong> changes to the index, <strong>commit</strong> to create a snapshot, then <strong>push</strong> to send that snapshot to a remote. Conflicts happen when two branches change the same lines or one branch deletes what another edits; Git marks the file and pauses so you can manually choose the final content, stage it again, and complete the commit.
+            </p>
+
+            <p style="margin-bottom:0.75rem;">
+                Older states of the code are always recoverable by their <strong>commit ID</strong>. You can move to a past commit to inspect it, or pull a specific file from that point back into your current branch so your existing work is not lost. Branches themselves are just lightweight references that point to commit IDs and can be merged so that both histories are preserved.
+            </p>
+
+            <p style="margin-bottom:0.75rem;">
+                Under the hood, Git behaves like a small content‑addressable database: <strong>content → SHA‑1 → stored object</strong>. It can pack many objects into compressed <strong>packfiles</strong> to save space and transfer them efficiently. The classic joke description of Git is &ldquo;the stupid content tracker&rdquo; because it simply tracks content by hashes and leaves the meaning and workflow to you.
+            </p>
+
+            <p style="margin-top:0.75rem; font-weight:600; color:#fbbf24;">
+                Motto: <strong>Gitting your project locally, tracking every change &mdash; then GitHub stores and shares it globally.</strong>
+            </p>
+            </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="contact" class="bg-surface border-t-4 border-highlight/20 mt-24 py-8">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            
+            <!-- Left Side: Brand and Tagline -->
+            <div class="mb-4 md:mb-0">
+                <p class="text-3xl font-extrabold text-white">AptiCraft</p>
+                <p class="text-sm text-slate-400">FullStack Software Development</p>
+            </div>
+
+            <!-- Right Side: Social Links (Hover for highlight color) -->
+            <div class="flex space-x-8">
+                <!-- Email -->
+                <a href="mailto:your.email@example.com" class="text-slate-400 hover:text-highlight transition duration-300 rounded-full p-2" aria-label="Email">
+                    <i class="fas fa-envelope fa-2x"></i>
+                </a>
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/afsanausa/" target="_blank" class="text-slate-400 hover:text-blue-400 transition duration-300 rounded-full p-2" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin fa-2x"></i>
+                </a>
+                <!-- GitHub -->
+                <a href="https://github.com/Afsana721/flask_apps" target="_blank" class="text-slate-400 hover:text-green-400 transition duration-300 rounded-full p-2" aria-label="GitHub">
+                    <i class="fab fa-github fa-2x"></i>
+                </a>
+                <a href="https://flask-apps-e45a.onrender.com" target="_blank" class="text-slate-400 hover:text-cyan-400 transition duration-300 rounded-full p-2" aria-label="Portfolio">
+                    <i class="fas fa-globe fa-2x"></i>
+            </div>
+        </div>
+    </footer>
+
+    <!-- THREE.JS LIBRARY IMPORTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- GEMINI API SCRIPT BLOCK -->
+    <script>
+        const API_KEY = ""; // Canvas will provide this if it's empty
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+
+        // --- Utility Function for API Calls with Exponential Backoff ---
+        async function fetchWithBackoff(payload, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    
+                    // Handle rate limiting (429) or server errors (5xx)
+                    if (response.status === 429 || response.status >= 500) {
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    } else {
+                        throw new Error(`API returned status ${response.status}: ${await response.text()}`);
+                    }
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        throw error;
+                    }
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+        
+        // --- GEMINI INTEGRATION 1: Professional Summary Generator ---
+        document.getElementById('generateSummaryBtn').addEventListener('click', async function() {
+            const button = this;
+            const outputDiv = document.getElementById('summaryOutput');
+            const outputText = document.getElementById('summaryText');
+            const loading = document.getElementById('summaryLoading');
+
+            // 1. Collect Content (Linux Gist list items)
+            const gistItems = Array.from(document.querySelectorAll('#linux-gist-list li')).map(li => li.innerText).join('\n---\n');
+            const fullContent = `
+            Title: Linux Fundamentals
+            
+            Key Points:
+            ${gistItems}
+            `;
+            
+            const systemPrompt = "You are a professional software development writer. Your task is to take the provided technical key points and convert them into a single, concise, engaging, and polished 3-4 sentence project summary suitable for a high-level portfolio or executive overview. Focus on the value and impact, not just the list details. Do not use bullet points or headings. Start directly with the summary text.";
+            
+            const userQuery = `Convert the following technical content into a polished, professional portfolio summary:\n\n${fullContent}`;
+
+            button.disabled = true;
+            outputDiv.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                };
+                
+                const result = await fetchWithBackoff(payload);
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (generatedText) {
+                    outputText.innerHTML = generatedText.replace(/\n/g, '<br>');
+                    outputDiv.classList.remove('hidden');
+                } else {
+                    outputText.textContent = "Error: Could not generate summary. Please try again.";
+                    outputDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                outputText.textContent = "Network Error: Failed to connect to the AI service.";
+                outputDiv.classList.remove('hidden');
+            } finally {
+                loading.classList.add('hidden');
+                button.disabled = false;
+            }
+        });
+
+        // --- GEMINI INTEGRATION 2: Tech Q&A Chatbot ---
+        const qaOutput = document.getElementById('qa-output');
+        const qaInput = document.getElementById('qaInput');
+        const qaSendBtn = document.getElementById('qaSendBtn');
+        let chatHistory = [];
+        
+        const qaSystemPrompt = "You are the 'Tech Guru' assistant for a professional portfolio. Your role is to answer technical questions about Operating Systems, Kernels, Linux, and the User Space/Kernel Space concept clearly and concisely. Keep answers under 100 words. Maintain a helpful, knowledgeable, and professional tone.";
+
+        function appendMessage(sender, text) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('p-3', 'rounded-lg', 'max-w-[90%]', 'break-words');
+
+            if (sender === 'user') {
+                messageElement.classList.add('bg-gemini-purple/60', 'self-end', 'ml-auto', 'text-white');
+                messageElement.innerHTML = `<strong>You:</strong> ${text}`;
+            } else {
+                messageElement.classList.add('bg-surface/70', 'text-gray-200');
+                messageElement.innerHTML = `<strong>Guru:</strong> ${text}`;
+            }
+            qaOutput.appendChild(messageElement);
+            qaOutput.scrollTop = qaOutput.scrollHeight; // Auto-scroll to bottom
+        }
+
+        async function sendMessage() {
+            const query = qaInput.value.trim();
+            if (!query) return;
+
+            // 1. Add user message to UI and history
+            appendMessage('user', query);
+            qaInput.value = '';
+            qaSendBtn.disabled = true;
+
+            chatHistory.push({ role: "user", parts: [{ text: query }] });
+            
+            // 2. Prepare payload
+            const contents = [
+                { role: "system", parts: [{ text: qaSystemPrompt }] },
+                ...chatHistory.slice(-5) // Keep the last 5 turns for context
+            ];
+            
+            const payload = {
+                contents: contents,
+                systemInstruction: { parts: [{ text: qaSystemPrompt }] },
+            };
+            
+            // Add loading indicator
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'qa-loading';
+            loadingIndicator.classList.add('p-3', 'flex', 'items-center', 'space-x-2', 'text-gemini-purple');
+            loadingIndicator.innerHTML = '<div class="spinner"></div> <span>Thinking...</span>';
+            qaOutput.appendChild(loadingIndicator);
+            qaOutput.scrollTop = qaOutput.scrollHeight;
+
+            try {
+                const result = await fetchWithBackoff(payload);
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                // Remove loading indicator
+                document.getElementById('qa-loading')?.remove();
+
+                if (generatedText) {
+                    appendMessage('ai', generatedText);
+                    chatHistory.push({ role: "model", parts: [{ text: generatedText }] });
+                } else {
+                    appendMessage('ai', "I'm sorry, I couldn't process that request.");
+                }
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                document.getElementById('qa-loading')?.remove();
+                appendMessage('ai', "Network Error: Failed to connect to the Tech Guru service.");
+            } finally {
+                qaSendBtn.disabled = false;
+            }
+        }
+
+        qaSendBtn.addEventListener('click', sendMessage);
+    </script>
+    
+    <!-- GIT COMMANDS DATA AND RENDERING LOGIC -->
+    <script>
+        const gitData = {
+            commands: [
+                { command: "git init", use: "Creates a new Git repository.", internal: "Creates the .git directory structure, including the initial object database, refs/heads, and the master HEAD pointer." },
+                { command: "git add <file>", use: "Stages changes for the next commit.", internal: "Converts the file content into a 'blob' object and updates the 'index' file (staging area) with a reference to that blob." },
+                { command: "git commit -m \"msg\"", use: "Records staged changes as a permanent snapshot.", internal: "Creates a 'tree' object from the index, then creates a 'commit' object pointing to the tree and the previous commit. Finally, it moves the branch pointer (e.g., 'main') to this new commit." },
+                { command: "git status", use: "Shows the working tree and staging area state.", internal: "Compares the current directory files against the index and the HEAD commit to identify modified, staged, or untracked files." },
+                { command: "git diff", use: "Shows changes between commits, index, and working tree.", internal: "Calculates the differences between two tree objects (or the index/working directory) and formats the output." },
+                { command: "git log", use: "Shows the commit history.", internal: "Traverses the commit objects backward from the HEAD pointer, formatting and displaying the metadata for each commit." },
+                { command: "git branch <name>", use: "Creates a new branch pointer.", internal: "Simply creates a new lightweight file inside .git/refs/heads/ that contains the SHA-1 hash of the current HEAD commit." },
+                { command: "git checkout <ref>", use: "Switches branches or restores files (legacy).", internal: "Moves the HEAD pointer and updates the working directory and the index to match the specified commit reference (SHA, branch, or tag)." },
+                { command: "git switch <branch>", use: "Switches branches (modern replacement for checkout).", internal: "A safer version of checkout primarily focused on moving the HEAD pointer to a new branch and updating the working directory." },
+                { command: "git merge <branch>", use: "Integrates changes from one branch into another.", internal: "Identifies the three-way common ancestor (merge base), performs a tree merge, creates a new merge commit object with two parents, and updates the current branch pointer." },
+                { command: "git rebase <branch>", use: "Reapplies commits on top of another base tip.", internal: "Temporarily removes commits from the current branch, checks out the new base, and then 'replays' (re-applies) the removed commits one by one on top of the new base, creating new commit objects." },
+                { command: "git remote add <name> <url>", use: "Adds a remote repository URL.", internal: "Creates a configuration entry in the .git/config file, associating a nickname (like 'origin') with a URL." },
+                { command: "git push <remote> <branch>", use: "Uploads local branch commits to the remote.", internal: "Uses the Git smart protocol to send the necessary blob, tree, and commit objects from the local object database to the remote, updating the remote branch pointer." },
+                { command: "git pull", use: "Fetches and merges/rebases changes from the remote.", internal: "A shorthand for 'git fetch' followed immediately by 'git merge' (or 'git rebase', depending on configuration)." },
+                { command: "git fetch", use: "Downloads commits, files, and refs from a remote.", internal: "Downloads all missing objects into the local object database and updates the remote-tracking branch pointers (e.g., 'origin/main'), but does NOT modify the working directory." },
+                { command: "git clone <url>", use: "Creates a full copy of a remote repository.", internal: "Creates a new directory, runs 'git init', downloads all objects from the remote, creates remote-tracking branches, and checks out the default branch." },
+                { command: "git reset <mode> <ref>", use: "Undo changes by moving HEAD, index, and/or working directory.", internal: "Depending on the mode (--soft, --mixed, --hard), it manipulates the HEAD reference, the index file, and the contents of the working directory." },
+                { command: "git revert <commit>", use: "Creates a new commit that undoes changes from a previous commit.", internal: "Calculates the reverse patch of the specified commit and applies it, creating a brand new commit object (non-destructive history change)." },
+                { command: "git tag <name>", use: "Creates a permanent, lightweight pointer to a commit.", internal: "Creates a pointer object in .git/refs/tags. Unlike branches, tags are fixed references and don't move with subsequent commits." },
+                { command: "git stash", use: "Temporarily saves uncommitted local changes.", internal: "Creates two or three temporary commit objects (working tree, index, and untracked files) and pushes a reference to them onto a special internal stack reflog (e.g., 'refs/stash')." },
+                { command: "git config <key> <value>", use: "Gets or sets repository, user, or system configuration options.", internal: "Reads or writes values to the local (.git/config), global (~/.gitconfig), or system-level configuration files." },
+                { command: "git rm <file>", use: "Removes a file from the working tree and stages the removal.", internal: "Deletes the file from the filesystem and removes its entry from the index, staging the deletion for the next commit." },
+                { command: "git mv <old> <new>", use: "Moves or renames a file.", internal: "Renames the file on the filesystem and updates the index to reflect the change, staging the move for the next commit." },
+                { command: "git show <ref>", use: "Shows details of an object (commit, tag, tree, or blob).", internal: "Reads the raw object data from the database, parses its type and content, and formats it for display." },
+                { command: "git reflog", use: "Shows a log of where HEAD and other refs have been.", internal: "Reads and displays the entries in the reference logs, which are stored internally to help recover lost commits." }
+            ],
+            concepts: {
+                HEAD: "The symbolic reference that points to the branch you are currently working on. It acts as the 'current' snapshot marker for the working directory. When you commit, the HEAD's target branch is moved forward to the new commit.",
+                Branch: "A lightweight, movable pointer to one of your project's commits. The name of the branch is simply a human-readable alias (e.g., 'main' or 'feature') for a long, obscure SHA-1 commit hash. Creating a branch is cheap and instantaneous, encouraging frequent branching.",
+                Conflict: "A state that occurs during a merge or rebase when two distinct branches have modified the exact same lines in the same file, or when one branch deletes a file that another branch modified. Git cannot automatically resolve these competing changes, requiring the developer to manually edit the file to choose the correct result."
+            }
+        };
+
+        function renderGitCommands(data) {
+            const commandsContainer = document.getElementById('gitCommandsList');
+            const conceptsContainer = document.getElementById('gitConcepts');
+            if (!commandsContainer || !conceptsContainer || !data) return;
+
+            // 1. Render Commands
+            data.commands.forEach(cmd => {
+                const commandBlock = document.createElement('div');
+                commandBlock.classList.add('p-4', 'bg-surface/50', 'rounded-lg', 'shadow-xl', 'border-l-4', 'border-git-command', 'transition', 'hover:bg-surface/70');
+                
+                commandBlock.innerHTML = `
+                    <code class="text-xl font-mono text-git-command block mb-2">${cmd.command}</code>
+                    <p class="text-gray-100 font-semibold mb-2">${cmd.use}</p>
+                    <p class="text-sm text-gray-400 border-t border-git-gold/10 pt-2">
+                        <strong class="text-git-gold">Internal:</strong> ${cmd.internal}
+                    </p>
+                `;
+                commandsContainer.appendChild(commandBlock);
+            });
+
+            // 2. Render Concepts
+            for (const key in data.concepts) {
+                const conceptBlock = document.createElement('div');
+                conceptBlock.classList.add('p-4', 'bg-surface/50', 'rounded-lg', 'shadow-lg', 'border-l-4', 'border-highlight/50');
+                conceptBlock.innerHTML = `
+                    <h4 class="text-xl font-bold text-highlight mb-2">${key.toUpperCase()}</h4>
+                    <p class="text-gray-200">${data.concepts[key]}</p>
+                `;
+                conceptsContainer.appendChild(conceptBlock);
+            }
+        }
+    </script>
+
+
+    <!-- THREE.JS IMPLEMENTATION BLOCKS -->
+
+    <!-- Helper function for creating 3D text (Shared between all scenes) -->
+    <script>
+        function createText(text, size, color, font) {
+            if (!font) return new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.1), new THREE.MeshBasicMaterial({ color: color })); // Fallback
+            const textGeo = new THREE.TextGeometry(text, {
+                font: font,
+                size: size,
+                height: 0.1,
+                curveSegments: 4
+            });
+            textGeo.computeBoundingBox();
+            textGeo.computeBoundingSphere();
+            // Center the text
+            textGeo.translate(-(textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) / 2, 0, 0);
+            const textMat = new THREE.MeshPhongMaterial({ color: color });
+            return new THREE.Mesh(textGeo, textMat);
+        }
+    </script>
+
+
+    <!-- --- THREE.JS IMPLEMENTATION 1: Computing Bus System --- -->
+    <script>
+    let sceneCpu, cameraCpu, rendererCpu, controlsCpu;
+    let cpuCore, components = [];
+    let particles = [];
+    let electronParticles = [];
+    let binaryTextElement;
+
+    const numParticles = 30;
+    const numElectronParticles = 50;
+    
+    // Hex color for the background, matching your Tailwind 'background' color: #0b1426
+    const sceneBackgroundColor = 0x0b1426; 
+
+    const componentData = [
+        { name: "RAM (Memory)", color: 0xFF00FF, radius: 10, angle: Math.PI * 0.25, tilt: 0.1 },
+        { name: "Storage (SSD/HDD)", color: 0x00AFFF, radius: 15, angle: Math.PI * 1.25, tilt: -0.1 },
+        { name: "I/O (Input/Output)", color: 0xFF8800, radius: 20, angle: Math.PI * 2.1, tilt: 0.2 }
+    ];
+
+    // Initialization for the CPU Bus System
+    function initBusSystem() {
+        const container = document.getElementById('animation-wrapper-cpu'); 
+        const canvas = document.getElementById('threeJsCanvasCpu');
+        if (!canvas || !container || !window.THREE) return;
+
+        const rect = container.getBoundingClientRect();
+
+        sceneCpu = new THREE.Scene();
+        sceneCpu.background = new THREE.Color(sceneBackgroundColor);
+
+        cameraCpu = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+        cameraCpu.position.z = 30;
+
+        rendererCpu = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+        rendererCpu.setSize(rect.width, rect.height, false);
+
+        binaryTextElement = document.getElementById('binaryStream');
+
+        controlsCpu = new THREE.OrbitControls(cameraCpu, rendererCpu.domElement);
+        controlsCpu.enableDamping = true;
+        controlsCpu.autoRotate = true;
+        controlsCpu.autoRotateSpeed = 1.0; 
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        sceneCpu.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+        directionalLight.position.set(5, 5, 5).normalize();
+        sceneCpu.add(directionalLight);
+
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load(
+            'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+            function (font) {
+                const darkSilverColor = 0x374151;
+                const metallicMaterial = new THREE.MeshPhongMaterial({
+                    color: darkSilverColor,
+                    emissive: 0x101010,
+                    shininess: 150,
+                    specular: 0xFFFFFF
+                });
+
+                // CPU Core construction
+                const cpuMainGeometry = new THREE.BoxGeometry(4, 1.5, 4);
+                const cpuMain = new THREE.Mesh(cpuMainGeometry, metallicMaterial);
+                const cpuTopGeometry = new THREE.CylinderGeometry(3.5, 3.8, 0.2, 32);
+                const cpuTop = new THREE.Mesh(cpuTopGeometry, metallicMaterial);
+                cpuTop.position.y = 0.8;
+                const cpuBottomGeometry = new THREE.CylinderGeometry(3.8, 3.5, 0.2, 32);
+                const cpuBottom = new THREE.Mesh(cpuBottomGeometry, metallicMaterial);
+                cpuBottom.position.y = -0.8;
+
+                cpuCore = new THREE.Group();
+                cpuCore.add(cpuMain);
+                cpuCore.add(cpuTop);
+                cpuCore.add(cpuBottom);
+                cpuCore.position.set(0, 0, 0);
+                sceneCpu.add(cpuCore);
+
+                // CPU Label
+                const labelColor = 0xD1D5DB;
+                const cpuLabel = createText('CPU (Processor)', 0.7, labelColor, font);
+                cpuLabel.position.set(-4, -4, 0);
+                sceneCpu.add(cpuLabel);
+
+                // Internal Electron Particles
+                const electronGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const electronMaterial = new THREE.MeshBasicMaterial({ color: 0x39ff14 });
+
+                for (let i = 0; i < numElectronParticles; i++) {
+                    const electron = new THREE.Mesh(electronGeometry, electronMaterial);
+                    electron.position.set(
+                        (Math.random() - 0.5) * 6,
+                        (Math.random() - 0.5) * 3,
+                        (Math.random() - 0.5) * 6
+                    );
+                    electron.userData.velocity = new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.05,
+                        (Math.random() - 0.5) * 0.05,
+                        (Math.random() - 0.5) * 0.05
+                    );
+                    electronParticles.push(electron);
+                    cpuCore.add(electron);
+                }
+
+                // Components and Bus Lines
+                const particleGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+
+                componentData.forEach(data => {
+                    const fixedX = data.radius * Math.cos(data.angle);
+                    const fixedZ = data.radius * Math.sin(data.angle);
+                    const componentPos = new THREE.Vector3(fixedX, 0, fixedZ);
+                    componentPos.applyAxisAngle(new THREE.Vector3(1, 0, 0), data.tilt);
+                    data.componentPosition = componentPos;
+
+                    // Bus line (The connection tube)
+                    const points = [new THREE.Vector3(0, 0, 0), componentPos.clone().multiplyScalar(0.9)];
+                    const busGeometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 20, 0.08, 8, false);
+                    const busMaterial = new THREE.MeshBasicMaterial({
+                        color: data.color,
+                        transparent: true,
+                        opacity: 0.3,
+                        side: THREE.BackSide
+                    });
+                    const bus = new THREE.Mesh(busGeometry, busMaterial);
+                    sceneCpu.add(bus);
+
+                    // Device Sphere
+                    const deviceGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+                    const deviceMaterial = new THREE.MeshPhongMaterial({
+                        color: data.color,
+                        emissive: data.color,
+                        emissiveIntensity: 1.5
+                    });
+                    const device = new THREE.Mesh(deviceGeometry, deviceMaterial);
+
+                    // Label
+                    const label = createText(data.name, 0.4, labelColor, font);
+                    label.position.set(0, 0.7, 0);
+
+                    const componentGroup = new THREE.Group();
+                    componentGroup.add(device);
+                    componentGroup.add(label);
+                    componentGroup.position.copy(componentPos);
+
+                    components.push(componentGroup);
+                    sceneCpu.add(componentGroup);
+                });
+
+                // Data Flow Particles
+                for (let i = 0; i < numParticles; i++) {
+                    const particle = new THREE.Mesh(particleGeometry, new THREE.MeshBasicMaterial({ color: 0xffffff }));
+                    const orbitIndex = Math.floor(Math.random() * componentData.length);
+                    const data = componentData[orbitIndex];
+                    particle.userData = {
+                        isOutgoing: Math.random() > 0.5,
+                        travelTime: 100 + Math.random() * 200,
+                        currentTime: Math.random() * 100,
+                        color: data.color,
+                        componentData: data,
+                        startPosition: new THREE.Vector3(),
+                        endPosition: new THREE.Vector3()
+                    };
+                    resetParticlePath(particle);
+                    particles.push(particle);
+                    sceneCpu.add(particle);
+                }
+
+                if (binaryTextElement) {
+                    updateBinaryStream();
+                    setInterval(updateBinaryStream, 150);
+                }
+
+                // Start the main animation loop
+                animateCpu();
+            },
+            undefined,
+            function (err) {
+                console.error('Font load failed, running CPU animation without labels:', err);
+                animateCpu();
+            }
+        );
+    }
+
+    function resetParticlePath(particle) {
+        const { componentData } = particle.userData;
+        const cpuCenter = new THREE.Vector3(0, 0, 0);
+        const componentPos = componentData.componentPosition;
+        particle.userData.isOutgoing = Math.random() > 0.5;
+
+        if (particle.userData.isOutgoing) {
+            particle.userData.startPosition.copy(cpuCenter);
+            particle.userData.endPosition.copy(componentPos);
+            particle.material.color.setHex(0xFFFFFF);
+        } else {
+            particle.userData.startPosition.copy(componentPos);
+            particle.userData.endPosition.copy(cpuCenter);
+            particle.material.color.setHex(componentData.color);
+        }
+        particle.userData.currentTime = 0;
+    }
+
+    function generateBinaryString(length) {
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += Math.round(Math.random());
+        }
+        return result;
+    }
+
+    function updateBinaryStream() {
+        if (!binaryTextElement) return;
+        const numLines = 10;
+        const lineLength = 20;
+        let stream = '';
+        for (let i = 0; i < numLines; i++) {
+            stream += generateBinaryString(lineLength) + "\n";
+        }
+        binaryTextElement.textContent = stream;
+    }
+
+    function animateCpu() {
+        requestAnimationFrame(animateCpu);
+
+        if (cpuCore) {
+            cpuCore.rotation.y += 0.005;
+            const pulse = 1.0 + Math.sin(Date.now() * 0.005) * 0.01;
+            cpuCore.scale.set(pulse, pulse, pulse);
+        }
+
+        electronParticles.forEach(electron => {
+            electron.position.add(electron.userData.velocity);
+            if (electron.position.x > 3 || electron.position.x < -3) electron.userData.velocity.x *= -1;
+            if (electron.position.y > 1 || electron.position.y < -1) electron.userData.velocity.y *= -1;
+            if (electron.position.z > 3 || electron.position.z < -3) electron.userData.velocity.z *= -1;
+        });
+
+        particles.forEach(particle => {
+            particle.userData.currentTime += 1;
+            const { startPosition, endPosition, travelTime, currentTime, componentData } = particle.userData;
+            let t = (currentTime % travelTime) / travelTime;
+
+            if (t > 0.95 && particle.userData.isOutgoing) {
+                particle.material.color.setHex(componentData.color);
+            } else if (t > 0.95 && !particle.userData.isOutgoing) {
+                particle.material.color.setHex(0xFFFFFF);
+            }
+
+            if (currentTime % travelTime === 0) {
+                resetParticlePath(particle);
+            }
+
+            particle.position.lerpVectors(startPosition, endPosition, t);
+            const scale = 0.5 + Math.sin(currentTime * 0.1) * 0.2;
+            particle.scale.set(scale, scale, scale);
+        });
+
+        if (controlsCpu) controlsCpu.update();
+        if (rendererCpu && cameraCpu && sceneCpu) rendererCpu.render(sceneCpu, cameraCpu);
+    }
+
+    function onWindowResizeCpu() {
+        const container = document.getElementById('animation-wrapper-cpu'); 
+        if (!container || !cameraCpu || !rendererCpu) return;
+        
+        const rect = container.getBoundingClientRect();
+        cameraCpu.aspect = rect.width / rect.height;
+        cameraCpu.updateProjectionMatrix();
+        rendererCpu.setSize(rect.width, rect.height, false);
+    }
+    
+    // --- THREE.JS IMPLEMENTATION 2: Linux Ecosystem --- 
+    
+    let sceneLinux, cameraLinux, rendererLinux, controlsLinux;
+    let tux, linuxOrbits = [];
+    const linuxOrbitalData = [
+        { name: "Cloud Servers", icon: 'C', color: 0x00FF00, radius: 10, speed: 0.005 },
+        { name: "Mobile (Android)", icon: 'A', color: 0xFF8800, radius: 15, speed: 0.003 },
+        { name: "IoT & Embedded", icon: 'I', color: 0xFF00FF, radius: 20, speed: 0.002 }
+    ];
+
+    function initLinuxSystem() {
+        const container = document.getElementById('animation-wrapper-linux'); 
+        const canvas = document.getElementById('threeJsCanvasLinux');
+        if (!canvas || !container || !window.THREE) return;
+
+        const rect = container.getBoundingClientRect();
+
+        sceneLinux = new THREE.Scene();
+        sceneLinux.background = new THREE.Color(0x1a3239); // Linux themed background
+
+        cameraLinux = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+        cameraLinux.position.z = 30;
+
+        rendererLinux = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+        rendererLinux.setSize(rect.width, rect.height, false);
+
+        controlsLinux = new THREE.OrbitControls(cameraLinux, rendererLinux.domElement);
+        controlsLinux.enableDamping = true;
+        controlsLinux.autoRotate = true; // Auto-rotate for engagement
+        controlsLinux.autoRotateSpeed = 0.8; 
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
+        sceneLinux.add(ambientLight);
+
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load(
+            'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+            function (font) {
+                // Tux (The Kernel)
+                const coreGeometry = new THREE.SphereGeometry(3, 32, 32);
+                const coreMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x00AFFF, // Blue/cyan for Tux
+                    emissive: 0x00FFFF,
+                    emissiveIntensity: 0.5
+                });
+                tux = new THREE.Mesh(coreGeometry, coreMaterial);
+                tux.add(createText('TUX (Kernel)', 0.8, 0xFFFFFF, font));
+                tux.children[0].position.set(0, 3.5, 0); // Position label above the core
+                sceneLinux.add(tux);
+
+                // Orbital Components
+                linuxOrbitalData.forEach((data, index) => {
+                    const group = new THREE.Group();
+                    group.userData.radius = data.radius;
+                    group.userData.speed = data.speed;
+                    group.userData.angle = Math.random() * Math.PI * 2;
+                    group.userData.color = data.color;
+
+                    // Component Sphere
+                    const deviceGeometry = new THREE.SphereGeometry(1.5, 16, 16);
+                    const deviceMaterial = new THREE.MeshPhongMaterial({
+                        color: data.color,
+                        emissive: data.color,
+                        emissiveIntensity: 1.0,
+                    });
+                    const device = new THREE.Mesh(deviceGeometry, deviceMaterial);
+
+                    // Text Icon inside the sphere
+                    const textIcon = createText(data.icon, 1.0, 0x000000, font);
+                    textIcon.position.set(-0.5, 0, 0); // Center the icon
+                    device.add(textIcon);
+
+                    // Label on the component
+                    const label = createText(data.name, 0.5, 0xFFFFFF, font);
+                    label.position.set(0, 2, 0);
+                    
+                    group.add(device);
+                    group.add(label);
+                    linuxOrbits.push(group);
+                    sceneLinux.add(group);
+
+                    // Create orbit line (Torus)
+                    const orbitGeometry = new THREE.TorusGeometry(data.radius, 0.05, 8, 50);
+                    const orbitMaterial = new THREE.MeshBasicMaterial({ color: data.color, transparent: true, opacity: 0.2 });
+                    const orbit = new THREE.Mesh(orbitGeometry, orbitMaterial);
+                    orbit.rotation.x = Math.PI / 2; // Lay flat
+                    sceneLinux.add(orbit);
+                });
+
+                // Start the Linux animation loop
+                animateLinux();
+            },
+            undefined,
+            function (err) {
+                console.error('Font load failed, running Linux animation without labels:', err);
+                animateLinux();
+            }
+        );
+    }
+
+    function animateLinux() {
+        requestAnimationFrame(animateLinux);
+
+        if (tux) {
+            tux.rotation.y += 0.005;
+        }
+
+        linuxOrbits.forEach(group => {
+            group.userData.angle += group.userData.speed;
+            const x = group.userData.radius * Math.cos(group.userData.angle);
+            const z = group.userData.radius * Math.sin(group.userData.angle);
+            group.position.set(x, 0, z);
+            
+            // Simple pulse for orbital activity
+            const pulse = 1.0 + Math.sin(Date.now() * 0.01 + group.userData.radius) * 0.05;
+            group.scale.set(pulse, pulse, pulse);
+        });
+
+        if (controlsLinux) controlsLinux.update();
+        if (rendererLinux && cameraLinux && sceneLinux) rendererLinux.render(sceneLinux, cameraLinux);
+    }
+
+    function onWindowResizeLinux() {
+        const container = document.getElementById('animation-wrapper-linux'); 
+        if (!container || !cameraLinux || !rendererLinux) return;
+        
+        const rect = container.getBoundingClientRect();
+        cameraLinux.aspect = rect.width / rect.height;
+        cameraLinux.updateProjectionMatrix();
+        rendererLinux.setSize(rect.width, rect.height, false);
+    }
+    
+    // --- THREE.JS IMPLEMENTATION 3: OS/Kernel Link System ---
+    
+    let sceneOS, cameraOS, rendererOS, controlsOS;
+    let kernelCoreOS, osShell;
+    let uiElements = [];
+    let callParticles = [];
+
+    const numCallParticles = 15;
+    
+    function initOSSystem() {
+        const container = document.getElementById('animation-wrapper-os'); 
+        const canvas = document.getElementById('threeJsCanvasOS');
+        if (!canvas || !container || !window.THREE) return;
+
+        const rect = container.getBoundingClientRect();
+
+        sceneOS = new THREE.Scene();
+        sceneOS.background = new THREE.Color(0x142a39); // OS Link themed background
+
+        cameraOS = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+        cameraOS.position.z = 25;
+
+        rendererOS = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+        rendererOS.setSize(rect.width, rect.height, false);
+
+        controlsOS = new THREE.OrbitControls(cameraOS, rendererOS.domElement);
+        controlsOS.enableDamping = true;
+        controlsOS.autoRotate = true;
+        controlsOS.autoRotateSpeed = 0.5; 
+        controlsOS.minDistance = 15;
+        controlsOS.maxDistance = 40;
+
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
+        sceneOS.add(ambientLight);
+        
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load(
+            'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+            function (font) {
+                
+                // 1. Kernel Core
+                const coreGeometry = new THREE.SphereGeometry(2, 32, 32);
+                const coreMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x00AFFF, 
+                    emissive: 0x00FFFF,
+                    emissiveIntensity: 0.8
+                });
+                kernelCoreOS = new THREE.Mesh(coreGeometry, coreMaterial);
+                kernelCoreOS.add(createText('Kernel', 0.6, 0x000000, font));
+                kernelCoreOS.children[0].position.set(-1, 0.5, 0); 
+                sceneOS.add(kernelCoreOS);
+                
+                // 2. OS Shell/Tools Layer (Transparent Ring)
+                const shellGeometry = new THREE.TorusGeometry(10, 0.3, 8, 50);
+                const shellMaterial = new THREE.MeshBasicMaterial({ color: 0xCCCCCC, transparent: true, opacity: 0.15 });
+                osShell = new THREE.Mesh(shellGeometry, shellMaterial);
+                osShell.rotation.x = Math.PI / 2; // Lay flat
+                sceneOS.add(osShell);
+
+                // 3. UI/Application Elements (Outer Orbit)
+                const uiOrbitRadius = 18;
+                const uiGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+                const uiMaterial = new THREE.MeshPhongMaterial({ color: 0xFF00FF, emissive: 0xFF00FF, emissiveIntensity: 0.5 });
+                
+                const appCount = 4;
+                for (let i = 0; i < appCount; i++) {
+                    const angle = (i / appCount) * Math.PI * 2;
+                    const app = new THREE.Mesh(uiGeometry, uiMaterial.clone());
+                    app.position.x = uiOrbitRadius * Math.cos(angle);
+                    app.position.z = uiOrbitRadius * Math.sin(angle);
+                    app.userData.angle = angle;
+                    app.userData.speed = 0.005;
+                    
+                    // Add a label
+                    const labelText = i === 0 ? 'User UI' : `App ${i}`;
+                    const label = createText(labelText, 0.4, 0xFFFFFF, font);
+                    label.position.set(0, 1.5, 0);
+                    app.add(label);
+
+                    uiElements.push(app);
+                    sceneOS.add(app);
+                }
+
+                // 4. System Call Particles (Traveling from UI to Kernel)
+                const particleGeometry = new THREE.SphereGeometry(0.15, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({ color: 0x00FF00 });
+
+                for (let i = 0; i < numCallParticles; i++) {
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial.clone());
+                    particle.userData = {
+                        travelTime: 120 + Math.random() * 80,
+                        currentTime: Math.random() * 200,
+                        startPos: new THREE.Vector3(),
+                        endPos: new THREE.Vector3(0, 0, 0),
+                        sourceElement: uiElements[i % appCount]
+                    };
+                    resetCallParticle(particle);
+                    callParticles.push(particle);
+                    sceneOS.add(particle);
+                }
+                
+                animateOS();
+            },
+            undefined,
+            function (err) {
+                console.error('Font load failed, running OS animation without labels:', err);
+                animateOS();
+            }
+        );
+    }
+    
+    function resetCallParticle(particle) {
+        const { sourceElement } = particle.userData;
+        particle.userData.startPos.copy(sourceElement.position);
+        particle.userData.currentTime = 0;
+        particle.material.color.setHex(0x00FF00); // Reset color to green (request)
+    }
+
+    function animateOS() {
+        requestAnimationFrame(animateOS);
+
+        if (kernelCoreOS) {
+            kernelCoreOS.rotation.y += 0.008;
+        }
+        
+        if (osShell) {
+            osShell.rotation.z += 0.003;
+        }
+        
+        uiElements.forEach(app => {
+            app.userData.angle += app.userData.speed;
+            app.position.x = 18 * Math.cos(app.userData.angle);
+            app.position.z = 18 * Math.sin(app.userData.angle);
+            app.rotation.y += 0.01;
+        });
+
+        callParticles.forEach(particle => {
+            particle.userData.currentTime += 1;
+            const { startPos, endPos, travelTime, currentTime, sourceElement } = particle.userData;
+            let t = (currentTime % travelTime) / travelTime;
+
+            if (currentTime % travelTime === 0) {
+                resetCallParticle(particle);
+            }
+
+            // Change color when particle enters the "kernel" (close to center)
+            if (t > 0.8 && particle.material.color.getHex() === 0x00FF00) {
+                particle.material.color.setHex(0xFF0000); // Red (response)
+            } else if (t < 0.2 && particle.material.color.getHex() === 0xFF0000) {
+                // If response reaches app, set back to neutral (transparent for a moment)
+                particle.material.color.setHex(0x00FF00); // Reset for next loop
+            }
+            
+            // Travel (App -> Kernel)
+            if (t < 0.5) {
+                particle.position.lerpVectors(startPos, endPos, t * 2); 
+            } 
+            // Travel (Kernel -> App) (Response)
+            else {
+                particle.position.lerpVectors(endPos, startPos, (t - 0.5) * 2);
+            }
+        });
+
+
+        if (controlsOS) controlsOS.update();
+        if (rendererOS && cameraOS && sceneOS) rendererOS.render(sceneOS, cameraOS);
+    }
+
+    function onWindowResizeOS() {
+        const container = document.getElementById('animation-wrapper-os'); 
+        if (!container || !cameraOS || !rendererOS) return;
+        
+        const rect = container.getBoundingClientRect();
+        cameraOS.aspect = rect.width / rect.height;
+        cameraOS.updateProjectionMatrix();
+        rendererOS.setSize(rect.width, rect.height, false);
+    }
+    
+    // --- THREE.JS IMPLEMENTATION 4: Git Version Control System ---
+    
+    let sceneGit, cameraGit, rendererGit, controlsGit;
+    let mainBranch, featureBranch, commits = [];
+    let isBranchActive = false;
+    let branchStartTime = 0;
+    const branchDuration = 500; // frames
+    const mainBranchPoints = [];
+
+    function initGitSystem() {
+        const container = document.getElementById('animation-wrapper-git'); 
+        const canvas = document.getElementById('threeJsCanvasGit');
+        if (!canvas || !container || !window.THREE) return;
+
+        const rect = container.getBoundingClientRect();
+
+        sceneGit = new THREE.Scene();
+        sceneGit.background = new THREE.Color(0x392c14); // Git themed background
+
+        cameraGit = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+        cameraGit.position.z = 25;
+        cameraGit.position.y = 5;
+
+        rendererGit = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+        rendererGit.setSize(rect.width, rect.height, false);
+
+        controlsGit = new THREE.OrbitControls(cameraGit, rendererGit.domElement);
+        controlsGit.enableDamping = true;
+        controlsGit.autoRotate = true;
+        controlsGit.autoRotateSpeed = 0.5; 
+        controlsGit.minDistance = 15;
+        controlsGit.maxDistance = 40;
+
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
+        sceneGit.add(ambientLight);
+        
+        const fontLoader = new THREE.FontLoader();
+        fontLoader.load(
+            'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+            function (font) {
+                const goldColor = 0xFFD700;
+                const cyanColor = 0x00FFFF;
+
+                // 1. Main Branch (Straight line in Z direction)
+                for(let i = 0; i < 15; i++) {
+                    mainBranchPoints.push(new THREE.Vector3(0, 0, i * 2 - 10));
+                }
+                const mainBranchCurve = new THREE.CatmullRomCurve3(mainBranchPoints);
+                const mainBranchGeometry = new THREE.TubeGeometry(mainBranchCurve, 64, 0.2, 8, false);
+                const mainBranchMaterial = new THREE.MeshBasicMaterial({ color: goldColor, transparent: true, opacity: 0.8 });
+                mainBranch = new THREE.Mesh(mainBranchGeometry, mainBranchMaterial);
+                sceneGit.add(mainBranch);
+                
+                // Main Branch Label
+                const mainLabel = createText('Main Branch', 0.8, goldColor, font);
+                mainLabel.position.set(-5, 0, 10); 
+                sceneGit.add(mainLabel);
+
+                // 2. Feature Branch (Initially hidden/small)
+                const branchPoints = [
+                    mainBranchPoints[5], // Start point (forking off Main at index 5)
+                    new THREE.Vector3(5, 5, mainBranchPoints[5].z + 3),
+                    new THREE.Vector3(0, 5, mainBranchPoints[9].z),
+                    mainBranchPoints[9] // End point (merging back into Main at index 9)
+                ];
+                const featureBranchCurve = new THREE.CatmullRomCurve3(branchPoints);
+                const featureBranchGeometry = new THREE.TubeGeometry(featureBranchCurve, 64, 0.2, 8, false);
+                const featureBranchMaterial = new THREE.MeshBasicMaterial({ color: cyanColor, transparent: true, opacity: 0 }); // Start invisible
+                featureBranch = new THREE.Mesh(featureBranchGeometry, featureBranchMaterial);
+                sceneGit.add(featureBranch);
+                
+                // Feature Branch Label
+                const featureLabel = createText('Feature Branch', 0.6, cyanColor, font);
+                featureLabel.position.set(6, 6, 0); 
+                sceneGit.add(featureLabel);
+
+
+                // 3. Commits (The particles moving along the branches)
+                const commitGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+                const commitMaterialMain = new THREE.MeshPhongMaterial({ color: goldColor, emissive: goldColor, emissiveIntensity: 1.0 });
+                const commitMaterialFeature = new THREE.MeshPhongMaterial({ color: cyanColor, emissive: cyanColor, emissiveIntensity: 1.0 });
+
+                // Main Branch commits
+                for (let i = 0; i < 10; i++) {
+                    const commit = new THREE.Mesh(commitGeometry, commitMaterialMain.clone());
+                    commit.userData.path = mainBranchCurve;
+                    commit.userData.isFeature = false;
+                    commit.userData.speed = 0.0005 + Math.random() * 0.0005;
+                    commit.userData.position = (i / 10) * 0.4;
+                    commits.push(commit);
+                    sceneGit.add(commit);
+                }
+
+                // Feature Branch commit (The one that moves along the feature branch)
+                const featureCommit = new THREE.Mesh(commitGeometry, commitMaterialFeature.clone());
+                featureCommit.userData.path = mainBranchCurve; // Starts on main
+                featureCommit.userData.isFeature = true;
+                featureCommit.userData.speed = 0.005;
+                featureCommit.userData.position = 0.2;
+                featureCommit.userData.state = 'MAIN_PRE_FORK'; // States: MAIN_PRE_FORK, FORKING, FEATURE, MERGING, MAIN_POST_MERGE
+                featureCommit.userData.forkPoint = 0.33; // Fork position on Main
+                featureCommit.userData.mergePoint = 0.66; // Merge position on Main
+                featureCommit.userData.featureCurve = featureBranchCurve;
+                featureCommit.material.transparent = true;
+                featureCommit.material.opacity = 0;
+                commits.push(featureCommit);
+                sceneGit.add(featureCommit);
+                
+                // Start the Git animation loop
+                animateGit();
+            },
+            undefined,
+            function (err) {
+                console.error('Font load failed, running Git animation without labels:', err);
+                animateGit();
+            }
+        );
+    }
+
+    function animateGit() {
+        requestAnimationFrame(animateGit);
+
+        if (controlsGit) controlsGit.update();
+        
+        const now = Date.now();
+        
+        // Feature branch animation loop
+        const featureCommit = commits.find(c => c.userData.isFeature);
+        
+        if (featureCommit) {
+            
+            if (featureCommit.userData.state === 'MAIN_PRE_FORK') {
+                featureCommit.userData.position += 0.0008; // Move along main slowly
+                featureCommit.material.opacity = 1;
+
+                if (featureCommit.userData.position >= featureCommit.userData.forkPoint) {
+                    featureCommit.userData.state = 'FORKING';
+                    branchStartTime = now;
+                    isBranchActive = true;
+                    featureCommit.userData.position = 0; // Reset position for feature curve
+                }
+            } else if (featureCommit.userData.state === 'FORKING') {
+                const timeRatio = (now - branchStartTime) / (branchDuration * 1.5);
+                featureBranch.material.opacity = timeRatio;
+                featureCommit.userData.position = featureCommit.userData.featureCurve.getPointAt(timeRatio);
+                featureCommit.position.copy(featureCommit.userData.position);
+                
+                if (timeRatio >= 1.0) {
+                    featureCommit.userData.state = 'FEATURE';
+                    featureCommit.userData.position = 0; // Reset for feature travel
+                    branchStartTime = now;
+                }
+                
+            } else if (featureCommit.userData.state === 'FEATURE') {
+                featureCommit.userData.position += 0.005; // Move along feature curve
+                if (featureCommit.userData.position >= 1.0) {
+                    featureCommit.userData.state = 'MERGING';
+                    branchStartTime = now;
+                }
+                featureCommit.position.copy(featureCommit.userData.featureCurve.getPointAt(featureCommit.userData.position % 1.0));
+
+            } else if (featureCommit.userData.state === 'MERGING') {
+                const timeRatio = (now - branchStartTime) / (branchDuration * 1.5);
+                featureBranch.material.opacity = 1.0 - timeRatio;
+                featureCommit.material.color.setHex(0xFFFFFF); // Flash white on merge
+
+                if (timeRatio >= 1.0) {
+                    featureCommit.userData.state = 'MAIN_POST_MERGE';
+                    featureCommit.material.color.setHex(featureCommit.userData.featureCurve.material); // Set back to feature color
+                    featureCommit.material.opacity = 0; // Hide after merge
+                    featureCommit.userData.position = 0;
+                    isBranchActive = false;
+                }
+            } else if (featureCommit.userData.state === 'MAIN_POST_MERGE') {
+                 // Wait a few seconds then reset
+                 if (now - branchStartTime > 3000) {
+                    featureCommit.userData.state = 'MAIN_PRE_FORK';
+                    featureCommit.userData.position = 0.1;
+                    featureCommit.material.color.setHex(0x00FFFF); // Reset to cyan
+                 }
+            }
+        }
+        
+        // Regular Commit Movement
+        commits.forEach(commit => {
+            if (!commit.userData.isFeature) {
+                commit.userData.position += commit.userData.speed;
+                if (commit.userData.position > 1.0) {
+                    commit.userData.position -= 1.0;
+                }
+                commit.position.copy(commit.userData.path.getPointAt(commit.userData.position));
+            }
+        });
+
+        if (rendererGit && cameraGit && sceneGit) rendererGit.render(sceneGit, cameraGit);
+    }
+
+    function onWindowResizeGit() {
+        const container = document.getElementById('animation-wrapper-git'); 
+        if (!container || !cameraGit || !rendererGit) return;
+        
+        const rect = container.getBoundingClientRect();
+        cameraGit.aspect = rect.width / rect.height;
+        cameraGit.updateProjectionMatrix();
+        rendererGit.setSize(rect.width, rect.height, false);
+    }
+
+
+    window.addEventListener('resize', () => {
+        onWindowResizeCpu();
+        onWindowResizeLinux();
+        onWindowResizeOS();
+        onWindowResizeGit(); // New resize function added
+    });
+    
+    // Initialize all systems on window load
+    window.addEventListener('load', () => {
+        initBusSystem();
+        initLinuxSystem();
+        initOSSystem();
+        initGitSystem(); // New system initialization
+        renderGitCommands(gitData); // Render the new Git commands list
+    }); 
+    </script>
+</body>
+</html>
