@@ -273,6 +273,10 @@ def three():
 def git_github():
     return render_template('git_github.html')
 
+@app.route('/Luc8k')
+def Luc8k():
+    return render_template('Luc8k.html')
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
