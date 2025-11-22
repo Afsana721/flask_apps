@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giraffe Advent</title>
+  <!-- Three.js -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white min-h-screen flex items-center justify-center p-4">
+
+
+<div id="giraffe-wrap" style="margin-top:180px;" class="relative w-full max-w-[900px] mx-auto">
+  <img src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/new_giraffe.png?raw=1" class="block max-w-none drop-shadow-[0_0_45px_#f29a33]
+  " style="width:800px; height:auto;" />
+
+  <!-- Tree placed right after giraffe, slightly far -->
+  <img src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/tree.png?raw=1" class="absolute z-[10] drop-shadow-[0_0_45px_#70e000]" style="left:620px; top:80px; width:280px; height:auto; opacity:0.95;" />
+
+  <!-- Popup card -->
+  <div id="popup" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[99]">
+    <div class="relative rounded-2xl shadow-2xl p-2 w-60 animate-[pop_0.25s_ease] bg-cover bg-center" 
+    style="background-image:url('https://videos.openai.com/az/vg-assets/client_upload%2Fmedia%2F1cf3b1992453e2fe825bf297b3841b09390b7644%2Fmedia_01ka20kfyqfxgsb3sdeg5ghdqr.png?se=2025-11-20T00%3A00%3A00Z&sp=r&sv=2024-08-04&sr=b&skoid=aa5ddad1-c91a-4f0a-9aca-e20682cc8969&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-11-14T01%3A08%3A59Z&ske=2025-11-21T01%3A13%3A59Z&sks=b&skv=2024-08-04&sig=6aIYPixWN%2BtuD5lLWA9SwEPnU1y/Pnx0Ys0X86TXb5Y%3D&ac=oaivgprodscus2');">
+      <h2 id="pop-title" class="text-xl font-medium text-black drop-shadow mb-3"></h2>
+      <button onclick="closePopup()" 
+      class="w-full bg-white/90 backdrop-blur rounded-lg font-medium hover:bg-white transition ">
+      Close</button>
+    </div>
+    </div>
+
+  <!-- Far Tree -->
+<img src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/tree.png?raw=1" class="absolute z-[20]" style="left:580px; top:98px; width:660px; height:auto; opacity:0.98;" />
+
+<!-- Tiny blinking green lights -->
+<div class="absolute pointer-events-none" style="left:620px; top:130px; z-index:30;">
+  <!-- green -->
+  <div class="tinyLight green" style="left:110px; top:30px;"></div>
+  <div class="tinyLight green" style="left:150px; top:70px;"></div>
+  <div class="tinyLight green" style="left:200px; top:40px;"></div>
+  <div class="tinyLight green" style="left:110px; top:30px;"></div>
+  <div class="tinyLight green" style="left:150px; top:70px;"></div>
+  <div class="tinyLight green" style="left:200px; top:40px;"></div>
+
+  <!-- purple -->
+  <div class="tinyLight purple" style="left:260px; top:90px;"></div>
+  <div class="tinyLight purple" style="left:310px; top:120px;"></div>
+   <div class="tinyLight purple" style="left:260px; top:90px;"></div>
+  <div class="tinyLight purple" style="left:310px; top:120px;"></div>
+   <div class="tinyLight purple" style="left:260px; top:90px;"></div>
+  <div class="tinyLight purple" style="left:310px; top:120px;"></div>
+
+  <!-- golden -->
+  <div class="tinyLight gold" style="left:340px; top:60px;"></div>
+  <div class="tinyLight gold" style="left:280px; top:150px;"></div>
+  <div class="tinyLight gold" style="left:340px; top:60px;"></div>
+  <div class="tinyLight gold" style="left:280px; top:150px;"></div>
+  <div class="tinyLight gold" style="left:340px; top:60px;"></div>
+  <div class="tinyLight gold" style="left:280px; top:150px;"></div>
+
+  <!-- extra random lights -->
+  <!-- added duplicates -->
+  <div class="tinyLight green" style="left:130px; top:50px;"></div>
+  <div class="tinyLight purple" style="left:240px; top:100px;"></div>
+  <div class="tinyLight gold" style="left:320px; top:140px;"></div>
+
+  <div class="tinyLight green" style="left:170px; top:190px;"></div>
+  <div class="tinyLight purple" style="left:260px; top:170px;"></div>
+  <div class="tinyLight gold" style="left:350px; top:90px;"></div>
+  <!-- extra random lights -->
+  <div class="tinyLight green" style="left:180px; top:160px;"></div>
+  <div class="tinyLight purple" style="left:220px; top:110px;"></div>
+  <div class="tinyLight gold" style="left:300px; top:180px;"></div>
+  <!-- added extra Christmas lights -->
+  <div class="tinyLight green" style="left:90px; top:40px;"></div>
+  <div class="tinyLight purple" style="left:140px; top:95px;"></div>
+  <div class="tinyLight gold" style="left:210px; top:130px;"></div>
+  <div class="tinyLight green" style="left:260px; top:40px;"></div>
+  <div class="tinyLight purple" style="left:330px; top:100px;"></div>
+  <div class="tinyLight gold" style="left:360px; top:160px;"></div>
+  <!-- BLUE LIGHTS -->
+  <div class="tinyLight blue" style="left:100px; top:20px;"></div>
+  <div class="tinyLight blue" style="left:180px; top:10px;"></div>
+  <div class="tinyLight blue" style="left:260px; top:25px;"></div>
+  <div class="tinyLight blue" style="left:320px; top:50px;"></div>
+
+  <!-- SILVER LIGHTS -->
+  <div class="tinyLight silver" style="left:140px; top:140px;"></div>
+  <div class="tinyLight silver" style="left:210px; top:165px;"></div>
+  <div class="tinyLight silver" style="left:300px; top:155px;"></div>
+  <div class="tinyLight silver" style="left:350px; top:130px;"></div>
+
+  <!-- ORANGE LIGHTS -->
+  <div class="tinyLight orange" style="left:120px; top:115px;"></div>
+  <div class="tinyLight orange" style="left:190px; top:95px;"></div>
+  <div class="tinyLight orange" style="left:280px; top:135px;"></div>
+  <div class="tinyLight orange" style="left:330px; top:170px;"></div>
+
+</div>
+<style>
+.tinyLight{
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  animation:tinyBlink 1.2s ease-in-out infinite;
+}
+.green{background:#7CFF6A; box-shadow:0 0 4px #7CFF6A, 0 0 8px #7CFF6A;}
+.purple{background:#b57dff; box-shadow:0 0 4px #b57dff, 0 0 8px #b57dff;}
+.gold{background:#ffd95e; box-shadow:0 0 4px #ffd95e, 0 0 8px #ffd95e;}
+@keyframes tinyBlink{
+  0%{opacity:0.2; transform:scale(0.7);} 
+  50%{opacity:1; transform:scale(1.4);} 
+  100%{opacity:0.3; transform:scale(0.8);} 
+}
+</style>
+<style>
+#image-balloon img{ animation: imgFloat 3s ease-in-out infinite; }
+@keyframes imgFloat{ 0%{transform:translateY(0);} 50%{transform:translateY(-12px);} 100%{transform:translateY(0);} }
+</style>
+<!-- Far Tree (fixed placement, outside popup) -->
+  <img src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/tree.png?raw=1" class="absolute z-[20]" style="left:580px; top:98px; width:660px; height:auto; opacity:0.98;" />
+
+<script>
+const coords = [
+  [264,90],
+  [258,128],
+  [208,174],
+  [250,168],  //8
+  [170,210],  //10
+  [238,208],  //13
+  [224,240],  //14
+  [140,248],  //23
+  [121,342],  //1
+  [180,244],  //3
+  [170,281],  //5
+  [189,310],  //7
+  [41,314],   //9
+  [99,277],   //11
+  [76,324],   //12
+  [158,346],  //15
+  [199,358],  //16
+  [164,396],  //17
+  [121,385],  //18
+  [36,385],   //19
+  [59,288],   //20
+  [80,369],   //21
+  [119,302],   //22
+  [19,348]    //24
+];
+
+
+const colors = Array(coords.length).fill("rgba(255,230,240,0.85)"); 
+
+
+    function openPopup(n){
+      document.getElementById('pop-title').innerText = `Day ${n}`;
+      document.getElementById('popup').classList.remove('hidden');
+    }
+    function closePopup(){ document.getElementById('popup').classList.add('hidden'); }
+
+    window.onload = () => {
+      const wrap = document.getElementById("giraffe-wrap");
+      const img = wrap.querySelector("img");
+      const w = img.clientWidth;
+      const h = img.clientHeight;
+
+      coords.forEach((c,i)=>{
+        const btn = document.createElement('button');
+        const seq=[2,4,6,8,10,13,14,23,1,3,5,7,9,11,12,15,16,17,18,19,20,21,22,24]; btn.innerText = seq[i] || (i+1);
+        btn.className = "absolute flex items-center justify-center rounded-full w-12 h-12 shadow-sm";
+        const bg = colors[i];
+        btn.style.background = "rgba(255,245,235,7)";
+        btn.style.border = "2px solid #d4c7b6";
+        btn.style.fontFamily = "Georgia, serif";
+        btn.style.fontSize = "37px"; btn.style.border = "1.5px solid #d9d0c4"; btn.style.borderRadius = "9999px";
+       const numberColors = ["#6A4FBF","#1C5DB5","#D68A1F","#227A50","#227A50","#D68A1F","#1C5DB5","#227A50","#D68A1F","#1C5DB5","#6A4FBF","#1C5DB5","#D68A1F","#227A50","#6A4FBF","#D68A1F","#227A50","#1C5DB5","#D68A1F","#1C5DB5","#6A4FBF","#227A50","#1C5DB5","#D68A1F"];
+
+        const textColor = numberColors[i % numberColors.length];
+        btn.style.color = textColor;
+
+        const x = c[0] / img.naturalWidth;
+        const y = c[1] / img.naturalHeight;
+        btn.style.left = (x*w -14) + "px";
+        btn.style.top  = (y*h - 10) + "px";
+
+        btn.onclick = () => openPopup(i+1);
+        wrap.appendChild(btn);
+      });
+    }
+  </script>
+</div>
+
+<style>
+@keyframes pop { from{transform:scale(.8);opacity:0;} to{transform:scale(1);opacity:1;} }
+</style>
+<style>
+.shineBird { filter: drop-shadow(0 0 6px #f7d774) drop-shadow(0 0 12px #ffeaa7); }
+</style>
+<!-- Animated Birds -->
+<section id="birdSection" style="position:absolute; top:0; left:0; width:100%; height:200px; overflow:hidden; pointer-events:none; z-index:40;">
+<div id="birds" style="position:absolute; top:40px; left:0; width:100%; height:160px; overflow:visible;">
+
+  <svg class="bird1 shineBird" width="80" height="50" viewBox="0 0 60 40" style="position:absolute; left:-120px;">
+    <ellipse cx="26" cy="22" rx="10" ry="6" fill="#f7d774" fill-opacity="0.95" />
+    <circle cx="36" cy="20" r="3" fill="white" />
+    <polygon points="39,20 44,22 39,24" fill="#e8c15f" />
+    <path class="wing" d="M18 22 Q6 8 4 4 Q12 10 20 20" fill="none" stroke="#f7d774" stroke-width="3" stroke-linecap="round" />
+  </svg>
+
+  <svg class="bird2 shineBird" width="80" height="50" viewBox="0 0 60 40" style="position:absolute; top:55px; left:-160px;">
+    <ellipse cx="26" cy="22" rx="10" ry="6" fill="#f7d774" fill-opacity="0.95" />
+    <circle cx="36" cy="20" r="3" fill="white" />
+    <polygon points="39,20 44,22 39,24" fill="#e8c15f" />
+    <path class="wing" d="M18 22 Q6 8 4 4 Q12 10 20 20" fill="none" stroke="#f7d774" stroke-width="3" stroke-linecap="round" />
+  </svg>
+
+</div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+<script>
+function birdFly(){
+  TweenMax.to('.bird1', 12, {x: window.innerWidth + 260, repeat:-1, ease:Power0.easeNone});
+  TweenMax.to('.bird2', 14, {x: window.innerWidth + 260, repeat:-1, delay:2, ease:Power0.easeNone});
+  TweenMax.to('.wing', 0.45, {
+    rotation:-28,
+    transformOrigin:'50% 50%',
+    yoyo:true,
+    repeat:-1,
+    ease:Power1.easeInOut
+  });
+}
+birdFly();
+</script>
+<audio id="birdSound" src="https://upload.wikimedia.org/wikipedia/commons/4/45/House_sparrow_call.ogg" autoplay loop></audio>
+<script>document.getElementById('birdSound').volume=0.45;</script>
+<!-- Floating LUC8K Balloon -->
+
+<!-- Second Image Balloon -->
+<div id="image-balloon" class="absolute z-[50]" style="top:260px; left:-260px; pointer-events:auto; cursor:pointer;">
+  <img id="coinBalloonImg" src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/LuckCoin.jpg?raw=1" style="opacity:0.55; width:95px; height:115px; border-radius:60% 60% 55% 55%; box-shadow:0 0 14px gold;" />
+</div>
+
+<div id="luc8k-balloon" class="absolute z-[50]" style="top:120px; left:-200px; pointer-events:auto; cursor:pointer;">
+  <div class="balloon pinkBalloon flex items-center justify-center text-white font-bold" 
+       style="width:90px; height:110px; border-radius:60% 60% 55% 55%; font-size:22px;">
+    LUC8K
+  </div>
+</div>
+<style>
+.pinkBalloon{
+  background: radial-gradient(circle at 40% 30%, #ffcce6, #dfc9d4, #ece5e9);
+  box-shadow: 0 0 12px #ffb3dd, 0 0 22px #ffd6ea;
+  border: 2px solid rgba(255,180,220,0.6);
+  color: rgba(255, 217, 0, 0.671);
+  text-shadow: 0 0 6px gold;
+}
+@keyframes balloonFloat {
+  0%{ transform: translateX(0) translateY(0);} 
+  50%{ transform: translateX(40px) translateY(-15px);} 
+  100%{ transform: translateX(0) translateY(0);} 
+}
+.balloon-burst{
+  animation:balloonBurst 0.35s ease-out forwards;
+}
+@keyframes balloonBurst{
+  0%{transform:scale(1);opacity:1;}
+  100%{transform:scale(1.5);opacity:0;}
+}
+</style>
+<div id="luc8k-runner" class="fixed top-16 left-10 text-4xl font-bold text-pink-500 drop-shadow-[0_0_10px_gold] z-[60] hidden">LUC8K</div>
+<script>
+function startBalloon(){
+  window.balloonMove = TweenMax.to('#luc8k-balloon', 18, {x: window.innerWidth + 300, repeat:-1, ease:Power0.easeNone});
+  window.balloonFloat = TweenMax.to('.pinkBalloon', 3, {y: -10, repeat:-1, yoyo:true, ease:Power1.easeInOut});
+}
+startBalloon();
+
+const balloonEl = document.getElementById('luc8k-balloon');
+const balloonInner = balloonEl.querySelector('.pinkBalloon');
+const lucRunner = document.getElementById('luc8k-runner');
+
+balloonEl.addEventListener('click', function(){
+  if(!lucRunner) return;
+  balloonEl.style.pointerEvents = 'none';
+  if(window.balloonMove) window.balloonMove.kill();
+  if(window.balloonFloat) window.balloonFloat.kill();
+  balloonInner.classList.add('balloon-burst');
+
+  setTimeout(function(){
+    balloonEl.style.opacity = '0';
+    lucRunner.classList.remove('hidden');
+    TweenMax.set('#luc8k-runner', {x:0});
+    TweenMax.to('#luc8k-runner', 4, {
+      x: window.innerWidth + 400,
+      ease: Power1.easeOut,
+      onComplete: function(){
+        lucRunner.classList.add('hidden');
+        TweenMax.set('#luc8k-runner', {x:0});
+        balloonEl.style.opacity = '1';
+        balloonInner.classList.remove('balloon-burst');
+        TweenMax.set('#luc8k-balloon', {x:0});
+        balloonEl.style.pointerEvents = 'auto';
+        startBalloon();
+      }
+    });
+  }, 260);
+});
+</script>
+<script>
+// second balloon fly
+TweenMax.to('#image-balloon', 22, {x: window.innerWidth + 350, repeat:-1, ease:Power0.easeNone});
+</script>
+<script>
+// Click → show owner image then vanish
+const coinBalloon=document.getElementById('image-balloon');
+coinBalloon.addEventListener('click',()=>{
+  coinBalloon.style.transition='opacity 0.3s';
+  coinBalloon.style.opacity='0';
+  setTimeout(()=>{ coinBalloon.style.opacity='1'; },3000);
+});
+</script>
+</body>
+</html>
