@@ -277,6 +277,10 @@ def git_github():
 def Luc8k():
     return render_template('Luc8k.html')
 
+@app.route('/calendar)
+def calendar():
+    return render_template('calendar.html')
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
