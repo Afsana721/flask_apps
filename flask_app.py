@@ -277,7 +277,7 @@ def git_github():
 def Luc8k():
     return render_template('Luc8k.html')
 
-@app.route('/calendar)
+@app.route('/calendar')
 def calendar():
     return render_template('calendar.html')
 
