@@ -284,7 +284,7 @@ def calendar():
 
 @app.route('/meshes')
 def meshes():
-    return render_template(meshes.html')
+    return render_template('meshes.html')
 
 
 if __name__ == "__main__":
