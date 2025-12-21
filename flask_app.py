@@ -286,6 +286,11 @@ def calendar():
 def meshes():
     return render_template('meshes.html')
 
+#use Three.js products visualization demo page
+@app.route('/design')
+def design():
+    return render_template('design.html')
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
