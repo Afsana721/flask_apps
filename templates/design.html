@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AptiCraft - Craft's Vogue</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'royal-gold': '#D4AF37',       /* Primary Gold */
+                        'pale-gold': '#F3E5AB',        /* Light Gold for text */
+                        'deep-pink': '#DB2777',        /* Accent Pink */
+                        'cream': '#FFFAF0',            /* Off-white */
+                        'very-light-gold': '#FFFACD',  /* New: Very light gold (lemon chiffon) */
+                        'dark-header-bg': '#1a1a1a',   /* Near Black for Header */
+                        'dark-crimson': '#8B0000',
+                        'deep-red': '#6B0000'
+                    },
+                    fontFamily: {
+                        'display': ['Playfair Display', 'serif'], /* More elegant font */
+                        'tech': ['Orbitron', 'sans-serif'],
+                        'body': ['Roboto', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-gold': '0 0 20px rgba(212, 175, 55, 0.4), 0 0 40px rgba(212, 175, 55, 0.2)',
+                    }
+                }
+            }
+        }
+      
+    </script>
+
+    <!-- 3D Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GLTFLoader is required for loading .glb files -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- OrbitControls is required for dragging/rotating the camera -->
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/controls/OrbitControls.js"></script>
+
+
+    <style>
+        /* Custom Scrollbar - Gold Theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #FFFAF0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 4px;
+        }
+
+        /* Text Shimmer Animation for Header */
+        @keyframes shimmer {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .text-shimmer {
+            background-size: 200% auto;
+            animation: shimmer 4s linear infinite;
+        }
+
+        /* Ensure body allows scrolling */
+        html,
+        body {
+            height: auto;
+            min-height: 100%;
+            overflow-x: hidden;
+            /* Prevent horizontal scrolling from floating elements */
+        }
+
+        /* Adjusted Soft Gradient Background to Red/Gold */
+        body {
+            /* Rich combination of dark red and gold, shifting from light gold to dark red */
+            background: linear-gradient(135deg,
+                    #FFFACD 0%,
+                    /* Very Light Gold */
+                    #D4AF37 30%,
+                    /* Royal Gold */
+                    #8B0000 60%,
+                    /* Dark Crimson */
+                    #6B0000 100%
+                    /* Deep Red */
+                );
+            background-attachment: fixed;
+        }
+
+        /* --- Custom Nav Styles --- */
+
+        /* Default color for all nav items (the original color) */
+        .nav-item {
+            color: #FFBF00;
+            text-shadow: #05850b;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        
+
+        /* Text color when the light is behind it (for better contrast) */
+        .active-link {
+            color: #A91101;
+            /* Matches the body background for a 'pop' effect, or use Black */
+            font-weight: 800;
+        }
+
+        #moving-nav::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 2px;
+            width: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #e6c96a 0%, #e6c96a 8%, #801818 14%, #d9aa4a 24%, #d4af37 38%, #e9b24a 52%, #ffe08a 66%, #d4af37 78%, #801818 90%, #e6c96a 100%);
+            background-size: 200% 100%;
+            animation: borderLine 1.2s linear infinite
+        }
+
+        /* bottom border line (same motion) */
+        #moving-nav::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 100%;
+            border-radius: 999px;
+            background: inherit;
+            background-size: inherit;
+            animation: inherit
+        }
+
+        @keyframes borderLine {
+            to {
+                background-position: 200% 0
+            }
+        }
+
+        /* Removed unused @keyframes slideY */
+
+        @keyframes shake {
+            0% {
+                transform: translate(1px, 1px) rotate(0deg);
+            }
+
+            10% {
+                transform: translate(-1px, -2px) rotate(-1deg);
+            }
+
+            20% {
+                transform: translate(-3px, 0px) rotate(1deg);
+            }
+
+            30% {
+                transform: translate(3px, 2px) rotate(0deg);
+            }
+
+            40% {
+                transform: translate(1px, -1px) rotate(1deg);
+            }
+
+            50% {
+                transform: translate(-1px, 2px) rotate(-1deg);
+            }
+
+            60% {
+                transform: translate(-3px, 1px) rotate(0deg);
+            }
+
+            70% {
+                transform: translate(3px, 1px) rotate(-1deg);
+            }
+
+            80% {
+                transform: translate(-1px, -1px) rotate(1deg);
+            }
+
+            90% {
+                transform: translate(1px, 2px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(1px, -2px) rotate(-1deg);
+            }
+        }
+
+        /* Edge Glow/Pulse for Concept 1 */
+        @keyframes edgeGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(212, 175, 55, 0.5), 0 0 10px rgba(212, 175, 55, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(212, 175, 55, 0.9), 0 0 30px rgba(212, 175, 55, 0.6);
+            }
+
+            100% {
+                box-shadow: 0 0 5px rgba(212, 175, 55, 0.5), 0 0 10px rgba(212, 175, 55, 0.3);
+            }
+        }
+
+        /* Oval Pulse/Translate for Concept 2 */
+        @keyframes ovalPulse {
+            0%,
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: scale(1.05) translateY(-5px);
+                opacity: 0.8;
+            }
+        }
+
+        /* Pentagon Rotation for Concept 3 */
+        @keyframes pentagonRotate {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Base class for all detail sections to ensure relative positioning and z-index */
+        .detail-section-base {
+            position: relative;
+            overflow: hidden;
+            padding: 3rem !important;
+            /* Expanded padding */
+            min-height: 400px;
+            z-index: 10;
+        }
+
+        /* Default pseudo-element for geometric background */
+        .detail-section-base::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            transition: all 0.5s;
+        }
+
+        /* Concept 1: Rectangle/Frame (Gold/Cream) */
+        #concept-detail-1 {
+            border-color: #D4AF37 !important;
+            background: linear-gradient(145deg, #FFFAF0, #FFFACD) !important;
+        }
+
+        #concept-detail-1::before {
+            background-color: transparent;
+            border: 3px solid #D4AF37;
+            box-sizing: border-box;
+            animation: shake 0.5s infinite, edgeGlow 4s infinite alternate;
+        }
+
+        /* *** NEW: ENSURE CONSISTENCY FOR CONCEPTS 2 & 3 BACKGROUNDS ***
+        */
+        #concept-detail-2, #concept-detail-3 {
+            border-color: #D4AF37 !important;
+            background: linear-gradient(145deg, #FFFAF0, #FFFACD) !important;
+            color: #4a4a4a; /* Set dark text for contrast */
+        }
+
+        /* Concept 2: Oval Shape (Adjusted for light background) */
+        #concept-detail-2::before {
+            width: 200px;
+            height: 300px;
+            top: -50px;
+            right: -50px;
+            border-radius: 50%;
+            /* Changed gradient color from dark red to gold */
+            background: radial-gradient(circle at center, #D4AF37, transparent 70%);
+            animation: ovalPulse 6s infinite ease-in-out;
+            border: none;
+            opacity: 0.3; /* Adjusted opacity for light background */
+        }
+
+        /* Concept 3: Pentagon Shape (Adjusted for light background) */
+        #concept-detail-3::before {
+            width: 150px;
+            height: 150px;
+            top: 50%;
+            left: 50%;
+            background: #8B0000; /* Use Crimson for contrast geometry */
+            opacity: 0.15;
+            clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+            animation: pentagonRotate 20s linear infinite;
+            border: none;
+            
+        }
+
+        /* twinkle animation */
+        #apti{animation:halo 2s linear infinite;}
+         @keyframes halo{0%{text-shadow:2px 0 4px rgba(24, 129, 10, 0.4)}25%{text-shadow:0 2px 4px rgba(6, 110, 32, 0.4)}50%{text-shadow:-2px 0 6px rgba(45, 219, 39, 0.4)}75%{text-shadow:0 -2px 6px rgba(24, 87, 5, 0.4)}100%{text-shadow:2px 0 6px rgba(30, 155, 6, 0.4)}}
+
+        /* bounce animation for year digits */   
+        #y2a{animation:bounce 1.6s infinite 0s}#y0{animation:bounce 1.6s infinite .2s}#y2b{animation:bounce 1.6s infinite .4s}#y6{animation:bounce 1.6s infinite .6s}@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+        #craftVogue{background-size:200% 200%;animation:luxeshift 6s ease-in-out infinite;}
+        @keyframes luxeshift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+            /* product vision text animation */
+            #vision{
+            font-family:sans-serif;
+            font-size:32px;
+            font-weight:700;
+            color:#000000;
+            letter-spacing: 0.02em;
+            text-shadow:
+                1px 1px 0 #7e7b72,
+                -1px -1px 0 #eeee8f,
+                0 0 6px rgba(128, 100, 100, 0.9),
+                2px 2px 3px rgba(235, 220, 20, 0.9);
+            animation:drift 6s ease-in-out infinite;
+            }
+
+            @keyframes drift{
+            0%{transform:translateX(0)}
+            15%{transform:translateX(-4px)}
+            30%{transform:translateX(0)}
+            45%{transform:translateX(0)}
+            60%{transform:translateX(4px)}
+            75%{transform:translateX(0)}
+            100%{transform:translateX(0)}
+            }
+
+        /* podium text animation */
+         #luxury {
+        font-family: 'Italiana', serif;
+        font-size: 2.6rem;
+        font-weight: 900;
+        letter-spacing: 0.0em;
+        background: linear-gradient(90deg,#0d0e0c,#e7eb08);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 0 6px #4fc908e0;
+          /* animation:
+        luxuryGlow 11s ease-in-out infinite,
+        luxuryTwist 11s ease-in-out infinite; */
+    }
+/* 
+        @keyframes luxuryGlow {
+        0%, 100% {
+            letter-spacing: 0.01em;
+            filter: brightness(2);
+        }
+        50% {
+            letter-spacing: 0.01em;
+            filter: brightness(4);
+        }
+        } */
+
+
+    /* @keyframes luxuryTwist {
+        0%   { transform: rotate(0deg); }
+        25%  { transform: rotate(-2deg); }
+        50%  { transform: rotate(0deg); }
+        75%  { transform: rotate(2deg); }
+        100% { transform: rotate(0deg); }
+    } */
+        
+        /*AptiCraft underline */
+            #luxUnderline{
+            background:linear-gradient(90deg,#2e7d32,#D4AF37,#8d0801,#D4AF37,#2e7d32);
+            background-size:200% 100%;
+            animation:luxShine 2s linear infinite;
+        }
+        @keyframes luxShine{0%{background-position:0%}100%{background-position:200%}}
+    </style>
+</head>
+
+<body class="text-gray-800 font-body relative selection:bg-royal-gold selection:text-white">
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+  <!-- HEADER: Standard navigation and branding section (Now scrolling) -->
+    <header class="w-full bg-dark-header-bg shadow-2xl">
+        <!-- Removed fixed classes and explicit height, allowing it to scroll -->
+        <div class="container mx-auto px-6 pt-10 pb-2">
+            <!-- Increased py on container to maintain tall look -->
+
+            <!-- ROW 1: Logo and Main Nav Links -->
+            <div class="flex justify-between items-center pt-3 pb-2 border-b border-royal-gold/30">
+
+                <!-- Logo Block -->
+                <div class="flex items-end ml-[84px] mb-16 ">
+                    <div id="apti" class="text-5xl font-display font-bold text-[#6a040f] mr-4 mb-6"
+                        style="-webkit-text-stroke:0.6px #ff9100;
+                              letter-spacing:0.001em;">
+                        AptiCraft
+                    </div>
+                    <!-- Gold Underline/Accent -->
+                    <div id="luxUnderline" class="h-0.5 w-14 mx-auto mb-6"></div>
+                </div>
+                <!-- Nav Links (Using <nav> for semantic clarity) -->
+                <nav id="moving-nav" style="border-image: linear-gradient(90deg,#069b0e,#e4cf11,#b91109) 1;" 
+                class="flex space-x-4 sm:space-x-8 text-lg text-[#FFBF00] font-display tracking-wider mb-4 mt-4 
+                    uppercase relative p-2 rounded-xl border-2 max-w-fit mx-auto">
+
+                    <span id="nav-light" class="absolute h-8 top-1/2 -translate-y-1/2 rounded-lg bg-[#fdf68c]/30 
+                        border-2 border-[#801818] pointer-events-none transition-all duration-300 ease-out"></span>
+                    <a href="/" class="relative z-10 p-2 rounded-lg nav-item active-link">Home</a>
+                    <a href="#" class="relative z-10 p-2 rounded-lg nav-item hidden sm:block">Gallery</a>
+                    <a href="#" class="relative z-10 p-2 rounded-lg nav-item">Inside</a>
+                    <a href="#" class="relative z-10 p-2 rounded-lg nav-item hidden md:block">About</a>
+                    <a href="#" class="relative z-10 p-2 rounded-lg nav-item">Contact</a>
+                </nav>
+            </div>
+            <!-- ROW 2: Main Title / Tagline -->
+         <!-- ROW 2: Main Title / Tagline -->
+            <div class="flex justify-start items-center py-2 ml-36 mt-2">
+                <!-- Main Title / Tagline Block -->
+                <div class="flex flex-col">
+                    <h1 id="craftVogue" class="text-4xl md:text-5xl font-display font-bold mb-2 shadow-lg shadow-dark-crimson" 
+                        style="background:linear-gradient(90deg,#0c4b04,#940404,#e2df0e,#d05a1e,#8A8635);
+                        -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:0.02em;">
+                        Craft's Vogue
+                    </h1>
+                     <!-- Secondary Text -->
+                    <p class="text-xl font-tech" 
+                    style="font-size:2.4rem; margin-top:0.25rem" text-[#afafaf] tracking-wider shadow-2xl shadow-glow-gold mt-0 ml-1">
+                        <span id="y2a" 
+                        style="color:#8A8635; display:inline-block">2</span><span id="y0" 
+                        style="color:#B12A1C; display:inline-block">0</span><span id="y2b" 
+                        style="color:#D05A1E; display:inline-block">2</span><span id="y6" 
+                        style="color:#19850b; display:inline-block">6</span> | <span
+                            class="text-transparent bg-clip-text text-2xl bg-gradient-to-r from-[#8A8635] via-[#B12A1C] to-[#FFE52A] text-shimmer">
+                            FASHION EVENT Coming . .
+                        </span>
+                    </p>
+                </div>
+            </div>
+            
+                </div>
+                <div class="w-full h-14  relative z-50 mb-2"
+                    style="background:
+                    linear-gradient(
+                        to bottom,
+                        rgb(145, 151, 18) 10%,
+                        rgba(31, 124, 3, 0.98) 25%,
+                        rgba(62, 83, 47, 0.95) 40%,
+                        rgba(145, 4, 4, 0.55) 60%,
+                        rgba(3, 15, 1, 0.45) 80%,
+                        rgb(0,0,0) 100%
+                    );
+                    box-shadow: inset 0 -40px 60px rgba(73, 1, 1, 0.6); ">
+                </div>
+            </header>
+        <!-- Polished transition: black header fading into warm luxury palette -->
+          <div class="w-full h-16  relative z-50 mt-1"
+                    style="background:
+                    linear-gradient(
+                        to bottom,
+                        rgb(198, 211, 12) 0%,
+                        rgba(31, 124, 3, 0.98) 15%,
+                        rgba(62, 83, 47, 0.95) 40%,
+                        rgba(145, 4, 4, 0.55) 60%,
+                        rgba(3, 15, 1, 0.45) 80%,
+                        rgb(228, 189, 14) 100%
+                    );
+                    box-shadow: inset 0 -40px 60px rgba(73, 1, 1, 0.6); ">
+                </div>
+        </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="relative min-h-screen">
+        <!-- SECTION 1: HERO and DIAGONAL SLIDER -->
+        <section id="hero-section"
+            class="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden mt-[88px]">
+
+            <!-- 3D Models are now rendered directly onto the fixed #bg-canvas. No need for a separate container here. -->
+
+            <!-- Center Text Content -->
+            <div class="text-center z-20 px-4 relative flex flex-col items-center justify-center h-full w-full">
+                <!-- Decorative circle behind text -->
+                <div
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 md:w-96 md:h-96 bg-white/40 rounded-full blur-3xl -z-10">
+                </div>
+
+                <!-- Main Title -->
+                  <h2 id="luxury" class=" bg-[#660000]/20 text-[#66cb03] mb-8 shadow-lg shadow-[#FACA16]/20">Podium Of Luxury</h2>
+                <p id="vision"
+                    class="text-xl md:text-2xl  max-w-2xl mx-auto mb-8 font-light pointer-events-auto tracking-widest">
+                    PRODUCING WITH VISION
+                </p>
+
+                <!-- Button with CSS-only Animated Border -->
+                <button
+                    class="pointer-events-auto mt-4 px-10 py-3 rounded-full border-2 border-[#138808]
+                    bg-gradient-to-r from-dark-crimson to-royal-gold text-[#000000] text-xl font-tech font-bold shadow-2xl shadow-[#E8AC41]/50 hover:shadow-[#FFBF00]/50 hover:scale-105 transition transform animated-border">
+                    <a href="#oqq-slider-section">Explore Collection</a>  
+                </button>
+            </div>
+        </section>
+
+            <!-- ===== THREE.JS TRAIN PENTAGON SLIDER (TRANSPARENT BACKGROUND) ===== -->
+            <section class="max-w-6xl mx-auto px-6 mt-12 mb-24">
+                  <h2 class="text-center font-display text-4xl mb-8 shadow-lg shadow-[#8B0000] tracking-widest"
+                    style="
+                    color:#207905;
+                    -webkit-text-stroke:0.05px #0f790c;
+                    text-shadow:
+                      1px 1px 0 #4e1e1e,
+                      -1px -1px 0 #ddec0d;">
+                    Craft Speaks _**
+                </h2>
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <canvas id="slider" class="w-full h-[450px] block border-1 border-[#980000]"></canvas>
+            </div>
+            </section>
+
+        <!--products visualization and its life cycle defination-->
+        <section id="oqq-slider-section" class="relative w-full min-h-[100vh] overflow-hidden">
+            <style>
+                #oqq-slider-section { position: relative; width:100%; height:140vh; }
+                #oqq-slider-section canvas { width:100%; height:100%; display:block; }
+            </style>
+            <h2 class="bg-[#ffb627]/30 text-center font-display text-4xl mt-8 shadow-lg shadow-[#66cb03]/50 tracking-widest" 
+            style="color:#09800f;
+                -webkit-text-stroke:1.2px #a01717;
+                text-shadow:
+                1px 1px 0 #750a0a,
+                -1px -1px 0 #ced114;">
+                Visuals Shape Strategy _**
+            </h2>
+            <div id="oqq-three-container" class="absolute inset-0"></div>
+          </section>
+
+        <!-- END: products visualization and its life cycle defination -->
+        <!-- SECTION 2: Placeholder Content for Designs -->
+        <section id="designs-section"
+            class="py-4 px-14 ml-14 mr-14 mt-12 mb-52 max-w-8xl mx-auto bg-white/70 backdrop-blur-sm rounded-xl border-2 border-[#C0C0C0] shadow-2xl 
+            shadow-[#808080]  ">
+            <h2
+                class="mb-16 text-4xl font-tech shadow-lg shadow-dark-crimson text-center text-transparent bg-clip-text bg-gradient-to-r from-dark-crimson via-royal-gold to-deep-red">
+                Featured <u class="text-3xl ml-4 shadow-6xl shadow-[#9d0b28]" style="
+                    text-decoration-color:#ecc64a;
+                    text-shadow:#d62316 0 0 9px;
+                    font-weight: normal;
+                    letter-spacing:normal;
+                    font-size: 0.6em;
+                    color: #660000;
+                    border-bottom:2px solid #FFA000;
+                    box-shadow:0 0 9px rgba(139, 134, 120, 0.8); ">Luxury Designs
+                </u>
+            </h2>
+
+            <section class="flex items-center justify-center py-20 px-6">
+                <div class="max-w-3xl text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-24 text-center shadow-2xl shadow-[#E8AC41]"
+                        style="
+                    color:#9d0b28;
+                    font-family:'Playfair Display','Libre Baskerville','Cormorant Gara mond','Georgia',serif;
+                    font-style:normal;
+                    font-weight:500;
+                    font-variant:small-caps;
+                    letter-spacing:0.02em;
+                    text-shadow: 0 0 1px #862305, 0 3px 8px rgba(228, 224, 11, 0.808);
+                    background:linear-gradient(90deg,rgba(238,223,12,0.25),transparent,rgba(214,197,197,0.25));
+                    padding:18px 28px;
+                    border-radius:14px;
+                    border-bottom:5px solid #862305;">
+                        Visualizes products come to life through interactive 3D experiences
+                    </h2>
+
+
+                    <p class="ml-1 mr-1 text-lg md:text-xl shadow-6x shadow-glow-gold"
+                        style="color:#660000;
+                                font-family:'Playfair Display','Libre Baskerville','Georgia',serif;
+                                line-height:1.9;
+                                text-shadow:0 0 3px rgba(56, 4, 4, 0.6);">
+                        We transform digital products into interactive experiences so users can see, explore,
+                        and understand them before making decisions. Interactive 3D product views allow rotation,
+                        zoom, and inspection, while realistic materials and variants bring accuracy. Visual
+                        storytelling explains features and usage clearly, creating engaging presentations that
+                        build trust.
+                    </p>
+                </div>
+            </section>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-44 perspective-[1200px]">
+
+                <div id="card-1"
+                    class="cursor-pointer bg-[#fff5ee] border-4 border-royal-gold p-6 rounded-xl
+                        shadow-2xl shadow-[#FF8A26] transition-all duration-500
+                        transform-gpu hover:-translate-y-2 hover:rotate-x-3 hover:rotate-y-3
+                        hover:shadow-glow-gold">
+                    <img src="/static/concept1.jpg" alt="concept"
+                    class="w-fulll h-[14.5rem] object-cover rounded-lg mb-4 transition-transform duration-500 hover:scale-[1.05]" />
+                    <h3 class="text-2xl font-tech mb-2 text-[#FFAA00]">Concept 1</h3>
+                    <p class="text-gray-900 text-lg font-tech">Product Visualization for Future Longevity.</p>
+                </div>
+
+                <div id="card-2"
+                    class="cursor-pointer bg-[#fff5ee] border-4 border-dark-crimson p-6 rounded-xl
+                        shadow-2xl shadow-[#BC0032] transition-all duration-500
+                        transform-gpu hover:-translate-y-2 hover:rotate-x-3 hover:rotate-y-3
+                        hover:shadow-glow-gold">
+                    <img src="/static/concept2.jpg" alt="concept"
+                    class="w-full h-[14.5rem] object-cover rounded-lg mb-4 transition-transform duration-500 hover:scale-[1.05]" />
+                    <h3 class="text-2xl font-tech mb-2 text-[#B22222]">Concept 2</h3>
+                    <p class="text-gray-900 text-lg font-tech">Immersive Retail and Digital Materiality.</p>
+                </div>
+
+                <div id="card-3"
+                    class="cursor-pointer bg-[#fff5ee] border-4 border-[#808080] p-6 rounded-xl
+                        shadow-2xl shadow-[#555555] transition-all duration-500
+                        transform-gpu hover:-translate-y-2 hover:rotate-x-[-3deg] hover:rotate-y-3
+                        hover:shadow-glow-gold">
+                    <img src="/static/concept3.jpg" alt="concept"
+                    class="w-full h-[14.5rem] object-cover rounded-lg mb-4 transition-transform duration-500 hover:scale-[1.05]" />
+                    <h3 class="text-2xl font-tech mb-2 text-[#242124]">Concept 3</h3>
+                    <p class="text-gray-900 text-lg font-tech">AI-Driven Visualization and Material Traceability.</p>
+                </div>
+
+                </div>
+
+            <!-- START: NEW HIDDEN DETAIL SECTIONS - UPDATED with detail-section-base class for expanded view and geometric effects -->
+
+            <!-- Concept 1 Detail Section - Gold/Cream Theme (Rectangle/Frame Effect) -->
+            <section id="concept-detail-1"
+                class="hidden mt-12 rounded-xl detail-section-base border-2 shadow-2xl shadow-royal-gold/80 transition-all duration-500 ease-in-out">
+                <h3 class="text-4xl font-display font-bold text-[#801818] shadow-lg shadow-royal-gold mb-12 relative z-20">Concept 1: Product
+                    Visualization for Future Longevity</h3>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    <span class="font-semibold text-dark-crimson">Products Visualization</span> is the first concept to
+                    embrace the current and future technological landscape, directly impacting **user satisfaction** and
+                    expanding beyond business-targeted customers. By offering **interactive 3D views** of our products
+                    (the Golden Hour Clutch), we establish trust and clarity for every individual user, allowing them to
+                    virtually "feel" the quality before purchase.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    This detailed digital twin approach significantly increases **product longevity** by managing user
+                    expectations accurately—fewer returns mean less waste and a lower carbon footprint. This technological
+                    commitment ensures **business sustainability** by building a reputation for transparency and quality,
+                    firmly aligning with our commitment to the user experience and ethical production standards.
+                </p>
+                <ul class="list-disc list-inside text-gray-800 space-y-3 ml-4 relative z-20 text-base">
+                    <li>Core Technology: Real-time 3D Rendering & Augmented Reality Preview</li>
+                    <li>Benefit: Reduces buyer's remorse and product returns by 30%</li>
+                    <li>Sustainability Goal: Maximizing product lifecycle and minimizing environmental impact</li>
+                    <li>User Commitment: Digital twin acts as a permanent certificate of authenticity</li>
+                </ul>
+                <button onclick="toggleDetail('1')"
+                    class="mt-8 px-6 py-3 bg-royal-gold text-white rounded-full hover:bg-royal-gold/80 transition shadow-lg relative z-20">Close
+                    Details</button>
+            </section>
+
+            <!-- Concept 2 Detail Section - Immersive Retail (VR/AR) -->
+            <section id="concept-detail-2"
+                class="hidden mt-12 rounded-xl detail-section-base border-4 shadow-2xl shadow-royal-gold/50 transition-all duration-500 ease-in-out">
+                <h3 class="text-4xl font-display font-bold text-royal-gold mb-6 relative z-20">Concept 2: Immersive
+                    Retail and Digital Materiality</h3>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    <span class="font-semibold text-dark-crimson">Immersive Retail (AR/VR)</span> represents the future
+                    of product visualization, moving beyond the screen to place products like the Artisan Smart Wallet
+                    directly into the user's environment. Current technology allows for **Augmented Reality (AR)** try-ons
+                    and placement, dramatically improving user confidence and satisfaction by resolving fit and scale
+                    questions instantly.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    The future involves **Virtual Showrooms** where non-targeted customers can explore entire collections
+                    through a personalized avatar, fostering a deep, sensory connection with the brand. This rich,
+                    high-fidelity visualization minimizes perceived risk, secures the customer’s long-term commitment,
+                    and significantly contributes to **business sustainability** by building a loyal, emotionally invested
+                    customer base who values the quality and digital experience.
+                </p>
+                <ul class="list-disc list-inside text-gray-800 space-y-3 ml-4 relative z-20 text-base">
+                    <li>Core Technology: Photogrammetry Scanning, WebAR & VR Commerce Engines</li>
+                    <li>Benefit: Reduces the psychological distance between digital viewing and physical ownership.</li>
+                    <li>Sustainability Goal: Decreases returns by ensuring product compatibility in the user's space.</li>
+                    <li>User Commitment: Personalized virtual styling sessions for all customers.</li>
+                </ul>
+                <button onclick="toggleDetail('2')"
+                    class="mt-8 px-6 py-3 bg-royal-gold text-white rounded-full hover:bg-royal-gold/80 transition shadow-lg relative z-20">Close
+                    Details</button>
+            </section>
+
+            <!-- Concept 3 Detail Section - AI-Driven Personalization -->
+            <section id="concept-detail-3"
+                class="hidden mt-12 rounded-xl detail-section-base border-4 shadow-2xl shadow-royal-gold/50 transition-all duration-500 ease-in-out">
+                <h3 class="text-4xl font-display font-bold text-royal-gold mb-6 relative z-20">Concept 3: AI-Driven
+                    Visualization and Material Traceability</h3>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    <span class="font-semibold text-dark-crimson">AI-Driven Visualization</span> focuses on hyper-personalizing
+                    the presentation of products, such as the Apex Timepiece. Current AI models can generate contextually
+                    relevant lifestyle images on-demand. The future extends this to **Generative Product Visuals**, where
+                    the AI creates 3D models based on a user’s social feed or existing style profile, showing the timepiece
+                    perfectly matched to their current aesthetic.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6 relative z-20 text-lg">
+                    This detailed, predictive visualization drives non-targeted customer adoption by removing the effort of
+                    imagining the product in their life. Furthermore, future visualization will be linked to **Blockchain-based
+                    Material Traceability**, displaying the full journey of the recycled titanium on the 3D model itself.
+                    This radical transparency gains products exceptional **longevity** and guarantees **business sustainability**
+                    by verifying every ethical claim directly to the consumer.
+                </p>
+                <ul class="list-disc list-inside text-gray-800 space-y-3 ml-4 relative z-20 text-base">
+                    <li>Core Technology: Generative Adversarial Networks (GANs) for Visuals, Blockchain Metadata Integration</li>
+                    <li>Benefit: Highest level of personalization for non-target demographics, leading to higher conversion.</li>
+                    <li>Sustainability Goal: Immutable proof of ethical sourcing and circular economy inputs.</li>
+                    <li>User Commitment: Full, interactive material history accessible via the digital twin.</li>
+                </ul>
+                <button onclick="toggleDetail('3')"
+                    class="mt-8 px-6 py-3 bg-royal-gold text-white rounded-full hover:bg-royal-gold/80 transition shadow-lg relative z-20">Close
+                    Details</button>
+            </section>
+
+            <!-- END: NEW HIDDEN DETAIL SECTIONS -->
+
+        </section>
+    </main>
+         <div class="w-full h-16  relative z-50 mt-8"
+                    style="background:
+                    linear-gradient(
+                        to bottom,
+                        rgb(198, 211, 12) 0%,
+                        rgba(31, 124, 3, 0.98) 15%,
+                        rgba(62, 83, 47, 0.95) 40%,
+                        rgba(145, 4, 4, 0.55) 60%,
+                        rgba(3, 15, 1, 0.45) 80%,
+                        rgb(228, 189, 14) 100%
+                    );
+                    box-shadow: inset 0 -40px 60px rgba(73, 1, 1, 0.6); ">
+                </div>
+    <!-- FOOTER (UPDATED) -->
+
+    <footer class="w-full bg-black py-1  ">
+          <div class="w-full h-16  relative z-50 mt-1 mb-8"
+                    style="background:
+                    linear-gradient(
+                        to bottom,
+                        rgb(198, 211, 12) 0%,
+                        rgba(31, 124, 3, 0.98) 15%,
+                        rgba(62, 83, 47, 0.95) 40%,
+                        rgba(145, 4, 4, 0.55) 60%,
+                        rgba(3, 15, 1, 0.45) 80%,
+                        rgb(228, 189, 14) 100%
+                    );
+                    box-shadow: inset 0 -40px 60px rgba(73, 1, 1, 0.6); ">
+                </div>
+    <div class="container mx-auto px-6">
+
+        <!-- Top accent (image‑2 palette: dark red → green → gold) -->
+        <div class="h-0.5 w-full mb-12 rounded-full" style="background:linear-gradient(90deg,#750606,#05850b,#d4af37);"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12" style="color:#ffbf00;">
+
+        <!-- Brand (image‑1 text colors) -->
+        <div class="space-y-4">
+            <h4 class="text-5xl font-tech shadow-lg shadow-[#80FF00]/40 tracking-wide bg-clip-text text-transparent" 
+            style=
+            "background-image:linear-gradient(90deg,#138808,#bd2119,#dde01c,#138808,hsl(59, 100%, 50%));
+            letter-spacing:0.001em;
+            font-family:Georgia, 'Times New Roman', Times, serif;
+            text-decoration:none;" > AptiCraft</h4>
+            <p class="text-lg" style="color:#cf8d13;">
+            Business products 3D visualization & interactive simulation platform.
+            </p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="space-y-4">
+            <h5 class="text-lg font-semibold uppercase tracking-wider" style="color:#A91101;">Navigation</h5>
+            <ul class="space-y-2" style="color:#138808;">
+            <li><a href="/" class="hover:text-[#ffbf00] transition">Index</a></li>
+            <li><a href="#design" class="hover:text-[#ffbf00] transition">Design</a></li>
+            </ul>
+        </div>
+
+        <!-- Connect (FULL OpenQQ info, links only) -->
+        <div class="space-y-4">
+            <h5 class="text-lg font-semibold uppercase tracking-wider" style="color:#A91101;">Connect</h5>
+            <ul class="space-y-2" style="color:#138808; ">
+            <li><a href="https://www.openqquantify.com/" target="_blank" class="hover:text-[#ffbf00]">openqquantify.com</a></li>
+            <li><a href="mailto:afsanaafroze21@gmail.com" class="hover:text-[#ffbf00]">afsanaafroze21@gmail.com</a></li>
+            <li><a href="https://github.com/Afsana721/flask_apps" target="_blank" class="hover:text-[#ffbf00]">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/afsanausa" target="_blank" class="hover:text-[#ffbf00]">LinkedIn</a></li>
+            </ul>
+        </div>
+        </div>
+
+        <!-- Bottom bar (image‑2 background, image‑1 text) -->
+        <div class="mt-16 border-t pt-6 text-center text-lg shadow-2xl shadow-dark-crimson"
+            style="border-color:#dfe220;color:#065f17;">
+        © 2025 AptiCraft 
+        </div>
+    </div>
+    </footer>
+
+    
+
+    <!-- Javascript Logic -->
+    <script>
+        // 1. GLB Model Configuration
+        const glbUrls = [
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/bag.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/mug.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/aptibag.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/laptop.glb',
+            'https://raw.githubusercontent.com/CesiumGS/cesium/main/Apps/SampleData/models/Mars/Curiosity.glb',
+            'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/gltf/coffeeMug.glb',
+            'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Baseball%20cap.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Punk%20Girl.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/family-style_bag.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/spode_-_christmas_mug.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Roses.glb',
+            'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/gemstone_test.glb',
+            
+        ];
+        let currentModelIndex = 0;
+        let currentModel = null;
+        let isMugModel = false; // Flag to track if the current model is the mug
+        const modelDuration = 12000; // 12 seconds per model
+
+        // 2. Three.js Setup and Globals
+
+        const canvas = document.querySelector('#bg-canvas');
+        const scene = new THREE.Scene();
+
+        // Adjust Fog
+        scene.fog = new THREE.FogExp2(0x8B0000, 0.05);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            alpha: true,
+            antialias: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Lights (UPDATED for better, neutral illumination)
+        // Ambient Light (Overall softness) - Pure white, slightly higher intensity
+        const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.7);
+        scene.add(ambientLight);
+
+        // Main Directional Light (Pure white for neutral color, strong intensity)
+        const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.8);
+        directionalLight.position.set(5, 5, 5).normalize();
+        scene.add(directionalLight);
+
+        // Secondary Fill Light (Pure white, opposite direction for full illumination - fixes black spots on gemstone)
+        const fillLight = new THREE.DirectionalLight(0xFFFFFF, 0.9);
+        fillLight.position.set(-5, -5, -5).normalize();
+        scene.add(fillLight);
+
+
+        // Background Geometry - GOLD Wireframe
+        const geometry = new THREE.IcosahedronGeometry(15, 1);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xD4AF37,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.1
+        });
+        const sphere = new THREE.Mesh(geometry, material);
+        sphere.position.z = -10;
+        scene.add(sphere);
+
+        // Particles (unchanged)
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 800;
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorsArray = new Float32Array(particlesCount * 3);
+        const color1 = new THREE.Color(0xffcf40);
+        const color2 = new THREE.Color(0xDB2777);
+        const color3 = new THREE.Color(0x8B0000);
+
+        for (let i = 0; i < particlesCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 60;
+            posArray[i + 1] = (Math.random() - 0.5) * 60;
+            posArray[i + 2] = (Math.random() - 0.5) * 60;
+
+            const rand = Math.random();
+            let mixedColor;
+            if (rand < 0.33) {
+                mixedColor = color1;
+            } else if (rand < 0.66) {
+                mixedColor = color2;
+            } else {
+                mixedColor = color3;
+            }
+            colorsArray[i] = mixedColor.r;
+            colorsArray[i + 1] = mixedColor.g;
+            colorsArray[i + 2] = mixedColor.b;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.15,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Initial camera position
+        camera.position.z = 5;
+
+        // --- ORBIT CONTROLS SETUP ---
+        let controls;
+
+        // GLB Loader setup
+        const loader = new THREE.GLTFLoader();
+
+        // 3. Movement Channel Configuration
+
+        // Define key points for the channel movement (X, Y in world units)
+        const pathPoints = [
+            new THREE.Vector3(-2.0, -1.5, -1), // 0: Top Left Corner (Start Point)
+            new THREE.Vector3(0.0, -1.5, -1), // 1: Bottom Center (Explore Button area)
+            new THREE.Vector3(2.0, 1.5, -2), // 2: Top Right Corner
+        ];
+
+        // Path Times (total 12000ms = 12s)
+       const pathTimes = [1500, 2200, 3500, 5000];
+        const totalMovementTime = pathTimes.reduce((a,b)=>a+b,0);
+
+        let movementClock = new THREE.Clock();
+
+        // Load Model Function
+        function loadNextModel() {
+            // Remove previous model if exists
+            if (currentModel) {
+                scene.remove(currentModel);
+                currentModel.traverse(object => {
+                    if (object.isMesh) {
+                        object.geometry.dispose();
+                        if (Array.isArray(object.material)) {
+                            object.material.forEach(m => m.dispose());
+                        } else {
+                            object.material.dispose();
+                        }
+                    }
+                });
+                currentModel = null;
+            }
+
+            // Reset movement clock for the new model's cycle
+            movementClock.start();
+
+            // Get URL for the next model
+            const url = glbUrls[currentModelIndex % glbUrls.length];
+
+            // Set the mug flag based on the loaded URL
+            isMugModel = url.includes('spode_-_christmas_mug.glb');
+
+            loader.load(
+                url,
+                (gltf) => {
+                    currentModel = gltf.scene;
+
+                    // Centering and Standardized Scaling
+                    const box = new THREE.Box3().setFromObject(currentModel);
+                    const size = box.getSize(new THREE.Vector3());
+                    const center = new THREE.Vector3();
+                    box.getCenter(center);
+                    const maxDim = Math.max(size.x, size.y, size.z);
+
+                    // 1. Center the model: Shift the model root so its center aligns with its local origin
+                    currentModel.position.sub(center);
+
+                    // 2. Apply standardized scaling: 
+                    // Per‑GLB size control
+                    // Using 3.2 for mug and 4.5 for others as defined in the provided file.
+                    const targetSize = isMugModel ? 3.2 : 4.5;
+                    const scaleFactor = targetSize / maxDim;
+                    currentModel.scale.set(scaleFactor, scaleFactor, scaleFactor);
+
+                    // Start the model at the Top Left position (pathPoints[0])
+                    currentModel.position.x = pathPoints[0].x;
+                    currentModel.position.y = pathPoints[0].y;
+                    currentModel.position.z = pathPoints[0].z;
+
+                    scene.add(currentModel);
+                },
+                (xhr) => {
+                    // console.log(`${Math.round(xhr.loaded / xhr.total * 100)}% loaded for model ${currentModelIndex}`);
+                },
+                (error) => {
+                    console.error('An error occurred loading the GLB model:', error);
+                    currentModelIndex++;
+                    setTimeout(loadNextModel, 1000);
+                }
+            );
+
+            // Increment index for the next cycle
+            currentModelIndex++;
+        }
+
+        // Start the model sequence loop
+        function startModelLoop() {
+            loadNextModel();
+            setInterval(loadNextModel, modelDuration); // Model swapping timer
+        }
+
+        // Interaction setup for background elements (Mouse/Touch position)
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+        document.addEventListener('touchmove', (event) => {
+            if (event.touches.length > 0) {
+                const touch = event.touches[0];
+                mouseX = touch.clientX / window.innerWidth - 0.5;
+                mouseY = touch.clientY / window.innerHeight - 0.5;
+            }
+        });
+
+        const clock = new THREE.Clock();
+
+        // 4. Detail Concept 3D Model Setup (New Section)
+        let detailModel = new THREE.Object3D(); // Group to hold the current detail shape
+        scene.add(detailModel);
+
+        // 3D Shapes corresponding to concepts
+        const conceptGeometries = {
+            // Concept 1: Rectangle/Frame
+            '1': new THREE.BoxGeometry(1.8, 1.2, 0.2),
+            // Concept 2: Oval/Sphere
+            '2': new THREE.SphereGeometry(1.0, 32, 32),
+            // Concept 3: Pentagon/Icosahedron (approximate)
+            '3': new THREE.IcosahedronGeometry(1.2, 0),
+        };
+        const conceptMaterial = new THREE.MeshPhongMaterial({
+            color: 0xFFBF00,
+            shininess: 150,
+            specular: 0xffffff,
+            transparent: true,
+            opacity: 0.8,
+            wireframe: false,
+        });
+
+        // Function to manage the appearance and structure of the 3D detail model
+        function updateDetailModel(conceptId, isVisible) {
+            // Clear any existing mesh in the detailModel group
+            detailModel.clear();
+            detailModel.userData.conceptId = null; // Clear ID
+
+            if (isVisible) {
+                const geometry = conceptGeometries[conceptId];
+                if (geometry) {
+                    const mesh = new THREE.Mesh(geometry, conceptMaterial);
+                    // Position it centrally and a bit forward
+                    mesh.position.set(0, 0, 1.5);
+                    detailModel.add(mesh);
+                    detailModel.userData.conceptId = conceptId; // Set ID for animation
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Rotate main background mesh slowly
+            sphere.rotation.y += 0.002;
+            sphere.rotation.x = Math.sin(elapsedTime * 0.2) * 0.2;
+
+            // Rotate particles based on time and mouse/touch input
+            particlesMesh.rotation.y = -elapsedTime * 0.05 + mouseX * 0.4;
+            particlesMesh.rotation.x = mouseY * 0.4;
+
+            // Camera control based on mouse (OrbitControls handles view, but we'll use mouseX/Y for background offset)
+            if (controls) {
+                // Update OrbitControls
+                controls.update();
+
+                // Apply a subtle movement to the camera position for a dynamic feel
+                const targetX = mouseX * 0.5;
+                const targetY = -mouseY * 0.5;
+
+                camera.position.x += (targetX - camera.position.x) * 0.05;
+                camera.position.y += (targetY - camera.position.y) * 0.05;
+            }
+
+            // --- Detail Model Animation Logic ---
+            if (detailModel.children.length > 0) {
+                const mesh = detailModel.children[0];
+                const conceptId = detailModel.userData.conceptId;
+
+                // Continuous base rotation
+                mesh.rotation.x += 0.005;
+                mesh.rotation.y += 0.008;
+
+                if (conceptId === '1') {
+                    // Concept 1: Shake/Translate for rectangle (complements CSS shake)
+                    mesh.position.x = 0.05 * Math.sin(elapsedTime * 10);
+                    mesh.position.y = 0.05 * Math.cos(elapsedTime * 7);
+                } else if (conceptId === '2') {
+                    // Concept 2: Pulse/Scale for oval (complements CSS pulse)
+                    const scaleFactor = 1.0 + 0.1 * Math.sin(elapsedTime * 2.5);
+                    mesh.scale.set(scaleFactor, scaleFactor, scaleFactor);
+                }
+                // Concept 3 uses the continuous base rotation for its pentagonal shape
+            }
+
+
+            if (currentModel) {
+                // --- Channel Movement Logic (Background Model) ---
+                const t = (movementClock.getElapsedTime() * 1000) % totalMovementTime; // Wrapped time in ms
+
+                let startPoint, endPoint;
+                let startTime, endTime;
+                let isFlipping = false;
+
+                // Determine the current segment and target points
+                if (t < pathTimes[0]) {
+                    // Segment 1: Move Top Left (0) to Bottom Center (1).
+                    startPoint = pathPoints[0];
+                    endPoint = pathPoints[1];
+                    startTime = 0;
+                    endTime = pathTimes[0];
+                } else if (t < pathTimes[1]) {
+                    // Segment 2: Wait at Bottom Center (Explore area) - THE CONTROLLED FLIP
+                    startPoint = pathPoints[1];
+                    endPoint = pathPoints[1];
+                    startTime = pathTimes[0]; // 3000ms
+                    endTime = pathTimes[1]; // 5000ms
+                    isFlipping = true;
+
+                } else if (t < pathTimes[2]) {
+                    // Segment 3: Move Bottom Center (1) to Top Right (2).
+                     startPoint = pathPoints[1];
+                    endPoint = new THREE.Vector3(-2, -6, -5); // 🔵 TEST-COLOR: RIGHT-SIDE OFFSET (changed for verification)
+                    endPoint = pathPoints[2];
+                    startTime = pathTimes[1];
+                    endTime = pathTimes[2];
+                } else { // t < pathTimes[3]
+                    // Segment 4: Wait at Top Right (2).
+                    startPoint = pathPoints[2];
+                    endPoint = pathPoints[2];
+                    startTime = pathTimes[2];
+                    endTime = pathTimes[3];
+                }
+
+                const duration = endTime - startTime;
+                // Calculate the Lerp factor (0 to 1) for position
+                const alpha = (duration > 0) ? (t - startTime) / duration : 1;
+
+                // Interpolate position
+                let interpolatedPosition = new THREE.Vector3();
+                interpolatedPosition.lerpVectors(startPoint, endPoint, alpha);
+
+                // Apply animated position to the model
+                currentModel.position.x = interpolatedPosition.x;
+                // Add slight hover effect back to Y position, relative to the interpolated path position
+                currentModel.position.y = interpolatedPosition.y + Math.sin(elapsedTime * 0.5) * 0.1;
+                currentModel.position.z = interpolatedPosition.z;
+
+
+                // --- Rotation Logic: Implement controlled flip/reveal in Segment 2 ---
+                if (isFlipping) {
+                    // CONTROLLED FLIP (Segment 2: 3000ms to 5000ms)
+                    const t_local = t - startTime;
+                    const duration_flip = endTime - startTime;
+                    const alpha_flip = t_local / duration_flip; // 0.0 to 1.0 over 2 seconds
+
+                    // Y-axis: Precise 360 degree spin (2 * PI) to show all sides (Override standard rotation)
+                    currentModel.rotation.y = 2 * Math.PI * alpha_flip;
+
+                    // Determine the maximum tilt for the X-axis
+                    let maxXTilt = Math.PI / 4; // Default 45 degrees
+
+                    // Increase tilt to 90 degrees (Math.PI / 2) specifically for the mug model
+                    if (isMugModel) {
+                        maxXTilt = Math.PI / 2;
+                    }
+
+                    // X-axis: Tilt forward and back (Flip motion)
+                    currentModel.rotation.x = Math.sin(alpha_flip * Math.PI) * maxXTilt;
+
+                } else {
+                    // CONTINUOUS BASE ROTATION (Segments 1, 3, 4) - Standard slow spin
+                    currentModel.rotation.y += 0.0010;
+                    currentModel.rotation.x = 0; // Reset X tilt for the standard path
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start the animation loop and model sequence when the window is loaded
+        window.onload = function () {
+            // Initialize Orbit Controls after setup
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // for smooth controls
+            controls.dampingFactor = 0.05;
+            // Set the target where the camera should look (center of the path)
+            controls.target.set(0, 0, 0);
+            // Disable auto pan/zoom on controls; we handle zoom with wheel event
+            controls.enablePan = false;
+
+            startModelLoop();
+            animate();
+        }
+
+        // 5. Zoom Functionality (Scroll Wheel) - Retained for separate zoom/pinch control
+        document.addEventListener('wheel', (event) => {
+            if (!canvas.offsetParent) return;
+
+            const zoomSpeed = 0.05;
+            const minZ = 1.5;
+            const maxZ = 10;
+
+            camera.position.z -= event.deltaY * zoomSpeed * 0.1;
+            camera.position.z = Math.max(minZ, Math.min(maxZ, camera.position.z));
+            event.preventDefault();
+        }, {
+            passive: false
+        });
+
+
+        // 6. Navigation Light Effect (Unchanged)
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const navLight = document.getElementById('nav-light');
+            const navContainer = document.getElementById('moving-nav');
+
+            const setLightPosition = (target) => {
+                if (!target) return;
+                const navRect = navContainer.getBoundingClientRect();
+                const targetRect = target.getBoundingClientRect();
+                const left = targetRect.left - navRect.left + navContainer.scrollLeft;
+                const width = targetRect.width;
+
+                navLight.style.left = `${left}px`;
+                navLight.style.width = `${width}px`;
+                navLight.style.opacity = '0.5';
+
+                navItems.forEach(item => item.classList.remove('active-link'));
+                target.classList.add('active-link');
+            };
+
+            const initialActive = document.querySelector('.nav-item.active-link');
+            if (initialActive) {
+                setLightPosition(initialActive);
+            }
+
+
+            navItems.forEach(item => {
+                item.addEventListener('mouseover', (event) => {
+                    setLightPosition(event.currentTarget);
+                });
+
+                navContainer.addEventListener('mouseleave', () => {
+                    navLight.style.opacity = '0';
+                });
+            });
+
+            // 7. Detail Section Click Handlers
+            const card1 = document.getElementById('card-1');
+            const card2 = document.getElementById('card-2');
+            const card3 = document.getElementById('card-3');
+
+            // Pass the ID to the toggle function
+            if (card1) card1.addEventListener('click', () => toggleDetail('1'));
+            if (card2) card2.addEventListener('click', () => toggleDetail('2'));
+            if (card3) card3.addEventListener('click', () => toggleDetail('3'));
+        });
+
+        // Function to toggle the detail view and close others (UPDATED)
+        function toggleDetail(id) {
+            const targetSection = document.getElementById(`concept-detail-${id}`);
+            const allSections = [
+                document.getElementById('concept-detail-1'),
+                document.getElementById('concept-detail-2'),
+                document.getElementById('concept-detail-3'),
+            ];
+
+            // Check if the target section is already visible
+            const isVisible = targetSection && !targetSection.classList.contains('hidden');
+
+            // 1. Hide all sections
+            allSections.forEach(section => {
+                if (section) {
+                    section.classList.add('hidden');
+                }
+            });
+
+            // 2. If it was hidden, show the target section
+            if (targetSection && !isVisible) {
+                targetSection.classList.remove('hidden');
+                // Optional: Scroll to the newly opened section
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                updateDetailModel(id, true); // <--- SHOW 3D MODEL
+            } else {
+                updateDetailModel(id, false); // <--- HIDE 3D MODEL
+            }
+        }
+
+
+    //slider script from here 
+
+      (function () {
+    if (!window.THREE) return;
+
+    /* ================= CONFIG ================= */
+    const ITEM_COUNT = 20;
+    const SET_COUNT = 3;                 // smooth looping
+    const ITEM_WIDTH = 12;
+    const ITEM_GAP = 1.5;
+    const ITEM_DEPTH = 0.15;
+    const ITEM_RADIUS = 0.5;
+    const ITEM_HALF_HEIGHT = 4;
+    const SCROLL_SPEED = 0.04;
+
+    const TOTAL_ITEM_WIDTH = ITEM_WIDTH + ITEM_GAP;
+    const TRACK_LENGTH = ITEM_COUNT * TOTAL_ITEM_WIDTH;
+    const TOTAL_TRACK_LENGTH = TRACK_LENGTH * SET_COUNT;
+
+    const Y_TOP = 5;
+    const Y_BOTTOM = -5;
+    const PIPE_Y = -7.5;
+    const PIPE_Z = 3.0;
+
+    /* ===== YOUR IMAGES (ALL KEPT) ===== */
+  const IMAGES_TOP = [
+  "https://images.unsplash.com/photo-1597143722151-6c041d7b2901?w=500&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=500&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1617897903246-719242758050?w=500&auto=format&fit=crop&q=60",
+  "https://plus.unsplash.com/premium_photo-1719289799376-d3de0ca4ddbc?q=80&w=870&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=464&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1587303876752-91efb6315dcc?q=80&w=435&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1731510912565-1c2b6df339a7?q=80&w=387&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1680770733998-dd4b09866450?q=80&w=870&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1626618016265-26657b08e8e8?q=80&w=465&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1586533350279-cfa516d2d832?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1691480150204-66dd1eb77391?w=500&auto=format&fit=crop&q=60",
+  "https://images.unsplash.com/photo-1719488757646-711cdaa7ca2c?q=80&w=435&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1719488758018-c6c1dbabe6d7?q=80&w=435&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1687071523279-93ec8e5e53b7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fEludGVsJTIwbGF0ZXN0JTIwR1BVfGVufDB8fDB8fHww",
+  "https://images.unsplash.com/photo-1515793789486-599a7f522b54?q=80&w=464&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1765812515434-6a0f0fc38bb6?q=80&w=806&auto=format&fit=crop",
+  "https://plus.unsplash.com/premium_photo-1667031519192-ba1ed681751d?q=80&w=871&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1662499216961-cc219ee71f15?q=80&w=939&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y29tcHV0ZXJ8ZW58MHx8MHx8fDA%3D",
+  "https://images.unsplash.com/photo-1680503397644-bcd216845f26?q=80&w=870&auto=format&fit=crop"
+];
+
+
+    const IMAGES_BOTTOM = [...IMAGES_TOP].reverse(); // reuse = 20 total allowed
+
+    /* ================= SCENE ================= */
+    const container = document.getElementById("oqq-three-container");
+
+    const scene = new THREE.Scene(); // NO background set
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      container.clientWidth / container.clientHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(0, -2, 22);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setClearAlpha(0);
+    container.appendChild(renderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 1.3));
+    const light = new THREE.DirectionalLight(0xffffff, 0.9);
+    light.position.set(0, 10, 10);
+    scene.add(light);
+
+    const clock = new THREE.Clock();
+    const sliders = [];
+    const WAVE_AMP = 0.35;   // vertical amount
+    const WAVE_FREQ = 2.5;  // speed
+
+       
+    /* ================= HELPERS ================= */
+    function roundedBox(w,h,d,r){
+      const s=new THREE.Shape();
+      const x=-w/2,y=-h/2;
+      r=Math.min(r,w/2,h/2);
+      s.moveTo(x,y+r);
+      s.lineTo(x,y+h-r); s.absarc(x+r,y+h-r,r,Math.PI,Math.PI/2,true);
+      s.lineTo(x+w-r,y+h); s.absarc(x+w-r,y+h-r,r,Math.PI/2,0,true);
+      s.lineTo(x+w,y+r); s.absarc(x+w-r,y+r,r,0,-Math.PI/2,true);
+      s.lineTo(x+r,y); s.absarc(x+r,y+r,r,-Math.PI/2,-Math.PI,true);
+      return new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false});
+    }
+
+    // texture cache + safe loader (prevents "empty" planes when a URL fails)
+    const TEX_CACHE = new Map();
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = "anonymous";
+
+    function fallbackTexture(txt){
+      const c=document.createElement('canvas');
+      c.width=512; c.height=256;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='rgba(255,255,255,0.08)';
+      ctx.fillRect(0,0,c.width,c.height);
+      ctx.strokeStyle='rgba(106,4,15,0.8)';
+      ctx.lineWidth=6;
+      ctx.strokeRect(10,10,c.width-20,c.height-20);
+      ctx.fillStyle='rgba(255,255,255,0.85)';
+      ctx.font='bold 44px Arial';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(txt, c.width/2, c.height/2);
+      const t=new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+
+    function getTexture(url){
+      if (TEX_CACHE.has(url)) return TEX_CACHE.get(url);
+      const t = fallbackTexture('LOADING');
+      TEX_CACHE.set(url, t);
+      loader.load(url,
+        (tex)=>{ tex.colorSpace = THREE.SRGBColorSpace; TEX_CACHE.set(url, tex); },
+        undefined,
+        ()=>{ TEX_CACHE.set(url, fallbackTexture('NO IMAGE')); }
+      );
+      return t;
+    }
+
+    function imagePlane(url){
+      const mat = new THREE.MeshBasicMaterial({ map: getTexture(url), transparent:true, side:THREE.DoubleSide });
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(ITEM_WIDTH*0.9, ITEM_HALF_HEIGHT*1.6),
+        mat
+      );
+      mesh.userData = { url };
+
+      // if the cached texture later becomes the real one, keep it in sync
+      mesh.onBeforeRender = () => {
+        const tex = TEX_CACHE.get(url);
+        if (tex && mat.map !== tex) { mat.map = tex; mat.needsUpdate = true; }
+      };
+
+      return mesh;
+    }
+
+    /* ================= MONITOR ================= */
+    let monitorMat, monitorImgMat, monitorImgMesh;
+
+    function createMonitor(){
+  const g = new THREE.Group();
+
+  // bezel: transparent dark red
+  g.add(new THREE.Mesh(
+    new THREE.BoxGeometry(15, 9, 0.3),
+    new THREE.MeshBasicMaterial({
+      color: 0x2b0000,
+      transparent: true,
+      opacity: 0.35
+    })
+  ));
+
+  // screen (transparent, no fill color)
+  monitorMat = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    transparent: true,
+    opacity: 0.2
+  });
+  const screen = new THREE.Mesh(
+    new THREE.BoxGeometry(13.8, 7.8, 0.25),
+    monitorMat
+  );
+  screen.position.z = 0.05;
+  g.add(screen);
+
+  // image plane (kept)
+  monitorImgMat = new THREE.MeshBasicMaterial({ transparent:true, opacity:0 });
+  monitorImgMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(13, 7.5),
+    monitorImgMat
+  );
+  const img = monitorImgMesh;
+  img.position.z = 0.18;
+  g.add(img);
+
+  // stand (unchanged)
+  const stand = new THREE.Mesh(
+    new THREE.BoxGeometry(8, 0.5, 3),
+    new THREE.MeshBasicMaterial({ color: 0x333333 })
+  );
+  stand.position.set(0, -4.7, 0.1);
+  g.add(stand);
+
+  // pushed down
+  g.position.set(0, Y_TOP - 8, 5);
+  scene.add(g);
+}
+
+    /* ================= PIPELINE (NO BLACK BLOCKER) ================= */
+    const pipe=new THREE.Mesh(
+      new THREE.BoxGeometry(TOTAL_TRACK_LENGTH+20,0.05,1.2),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+
+    );
+    pipe.position.set(0, PIPE_Y, PIPE_Z);
+    scene.add(pipe);
+
+    const indicator=new THREE.Mesh(
+      new THREE.BoxGeometry(0.5,0.5,0.5),
+      new THREE.MeshBasicMaterial({color:0xffffff})
+    );
+    indicator.position.set((TOTAL_TRACK_LENGTH+20)/2, PIPE_Y+0.2, PIPE_Z);
+    indicator.userData={start:-(TOTAL_TRACK_LENGTH+20)/2, end:(TOTAL_TRACK_LENGTH+20)/2};
+    scene.add(indicator);
+
+    /* ================= TRACKS ================= */
+    const baseGeo = roundedBox(ITEM_WIDTH, ITEM_HALF_HEIGHT * 2, ITEM_DEPTH, ITEM_RADIUS);
+
+    function buildTrack(y, images, rowId) {
+      for (let s = 0; s < SET_COUNT; s++) {
+        for (let i = 0; i < ITEM_COUNT; i++) {
+          const m = new THREE.Mesh(
+            baseGeo,
+            new THREE.MeshBasicMaterial({ transparent:true, opacity:0 })
+          );
+
+          m.position.set(
+            s * TRACK_LENGTH + i * TOTAL_ITEM_WIDTH - (TOTAL_TRACK_LENGTH / 2) + (TOTAL_ITEM_WIDTH / 2),
+            y,
+            0
+          );
+          
+          //sliders behind shadow
+
+          const p = imagePlane(images[i % images.length]);
+          // 1px border (visual wireframe edge)
+          const edges = new THREE.EdgesGeometry(baseGeo);
+          const border = new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({ color: 0x6a040f, linewidth: 1 })
+          );
+          m.add(border);
+          p.position.z = ITEM_DEPTH + 0.05;
+          m.add(p);
+
+          // ---- DATA PIPELINE METADATA ----
+          m.userData = {
+            img: images[i % images.length],
+            row: rowId,
+            index: i
+          };
+
+          m.userData._baseY = y; // remember original row
+          sliders.push(m);
+          scene.add(m);
+        }
+      }
+    }
+
+    createMonitor();
+    buildTrack(Y_TOP, IMAGES_TOP, 0);
+    buildTrack(Y_BOTTOM, IMAGES_BOTTOM, 1);
+
+    /* ================= CLICK (ENLARGE + MONITOR) ================= */
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    function pickSliderFromIntersect(obj){
+      let o=obj;
+      while(o && !o.userData?.img){ o=o.parent; }
+      return o && o.userData?.img ? o : null;
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e)=>{
+      const r = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      mouse.y = -(((e.clientY - r.top) / r.height) * 2 - 1);
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(sliders, true);
+      if (!hits.length) return;
+
+      const host = pickSliderFromIntersect(hits[0].object);
+      if (!host) return;
+
+      const url = host.userData.img;
+      monitorImgMat.opacity = 1;
+      monitorImgMat.map = getTexture(url);
+      monitorImgMat.needsUpdate = true;
+
+      if (monitorImgMesh) monitorImgMesh.scale.set(1.18, 1.18, 1);
+    });
+
+    /* ================= ANIMATE ================= */
+(function animate() {
+  requestAnimationFrame(animate);
+
+  const d = SCROLL_SPEED * 60 * clock.getDelta();
+
+  // MOVE ALL SLIDERS + subtle vertical wave (keeps original pipeline)
+  sliders.forEach(m => {
+    m.position.x -= d;
+    if (m.position.x < -TOTAL_TRACK_LENGTH / 2 - ITEM_WIDTH) {
+      m.position.x += TOTAL_TRACK_LENGTH;
+    }
+    if (m.userData && m.userData._baseY !== undefined) {
+      const t = clock.elapsedTime;
+      m.position.y = m.userData._baseY + Math.sin(t * WAVE_FREQ + m.position.x * 0.05) * WAVE_AMP;
+    }
+  });
+
+  // PIPE INDICATOR
+  indicator.position.x -= d * 0.75;
+  if (indicator.position.x < indicator.userData.start) {
+    indicator.position.x = indicator.userData.end;
+  }
+
+  // ---- MONITOR DATA PIPELINE (CENTER CROSS, ONE-BY-ONE, BOTH ROWS) ----
+  sliders.forEach(m => {
+    if (!m.userData) return;
+    if (m.userData._lastX === undefined) m.userData._lastX = m.position.x;
+
+    const crossedCenter = (m.userData._lastX > 0 && m.position.x <= 0);
+    if (crossedCenter && m.userData.img) {
+      monitorImgMat.opacity = 1;
+      monitorImgMat.map = getTexture(m.userData.img);
+      monitorImgMat.needsUpdate = true;
+    }
+
+    m.userData._lastX = m.position.x;
+  });
+
+  renderer.render(scene, camera);
+})();
+
+    window.addEventListener("resize", () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+
+  })();
+
+//slider js script end here.
+
+
+//pantagon shape slider script starts here
+  (() => {
+
+  const sliderImages = [
+    'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/mug.png',
+    'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/bags.png',
+    'https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg',
+    'https://images.pexels.com/photos/303383/pexels-photo-303383.jpeg',
+    'https://media.istockphoto.com/id/1404894296/photo/woman-with-stylish-bag-on-grey-background-closeup.jpg?s=1024x1024&w=is&k=20&c=vUTe7LtnUaTrTpgQPgifhJfF7shbq202eVO4b2TjsDw=',
+    'https://media.istockphoto.com/id/1459477634/photo/organization-shelves-with-shoes-organized-and-lined-up.jpg?b=1&s=612x612&w=0&k=20&c=teoxcnV6fOMSu0mA-F4H5Pp0XJNqjo8zyz2q_hyfytY=',
+    'https://images.pexels.com/photos/205961/pexels-photo-205961.jpeg',
+    'https://images.pexels.com/photos/2456429/pexels-photo-2456429.jpeg',
+
+];
+
+  const productDetails = {
+  mug:{title:'Artisan Mug',detail:'Perfectly sized ceramic for your daily ritual.',extra:'Stoneware'},
+  bags:{title:'Eco Tote',detail:'Durable canvas for everyday use.',extra:'Organic Cotton'},
+  pexels1:{title:'Minimal Decor',detail:'Clean modern aesthetic.',extra:'Studio Style'},
+  pexels2:{title:'Urban Workspace',detail:'Creative working environment.',extra:'Productive Setup'},
+  istock1:{title:'Leather Fashion',detail:'Premium bag styling.',extra:'Luxury Finish'},
+  istock2:{title:'Organized Shoes',detail:'Perfect shelf organization.',extra:'Lifestyle'},
+  pexels3:{title:'Classic Watch',detail:'Timeless daily wear.',extra:'Elegant Design'},
+  pexels4:{title:'Casual Fashion',detail:'Everyday comfort look.',extra:'Modern Fit'}
+};
+
+  const brightColors = [0x4CAF50,0x9C27B0,0x03A9F4];
+  const brightColorsRgb = ['rgb(76,175,80)','rgb(156,39,176)','rgb(3,169,244)'];
+
+  const INFO_X = -1.2;
+  const IMAGE_X = 1.2;
+
+  const canvas = document.getElementById('slider');
+
+  const sliderRenderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  sliderRenderer.setClearColor(0x000000, 0);
+
+  const sliderScene = new THREE.Scene();
+  const sliderCamera = new THREE.OrthographicCamera(-3.5,3.5,1.7,-1.7,0.1,10);
+  sliderCamera.position.z = 5;
+
+  const loader = new THREE.TextureLoader();
+  loader.setCrossOrigin('anonymous');
+
+  let slideIndex = 0;
+  let imageGroup = null;
+  let infoGroup = null;
+  let flashMesh = null;
+  let timers = [];
+  let autoTimer = null;
+
+  const alphaMap = (() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 256;
+    const x = c.getContext('2d');
+    x.fillStyle='#000'; x.fillRect(0,0,256,256);
+    x.fillStyle='#fff';
+    x.beginPath();
+    x.moveTo(128,0); x.lineTo(256,96); x.lineTo(208,256);
+    x.lineTo(48,256); x.lineTo(0,96);
+    x.closePath(); x.fill();
+    return new THREE.CanvasTexture(c);
+  })();
+
+  function initFlash(){
+    flashMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(3,3),
+      new THREE.MeshBasicMaterial({transparent:true,opacity:0,alphaMap})
+    );
+    flashMesh.position.z = 0.03;
+    sliderScene.add(flashMesh);
+  }
+
+  function clearAll(){
+    timers.forEach(t=>clearTimeout(t));
+    timers=[];
+    [imageGroup,infoGroup].forEach(g=>{
+      if(!g) return;
+      sliderScene.remove(g);
+      g.traverse(o=>{
+        if(o.isMesh){
+          o.geometry.dispose();
+          if(o.material.map) o.material.map.dispose();
+          o.material.dispose();
+        }
+      });
+    });
+    imageGroup=infoGroup=null;
+    if(flashMesh) flashMesh.material.opacity=0;
+  }
+
+  function showSlide(i){
+    clearAll();
+
+    const url = sliderImages[i % sliderImages.length];
+    const key = Object.keys(productDetails).find(k=>url.includes(k)) || Object.keys(productDetails)[i % Object.keys(productDetails).length];
+    const info = productDetails[key] || {};
+    const color = brightColors[i % brightColors.length];
+    const colorRgb = brightColorsRgb[i % brightColorsRgb.length];
+
+    /* INFO PANEL */
+    infoGroup = new THREE.Group();
+    infoGroup.position.set(INFO_X,0,0.01);
+
+    const infoCanvas = document.createElement('canvas');
+    infoCanvas.width = infoCanvas.height = 512;
+    const cx = infoCanvas.getContext('2d');
+    cx.fillStyle='rgba(20,40,20,.28)'; cx.fillRect(0,0,512,512);
+    cx.strokeStyle='#FFBF00'; cx.lineWidth=2; cx.strokeRect(20,20,472,472);
+    cx.fillStyle=colorRgb; cx.font='bold 40px Inter'; cx.textAlign='center';
+    cx.fillText(info.title||'',256,220);
+    cx.fillStyle='#eaffd0'; cx.font='22px Inter'; cx.fillText(info.detail||'',256,270); cx.font='16px Inter'; cx.fillStyle='#d4ff9a'; cx.fillText(info.extra||'',256,310);
+
+    const infoTex = new THREE.CanvasTexture(infoCanvas);
+    const panel = new THREE.Mesh(
+      new THREE.PlaneGeometry(3,3),
+      new THREE.MeshBasicMaterial({map:infoTex,transparent:true,opacity:0,alphaMap})
+    );
+    infoGroup.add(panel);
+    sliderScene.add(infoGroup);
+
+    
+    /* IMAGE PANEL */
+    imageGroup = new THREE.Group();
+    imageGroup.position.set(IMAGE_X,0,0.02);
+    sliderScene.add(imageGroup);
+
+    loader.load(url, tex=>{
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      tex.needsUpdate = true;
+
+      const cols = 3, rows = 2;
+      const pw = 2.8 / cols;
+      const ph = 2.8 / rows;
+      const order = [0,2,3,5,1,4];
+      const pieces = [];
+
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          const t = tex.clone();
+          t.repeat.set(1/cols,1/rows);
+          t.offset.set(c/cols,(rows-1-r)/rows);
+          t.needsUpdate = true;
+
+          const m = new THREE.Mesh(
+            new THREE.PlaneGeometry(pw,ph),
+            new THREE.MeshBasicMaterial({map:t,transparent:true,alphaMap})
+          );
+
+          m.position.x = -((cols-1)*pw)/2 + c*pw;
+          m.position.y =  ((rows-1)*ph)/2 - r*ph;
+          m.position.z = 0;
+          m.visible = false;
+
+          pieces.push(m);
+          imageGroup.add(m);
+        }
+      }
+
+      order.forEach((idx,i)=>{
+        timers.push(setTimeout(()=>pieces[idx]&&(pieces[idx].visible=true), i*120));
+      });
+
+      flashMesh.position.x = IMAGE_X;
+      flashMesh.material.color.setHex(0xFFBF00);
+      timers.push(setTimeout(()=>{
+        flashMesh.material.opacity=0.4;
+        timers.push(setTimeout(()=>flashMesh.material.opacity=0,600));
+      },800));
+    });
+
+    const start = Date.now();
+    (function slide(){
+      const t = Math.min(1,(Date.now()-start)/700);
+      infoGroup.position.x = IMAGE_X + (INFO_X-IMAGE_X)*t;
+      panel.material.opacity = t;
+      if(t<1) requestAnimationFrame(slide);
+    })();
+  }
+
+  function animate(){
+    requestAnimationFrame(animate);
+    sliderRenderer.render(sliderScene, sliderCamera);
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    sliderRenderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    initFlash();
+    showSlide(slideIndex);
+    animate();
+    autoTimer = setInterval(()=>showSlide(++slideIndex),3000);
+    canvas.addEventListener('click',()=>showSlide(++slideIndex));
+    window.addEventListener('resize',()=>{
+      sliderRenderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    });
+  });
+
+})();
+
+//pentagon shape slider script ends here
+
+    </script>
+</body>
+
+</html>
