@@ -291,6 +291,10 @@ def meshes():
 def design():
     return render_template('design.html')
 
+#use 360 panoramic image visualization demo page
+@app.route('/panoramic')
+def panoramic():
+    return render_template('panoramic.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
