@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AptiCraft Skybox _Afsana</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Three.js and GLTFLoader for 3D content -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GLTFLoader for loading the .glb satellite model -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <!-- OrbitControls for interactive camera movement (zoom, rotate) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Configure Tailwind to use the Inter font family and custom styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        /* Target both HTML and BODY to eliminate the browser's default white background */
+        html,
+        body {
+            background-color: transparent !important;
+        }
+
+        /* Ensure the main content wrapper is also transparent */
+        main {
+            background-color: transparent !important;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Allow scrolling by removing overflow: hidden; */
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            /* Hide horizontal scrollbar, allow vertical */
+        }
+
+        /* Custom styles: Setting a large height to enable scrolling for the 360 viewer */
+        .skybox-container {
+            width: 100%;
+            /* Full width of its parent */
+            /* Reverting to a large height to force vertical scrolling */
+            height: 2000px;
+            position: relative;
+            /* Anchor for absolute elements like the info section and footer */
+            /* Ensure this main container is also transparent */
+            background-color: transparent !important;
+        }
+
+        /* Style the 360 viewer iframe to fill the container and scroll with it */
+        .skybox-container iframe {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Style the 3D canvas to be FIXED to the viewport, ensuring the satellite is always visible */
+        #satellite-canvas {
+            width: 100vw;
+            /* Full viewport width */
+            height: 100vh;
+            /* Full viewport height */
+            position: fixed;
+            /* FIXED relative to the viewport (always on top) */
+            top: 0;
+            left: 0;
+            z-index: 10;
+            /* 3D canvas on top of the iframe and scroll */
+        }
+
+        /* Floating Navigation elements are already position: fixed */
+        #floating-nav {
+            position: fixed;
+            top: 1rem;
+            /* Space from the top */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 30;
+            /* Highest z-index to always be on top */
+            /* Allows mouse events to pass through to the 360 viewer, unless clicking a link */
+            pointer-events: none;
+        }
+
+        #floating-nav a {
+            pointer-events: auto;
+            /* Re-enable clicks on the links themselves */
+            /* Add shadow for readability against the skybox */
+            text-shadow: 0 0 8px rgba(235, 228, 228, 0.9), 0 0 3px rgba(0, 0, 0, 0.6);
+            letter-spacing: -0.07em;
+        }
+
+        /* Style for the mode switch (Positioning only - other styles handled by Tailwind in JS) */
+        #mode-switch {
+            /* We rely on Tailwind classes in JS for full styling (right, top, padding, colors) */
+            z-index: 20;
+            /* Above everything else */
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            /* Prevent text wrapping */
+        }
+
+        /* Ensure text is readable against the fixed background (applies to the info section and footer) */
+        /* #info-section h3, #info-section p, footer div, footer a {
+          
+            text-shadow: 0 0 10px rgba(175, 171, 158, 0.9), 0 0 5px rgba(236, 159, 159, 0.7);
+        } */
+
+        /* The footer will now be positioned absolutely inside the main container, but we still need the fixed-footer ID for the scroll fix below */
+    </style>
+</head>
+
+<body class="min-h-screen text-gray-100 antialiased">
+
+    <!-- Main Content Section: Still defines the large scrollable area (2000px high) -->
+    <main class="w-full">
+        <div class="w-full h-full">
+            <!-- Skybox Viewer Container (Relative positioning anchor) -->
+            <div id="skybox-3d-wrapper" class="skybox-container overflow-hidden">
+
+                <!-- Floating AptiCraft/Home UI (Fixed and centered) -->
+                <div id="floating-nav" class="flex items-center space-x-28 p-8">
+                    <!-- AptiCraft Logo/Brand Name -->
+                    <a id="apti" href="#"
+                        class=" text-transparent [-webkit-text-stroke:1px_black] text-6xl font-extrabold text-[#C19A6B] tracking-wider transition duration-300 hover:text-white">
+                        AptiCraft
+                    </a>
+                    <div class="flex space-x-10">
+                        <!-- 360 Skybox placed just below nav -->
+                        <h3 class="mt-4 mb-3 ">
+                            <span class="text-5xl tracking-wider text-[#E3DAC9] italic rotate-[-2deg] select-none"
+                                style="font-family:fantasy;
+                            text-shadow: 
+                            -1px -1px 0 #470606,
+                            1px -1px 0 #7fcfdd,
+                            -2px  2px 0 #dfe6a5,
+                            1px  1px 0 #7e5a5a;;
+                            ">360°</span>
+                        </h3>
+                    </div>
+                    <!-- Home Link -->
+                    <a href="/" target="_blank" class="text-3xl font-normal text-[#FFFAFA]
+                     transition duration-300 hover:text-gray-800"
+                        style="text-shadow: 0 0 10px rgba(238, 233, 162, 0.9), 0 0 5px rgba(59, 11, 11, 0.7);">
+                        home
+                    </a>
+                </div>
+                <!-- 360 Viewer Iframe -->
+                <iframe src="https://skybox.blockadelabs.com/e/640be3f44cf1cdc3109ad67198007549"
+                    allow="fullscreen; xr-spatial-tracking" frameborder="0">
+                </iframe>
+                <!-- Three.js Canvas Overlay (Fixed to viewport) -->
+                <canvas id="satellite-canvas"></canvas>
+                <!-- Mode Switch UI (Initial state set by JS) -->
+                <div id="mode-switch">
+                    <!-- Text content and all styles are now set by the JavaScript function setZoomMode -->
+                </div>
+
+                <!-- 
+                FIXED Info Section Overlay (Always visible on screen, positioned at bottom-center)
+                - Changed from 'absolute' to 'fixed' and repositioned using 'bottom-10'.
+                -->
+                <div id="scroll-info-fixed-overlay" class="fixed bottom-10 left-1/2 transform -translate-x-1/2 
+                           w-full max-w-4xl p-6 z-50 
+                           transition-opacity duration-500 
+                           pointer-events-auto">
+                    <div id="info-section" class="text-center bg-transparent">
+                        <!-- Bright Gray Text, Large Size -->
+                        <h3 id="info-title" class="text-3xl lg:text-3xl font-bold text-[#98817B] mb-4"></h3>
+                        <p id="info-summary" class="text-xl font-tech text-[#F5F5F5]"></p>
+                    </div>
+                </div>
+
+                <!-- 
+                SCROLLABLE Footer Section (Now ABSOLUTE at the bottom of the 2000px container)
+                - 'absolute bottom-0' ensures it appears at the end of the scroll.
+                -->
+                <footer id="fixed-footer" class="absolute bottom-0 left-0 w-full p-6 bg-transparent z-50
+                           text-white flex flex-col md:flex-row items-center justify-between opacity-80
+                           border-t-2 border-gray-700/20">
+
+                    <!-- AptiCraft Brand Text (Stylized "Ambush Shape" Font) -->
+                    <!-- AptiCraft Logo/Brand Name -->
+                    <a id="apti" href="#" class=" text-transparent [-webkit-text-stroke:1px_black] text-5xl font-bold text-[#C19A6B] 
+                    tracking-wider transition duration-300 hover:text-white " style=" pointer-events: auto; 
+                            text-shadow: 0 0 8px rgba(235, 228, 228, 0.9), 0 0 3px rgba(0,0,0,0.6);
+                            letter-spacing: -0.07em; ">
+                        AptiCraft
+                    </a>
+                    <!-- Social Links and Info -->
+                    <div class="flex space-x-6 text-sm font-medium text-gray-300 mr-24">
+                        <a href="https://github.com/Afsana721/flask_apps" target="_blank"
+                            class="hover:text-white transition duration-200">GitHub</a>
+                        <a href="https://flask-apps-e45a.onrender.com/" target="_blank"
+                            class="hover:text-white transition duration-200">Portfolio_site</a>
+                        <a href="https://www.openqquantify.com/" target="_blank"
+                            class="hover:text-white transition duration-200">OpenQQuantify</a>
+                        <a href="afsanaafroze21@gmail.com" target="_blank"
+                            class="hover:text-white transition duration-200">Email</a>
+                        <a href="https://www.linkedin.com/in/afsanausa/" target="_blank"
+                            class="hover:text-white transition duration-200">LinkedIn</a>
+                    </div>
+                </footer>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Use an IIFE for scope isolation
+        (function () {
+            const container = document.getElementById('skybox-3d-wrapper');
+            const canvas = document.getElementById('satellite-canvas');
+            const modeSwitch = document.getElementById('mode-switch');
+            const fixedInfoOverlay = document.getElementById('scroll-info-fixed-overlay');
+
+            // Using the GLB URL provided in the last file
+            const GLB_URL = 'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766547783114.glb';
+
+            let scene, camera, renderer, satellite, controls;
+            let dataWeb;
+            let webPoints = [];
+            const NUM_WEB_SEGMENTS = 25;
+            const dataPoints = [];
+            let isSatelliteZoomActive = true;
+
+            // Array of abstract symbols/signs for the data stream effect
+            const dataTerms = ["<|>>$$&&**", "[#]$$&&**", "$$$$&&**", "~*0011", "0x00xx$$", ">>>$$&&**", "|...|^^%%", "{&}$$&&**", ":::$$&&**", "->0011**&&"];
+
+            // --- Info Section Variables and Content ---
+            const infoTitle = document.getElementById('info-title');
+            const infoSummary = document.getElementById('info-summary');
+
+            let infoIndex = 0;
+            let infoInterval = null;
+
+            const infoContent = [
+                {
+                    title: "360° Immersive Documentation",
+                    summary: "Capture the entire environment in a single, fixed-point view. This high-resolution panoramic data is foundational for virtual site analysis and remote collaboration."
+                },
+                {
+                    title: "Pipeline Works",
+                    summary: "Data visualized by the pulsing wireframe - is streamed from the satellite, indexed, and georeferenced against the 360° environment for a cohesive digital twin experience."
+                },
+                {
+                    title: "Development & Engineering Benefits",
+                    summary: "Provides engineers with a fixed, verifiable visual record for quality assurance, progress tracking, anomaly detection, and reducing physical site visits, drastically cutting development time."
+                }
+            ];
+            // ------------------------------------------
+
+            // Note: Initial hide logic is removed as the element is now fixed and always visible.
+
+            // Helper to create transparent text texture for sprites
+            function createTextTexture(text) {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                // Smaller canvas size (e.g., 160x40) for a tiny, tight sprite
+                canvas.width = 160;
+                canvas.height = 40;
+                context.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent background
+                context.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Smaller font size (Tiny visual, reduced to 12px)
+                context.font = '18px Inter';
+                context.fillStyle = '#CCCCCC'; // Light Gray text color
+                context.textAlign = 'center';
+                context.fillText(text, canvas.width / 2, canvas.height / 2);
+
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            // Function to generate a new data point sprite (floating text)
+            function generateDataPoint() {
+                if (!satellite || dataTerms.length === 0) return;
+
+                // Randomly select a text term and create its unique texture
+                const text = dataTerms[Math.floor(Math.random() * dataTerms.length)];
+                const texture = createTextTexture(text);
+
+                // Create the sprite material and sprite
+                const material = new THREE.SpriteMaterial({
+                    map: texture,
+                    color: 0x99FFFF,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending, // Glowing effect
+                    opacity: 1.5,
+                    sizeAttenuation: false // Sprite scale is fixed relative to screen space.
+                });
+                const sprite = new THREE.Sprite(material);
+
+                // Position it near the satellite with a slight random offset
+                const satPos = satellite.position.clone();
+                sprite.position.copy(satPos);
+
+                // Increased offset to ensure visibility around the drone model.
+                sprite.position.x += (Math.random() - 0.5) * 1.5;
+                sprite.position.y += 1.0;
+
+                // Further adjusted scale for the fixed screen size (0.2 x 0.03, even tinier visual)
+                sprite.scale.set(0.3, 0.04, 1);
+
+                // Add to scene and tracking array
+                scene.add(sprite);
+                dataPoints.push({
+                    sprite: sprite,
+                    startTime: Date.now(),
+                    duration: 3000, // Fade duration (3 seconds)
+                    startOpacity: 1
+                });
+            }
+
+            function setZoomMode(isSatellite) {
+                isSatelliteZoomActive = isSatellite;
+
+                // 1. Control OrbitControls
+                controls.enabled = isSatellite;
+
+                // Uses 'fixed' position from the previous update to keep it on screen
+                const staticClasses = 'fixed right-4 top-1/2 transform -translate-y-1/2 p-2 rounded-full shadow-lg z-20 cursor-pointer transition duration-300 text-sm font-normal text-gray-800';
+
+                // 2. Update Canvas pointer events and Switch UI
+                if (isSatellite) {
+                    // Satellite mode: Canvas captures clicks for OrbitControls
+                    canvas.style.pointerEvents = 'all';
+                    modeSwitch.textContent = 'Zoom GLB';
+                    // Hover state added
+                    modeSwitch.className = 'bg-gray-200 hover:bg-gray-300 ' + staticClasses;
+                } else {
+                    // 360 mode: Canvas ignores clicks, allowing them to pass through to the iframe
+                    canvas.style.pointerEvents = 'none';
+                    modeSwitch.textContent = 'Zoom 360';
+                    // Hover state added
+                    modeSwitch.className = 'bg-gray-200 hover:bg-gray-300 ' + staticClasses;
+                }
+            }
+
+            // --- Info Section Carousel Logic ---
+            function updateInfoSection() {
+                // Fade out the entire overlay container (for transition effect)
+                fixedInfoOverlay.style.opacity = 0;
+
+                setTimeout(() => {
+                    // Update content
+                    infoTitle.textContent = infoContent[infoIndex].title;
+                    infoSummary.textContent = infoContent[infoIndex].summary;
+
+                    // Fade in the entire overlay container
+                    fixedInfoOverlay.style.opacity = 1;
+
+                    // Cycle index
+                    infoIndex = (infoIndex + 1) % infoContent.length;
+                }, 500); // Transition time
+            }
+
+            function startInfoCycle() {
+                updateInfoSection();
+                // Cycle content every 10 seconds
+                infoInterval = setInterval(updateInfoSection, 10000);
+            }
+
+            // Scroll handler removed as the element is now fixed and always visible.
+
+            // -----------------------------------
+
+            function init() {
+                // Set canvas size (relative to viewport)
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                // 1. Scene
+                scene = new THREE.Scene();
+
+                // 2. Camera
+                // Use viewport dimensions for the aspect ratio calculation
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(0, 0, 8);
+
+                // 3. Renderer
+                renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    alpha: true,
+                    antialias: true
+                });
+                // Set renderer size to match viewport size
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                // 4. OrbitControls setup
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                // Enable screen-space panning to allow dragging the satellite's position
+                controls.screenSpacePanning = true;
+                controls.minDistance = 2;
+                controls.maxDistance = 15;
+
+                // *** SLOW ROTATION SETTINGS ***
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 0.2;
+                // ******************************
+
+                // 5. Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+                scene.add(ambientLight);
+
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);
+                directionalLight.position.set(5, 5, 5).normalize();
+                scene.add(directionalLight);
+
+                // 6. Data Web setup (Data Pipeline visualization)
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0xFFFFFF, // Pure white
+                    linewidth: 1,
+                    opacity: 0.0,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending
+                });
+
+                // Initialize anchor points and geometry array
+                const initialPositions = [];
+                const webRadius = 3.5;
+
+                for (let i = 0; i < NUM_WEB_SEGMENTS; i++) {
+                    const x = (Math.random() - 0.5) * webRadius * 2;
+                    const y = (Math.random() * -1.5) - 1.5;
+                    const z = (Math.random() - 0.5) * webRadius * 2;
+
+                    webPoints.push(new THREE.Vector3(x, y, z));
+
+                    initialPositions.push(0, 0, 0); // Placeholder for satellite position (start of segment)
+                    initialPositions.push(x, y, z); // Anchor position (end of segment)
+                }
+
+                const lineGeometry = new THREE.BufferGeometry();
+                lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(initialPositions, 3));
+
+                dataWeb = new THREE.LineSegments(lineGeometry, lineMaterial);
+                scene.add(dataWeb);
+
+                // 7. Load GLB Model
+                const loader = new THREE.GLTFLoader();
+                loader.load(GLB_URL,
+                    (gltf) => {
+                        satellite = gltf.scene;
+
+                        // FIX: Reduced scale for better visibility of the drone and data points
+                        satellite.scale.set(5, 5, 5);
+                        // UPDATED POSITION to be centered horizontally
+                        satellite.position.set(0, 1.5, 0);
+                        satellite.rotation.set(0.6, 0.6, 0);
+
+                        scene.add(satellite);
+
+                        // Set controls target
+                        controls.target.copy(satellite.position);
+                        controls.update();
+                    },
+                    (xhr) => {
+                        // Progress logging is useful but optional
+                    },
+                    (error) => {
+                        console.error('An error happened loading the GLB model:', error);
+                    }
+                );
+
+                // 8. Data Generation Interval: Generate a new floating text data point every 1.5 seconds
+                setInterval(generateDataPoint, 1500);
+
+                // 9. Initialize mode and attach listener
+                setZoomMode(true); // Default to GLB zoom
+                modeSwitch.addEventListener('click', () => {
+                    setZoomMode(!isSatelliteZoomActive);
+                });
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Update controls in the animation loop
+                if (controls && isSatelliteZoomActive) {
+                    controls.update();
+                }
+
+                if (satellite) {
+                    // Subtle bobbing motion
+                    satellite.position.y = 1.5 + Math.sin(Date.now() * 0.001) * 0.1;
+
+                    // NEW: Continuous slow rotation for an active look
+                    satellite.rotation.y += 0.005;
+                }
+
+                // Update data web geometry (Data Channel visualization)
+                if (satellite && dataWeb) {
+                    const positions = dataWeb.geometry.attributes.position.array;
+                    const satPos = satellite.position;
+
+                    for (let i = 0; i < NUM_WEB_SEGMENTS; i++) {
+                        const startIdx = i * 6;
+
+                        // Update start point of the segment to satellite's current position
+                        positions[startIdx] = satPos.x;
+                        positions[startIdx + 1] = satPos.y;
+                        positions[startIdx + 2] = satPos.z;
+                    }
+
+                    dataWeb.geometry.attributes.position.needsUpdate = true;
+
+                    // Subtle pulse effect on the web opacity
+                    dataWeb.material.opacity = 0.1 + Math.sin(Date.now() * 0.005) * 0.1;
+                }
+
+                // Animate and clean up data points (Floating Text effect)
+                const currentTime = Date.now();
+                for (let i = dataPoints.length - 1; i >= 0; i--) {
+                    const dp = dataPoints[i];
+                    const elapsed = currentTime - dp.startTime;
+                    const progress = elapsed / dp.duration;
+
+                    if (progress >= 1) {
+                        // Clean up
+                        scene.remove(dp.sprite);
+                        if (dp.sprite.material.map) dp.sprite.material.map.dispose();
+                        dp.sprite.material.dispose();
+                        dataPoints.splice(i, 1);
+                    } else {
+                        // Animate position (float up) and fade out
+                        dp.sprite.position.y += 0.0003;
+                        dp.sprite.material.opacity = dp.startOpacity * (1 - progress);
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            // Handle resizing of the window
+            function onWindowResize() {
+                const newWidth = window.innerWidth;
+                const newHeight = window.innerHeight;
+
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize(newWidth, newHeight);
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+            }
+
+            // Start the application when the window loads
+            window.onload = function () {
+                init();
+                animate();
+                window.addEventListener('resize', onWindowResize);
+
+                // NEW: Start the info cycle immediately since the element is now fixed and always visible.
+                startInfoCycle();
+                fixedInfoOverlay.style.opacity = 1;
+            }
+
+        })();
+    </script>
+</body>
+
+</html>
