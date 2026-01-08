@@ -355,6 +355,23 @@
     <div class="content-card w-full max-w-7xl mx-auto p-6 md:p-12 rounded-3xl shadow-2xl relative z-10 my-8">
 
         <header class="text-center mb-12">
+        <!-- back to home -->
+            <a href="/" class="fixed top-6 left-10 mb-4 flex items-center gap-2
+                         text-lg font-light tracking-wide
+                         text-slate-100 hover:text-white
+                         animate-[pulse_6s_ease-in-out_infinite]
+                         hover:animate-none
+                         transition-all duration-300
+                         drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
+                  </svg>
+                
+                  <span>Go&nbsp;Home</span>
+                </a>
+          <!-- back to home end -->
+            
             <img src="{{ url_for('static', filename='aptiCraft.png') }}" alt="apticraft" class="w-4 h-4  bg-[#CCE4EB] inline-block align-middle">
             <span class="text-3xl font-extrabold text-emerald-400 mb-8">AptiCraft</span>
             <h1 class="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3 mt-4">
