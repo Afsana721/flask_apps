@@ -75,7 +75,20 @@
 </head>
 
 <body class="bg-[#282c34] text-[#eaeee8] font-[Roboto]">
-
+        <!--go main page --> 
+        <a  href="/" class="fixed top-6 left-10 mb-4 mt-12 flex items-center gap-2
+                 text-lg font-light tracking-wide
+                 text-slate-100 hover:text-white
+                 animate-[pulse_6s_ease-in-out_infinite]
+                 hover:animate-none
+                 transition-all duration-300
+                 drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
+          </svg>
+        <span>Go&nbsp;Home</span>
+      </a>
+<!--go main page end --> 
   <!-- Top Bar -->
   <div class="w-full text-sm flex justify-between items-center mt-2 px-6 py-2 shadow-sm">
     <div class="flex gap-6 items-center">
@@ -122,28 +135,12 @@
 
   <!-- Header, Main, Footer stay unchanged below -->
   <header class="bg-[#000000] h-auto shadow-md z-50 fade-in border-b border-gray-300">
-        
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col items-center">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col items-center">
       <div class="flex items-center gap-3 mb-2 text-[	#020881]">
         <!-- <img src="{{ url_for('static', filename='assets/basic/qqlogo.png') }}" alt="OpenQQuantify Logo" class="w-16 h-16 rounded-full"> -->
         <span class="text-4xl font-extrabold text-[#020881] tracking-wider drop-shadow-md"
           style="font-family: 'Playfair Display', serif;">AptiCraft</span>
       </div>
-        <!--go main page --> 
-        <a  href="/" class="fixed top-6 left-10 mb-4 flex items-center gap-2
-                 text-lg font-light tracking-wide
-                 text-slate-100 hover:text-white
-                 animate-[pulse_6s_ease-in-out_infinite]
-                 hover:animate-none
-                 transition-all duration-300
-                 drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-10.5z"/>
-          </svg>
-        <span>Go&nbsp;Home</span>
-      </a>
-<!--go main page end --> 
-
       <!-- OpenQQuantify Main Navigation Links -->
       <nav class="flex flex-wrap justify-center gap-6 text-xl text-[#eaeee8] mb-6">
         <a href="/" class="hover:text-blue-600">Home</a>
