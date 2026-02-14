@@ -296,5 +296,10 @@ def design():
 def panoramic():
     return render_template('panoramic.html')
 
+# use Valentine html 
+@app.route('/Valentine')
+def Valentine(): 
+    return render_template('Valentine.html')
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
