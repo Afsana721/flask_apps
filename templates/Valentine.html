@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenQuantify-Valentine 2026_afsana</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;800;900&family=Playfair+Display:ital,wght@0,600;1,600&family=Great+Vibes&display=swap');
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff0f3;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+
+        #content-section {
+            margin-top: 10px;
+            margin-bottom: 10px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            position: relative;
+            z-index: 100;
+            width: 100%;
+            min-height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        #ui {
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 4px;
+            perspective: 1000px;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            letter-spacing: -1.5px;
+            font-weight: 600;
+            margin: 0;
+            position: relative;
+            text-transform: none;
+            background: linear-gradient(to right,
+                    #800e13 0%,
+                    #ff2e88 15%,
+                    #FFBF00 30%,
+                    #ffffff 45%,
+                    #FFBF00 60%,
+                    #ff2e88 85%,
+                    #800e13 100%);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 3px rgba(128, 14, 19, 0.15));
+            animation:
+                brandEntry 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards,
+                shimmerSweep 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes shimmerSweep {
+            0% {
+                background-position: 100% center;
+            }
+
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        @keyframes brandEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .oqq-watermark {
+            position: absolute;
+            left: 50%;
+            top: 5vh;
+            color: #e4065b;
+            transform: translateX(-50%);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 100;
+            font-size: clamp(1.5rem, 3vw, 4rem);
+            letter-spacing: 5px;
+            opacity: 70%;
+            background: linear-gradient(90deg, #f0da19, #47095f, #3b031f, #3f242b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            z-index: -1;
+            filter: drop-shadow(0 0 10px rgba(235, 216, 17, 0.6));
+            animation: watermarkFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes watermarkFloat {
+
+            0%,
+            100% {
+                transform: translateX(-52%) translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateX(-53%) translateY(-10px) scale(1.01);
+            }
+        }
+
+        .main-text {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-align: center;
+            margin: 0;
+            text-shadow: 0 2px 0 rgba(255, 210, 226, 0.95), 0 4px 0 rgba(255, 170, 204, 0.85), 0 12px 22px rgba(0, 0, 0, 0.22);
+            background: linear-gradient(180deg, #C40234 0%, #C21E56 45%, #D3045D 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: floatVal 4s ease-in-out infinite alternate, shineSweep 4s linear infinite;
+        }
+
+        @keyframes floatVal {
+            from {
+                transform: translateY(0px);
+            }
+
+            to {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes shineSweep {
+
+            0%,
+            100% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.35);
+            }
+        }
+
+        .year-wrapper {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-top: -95px;
+            pointer-events: auto;
+        }
+
+        .year-text {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: clamp(2rem, 5vw, 4.2rem);
+            letter-spacing: 6px;
+            background: linear-gradient(180deg, #fff3b0 0%, #ffd166 30%, #fca311 60%, #e85d04 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: yearFloat 1s ease-in-out infinite;
+        }
+
+        .wishes-tag {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #F56FA1;
+            -webkit-text-stroke: 0.25px hsl(20, 15%, 14%);
+            paint-order: stroke fill;
+            animation: yearFloat 1s ease-in-out infinite;
+
+        }
+
+        .wishes-tag:hover {
+            color: #EE204E;
+            text-shadow: 0 0 8px #dfced7, 0 0 16px #c9bcc2, 0 0 24px #c7bdc2;
+        }
+
+        @keyframes yearFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-2px);
+            }
+        }
+
+        #gift-box-anchor {
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            z-index: 200;
+            display: inline-block;
+        }
+
+        .motto {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            letter-spacing: 2px;
+            line-height: 1.35;
+            display: inline-block;
+            max-width: 900px;
+            text-align: center;
+            margin-top: 10px;
+            text-shadow: 1px 1px 0 rgba(228, 37, 46, 0.6), 0 6px 18px rgba(222, 226, 9, 0.35);
+            background: linear-gradient(180deg,
+                    #f00d8a 0%,
+                    #960018 30%,
+                    #e60624 55%,
+                    #a82004 80%,
+                    #df2984 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 6px rgba(245, 238, 137, 0.45));
+            animation: floatVal 4s ease-in-out infinite alternate, shimmerSweep 5s linear infinite;
+        }
+
+        @keyframes mottoLive {
+            0% {
+                filter: brightness(1);
+            }
+
+            100% {
+                filter: brightness(1.6);
+            }
+        }
+
+        #vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 0%, rgba(255, 77, 109, 0.25) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="vignette"></div>
+
+    <section id="content-section">
+        <div class="oqq-watermark">OPENQQUANTIFY</div>
+        <div id="ui">
+            <div class="brand-container">
+                <div class="brand">OpenQQuantify</div>
+            </div>
+            <h1 class="main-text">Happy Valentine's</h1>
+            <div class="year-wrapper">
+                <span class="year-text">2026</span>
+                <div id="gift-box-anchor"></div>
+                <div class="wishes-tag ">Wishes</div>
+            </div>
+            <div class="motto-container">
+                <p class="motto mb-12">Love calls us to follow our responsibilities and to raise our voice in the right
+                    way.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let scene, camera, renderer, realRoses = [], leaves = [];
+        let musicInterval = null;
+        let autoTimerStart = null;
+        let autoTimerStop = null;
+        let boxGroup, boxLid, boxKey, candyGroup = null, sparkleGroup = null, loveOrbit = null, balloonGroup = null;
+        let boxOpen = false, keyTurning = false;
+        const clock = new THREE.Clock();
+
+        const ROSE_URL = 'https://img.freepik.com/premium-psd/rose-flower-png-isolated-transparent-background_1189562-90571.jpg';
+        const PROXY_URL = 'https://images.weserv.nl/?url=' + encodeURIComponent(ROSE_URL);
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xfff0f3);
+            scene.fog = new THREE.Fog(0xfff0f3, 10, 150);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 45);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.autoClear = false;
+            document.body.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+            scene.add(ambientLight);
+
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.setCrossOrigin('anonymous');
+            textureLoader.load(PROXY_URL, (texture) => { createRealRoseCloud(texture); });
+
+            createLeafSystem();
+            createGiftBox();
+            candyGroup = buildCandyStack();
+            sparkleGroup = createSparkles();
+            loveOrbit = createLoveOrbit();
+            balloonGroup = createDelicateBalloons();
+
+            window.addEventListener('resize', onWindowResize, false);
+
+            const anchor = document.getElementById('gift-box-anchor');
+            anchor.addEventListener('click', () => { ensureAudio(); toggleWishes(); });
+
+            function startAutoLoop() {
+                autoTimerStart = setTimeout(() => {
+                    toggleWishes(true);
+                    playTingTong();
+                    if (musicInterval) clearInterval(musicInterval);
+                    musicInterval = setInterval(playTingTong, 1200);
+
+                    autoTimerStop = setTimeout(() => {
+                        toggleWishes(false);
+                        startAutoLoop();
+                    }, 15000);
+                }, 3000);
+            }
+            startAutoLoop();
+
+            animate();
+        }
+
+        function createGiftBox() {
+            boxGroup = new THREE.Group();
+
+            const purpleBase = new THREE.PointLight(0xbf00ff, 2.5, 45);
+            purpleBase.position.set(0, -3.8, -1);
+            boxGroup.add(purpleBase);
+
+            const goldenLight = new THREE.PointLight(0xFFD700, 2.0, 30);
+            goldenLight.position.set(3, -3, -2);
+            boxGroup.add(goldenLight);
+
+            const blueLight = new THREE.PointLight(0x00d4ff, 2.0, 30);
+            blueLight.position.set(-3, -3, -2);
+            boxGroup.add(blueLight);
+
+            const shineCore = new THREE.PointLight(0xffffff, 1.0, 20);
+            shineCore.position.set(0, -2, -3);
+            boxGroup.add(shineCore);
+
+            boxGroup.userData.glows = { purple: purpleBase, gold: goldenLight, blue: blueLight, core: shineCore };
+
+            const internalBoxLight = new THREE.PointLight(0xffffff, 2.0, 50);
+            internalBoxLight.position.set(2, 5, 5);
+            boxGroup.add(internalBoxLight);
+
+            const pinkMat = new THREE.MeshPhongMaterial({ color: 0xDE3163, shininess: 160, emissive: 0xDE3163, emissiveIntensity: 0.25 });
+            const purpleMat = new THREE.MeshPhongMaterial({ color: 0xFF0080, shininess: 150 });
+            const ribbonMat = new THREE.MeshPhongMaterial({ color: 0xFFE4E1, shininess: 190 });
+
+            const base = new THREE.Mesh(new THREE.BoxGeometry(4.8, 3.6, 4.8), pinkMat);
+            boxGroup.add(base);
+
+            const ribV = new THREE.Mesh(new THREE.BoxGeometry(0.85, 3.7, 4.9), ribbonMat);
+            const ribH = new THREE.Mesh(new THREE.BoxGeometry(4.9, 3.7, 0.85), purpleMat);
+            boxGroup.add(ribV, ribH);
+
+            boxLid = new THREE.Group();
+            const lidMain = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1, 5.2), purpleMat);
+            const lidRibV = new THREE.Mesh(new THREE.BoxGeometry(1, 1.1, 5.3), ribbonMat);
+            const lidRibH = new THREE.Mesh(new THREE.BoxGeometry(5.3, 1.1, 1), pinkMat);
+            boxLid.add(lidMain, lidRibV, lidRibH);
+            boxLid.position.y = 1.9;
+            boxGroup.add(boxLid);
+
+            boxKey = new THREE.Group();
+            const keyMat = new THREE.MeshPhongMaterial({ color: 0xffd700, shininess: 500 });
+            const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 2.2), keyMat);
+            const head = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.14, 16, 32), keyMat);
+            head.position.y = 1.1;
+            boxKey.add(stem, head);
+            boxKey.rotation.z = Math.PI / 2;
+            boxKey.position.set(0, -0.6, 3.1);
+            boxGroup.add(boxKey);
+
+            boxGroup.traverse(node => { if (node.isMesh) node.renderOrder = 1000; });
+            scene.add(boxGroup);
+        }
+
+        // IMPROVED SMALL DELICATE BALLOONS
+        function createDelicateBalloons() {
+            const group = new THREE.Group();
+            // Palette: FFE4E1, FF91AF, FF1DCE, EE82EE, FFF5EE, FCF75E, DE3163
+            const colors = ['#FFE4E1', '#FF91AF', '#FF1DCE', '#EE82EE', '#FFF5EE', '#FCF75E', '#DE3163'];
+
+            for (let i = 0; i < 24; i++) {
+                const color = colors[i % colors.length];
+                const canvas = document.createElement('canvas');
+                canvas.width = 256; canvas.height = 512; // Taller for ribbon
+                const ctx = canvas.getContext('2d');
+
+                // 1. Draw Balloon Body (Tapered)
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(128, 200);
+                // Left curve
+                ctx.bezierCurveTo(60, 200, 60, 40, 128, 40);
+                // Right curve
+                ctx.bezierCurveTo(196, 40, 196, 200, 128, 200);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                // 2. High Shine / Specular
+                const shine = ctx.createRadialGradient(90, 80, 5, 128, 128, 80);
+                shine.addColorStop(0, 'rgba(255,255,255,0.7)');
+                shine.addColorStop(0.2, 'rgba(255,255,255,0.4)');
+                shine.addColorStop(1, 'rgba(255,255,255,0)');
+                ctx.fillStyle = shine;
+                ctx.fill();
+
+                // 3. Ribbon (The String)
+                ctx.beginPath();
+                ctx.moveTo(128, 200);
+                ctx.lineTo(124, 208);
+                ctx.lineTo(132, 208);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.setLineDash([5, 3]);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = color;
+                ctx.moveTo(128, 208);
+                ctx.bezierCurveTo(120, 250, 140, 300, 128, 400);
+                ctx.stroke();
+
+                // 4. Text
+                ctx.fillStyle = (color === '#FFE4E1' || color === '#FFF5EE' || color === '#FCF75E') ? '#800e13' : 'white';
+                ctx.font = 'bold 20px Montserrat';
+                ctx.textAlign = 'center';
+                ctx.fillText("Valentine's", 128, 110);
+                ctx.fillText("Day", 128, 135);
+                ctx.restore();
+
+                const texture = new THREE.CanvasTexture(canvas);
+                const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.85 });
+                const sprite = new THREE.Sprite(mat);
+
+                resetBalloon(sprite, true);
+                group.add(sprite);
+            }
+            scene.add(group);
+            return group;
+        }
+
+        function resetBalloon(sprite, initial = false) {
+            sprite.position.x = (Math.random() - 0.5) * 120;
+            sprite.position.y = initial ? (Math.random() * 120 - 60) : -75;
+            sprite.position.z = (Math.random() - 0.5) * 60;
+
+            // Smaller size for "more small" request
+            const s = 5 + Math.random() * 4;
+            sprite.scale.set(s, s * 2, 1); // 1:2 ratio to accommodate the ribbon
+
+            sprite.userData = {
+                speedY: 0.04 + Math.random() * 0.1,
+                sinOffset: Math.random() * Math.PI * 2,
+                sinSpeed: 0.008 + Math.random() * 0.015,
+                amplitude: 0.1 + Math.random() * 0.4
+            };
+        }
+
+        function toggleWishes(force) {
+            if (force === false || (force === undefined && boxOpen)) {
+                boxOpen = false;
+                if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+                if (sparkleGroup) sparkleGroup.visible = false;
+                if (loveOrbit) loveOrbit.visible = false;
+                return;
+            }
+            if (force === true || (force === undefined && !boxOpen && !keyTurning)) {
+                startKeyTurn();
+            }
+        }
+
+        function startKeyTurn() {
+            keyTurning = true;
+            boxKey.rotation.y = 0;
+            candyGroup.visible = true;
+            candyGroup.children.forEach(c => {
+                c.position.copy(boxGroup.position);
+                c.scale.set(0, 0, 0);
+            });
+        }
+
+        let audioCtx = null;
+        function ensureAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTingTong() {
+            ensureAudio();
+            if (!audioCtx || audioCtx.state !== 'running') return;
+            const note = (f, start) => {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.type = 'sine';
+                o.frequency.setValueAtTime(f, start);
+                g.gain.setValueAtTime(0.12, start);
+                g.gain.exponentialRampToValueAtTime(0.0001, start + 0.8);
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(start); o.stop(start + 0.8);
+            };
+            [1567.98, 1396.91, 1567.98, 2093, 1567.98].forEach((f, i) => {
+                note(f, audioCtx.currentTime + i * 0.12);
+            });
+        }
+
+        function createLeafSystem() {
+            const leafShape = new THREE.Shape();
+            leafShape.moveTo(0, 0);
+            leafShape.bezierCurveTo(4, 1, 6, 6, 0, 10);
+            leafShape.bezierCurveTo(-6, 6, -4, 1, 0, 0);
+            const geometry = new THREE.ShapeGeometry(leafShape);
+            for (let i = 0; i < 40; i++) {
+                const leaf = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xff5d8f, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }));
+                resetLeaf(leaf, true);
+                scene.add(leaf);
+                leaves.push(leaf);
+            }
+        }
+
+        function resetLeaf(leaf, initial = false) {
+            leaf.position.set((Math.random() - 0.5) * 80, initial ? (Math.random() * 80 - 40) : 40, (Math.random() - 0.5) * 30);
+            const s = 0.05 + Math.random() * 0.1;
+            leaf.scale.set(s, s, s);
+            leaf.userData = { speedY: 0.05 + Math.random() * 0.1, rot: Math.random() * 0.05 };
+        }
+
+        function createRealRoseCloud(texture) {
+            for (let i = 0; i < 20; i++) {
+                const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.7 }));
+                resetRose(sprite, true);
+                scene.add(sprite);
+                realRoses.push(sprite);
+            }
+        }
+
+        function resetRose(sprite, initial = false) {
+            sprite.position.set((Math.random() - 0.5) * 120, initial ? (Math.random() * 120 - 60) : -65, (Math.random() - 0.5) * 50);
+            const s = 15 + Math.random() * 15;
+            sprite.scale.set(s, s, 1);
+            sprite.speedY = 0.03 + Math.random() * 0.06;
+        }
+
+        function buildCandyStack() {
+            const urls = [
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/candy.png',
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6513BYZxrSt6BzwPmIUnwghxqOPubCsRkmw&s=10",
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc.png',
+                "https://png.pngtree.com/png-clipart/20240810/original/pngtree-3d-red-rose-bouquet-on-transparent-background-png-image_15740398.png",
+                "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc1.png",
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc2.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc3.png',
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVrpW78y3xk-EXgEp4E4Rsn_u2whFNVj-EZg&s=10',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc4.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc5.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc6.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc7.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc8.png',
+                'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/cc9.png',
+                'https://png.pngtree.com/png-vector/20240910/ourlarge/pngtree-3d-rose-flowers-transparent-images-png-image_13803515.png'
+            ];
+            const group = new THREE.Group();
+            const loader = new THREE.TextureLoader();
+            loader.setCrossOrigin('anonymous');
+            for (let i = 0; i < 25; i++) {
+                loader.load(urls[i % urls.length], (tex) => {
+                    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+                    sp.scale.set(0, 0, 0);
+                    sp.renderOrder = 2000;
+                    sp.userData = { speed: 0.2 + Math.random() * 0.4, vx: (Math.random() - 0.5) * 0.5, offset: Math.random() * 10, targetScale: urls[i % urls.length].includes('cc') ? 9 : 6 };
+                    group.add(sp);
+                });
+            }
+            group.visible = false;
+            scene.add(group);
+            return group;
+        }
+
+        function createSparkles() {
+            const COUNT = 180;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(COUNT * 3), vel = new Float32Array(COUNT * 3), life = new Float32Array(COUNT), col = new Float32Array(COUNT * 3);
+            const palette = [new THREE.Color('#ffd166'), new THREE.Color('#c0c0c0'), new THREE.Color('#ffc2d1'), new THREE.Color('#9d4edd')];
+            function respawn(i) {
+                pos[i * 3 + 0] = boxGroup.position.x + (Math.random() - 0.5) * 0.7;
+                pos[i * 3 + 1] = boxGroup.position.y + Math.random() * 0.8;
+                pos[i * 3 + 2] = boxGroup.position.z + (Math.random() - 0.5) * 0.7;
+                vel[i * 3 + 0] = (Math.random() - 0.5) * 1.4; vel[i * 3 + 1] = 0.8 + Math.random() * 2.2; vel[i * 3 + 2] = (Math.random() - 0.5) * 1.2;
+                life[i] = 0.8 + Math.random() * 1.2;
+                const c = palette[Math.floor(Math.random() * palette.length)];
+                col[i * 3 + 0] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+            }
+            for (let i = 0; i < COUNT; i++) respawn(i);
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+            const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.22, transparent: true, opacity: 0.95, vertexColors: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+            pts.renderOrder = 2100; pts.visible = false; pts.userData = { vel, life, respawn };
+            scene.add(pts);
+            return pts;
+        }
+
+        function createLoveOrbit() {
+            const colors = ['#FF0090', '#E30B5C', '#A81C07', '#FF0800', '#DC143C', '#FF0080', '#FFD800'];
+            const group = new THREE.Group();
+            group.visible = false; group.renderOrder = 2200;
+
+            colors.forEach((color, idx) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 128; canvas.height = 128;
+                const ctx = canvas.getContext('2d');
+                const grd = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+                grd.addColorStop(0, color);
+                grd.addColorStop(0.3, color);
+                grd.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grd;
+                ctx.beginPath();
+                ctx.arc(64, 64, 60, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(64, 64, 18, 0, Math.PI * 2);
+                ctx.fill();
+
+                const tex = new THREE.CanvasTexture(canvas);
+                let count = 6;
+                if (color === '#FFD800' || color === '#FF0090' || color === '#FF0080') count = 12;
+
+                for (let i = 0; i < count; i++) {
+                    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.8 });
+                    const s = new THREE.Sprite(mat);
+                    s.scale.set(3, 3, 1);
+                    s.userData = { radius: 6 + Math.random() * 8, speed: 0.4 + Math.random() * 1.8, phase: Math.random() * Math.PI * 2, yAmp: 1.0 + Math.random() * 3.5, pulse: Math.random() * 10, floatFreq: 2 + Math.random() * 5 };
+                    group.add(s);
+                }
+            });
+            scene.add(group);
+            return group;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const t = clock.getElapsedTime();
+
+            realRoses.forEach(r => { r.position.y += r.speedY; if (r.position.y > 65) resetRose(r); });
+            leaves.forEach(l => { l.position.y -= l.userData.speedY; l.rotation.z += l.userData.rot; if (l.position.y < -45) resetLeaf(l); });
+
+            // Balloon Physics
+            if (balloonGroup) {
+                balloonGroup.children.forEach(b => {
+                    b.position.y += b.userData.speedY;
+                    b.position.x += Math.sin(t + b.userData.sinOffset) * b.userData.amplitude;
+                    // Rotation for a natural swaying effect
+                    b.rotation.z = Math.sin(t * b.userData.sinSpeed + b.userData.sinOffset) * 0.1;
+                    if (b.position.y > 65) resetBalloon(b);
+                });
+            }
+
+            const anchor = document.getElementById('gift-box-anchor');
+            if (anchor) {
+                const rect = anchor.getBoundingClientRect();
+                const x = ((rect.left + rect.width / 2) / window.innerWidth) * 2 - 1;
+                const y = -((rect.top + rect.height / 2) / window.innerHeight) * 2 + 1;
+                const vector = new THREE.Vector3(x, y, 0.5).unproject(camera);
+                const dir = vector.sub(camera.position).normalize();
+                const dist = -camera.position.z / dir.z;
+                boxGroup.position.copy(camera.position.clone().add(dir.multiplyScalar(dist)));
+            }
+
+            if (keyTurning) {
+                boxKey.rotation.y += 0.4;
+                if (boxKey.rotation.y > Math.PI * 6) {
+                    keyTurning = false; boxOpen = true;
+                    if (musicInterval) clearInterval(musicInterval);
+                    musicInterval = setInterval(playTingTong, 1200);
+                    if (sparkleGroup) sparkleGroup.visible = true;
+                    if (loveOrbit) loveOrbit.visible = true;
+                }
+            }
+
+            boxLid.position.y += ((boxOpen ? 4.5 : 1.9) - boxLid.position.y) * 0.1;
+            boxLid.rotation.x += ((boxOpen ? -Math.PI / 1.8 : 0) - boxLid.rotation.x) * 0.1;
+            boxGroup.rotation.y = Math.sin(t * 0.6) * 0.2;
+
+            if (boxGroup.userData.glows) {
+                const { purple, gold, blue, core } = boxGroup.userData.glows;
+                purple.intensity = 2.0 + Math.sin(t * 3) * 0.5;
+                const orbitA = t * 2;
+                gold.position.x = Math.cos(orbitA) * 5;
+                gold.position.z = Math.sin(orbitA) * 3 - 2;
+                gold.intensity = 1.5 + Math.cos(t * 2) * 0.5;
+                blue.position.x = Math.cos(orbitA + Math.PI) * 5;
+                blue.position.z = Math.sin(orbitA + Math.PI) * 3 - 2;
+                blue.intensity = 1.5 + Math.sin(t * 2) * 0.5;
+                core.intensity = boxOpen ? 3.0 : 1.0 + Math.sin(t * 5) * 0.3;
+            }
+
+            if (candyGroup && candyGroup.visible) {
+                candyGroup.children.forEach(c => {
+                    if (boxOpen) {
+                        if (!c.userData.vy) c.userData.vy = (Math.random() - 0.5) * 0.6;
+                        c.position.y += c.userData.vy; c.position.x += c.userData.vx;
+                        c.scale.lerp(new THREE.Vector3(c.userData.targetScale || 6, c.userData.targetScale || 6, 1), 0.08);
+                        if (Math.abs(c.position.y) > 70 || Math.abs(c.position.x) > 90) c.position.copy(boxGroup.position);
+                    } else { c.scale.set(0, 0, 0); c.position.copy(boxGroup.position); }
+                });
+            }
+
+            if (loveOrbit && loveOrbit.visible) {
+                loveOrbit.children.forEach(h => {
+                    const a = t * h.userData.speed + h.userData.phase;
+                    h.position.set(
+                        boxGroup.position.x + Math.cos(a) * h.userData.radius,
+                        boxGroup.position.y + 2.5 + Math.sin(a * 1.5) * h.userData.yAmp,
+                        boxGroup.position.z + Math.sin(a) * h.userData.radius
+                    );
+                    const pulseVal = Math.sin(t * h.userData.floatFreq + h.userData.pulse);
+                    h.material.opacity = 0.4 + pulseVal * 0.6;
+                    const scaleBase = 3.5;
+                    const scaleBounce = pulseVal * 0.8;
+                    h.scale.set(scaleBase + scaleBounce, scaleBase + scaleBounce, 1);
+                });
+            }
+
+            if (sparkleGroup && sparkleGroup.visible) {
+                const dt = Math.min(0.033, clock.getDelta());
+                const pos = sparkleGroup.geometry.attributes.position.array;
+                const vel = sparkleGroup.userData.vel;
+                const life = sparkleGroup.userData.life;
+                for (let i = 0; i < life.length; i++) {
+                    life[i] -= dt; vel[i * 3 + 1] -= 1.2 * dt;
+                    pos[i * 3 + 0] += vel[i * 3 + 0] * dt; pos[i * 3 + 1] += vel[i * 3 + 1] * dt; pos[i * 3 + 2] += vel[i * 3 + 2] * dt;
+                    if (life[i] <= 0 || pos[i * 3 + 1] < boxGroup.position.y - 8) sparkleGroup.userData.respawn(i);
+                }
+                sparkleGroup.geometry.attributes.position.needsUpdate = true;
+            }
+
+            renderer.clear();
+            renderer.render(scene, camera);
+            renderer.clearDepth();
+            renderer.render(boxGroup, camera);
+            if (candyGroup) renderer.render(candyGroup, camera);
+            if (sparkleGroup?.visible) renderer.render(sparkleGroup, camera);
+            if (loveOrbit?.visible) renderer.render(loveOrbit, camera);
+            if (balloonGroup) renderer.render(balloonGroup, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
