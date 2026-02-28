@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>AptiCraft | Luxury Coffee_afsana</title>
+    <title>AptiCraft | Luxury Coffee Visualization</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Added Requested Libraries -->
@@ -287,11 +287,11 @@
             font-style: oblique;
 
             /* MATCHING PINK/GOLD: High-visibility gold with pink depth */
-            color: #000000;
+            color: #FFBF00;
             text-shadow:
-                1px 1px 0px #faf9f4,
+                1px 1px 0px #e0f4f5,
                 /* Deep Pink Outline for visibility */
-                -1px -1px 0px hsla(0, 90%, 4%, 0.87),
+                -1px -1px 0px hsla(10, 7%, 17%, 0.87),
                 1px 1px 5px rgba(250, 249, 245, 0.8);
             /* Golden Glow */
         }
@@ -331,6 +331,13 @@
             box-shadow: 0 4px 12px rgba(218, 165, 32, 0.6);
         }
 
+   
+        
+
+        /* #nav-dust {
+            z-index: -1 !important;
+            } */
+
         /* #gallery-nav {
             background: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrjARSONn_k8-DLm-apLfPTZhapMNW_mMTGg&s");
             background-size: cover;
@@ -351,20 +358,20 @@
         <!-- dust layer -->
         <div id="nav-dust" class="absolute inset-0 pointer-events-none z-0"></div>
         <!-- NAV BAR -->
-        <div class="flex items-center justify-center max-w-7xl mx-auto relative z-60 ">
+        <div class="flex items-center justify-center max-w-6xl mx-auto relative z-60 ">
             <div
-                class="flex items-center gap-10 px-12 rounded-full bg-white/10 backdrop-blur-md border-b-8 border-[#79443B] shadow-2xl shadow-[#3D0C02]">
+                class="flex items-center gap-8 px-6 rounded-full bg-white/10 backdrop-blur-md border-b-8 border-[#79443B] shadow-2xl shadow-[#3D0C02]">
                 <!-- SITE NAME (separate style) -->
                 <div class="flex flex-col leading-tight mr-6  relative ">
                     <span id="apti"
-                        class="mb-8 mt-6 ml-6 mr-6 text-4xl font-tech tracking-[0.001em] text-[#592720] drop-shadow-[0_2px_8px_rgba(8,4,0,0.6)] hover:text-[#C19A6B] transition-colors">
+                        class="mb-8 mt-6 text-5xl font-bold tracking-[0.001em] text-[#592720] drop-shadow-[0_2px_8px_rgba(8,4,0,0.6)] hover:text-[#C19A6B] transition-colors">
                         <!-- AptiCraft -->
                     </span>
                 </div>
                 <!-- divider -->
                 <div class="h-8 w-px bg-white/20"></div>
                 <!-- NAV ITEMS -->
-                <div class="flex items-center gap-9 mt-8 ml-14 text-xl font-semibold mb-4 mt-6">
+                <div class="flex items-center gap-6 mt-8  mb-4 text-xl font-semibold  ">
                     <a href="#" class="navItem">Home</a>
                     <a href="#"
                         onclick="closeExtension(); document.querySelector('#webgl-container')?.classList.remove('hidden'); document.querySelector('.full-bleed-360 iframe')?.classList.remove('hidden'); return false;"
@@ -419,7 +426,7 @@
 
         <!-- Section after 360 -->
         <section id="visualize"
-            class="relative min-h-[300vh] flex flex-col items-center justify-start pt-24 pb-32 text-center bg-[#FDFCFB]">
+            class="relative min-h-[300vh] flex flex-col items-center justify-start pt-24  text-center bg-[#FDFCFB]">
             <!-- Transition Gradient -->
             <div
                 class="absolute left-0 right-0 -top-6 h-32 bg-gradient-to-b from-[#1a1a1a] via-[#2c1810]/40 to-[#FDFCFB]">
@@ -724,44 +731,379 @@
         <div id="inspect-hint">Tap to Inspect</div>
     </main>
     <!-- FOOTER TOP GRADIENT BAR -->
-    <div class="w-full bg-gradient-to-t from-[#C08081]/70 to-transparent shadow-2xl shadow-[#592720] h-16"></div>
+   <div class="w-full bg-gradient-to-t from-[#1B0F08] via-[#2B170C] to-transparent shadow-2xl shadow-[#140804] h-16"></div>
 
     <!-- PROFESSIONAL FULL WIDTH FOOTER -->
-    <footer id="main-footer"
-        class="w-full bg-[#3D0C02]/40 backdrop-blur-md shadow-2xl shadow-[#893F45]/50 text-[#3D0C02]">
-        <div class="max-w-7xl mx-auto px-8 py-14 flex flex-col gap-14 uppercase tracking-wide">
+   <!-- ✅ COPY/PASTE ONLY THIS FOOTER (self‑contained). It keeps ALL your style + script, just moved inside the footer. -->
+<!-- ✅ COPY/PASTE ONLY THIS FOOTER (self‑contained). It keeps ALL your style + script, just moved inside the footer. -->
+<footer id="fixed-footer" class="relative w-full h-[420px] overflow-hidden tracking-tight">
 
-            <!-- LINKS ROW -->
-            <div class="flex flex-wrap justify-between items-center gap-8">
-                <div class="flex flex-wrap gap-8 text-lg font-semibold tracking-wide">
-                    <a href="https://github.com/Afsana721/flask_apps" target="_blank"
-                        class="px-2 shadow-lg shadow-[#592720] hover:text-[#EFDECD] transition">GitHub</a>
-                    <a href="https://www.linkedin.com/in/afsanausa/" target="_blank"
-                        class="px-2 shadow-lg shadow-[#592720] hover:text-[#EFDECD] transition">LinkedIn</a>
-                    <a href="https://flask-apps-e45a.onrender.com/" target="_blank"
-                        class="px-2 shadow-lg shadow-[#592720] hover:text-[#EFDECD] transition">Portfolio</a>
-                    <a href="https://www.openqquantify.com/" target="_blank"
-                        class="px-2 shadow-lg shadow-[#592720] hover:text-[#EFDECD] transition">Working Site</a>
-                </div>
+  <!-- curved top so footer goes slightly inside page -->
+  <div style="position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:85%;height:90px;background:transparent;border-bottom-left-radius:120px;border-bottom-right-radius:120px;z-index:3;"></div>
 
-                <div class="flex gap-8 text-base font-semibold uppercase tracking-wide">
-                    <a href="https://www.openqquantify.com/electronics/" target="_blank"
-                        class="px-2 shadow-lg shadow-[#58111A]/30 hover:text-[#EFDECD] transition">Electronic</a>
-                    <a href="https://www.openqquantify.com/gemstone/" target="_blank"
-                        class="px-2 shadow-lg shadow-[#58111A]/30 hover:text-[#EFDECD] transition">Gemstone</a>
-                </div>
-            </div>
+  <!-- libs (kept, inside footer) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Three.js removed here to avoid loading it twice (gallery already loads it) -->
 
-            <!-- DIVIDER -->
-            <div class="w-full h-px bg-[#C4C4C4] hover:bg-[#6F4E37]"></div>
+  <style>
+    
 
-            <!-- COPYRIGHT -->
-            <div class="text-center text-sm tracking-[0.15em] text-[#3D2B1F]">
-                © 2026 APTICRAFT VISUAL LOGIC
-            </div>
+    #canvas-container{width:100%;height:420px;}
 
-        </div>
-    </footer>
+    /* Coffee + Gold UI Style */
+    .apti-brand{
+      color:#3D2B1F; /* dark coffee */
+      -webkit-text-stroke:1px #FFFFFF; /* gold outline */
+      letter-spacing: -8px;
+      transition:all .35s ease;
+    }
+
+    .apti-brand:hover{transform:none;}
+
+    #fixed-footer a{
+      color:#44362F;
+      -webkit-text-stroke:0.3px #DDD06A;
+      transition:all .3s ease;
+    }
+
+    #fixed-footer a:hover{
+      color:#800000;
+      
+      transform:translateY(-1px);
+    }
+  </style>
+
+  <!-- three canvas (kept id so your script works without changes) -->
+  <div id="canvas-container" class="absolute inset-0"></div>
+
+<!-- top mask so drops appear from hidden gap -->
+<div style="position:absolute;top:0;left:0;width:100%;height:50px;background:transparent;z-index:2;"></div>
+
+  <!-- AptiCraft Footer UI (same content) -->
+  <div class="absolute bottom-0 left-0 w-full p-6 bg-transparent z-[10]
+              text-white flex flex-col md:flex-row items-center justify-between 
+              bg-transparent">
+
+    <a id="apti" href="#" class="apti-brand text-5xl font-bold ">AptiCraft</a>
+
+    <div class="flex flex-wrap justify-center gap-6 mt-4 md:mt-0 text-xl font-bold text-[#44362F] md:mr-12">
+        <a href="https://github.com/Afsana721/flask_apps" target="_blank"
+            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">GitHub</a>
+        <a href="https://flask-apps-e45a.onrender.com/" target="_blank"
+            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Portfolio</a>
+        <a href="https://www.openqquantify.com/" target="_blank"
+            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">OpenQQuantify</a>
+        <a href="mailto:afsanaafroze21@gmail.com" target="_blank"
+            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Email</a>
+        <a href="https://www.linkedin.com/in/afsanausa/" target="_blank"
+            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">LinkedIn</a>
+    </div>
+  </div>
+
+  <script>
+(function(){
+
+    const containerFooter = document.getElementById('canvas-container');
+    const foamTextureUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/foam.png";
+    
+    const scene = new THREE.Scene();
+    let w = containerFooter.clientWidth;
+    let h = containerFooter.clientHeight;
+    
+    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+    camera.position.set(0, -0.1, 1.2); 
+    camera.lookAt(0, 0, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    containerFooter.appendChild(renderer.domElement);
+
+    
+
+    const surfaceGroup = new THREE.Group();
+    scene.add(surfaceGroup);
+
+    function getPlaneSize() {
+      const distance = camera.position.z;
+      const vFov = camera.fov * Math.PI / 180;
+      const planeHeight = 2 * Math.tan(vFov / 2) * distance * 2;
+      const planeWidth = planeHeight * (containerFooter.clientWidth / containerFooter.clientHeight);
+      return { width: planeWidth, height: planeHeight };
+    }
+
+    let pSize = getPlaneSize();
+    const geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
+    
+    const loader = new THREE.TextureLoader();
+    loader.setCrossOrigin('anonymous');
+    
+    let mesh;
+    loader.load(foamTextureUrl, (tex) => {
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(2, 2);
+      const material = new THREE.MeshBasicMaterial({map: tex, side: THREE.DoubleSide});
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.rotation.x = -0.25; /* slight curve so drops appear from top */ 
+      surfaceGroup.add(mesh);
+    });
+
+    /* --- BUBBLE TEXTURE GENERATOR --- */
+    function createBubbleTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 64;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      grad.addColorStop(0, 'rgba(255, 245, 230, 0.1)');
+      grad.addColorStop(0.7, 'rgba(255, 250, 240, 0.4)');
+      grad.addColorStop(0.9, 'rgba(255, 255, 255, 0.8)');
+      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(32, 32, 30, 0, Math.PI * 2);
+      ctx.fill();
+
+      const coffeeGrad = ctx.createRadialGradient(32, 20, 0, 32, 20, 15);
+      coffeeGrad.addColorStop(0, '#3D0C02'); 
+      coffeeGrad.addColorStop(1, 'rgba(89, 39, 32, 0)'); 
+      ctx.fillStyle = coffeeGrad;
+      ctx.beginPath();
+      ctx.arc(32, 20, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      return new THREE.CanvasTexture(canvas);
+    }
+    const bubbleTexture = createBubbleTexture();
+
+    function createLiquidTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+      grad.addColorStop(0, 'rgba(30, 15, 5, 0.95)'); 
+      grad.addColorStop(0.2, 'rgba(30, 15, 5, 0.6)');
+      grad.addColorStop(0.5, 'rgba(45, 25, 15, 0.2)');
+      grad.addColorStop(1, 'rgba(45, 25, 15, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(canvas);
+    }
+    const softTexture = createLiquidTexture();
+
+    const seepageItems = [];
+    const bubbles = [];
+
+    function spawnBubble(x, y, isAmbient = false) {
+        const bMat = new THREE.MeshBasicMaterial({ map: bubbleTexture, transparent: true, opacity: 0.9 });
+        const bSize = isAmbient ? (0.005 + Math.random() * 0.02) : (0.02 + Math.random() * 0.05);
+        const bMesh = new THREE.Mesh(new THREE.PlaneGeometry(bSize, bSize), bMat);
+        
+        bMesh.position.set(x, y, 0.02);
+        bMesh.rotation.x = -0.3;
+        
+        bubbles.push({
+          mesh: bMesh,
+          vx: (Math.random() - 0.5) * 0.0008,
+          vy: (Math.random() - 0.5) * 0.0008,
+          life: 1.0,
+          decay: isAmbient ? (0.00015 + Math.random() * 0.00035) : 0.0012
+        });
+        surfaceGroup.add(bMesh);
+    }
+
+    function triggerSeepage(x, y) {
+      const mat = new THREE.MeshBasicMaterial({ 
+        map: softTexture,
+        transparent: true, 
+        opacity: 0, 
+        depthWrite: false,
+        blending: THREE.NormalBlending 
+      });
+      const sMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.25), mat);
+      sMesh.position.set(x, y, 0.01);
+      sMesh.rotation.set(-0.3, 0, Math.random() * Math.PI);
+      
+      seepageItems.push({
+        mesh: sMesh,
+        life: 0,
+        x: x,
+        y: y,
+        phase: 'expanding', 
+        maxScale: 1.4 + Math.random() * 0.6
+      });
+      surfaceGroup.add(sMesh);
+
+      const numBubbles = 8 + Math.floor(Math.random() * 6);
+      for(let i=0; i<numBubbles; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * 0.1;
+        spawnBubble(x + Math.cos(angle) * dist, y + Math.sin(angle) * dist, false);
+      }
+    }
+
+    const dripCount = 25; /* more drops */ 
+    const dripGeometry = new THREE.SphereGeometry(0.03, 12, 12);
+    const dripMaterial = new THREE.MeshStandardMaterial({ color: 0x241401, roughness: 0.5, metalness: 0.1 });
+    const dripParticles = new THREE.InstancedMesh(dripGeometry, dripMaterial, dripCount);
+    const pDummy = new THREE.Object3D();
+    
+    const faucets = [
+  { x: -1.35, y: -10, velocity: 0, active: false, nextStart: 0 },
+  { x: -1.20, y: -10, velocity: 0, active: false, nextStart: 150 },
+  { x: -1.05, y: -10, velocity: 0, active: false, nextStart: 300 },
+  { x: -0.90, y: -10, velocity: 0, active: false, nextStart: 450 },
+  { x: -0.75, y: -10, velocity: 0, active: false, nextStart: 600 },
+  { x: -0.60, y: -10, velocity: 0, active: false, nextStart: 750 },
+  { x: -0.45, y: -10, velocity: 0, active: false, nextStart: 900 },
+  { x: -0.30, y: -10, velocity: 0, active: false, nextStart: 1050 },
+  { x: -0.15, y: -10, velocity: 0, active: false, nextStart: 1200 },
+  { x:  0.00, y: -10, velocity: 0, active: false, nextStart: 1350 },
+  { x:  0.15, y: -10, velocity: 0, active: false, nextStart: 1500 },
+  { x:  0.30, y: -10, velocity: 0, active: false, nextStart: 1650 },
+  { x:  0.45, y: -10, velocity: 0, active: false, nextStart: 1800 },
+  { x:  0.60, y: -10, velocity: 0, active: false, nextStart: 1950 },
+  { x:  0.75, y: -10, velocity: 0, active: false, nextStart: 2100 },
+  { x:  0.90, y: -10, velocity: 0, active: false, nextStart: 2250 },
+  { x:  1.05, y: -10, velocity: 0, active: false, nextStart: 2400 },
+  { x:  1.20, y: -10, velocity: 0, active: false, nextStart: 2550 },
+  { x:  1.35, y: -10, velocity: 0, active: false, nextStart: 2700 },
+
+  /* extra faucets */
+  { x: -1.10, y: -10, velocity: 0, active: false, nextStart: 2850 },
+  { x: -0.55, y: -10, velocity: 0, active: false, nextStart: 3000 },
+  { x:  0.55, y: -10, velocity: 0, active: false, nextStart: 3150 },
+  { x:  1.10, y: -10, velocity: 0, active: false, nextStart: 3300 },
+  { x:  0.00, y: -10, velocity: 0, active: false, nextStart: 3450 }
+];
+    scene.add(dripParticles);
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+      const t = time || performance.now();
+      
+      if (mesh && mesh.geometry) {
+        const positions = mesh.geometry.attributes.position;
+        
+        mesh.material.map.offset.y = Math.sin(t * 0.0002) * 0.005;
+        mesh.material.map.offset.x = Math.cos(t * 0.0003) * 0.005;
+
+        if (Math.random() < 0.18) { 
+           const randX = (Math.random() - 0.5) * pSize.width;
+           const randY = (Math.random() - 0.5) * pSize.height;
+           spawnBubble(randX, randY, true);
+        }
+
+        for (let i = 0; i < positions.count; i++) {
+          const x = positions.getX(i);
+          const y = positions.getY(i);
+          const swelling = Math.sin(t * 0.0002) * 0.012; 
+          
+          const wave = Math.sin(x * 1.5 + t * 0.0004) * 0.006 + 
+                       Math.cos(y * 1.3 + t * 0.0003) * 0.006 + 
+                       Math.sin((x + y) * 2.0 + t * 0.0008) * 0.002;
+          
+          let splash = 0;
+          faucets.forEach(p => {
+              if(p.active && p.y < 0.1 && p.y > -0.1) {
+                const dx = x - p.x;
+                const dy = y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                splash += Math.sin(t * 0.015 - dist * 35) * (0.04 * (1 - Math.min(dist/0.4, 1)));
+              }
+          });
+          positions.setZ(i, wave + splash + swelling);
+        }
+        positions.needsUpdate = true;
+
+        faucets.forEach((p, i) => {
+          if (!p.active && t > p.nextStart) {
+            p.active = true;
+            p.y = 2.5;
+            p.velocity = 0;
+          }
+          if (p.active) {
+            p.velocity += 0.0001;
+            p.y -= p.velocity;
+            pDummy.position.set(p.x, p.y, 0.05);
+            const s = 1 + p.velocity * 9;
+            pDummy.scale.set(1/s, s, 1/s);
+            if (p.y < 0) {
+              triggerSeepage(p.x, 0); 
+              p.active = false;
+              p.y = -10;
+              p.nextStart = t + 1000 + Math.random() * 3000;
+            }
+          } else {
+            pDummy.position.set(0, -10, 0);
+          }
+          pDummy.updateMatrix();
+          dripParticles.setMatrixAt(i, pDummy.matrix);
+        });
+        dripParticles.instanceMatrix.needsUpdate = true;
+
+        for (let i = seepageItems.length - 1; i >= 0; i--) {
+          const s = seepageItems[i];
+          if (s.phase === 'expanding') {
+            s.life += 0.07;
+            if (s.life >= 1) s.phase = 'diluting';
+          } else {
+            s.life -= 0.005; 
+          }
+          if (s.life <= 0) {
+            surfaceGroup.remove(s.mesh);
+            seepageItems.splice(i, 1);
+            continue;
+          }
+          const currentScale = (s.phase === 'expanding' ? s.life : 1 + (1 - s.life) * 0.5) * s.maxScale;
+          s.mesh.scale.set(currentScale, currentScale, 1);
+          s.mesh.material.opacity = Math.max(0, s.life * 0.7);
+          const wAt = Math.sin(s.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(s.y * 1.3 + t * 0.0003) * 0.006 + Math.sin(t * 0.0002) * 0.012;
+          s.mesh.position.z = wAt + 0.001;
+        }
+
+        for (let i = bubbles.length - 1; i >= 0; i--) {
+          const b = bubbles[i];
+          b.life -= b.decay;
+          b.mesh.position.x += b.vx;
+          b.mesh.position.y += b.vy;
+          
+          const waveAt = Math.sin(b.mesh.position.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(b.mesh.position.y * 1.3 + t * 0.0003) * 0.006 + Math.sin(t * 0.0002) * 0.012;
+          b.mesh.position.z = waveAt + 0.02;
+          b.mesh.material.opacity = b.life;
+          
+          if (b.life <= 0) {
+            surfaceGroup.remove(b.mesh);
+            bubbles.splice(i, 1);
+          }
+        }
+      }
+      renderer.render(scene, camera);
+    }
+    
+    animate();
+
+    window.addEventListener('resize', () => {
+      w = containerFooter.clientWidth;
+      h = containerFooter.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      pSize = getPlaneSize();
+      if (mesh) {
+        mesh.geometry.dispose();
+        mesh.geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
+      }
+    });
+})();
+</script>
+
+</footer>
+
 
 
     <div id="info" class="p-4 bg-gray-900 bg-opacity-80 text-white rounded-lg shadow-xl text-sm md:text-base">
@@ -779,7 +1121,7 @@
         Switch Zoom
     </button>
 
-    <script>
+      <script>
         // ===== Existing Three.js Logic (All Same) =====
         const glbUrls = [
             'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766279337952.glb',
@@ -924,7 +1266,7 @@ function createGeminiChartOverlay() {
 
     let history = Array.from({length:10},()=>Math.random()*1.5+0.6);
     const bars=[];
-    const colors=[0xff4d4d,0xffa64d,0xffe44d,0x4dff88,0x4dd2ff,0x6a5cff];
+    const colors=[0xFF0800,0x8806CE,0xFFD700,0x4dff88,0xF94D00,0x0000FF];
 
     for(let i=0;i<10;i++){
         const geo = new THREE.BoxGeometry(0.25,1,0.25);
@@ -1337,14 +1679,23 @@ function createGeminiChartOverlay() {
                         m.userData.sp = .25 + Math.random() * .65;
                         items.push(m);
                         s.add(m);
+                        
                     }
                 });
             });
+
+            const aptiText = document.getElementById("apti");
+            if (aptiText) aptiText.textContent = "AptiCraft";
+            let hue = 0;
 
             function loop() {
                 for (const p of items) {
                     p.position.y += p.userData.sp;
                     if (p.position.y > 70) p.position.y = -70;
+                }
+                if (aptiText) {
+                    hue = (hue + 1) % 360;
+                    aptiText.style.color = `hsl(${hue}, 85%, 60%)`;
                 }
                 r.render(s, cam);
                 requestAnimationFrame(loop);
@@ -1374,6 +1725,7 @@ function createGeminiChartOverlay() {
             }
         }
     </script>
+
 
 </body>
 
