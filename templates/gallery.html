@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>AptiCraft | Luxury Coffee Visualization</title>
+    <title>Luxury Coffee Visualization_afsana</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Added Requested Libraries -->
@@ -730,388 +730,387 @@
         <!-- Human touch: Inspection hint for the user -->
         <div id="inspect-hint">Tap to Inspect</div>
     </main>
+
     <!-- FOOTER TOP GRADIENT BAR -->
    <div class="w-full bg-gradient-to-t from-[#1B0F08] via-[#2B170C] to-transparent shadow-2xl shadow-[#140804] h-16"></div>
-
     <!-- PROFESSIONAL FULL WIDTH FOOTER -->
-   <!-- ✅ COPY/PASTE ONLY THIS FOOTER (self‑contained). It keeps ALL your style + script, just moved inside the footer. -->
-<!-- ✅ COPY/PASTE ONLY THIS FOOTER (self‑contained). It keeps ALL your style + script, just moved inside the footer. -->
-<footer id="fixed-footer" class="relative w-full h-[420px] overflow-hidden tracking-tight">
+        <footer id="fixed-footer" class="relative w-full h-[420px] overflow-hidden tracking-tight">
 
-  <!-- curved top so footer goes slightly inside page -->
-  <div style="position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:85%;height:90px;background:transparent;border-bottom-left-radius:120px;border-bottom-right-radius:120px;z-index:3;"></div>
+        <!-- curved top so footer goes slightly inside page -->
+        <div style="position:absolute;top:-25px;left:50%;transform:translateX(-50%);width:85%;height:90px;background:transparent;border-bottom-left-radius:120px;border-bottom-right-radius:120px;z-index:3;"></div>
 
-  <!-- libs (kept, inside footer) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <!-- Three.js removed here to avoid loading it twice (gallery already loads it) -->
+        <!-- libs (kept, inside footer) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <!-- Three.js removed here to avoid loading it twice (gallery already loads it) -->
 
-  <style>
-    
+        <style>
+            
+            #canvas-container{width:100%;height:420px;}
 
-    #canvas-container{width:100%;height:420px;}
-
-    /* Coffee + Gold UI Style */
-    .apti-brand{
-      color:#3D2B1F; /* dark coffee */
-      -webkit-text-stroke:1px #FFFFFF; /* gold outline */
-      letter-spacing: -8px;
-      transition:all .35s ease;
-    }
-
-    .apti-brand:hover{transform:none;}
-
-    #fixed-footer a{
-      color:#44362F;
-      -webkit-text-stroke:0.3px #DDD06A;
-      transition:all .3s ease;
-    }
-
-    #fixed-footer a:hover{
-      color:#800000;
-      
-      transform:translateY(-1px);
-    }
-  </style>
-
-  <!-- three canvas (kept id so your script works without changes) -->
-  <div id="canvas-container" class="absolute inset-0"></div>
-
-<!-- top mask so drops appear from hidden gap -->
-<div style="position:absolute;top:0;left:0;width:100%;height:50px;background:transparent;z-index:2;"></div>
-
-  <!-- AptiCraft Footer UI (same content) -->
-  <div class="absolute bottom-0 left-0 w-full p-6 bg-transparent z-[10]
-              text-white flex flex-col md:flex-row items-center justify-between 
-              bg-transparent">
-
-    <a id="apti" href="#" class="apti-brand text-5xl font-bold ">AptiCraft</a>
-
-    <div class="flex flex-wrap justify-center gap-6 mt-4 md:mt-0 text-xl font-bold text-[#44362F] md:mr-12">
-        <a href="https://github.com/Afsana721/flask_apps" target="_blank"
-            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">GitHub</a>
-        <a href="https://flask-apps-e45a.onrender.com/" target="_blank"
-            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Portfolio</a>
-        <a href="https://www.openqquantify.com/" target="_blank"
-            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">OpenQQuantify</a>
-        <a href="mailto:afsanaafroze21@gmail.com" target="_blank"
-            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Email</a>
-        <a href="https://www.linkedin.com/in/afsanausa/" target="_blank"
-            class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">LinkedIn</a>
-    </div>
-  </div>
-
-  <script>
-(function(){
-
-    const containerFooter = document.getElementById('canvas-container');
-    const foamTextureUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/foam.png";
-    
-    const scene = new THREE.Scene();
-    let w = containerFooter.clientWidth;
-    let h = containerFooter.clientHeight;
-    
-    const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
-    camera.position.set(0, -0.1, 1.2); 
-    camera.lookAt(0, 0, 0);
-    
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    containerFooter.appendChild(renderer.domElement);
-
-    
-
-    const surfaceGroup = new THREE.Group();
-    scene.add(surfaceGroup);
-
-    function getPlaneSize() {
-      const distance = camera.position.z;
-      const vFov = camera.fov * Math.PI / 180;
-      const planeHeight = 2 * Math.tan(vFov / 2) * distance * 2;
-      const planeWidth = planeHeight * (containerFooter.clientWidth / containerFooter.clientHeight);
-      return { width: planeWidth, height: planeHeight };
-    }
-
-    let pSize = getPlaneSize();
-    const geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
-    
-    const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
-    
-    let mesh;
-    loader.load(foamTextureUrl, (tex) => {
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(2, 2);
-      const material = new THREE.MeshBasicMaterial({map: tex, side: THREE.DoubleSide});
-      mesh = new THREE.Mesh(geometry, material);
-      mesh.rotation.x = -0.25; /* slight curve so drops appear from top */ 
-      surfaceGroup.add(mesh);
-    });
-
-    /* --- BUBBLE TEXTURE GENERATOR --- */
-    function createBubbleTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 64;
-      canvas.height = 64;
-      const ctx = canvas.getContext('2d');
-      
-      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      grad.addColorStop(0, 'rgba(255, 245, 230, 0.1)');
-      grad.addColorStop(0.7, 'rgba(255, 250, 240, 0.4)');
-      grad.addColorStop(0.9, 'rgba(255, 255, 255, 0.8)');
-      grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(32, 32, 30, 0, Math.PI * 2);
-      ctx.fill();
-
-      const coffeeGrad = ctx.createRadialGradient(32, 20, 0, 32, 20, 15);
-      coffeeGrad.addColorStop(0, '#3D0C02'); 
-      coffeeGrad.addColorStop(1, 'rgba(89, 39, 32, 0)'); 
-      ctx.fillStyle = coffeeGrad;
-      ctx.beginPath();
-      ctx.arc(32, 20, 15, 0, Math.PI * 2);
-      ctx.fill();
-
-      return new THREE.CanvasTexture(canvas);
-    }
-    const bubbleTexture = createBubbleTexture();
-
-    function createLiquidTexture() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 256;
-      canvas.height = 256;
-      const ctx = canvas.getContext('2d');
-      const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-      grad.addColorStop(0, 'rgba(30, 15, 5, 0.95)'); 
-      grad.addColorStop(0.2, 'rgba(30, 15, 5, 0.6)');
-      grad.addColorStop(0.5, 'rgba(45, 25, 15, 0.2)');
-      grad.addColorStop(1, 'rgba(45, 25, 15, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 256, 256);
-      return new THREE.CanvasTexture(canvas);
-    }
-    const softTexture = createLiquidTexture();
-
-    const seepageItems = [];
-    const bubbles = [];
-
-    function spawnBubble(x, y, isAmbient = false) {
-        const bMat = new THREE.MeshBasicMaterial({ map: bubbleTexture, transparent: true, opacity: 0.9 });
-        const bSize = isAmbient ? (0.005 + Math.random() * 0.02) : (0.02 + Math.random() * 0.05);
-        const bMesh = new THREE.Mesh(new THREE.PlaneGeometry(bSize, bSize), bMat);
-        
-        bMesh.position.set(x, y, 0.02);
-        bMesh.rotation.x = -0.3;
-        
-        bubbles.push({
-          mesh: bMesh,
-          vx: (Math.random() - 0.5) * 0.0008,
-          vy: (Math.random() - 0.5) * 0.0008,
-          life: 1.0,
-          decay: isAmbient ? (0.00015 + Math.random() * 0.00035) : 0.0012
-        });
-        surfaceGroup.add(bMesh);
-    }
-
-    function triggerSeepage(x, y) {
-      const mat = new THREE.MeshBasicMaterial({ 
-        map: softTexture,
-        transparent: true, 
-        opacity: 0, 
-        depthWrite: false,
-        blending: THREE.NormalBlending 
-      });
-      const sMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.25), mat);
-      sMesh.position.set(x, y, 0.01);
-      sMesh.rotation.set(-0.3, 0, Math.random() * Math.PI);
-      
-      seepageItems.push({
-        mesh: sMesh,
-        life: 0,
-        x: x,
-        y: y,
-        phase: 'expanding', 
-        maxScale: 1.4 + Math.random() * 0.6
-      });
-      surfaceGroup.add(sMesh);
-
-      const numBubbles = 8 + Math.floor(Math.random() * 6);
-      for(let i=0; i<numBubbles; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * 0.1;
-        spawnBubble(x + Math.cos(angle) * dist, y + Math.sin(angle) * dist, false);
-      }
-    }
-
-    const dripCount = 25; /* more drops */ 
-    const dripGeometry = new THREE.SphereGeometry(0.03, 12, 12);
-    const dripMaterial = new THREE.MeshStandardMaterial({ color: 0x241401, roughness: 0.5, metalness: 0.1 });
-    const dripParticles = new THREE.InstancedMesh(dripGeometry, dripMaterial, dripCount);
-    const pDummy = new THREE.Object3D();
-    
-    const faucets = [
-  { x: -1.35, y: -10, velocity: 0, active: false, nextStart: 0 },
-  { x: -1.20, y: -10, velocity: 0, active: false, nextStart: 150 },
-  { x: -1.05, y: -10, velocity: 0, active: false, nextStart: 300 },
-  { x: -0.90, y: -10, velocity: 0, active: false, nextStart: 450 },
-  { x: -0.75, y: -10, velocity: 0, active: false, nextStart: 600 },
-  { x: -0.60, y: -10, velocity: 0, active: false, nextStart: 750 },
-  { x: -0.45, y: -10, velocity: 0, active: false, nextStart: 900 },
-  { x: -0.30, y: -10, velocity: 0, active: false, nextStart: 1050 },
-  { x: -0.15, y: -10, velocity: 0, active: false, nextStart: 1200 },
-  { x:  0.00, y: -10, velocity: 0, active: false, nextStart: 1350 },
-  { x:  0.15, y: -10, velocity: 0, active: false, nextStart: 1500 },
-  { x:  0.30, y: -10, velocity: 0, active: false, nextStart: 1650 },
-  { x:  0.45, y: -10, velocity: 0, active: false, nextStart: 1800 },
-  { x:  0.60, y: -10, velocity: 0, active: false, nextStart: 1950 },
-  { x:  0.75, y: -10, velocity: 0, active: false, nextStart: 2100 },
-  { x:  0.90, y: -10, velocity: 0, active: false, nextStart: 2250 },
-  { x:  1.05, y: -10, velocity: 0, active: false, nextStart: 2400 },
-  { x:  1.20, y: -10, velocity: 0, active: false, nextStart: 2550 },
-  { x:  1.35, y: -10, velocity: 0, active: false, nextStart: 2700 },
-
-  /* extra faucets */
-  { x: -1.10, y: -10, velocity: 0, active: false, nextStart: 2850 },
-  { x: -0.55, y: -10, velocity: 0, active: false, nextStart: 3000 },
-  { x:  0.55, y: -10, velocity: 0, active: false, nextStart: 3150 },
-  { x:  1.10, y: -10, velocity: 0, active: false, nextStart: 3300 },
-  { x:  0.00, y: -10, velocity: 0, active: false, nextStart: 3450 }
-];
-    scene.add(dripParticles);
-
-    function animate(time) {
-      requestAnimationFrame(animate);
-      const t = time || performance.now();
-      
-      if (mesh && mesh.geometry) {
-        const positions = mesh.geometry.attributes.position;
-        
-        mesh.material.map.offset.y = Math.sin(t * 0.0002) * 0.005;
-        mesh.material.map.offset.x = Math.cos(t * 0.0003) * 0.005;
-
-        if (Math.random() < 0.18) { 
-           const randX = (Math.random() - 0.5) * pSize.width;
-           const randY = (Math.random() - 0.5) * pSize.height;
-           spawnBubble(randX, randY, true);
-        }
-
-        for (let i = 0; i < positions.count; i++) {
-          const x = positions.getX(i);
-          const y = positions.getY(i);
-          const swelling = Math.sin(t * 0.0002) * 0.012; 
-          
-          const wave = Math.sin(x * 1.5 + t * 0.0004) * 0.006 + 
-                       Math.cos(y * 1.3 + t * 0.0003) * 0.006 + 
-                       Math.sin((x + y) * 2.0 + t * 0.0008) * 0.002;
-          
-          let splash = 0;
-          faucets.forEach(p => {
-              if(p.active && p.y < 0.1 && p.y > -0.1) {
-                const dx = x - p.x;
-                const dy = y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                splash += Math.sin(t * 0.015 - dist * 35) * (0.04 * (1 - Math.min(dist/0.4, 1)));
-              }
-          });
-          positions.setZ(i, wave + splash + swelling);
-        }
-        positions.needsUpdate = true;
-
-        faucets.forEach((p, i) => {
-          if (!p.active && t > p.nextStart) {
-            p.active = true;
-            p.y = 2.5;
-            p.velocity = 0;
-          }
-          if (p.active) {
-            p.velocity += 0.0001;
-            p.y -= p.velocity;
-            pDummy.position.set(p.x, p.y, 0.05);
-            const s = 1 + p.velocity * 9;
-            pDummy.scale.set(1/s, s, 1/s);
-            if (p.y < 0) {
-              triggerSeepage(p.x, 0); 
-              p.active = false;
-              p.y = -10;
-              p.nextStart = t + 1000 + Math.random() * 3000;
+            /* Coffee + Gold UI Style */
+            .apti-brand{
+            color:#f3ece7; /* dark coffee */
+            -webkit-text-stroke:1px #ecee68; /* gold outline */
+            letter-spacing: -5px;
+            transition:all .35s ease;
             }
-          } else {
-            pDummy.position.set(0, -10, 0);
-          }
-          pDummy.updateMatrix();
-          dripParticles.setMatrixAt(i, pDummy.matrix);
-        });
-        dripParticles.instanceMatrix.needsUpdate = true;
 
-        for (let i = seepageItems.length - 1; i >= 0; i--) {
-          const s = seepageItems[i];
-          if (s.phase === 'expanding') {
-            s.life += 0.07;
-            if (s.life >= 1) s.phase = 'diluting';
-          } else {
-            s.life -= 0.005; 
-          }
-          if (s.life <= 0) {
-            surfaceGroup.remove(s.mesh);
-            seepageItems.splice(i, 1);
-            continue;
-          }
-          const currentScale = (s.phase === 'expanding' ? s.life : 1 + (1 - s.life) * 0.5) * s.maxScale;
-          s.mesh.scale.set(currentScale, currentScale, 1);
-          s.mesh.material.opacity = Math.max(0, s.life * 0.7);
-          const wAt = Math.sin(s.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(s.y * 1.3 + t * 0.0003) * 0.006 + Math.sin(t * 0.0002) * 0.012;
-          s.mesh.position.z = wAt + 0.001;
+            .apti-brand:hover{transform:none;}
+
+            #fixed-footer a{
+            color:#FFFFF0;
+            -webkit-text-stroke:0.3px #ecea6b;
+            transition:all .3s ease;
+            }
+
+            #fixed-footer a:hover{
+            color:#180101;
+            
+            transform:translateY(-1px);
+            }
+        </style>
+
+        <!-- three canvas (kept id so your script works without changes) -->
+        <div id="canvas-container" class="absolute inset-0"></div>
+
+        <!-- top mask so drops appear from hidden gap -->
+        <div style="position:absolute;top:0;left:0;width:100%;height:50px;background:transparent;z-index:2;"></div>
+
+        <!-- AptiCraft Footer UI (same content) -->
+        <div class="absolute bottom-0 left-0 w-full p-6 bg-transparent z-[10]
+                    text-white flex flex-col md:flex-row items-center justify-between 
+                    bg-transparent">
+
+            <a id="apti" href="#" class="apti-brand text-5xl font-bold ">AptiCraft</a>
+
+            <div class="flex flex-wrap justify-center gap-6 mt-4 md:mt-0 text-xl font-bold text-[#FEFEFA] md:mr-12">
+                <a href="https://github.com/Afsana721/flask_apps" target="_blank"
+                    class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">GitHub</a>
+                <a href="https://flask-apps-e45a.onrender.com/" target="_blank"
+                    class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Portfolio</a>
+                <a href="https://www.openqquantify.com/" target="_blank"
+                    class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">OpenQQuantify</a>
+                <a href="mailto:afsanaafroze21@gmail.com" target="_blank"
+                    class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">Email</a>
+                <a href="https://www.linkedin.com/in/afsanausa/" target="_blank"
+                    class="hover:text-[#C19A6B] transition duration-200 border-b border-transparent hover:border-[#3D0C02]">LinkedIn</a>
+            </div>
+        </div>
+
+        <script>
+        (function(){
+
+            const containerFooter = document.getElementById('canvas-container');
+            const foamTextureUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/foam.png";
+            
+            const scene = new THREE.Scene();
+            let w = containerFooter.clientWidth;
+            let h = containerFooter.clientHeight;
+            
+            const camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
+            camera.position.set(0, -0.1, 1.2); 
+            camera.lookAt(0, 0, 0);
+            
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            containerFooter.appendChild(renderer.domElement);
+
+            
+
+            const surfaceGroup = new THREE.Group();
+            scene.add(surfaceGroup);
+
+            function getPlaneSize() {
+            const distance = camera.position.z;
+            const vFov = camera.fov * Math.PI / 180;
+            const planeHeight = 2 * Math.tan(vFov / 2) * distance * 2;
+            const planeWidth = planeHeight * (containerFooter.clientWidth / containerFooter.clientHeight);
+            return { width: planeWidth, height: planeHeight };
+            }
+
+            let pSize = getPlaneSize();
+            const geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
+            
+            const loader = new THREE.TextureLoader();
+            loader.setCrossOrigin('anonymous');
+            
+            let mesh;
+            loader.load(foamTextureUrl, (tex) => {
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(2, 2);
+            const material = new THREE.MeshBasicMaterial({map: tex, side: THREE.DoubleSide});
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.rotation.x = -0.78; /* steeper ~45deg tilt so liquid appears to emerge from the top div */ 
+            surfaceGroup.add(mesh);
+            });
+
+            /* --- BUBBLE TEXTURE GENERATOR --- */
+            function createBubbleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            grad.addColorStop(0, 'rgba(255, 245, 230, 0.1)');
+            grad.addColorStop(0.7, 'rgba(255, 250, 240, 0.4)');
+            grad.addColorStop(0.9, 'rgba(255, 255, 255, 0.8)');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(32, 32, 30, 0, Math.PI * 2);
+            ctx.fill();
+
+            const coffeeGrad = ctx.createRadialGradient(32, 20, 0, 32, 20, 15);
+            coffeeGrad.addColorStop(0, '#3D0C02'); 
+            coffeeGrad.addColorStop(1, 'rgba(89, 39, 32, 0)'); 
+            ctx.fillStyle = coffeeGrad;
+            ctx.beginPath();
+            ctx.arc(32, 20, 15, 0, Math.PI * 2);
+            ctx.fill();
+
+            return new THREE.CanvasTexture(canvas);
+            }
+            const bubbleTexture = createBubbleTexture();
+
+            function createLiquidTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            grad.addColorStop(0, 'rgba(30, 15, 5, 0.95)'); 
+            grad.addColorStop(0.2, 'rgba(30, 15, 5, 0.6)');
+            grad.addColorStop(0.5, 'rgba(45, 25, 15, 0.2)');
+            grad.addColorStop(1, 'rgba(45, 25, 15, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            return new THREE.CanvasTexture(canvas);
+            }
+            const softTexture = createLiquidTexture();
+
+            const seepageItems = [];
+            const bubbles = [];
+
+            function spawnBubble(x, y, isAmbient = false) {
+                const bMat = new THREE.MeshBasicMaterial({ map: bubbleTexture, transparent: true, opacity: 0.9 });
+                const bSize = isAmbient ? (0.004 + Math.random() * 0.02) : (0.02 + Math.random() * 0.04);
+                const bMesh = new THREE.Mesh(new THREE.PlaneGeometry(bSize, bSize), bMat);
+                
+                bMesh.position.set(x, y, 0.02);
+                bMesh.rotation.x = -0.3;
+                
+                bubbles.push({
+                mesh: bMesh,
+                vx: (Math.random() - 0.5) * 0.0008,
+                vy: (Math.random() - 0.5) * 0.0008,
+                life: 1.0,
+                decay: isAmbient ? (0.00015 + Math.random() * 0.00035) : 0.0012
+                });
+                surfaceGroup.add(bMesh);
+            }
+
+            function triggerSeepage(x, y) {
+            const mat = new THREE.MeshBasicMaterial({ 
+                map: softTexture,
+                transparent: true, 
+                opacity: 0, 
+                depthWrite: false,
+                blending: THREE.NormalBlending 
+            });
+            const sMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 0.25), mat);
+            sMesh.position.set(x, y, 0.01);
+            sMesh.rotation.set(-0.3, 0, Math.random() * Math.PI);
+            
+            seepageItems.push({
+                mesh: sMesh,
+                life: 0,
+                x: x,
+                y: y,
+                phase: 'expanding', 
+                maxScale: 1.4 + Math.random() * 0.6
+            });
+            surfaceGroup.add(sMesh);
+
+            const numBubbles = 8 + Math.floor(Math.random() * 6);
+            for(let i=0; i<numBubbles; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 0.1;
+                spawnBubble(x + Math.cos(angle) * dist, y + Math.sin(angle) * dist, false);
+            }
+            }
+
+            const dripCount = 40; /* more drops across full width */ /* more drops */ 
+            const dripGeometry = new THREE.SphereGeometry(0.03, 12, 12);
+            const dripMaterial = new THREE.MeshStandardMaterial({ color: 0x241401, roughness: 0.5, metalness: 0.1 });
+            const dripParticles = new THREE.InstancedMesh(dripGeometry, dripMaterial, dripCount);
+            const pDummy = new THREE.Object3D();
+            
+            const faucets = [];
+
+        /* spread drip sources across full liquid surface */
+        const faucetCount = dripCount;
+        for(let i=0;i<faucetCount;i++){
+            //const spread = -1.5 + (i/(faucetCount-1))*3.0; /* full width */
+          const spread = [-1.5,-1.35,-1.2,-1.05,-0.9,-0.75,-0.6,-0.45,-0.3,-0.15,0,0.15,0.3,0.45,0.6,0.75,0.9,1.05,1.2,1.35][i % 20];
+            faucets.push({
+                x: spread,
+                y: 4,
+                velocity:0,
+                active:false,
+                nextStart:i*180
+            });
         }
+            scene.add(dripParticles);
 
-        for (let i = bubbles.length - 1; i >= 0; i--) {
-          const b = bubbles[i];
-          b.life -= b.decay;
-          b.mesh.position.x += b.vx;
-          b.mesh.position.y += b.vy;
-          
-          const waveAt = Math.sin(b.mesh.position.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(b.mesh.position.y * 1.3 + t * 0.0003) * 0.006 + Math.sin(t * 0.0002) * 0.012;
-          b.mesh.position.z = waveAt + 0.02;
-          b.mesh.material.opacity = b.life;
-          
-          if (b.life <= 0) {
-            surfaceGroup.remove(b.mesh);
-            bubbles.splice(i, 1);
-          }
-        }
-      }
-      renderer.render(scene, camera);
-    }
-    
-    animate();
+            function animate(time) {
+            requestAnimationFrame(animate);
+            const t = time || performance.now();
+            
+            if (mesh && mesh.geometry) {
+                const positions = mesh.geometry.attributes.position;
+                
+                mesh.material.map.offset.y = Math.sin(t * 0.00025) * 0.01; /* stronger liquid drift */
+                mesh.material.map.offset.x = Math.cos(t * 0.00035) * 0.01; /* horizontal liquid motion */
 
-    window.addEventListener('resize', () => {
-      w = containerFooter.clientWidth;
-      h = containerFooter.clientHeight;
-      renderer.setSize(w, h);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      pSize = getPlaneSize();
-      if (mesh) {
-        mesh.geometry.dispose();
-        mesh.geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
-      }
-    });
-})();
-</script>
+                if (Math.random() < 0.18) { 
+                const randX = (Math.random() - 0.5) * pSize.width;
+                const randY = (Math.random() - 0.5) * pSize.height;
+                spawnBubble(randX, randY, true);
+                triggerSeepage(randX, randY); /* full-surface ripple effect */
+                }
 
+                for (let i = 0; i < positions.count; i++) {
+                const x = positions.getX(i);
+                const y = positions.getY(i);
+                const swelling = Math.sin(t * 0.0002) * 0.012; 
+                
+                const wave = Math.sin(x * 1.5 + t * 0.0004) * 0.006 + 
+                            Math.cos(y * 1.3 + t * 0.0003) * 0.006 + 
+                            Math.sin((x + y) * 2.0 + t * 0.0008) * 0.002;
+                
+                let splash = 0;
+                faucets.forEach(p => {
+                    if(p.active && p.y < 0.1 && p.y > -0.1) {
+                        const dx = x - p.x;
+                        const dy = y;
+                        const dist = Math.sqrt(dx*dx + dy*dy);
+                        splash += Math.sin(t * 0.015 - dist * 35) * (0.04 * (1 - Math.min(dist/0.4, 1)));
+                    }
+                });
+                positions.setZ(i, wave + splash + swelling);
+                }
+                positions.needsUpdate = true;
+
+                faucets.forEach((p, i) => {
+                /* accumulate liquid at top before dropping */
+                if (!p.active && t > p.nextStart) {
+                    p.build = (p.build || 0) + 0.02; /* liquid gathering */
+                    if (p.build > 1 + Math.random()*0.5) {
+                        p.active = true;
+                        p.y = 2.5;
+                        p.velocity = 0;
+                        p.build = 0;
+                    }
+                }
+                
+                if (p.active) {
+                    p.velocity += 0.0001;
+                    p.y -= p.velocity;
+                    pDummy.position.set(p.x, p.y, 0.05);
+                    const s = 1 + p.velocity * 9;
+                    //pDummy.scale.set(1/s, s, 1/s);
+                    pDummy.scale.set(0.2, 1.1, 0.7);
+
+                    if (p.y < 0) {
+                        /* splash effect when drop hits surface */
+                        triggerSeepage(p.x, 0);
+                        for(let s=0;s<4;s++){
+                            const angle = Math.random()*Math.PI*2;
+                            const dist = 0.05 + Math.random()*0.08;
+                            const sx = p.x + Math.cos(angle)*dist;
+                            const sy = Math.sin(angle)*0.02;
+                            triggerSeepage(sx, sy);
+                        }
+                        p.active = false;
+                        p.y = -10;
+                        p.nextStart = t + 1500 + Math.random() * 3500; /* staggered drops */
+                    }
+                } else {
+                    /* small bulge to show liquid building */
+                    const bulge = (p.build || 0) * 0.04;
+                    pDummy.position.set(p.x, 1.2 + bulge, 0.04);
+                    pDummy.scale.set(0.6 + bulge, 0.6 + bulge, 0.6);
+                }
+
+                pDummy.updateMatrix();
+                dripParticles.setMatrixAt(i, pDummy.matrix);
+                });
+                dripParticles.instanceMatrix.needsUpdate = true;
+
+                for (let i = seepageItems.length - 1; i >= 0; i--) {
+                const s = seepageItems[i];
+                if (s.phase === 'expanding') {
+                    s.life += 0.07;
+                    if (s.life >= 1) s.phase = 'diluting';
+                } else {
+                    s.life -= 0.005; 
+                }
+                if (s.life <= 0) {
+                    surfaceGroup.remove(s.mesh);
+                    seepageItems.splice(i, 1);
+                    continue;
+                }
+                const currentScale = (s.phase === 'expanding' ? s.life : 1 + (1 - s.life) * 0.5) * s.maxScale;
+                s.mesh.scale.set(currentScale, currentScale, 1);
+                s.mesh.material.opacity = Math.max(0, s.life * 0.7);
+                const wAt = Math.sin(s.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(s.y * 1.3 + t * 0.0003) * 0.006 + Math.sin(t * 0.0002) * 0.012;
+                s.mesh.position.z = wAt + 0.001;
+                }
+
+                for (let i = bubbles.length - 1; i >= 0; i--) {
+                const b = bubbles[i];
+                b.life -= b.decay;
+                b.mesh.position.x += b.vx;
+                b.mesh.position.y += b.vy;
+                
+                const waveAt = Math.sin(b.mesh.position.x * 1.5 + t * 0.0004) * 0.006 + Math.cos(b.mesh.position.y * 1.3 + t * 0.0003) * 0.016 + Math.sin(t * 0.0012) * 0.022;
+                b.mesh.position.z = waveAt + 0.08;
+                b.mesh.material.opacity = b.life;
+                
+                if (b.life <= 0) {
+                    surfaceGroup.remove(b.mesh);
+                    bubbles.splice(i, 1);
+                }
+                }
+            }
+            renderer.render(scene, camera);
+            }
+            
+            animate();
+
+            window.addEventListener('resize', () => {
+            w = containerFooter.clientWidth;
+            h = containerFooter.clientHeight;
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            pSize = getPlaneSize();
+            if (mesh) {
+                mesh.geometry.dispose();
+                mesh.geometry = new THREE.PlaneGeometry(pSize.width, pSize.height, 100, 100);
+            }
+            });
+        })();
+        </script>
 </footer>
-
-
 
     <div id="info" class="p-4 bg-gray-900 bg-opacity-80 text-white rounded-lg shadow-xl text-sm md:text-base">
         Status: Loading...
     </div>
-
-
-
     <button id="rotate-left-btn"
         class="fixed bottom-16 left-8 z-20 bg-gray-500 hover:bg-opacity-80 text-white font-normal py-1 px-2 rounded-full shadow-xl transition-colors">
         &larr;
@@ -1121,7 +1120,7 @@
         Switch Zoom
     </button>
 
-      <script>
+       <script>
         // ===== Existing Three.js Logic (All Same) =====
         const glbUrls = [
             'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766279337952.glb',
@@ -1251,11 +1250,16 @@ function createGeminiChartOverlay() {
         const ctx = mesh.userData.ctx;
         const canvas = mesh.userData.canvas;
         ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        // CLEAR READABLE VALUE TEXT
+        ctx.textAlign = "left";          // no center gap
         ctx.textBaseline = "middle";
-        ctx.fillText(text,2,canvas.height/2);
-        ctx.lineWidth = 9;
-        // ctx.strokeStyle = "rgba(255,255,255,0.35)";
-        ctx.strokeText(text,2,canvas.height/2);
+        ctx.font = "900 120px Arial";    // bold clear font
+        ctx.fillStyle = "#111111";       // dark solid color (no glow / shadow)
+
+        // draw clean text
+        ctx.fillText(text, 40, canvas.height/2);
+
         mesh.userData.tex.needsUpdate = true;
     }
 
@@ -1403,7 +1407,7 @@ function createGeminiChartOverlay() {
                     // Turn the flash OFF after a moment
                     setTimeout(() => {
                         areaLights.forEach(light => {
-                            light.intensity = 0;
+                            light.intensity = 8;
                         });
                     }, 1200);
                 }
@@ -1725,8 +1729,5 @@ function createGeminiChartOverlay() {
             }
         }
     </script>
-
-
 </body>
-
 </html>
