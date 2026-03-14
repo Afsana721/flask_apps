@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AptiCraft ArcGis_afsana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.29/"></script>
+</head>
+<body class="bg-emerald-50 text-slate-800 font-['Space_Grotesk'] scroll-smooth">
+
+<header class="w-full border-b border-emerald-200 bg-gradient-to-r from-green-100 via-emerald-100 to-lime-100 shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        <h1 class="text-2xl font-bold tracking-tight text-emerald-800">AptiCraft • Research-Grade Soil OS</h1>
+        <nav class="hidden md:flex space-x-8 text-sm font-semibold text-emerald-800">
+            <a href="#concept" class="hover:text-emerald-600 transition">Philosophy</a>
+            <a href="#map-hub" class="hover:text-emerald-600 transition">Live Map</a>
+            <a href="#analysis" class="hover:text-emerald-600 transition">Data Analysis</a>
+        </nav>
+    </div>
+</header>
+
+<section id="concept" class="max-w-7xl mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-12">
+        <div class="max-w-2xl">
+            <h2 class="text-4xl font-bold text-emerald-800 tracking-tight">Primal Growth Protocol</h2>
+            <p class="text-slate-600 text-lg mt-4 leading-relaxed">
+                AptiCraft defines <span class="text-emerald-700 font-bold">Primal Growth</span> as the original biological baseline of a landscape. We utilize drone telemetry to bridge the delta between current soil exhaustion and indigenous equilibrium.
+            </p>
+        </div>
+        <div class="bg-emerald-100/50 border-l-4 border-emerald-500 p-6 rounded-r-lg">
+            <h3 class="text-xl font-bold text-emerald-900 italic">"Earth First, Data Always."</h3>
+        </div>
+    </div>
+</section>
+
+<div id="map-hub" class="w-full border-y border-emerald-200 shadow-inner bg-white relative">
+    <div id="viewDiv" class="w-full h-[110vh]"></div>
+
+    <div class="absolute top-4 right-4 bg-white/95 p-4 rounded-xl border border-emerald-200 shadow-xl z-10 w-64 pointer-events-none">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-800">Telemetry Active</span>
+        </div>
+        <div class="space-y-2 text-xs font-semibold">
+            <div class="flex justify-between text-slate-400"><span>ALTITUDE</span> <span id="alt-val" class="text-slate-800">1100m</span></div>
+            <div class="flex justify-between text-slate-400"><span>STANCE</span> <span class="text-emerald-600">LOCKED</span></div>
+            <div class="flex justify-between text-slate-400"><span>MODE</span> <span class="text-slate-800">FOLLOW</span></div>
+        </div>
+    </div>
+</div>
+
+<section id="analysis" class="max-w-7xl mx-auto px-6 py-16">
+    <div class="grid md:grid-cols-2 gap-10">
+        <div class="bg-white border border-emerald-200 rounded-2xl p-8 shadow-sm">
+            <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight mb-4">Geo-Solid Stability</h3>
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                Analyze structural terrain integrity using topographic variance. Identify soil density shifts via thermal sync to restore geological pillars.
+            </p>
+        </div>
+        <div class="bg-white border border-emerald-200 rounded-2xl p-8 shadow-sm">
+            <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight mb-4">Native Life Guard</h3>
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                Environmental balancing ensures that crop improvement does not displace indigenous flora.
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+require([
+    "esri/Map",
+    "esri/views/SceneView",
+    "esri/Graphic",
+    "esri/layers/GraphicsLayer",
+    "esri/geometry/Point",
+    "esri/geometry/SpatialReference"
+], function(Map, SceneView, Graphic, GraphicsLayer, Point, SpatialReference) {
+
+    const center = { lat: 35.3186, lon: -87.7735 };
+
+    // Drone position state
+    let posX = center.lon;
+    let posY = center.lat;
+    let posZ = 1100;
+    let rotation = 0; // Initialize rotation angle
+
+    // Speeds
+    const speedX = 0.000012;
+    const speedY = 0.000008;
+    const rotationSpeed = 0.5; // How fast the drone spins (degrees per frame)
+
+    const droneUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766547783114.glb";
+
+    const map = new Map({
+        basemap: "satellite",
+        ground: null
+    });
+
+    const view = new SceneView({
+        container: "viewDiv",
+        map,
+        qualityProfile: "high",
+        camera: {
+            position: [posX, posY - 0.003, posZ + 800],
+            heading: 0,
+            tilt: 60
+        }
+    });
+
+    const gLayer = new GraphicsLayer();
+    map.add(gLayer);
+
+    let droneGraphic = null;
+
+    function makeDronePoint(x, y, z) {
+        return new Point({
+            x, y, z,
+            spatialReference: SpatialReference.WGS84
+        });
+    }
+
+    function syncCameraWithDrone() {
+        if (view.interacting) return;
+        const cam = view.camera.clone();
+        cam.position.longitude += speedX;
+        cam.position.latitude += speedY;
+        view.camera = cam;
+    }
+
+    droneGraphic = new Graphic({
+        geometry: makeDronePoint(posX, posY, posZ),
+        symbol: {
+            type: "point-3d",
+            symbolLayers: [{
+                type: "object",
+                resource: { href: droneUrl },
+                height: 100,
+                anchor: "center",
+                heading: 0 // Initial heading
+            }]
+        }
+    });
+
+    gLayer.add(droneGraphic);
+
+    function startAnimation() {
+        function frame() {
+            if (!droneGraphic) return;
+
+            // 1. Move the drone forward
+            posX += speedX;
+            posY += speedY;
+            droneGraphic.geometry = makeDronePoint(posX, posY, posZ);
+
+            // 2. Rotate the drone slowly
+            rotation += rotationSpeed; 
+            // We clone the symbol to trigger a visual update in the API
+            const newSymbol = droneGraphic.symbol.clone();
+            newSymbol.symbolLayers.getItemAt(0).heading = rotation % 360;
+            droneGraphic.symbol = newSymbol;
+
+            // 3. Keep map moving with drone
+            syncCameraWithDrone();
+
+            document.getElementById("alt-val").innerText = Math.round(posZ) + "m";
+            requestAnimationFrame(frame);
+        }
+        requestAnimationFrame(frame);
+    }
+
+    view.when(function() {
+        view.ui.remove("attribution");
+        view.goTo({ target: droneGraphic, tilt: 60 }, { animate: false }).then(() => {
+            startAnimation();
+        });
+    });
+});
+</script>
+</body>
+</html>
