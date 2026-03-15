@@ -37,18 +37,18 @@
 <div id="map-hub" class="w-full border-y border-emerald-200 shadow-inner bg-white relative">
     <div id="viewDiv" class="w-full h-[110vh]"></div>
 
-    <div class="absolute top-4 right-4 bg-white/95 p-4 rounded-xl border border-emerald-200 shadow-xl z-10 w-64 pointer-events-none">
+    <div class="absolute top-4 right-4 bg-white/10 p-4 rounded-xl border border-emerald-200 shadow-xl z-10 w-64 pointer-events-none">
         <div class="flex items-center gap-2 mb-3">
             <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-800">Telemetry Active</span>
+            <span class="text-[22px] font-bold uppercase tracking-tight text-[#E4D96F]">Telemetry Active</span>
         </div>
-        <div class="space-y-2 text-xs font-semibold">
-            <div class="flex justify-between text-slate-400"><span>ALTITUDE</span> <span id="alt-val" class="text-slate-800">1100m</span></div>
-            <div class="flex justify-between text-slate-400"><span>STANCE</span> <span class="text-emerald-600">LOCKED</span></div>
-            <div class="flex justify-between text-slate-400"><span>MODE</span> <span class="text-slate-800">FOLLOW</span></div>
+        <div class="space-y-2 text-lg font-semibold text-[#DDD06A]">
+            <div class="flex justify-between"><span>ALTITUDE</span> <span id="alt-val" class="">1100m</span></div>
+            <div class="flex justify-between"><span>STANCE</span> <span class="text-emerald-600">LOCKED</span></div>
+            <div class="flex justify-between"><span>MODE</span> <span class="text-slate-800">FOLLOW</span></div>
         </div>
     </div>
 </div>
@@ -68,7 +68,112 @@
             </p>
         </div>
     </div>
+
+    <!-- RESEARCH VISUALIZATION SECTION -->
+    <div class="mt-12 bg-[#1A1A1A] rounded-3xl p-8 shadow-2xl border border-slate-800">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <div>
+                <h3 class="text-emerald-400 font-bold text-xl uppercase tracking-widest">Research Comparison Matrix</h3>
+                <p class="text-slate-500 text-xs mt-1">Live Telemetry Analysis & Growth Variance</p>
+            </div>
+            <div class="text-right">
+                <span id="live-loc-tag" class="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase">GPS Syncing...</span>
+            </div>
+        </div>
+
+        <!-- Graphs Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <!-- Humidity Graph -->
+            <div class="bg-[#242424] p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Air Moisture / Humidity</span>
+                    <span id="live-hum-val" class="text-emerald-400 font-bold text-lg">--%</span>
+                </div>
+                <div id="hum-chart-container" class="flex items-end gap-1.5 h-32">
+                    <!-- Dynamic Bars -->
+                </div>
+            </div>
+
+            <!-- Soil Moisture Path -->
+            <div class="bg-[#242424] p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Soil Moisture Delta</span>
+                    <span id="live-moist-val" class="text-emerald-400 font-bold text-lg">--%</span>
+                </div>
+                <div class="relative h-32">
+                    <svg viewBox="0 0 200 100" class="w-full h-full">
+                        <path id="moisture-curve" d="M0 80 Q 50 80, 100 80 T 200 80" fill="none" stroke="#10b981" stroke-width="2" />
+                        <line x1="0" y1="50" x2="200" y2="50" stroke="#444" stroke-dasharray="4" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Dryness Metric -->
+            <div class="bg-[#242424] p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Aridity / Dryness Index</span>
+                </div>
+                <div class="flex flex-col items-center justify-center h-32">
+                    <div class="text-5xl font-bold text-white mb-2" id="live-dry-val">0.0</div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="dry-progress" class="bg-amber-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="text-[10px] text-slate-500 uppercase tracking-widest border-b border-slate-800">
+                        <th class="px-6 py-4 text-left font-bold">Crop Specimen</th>
+                        <th class="px-6 py-4 text-left font-bold">Standard Data</th>
+                        <th class="px-6 py-4 text-left font-bold">Drone Live Feed</th>
+                        <th class="px-6 py-4 text-left font-bold">Variance</th>
+                        <th class="px-6 py-4 text-left font-bold">Growth State</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/50 text-xs">
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            <span class="text-2xl">🌾</span>
+                            <div><div class="text-white font-bold">Rice</div><div class="text-slate-500 text-[10px]">Oryza sativa</div></div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-400">80% Hum / 90% Moist</td>
+                        <td class="px-6 py-4 text-emerald-400 font-mono" id="table-rice-live">-- / --</td>
+                        <td class="px-6 py-4"><div class="w-20 bg-slate-800 h-1.5 rounded-full"><div class="bg-emerald-500 h-full w-[85%] rounded-full"></div></div></td>
+                        <td class="px-6 py-4"><span class="text-emerald-500 font-bold uppercase text-[9px]">Optimal</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            <span class="text-2xl">🌽</span>
+                            <div><div class="text-white font-bold">Corn</div><div class="text-slate-500 text-[10px]">Zea mays</div></div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-400">60% Hum / 50% Moist</td>
+                        <td class="px-6 py-4 text-emerald-400 font-mono" id="table-corn-live">-- / --</td>
+                        <td class="px-6 py-4"><div class="w-20 bg-slate-800 h-1.5 rounded-full"><div class="bg-amber-500 h-full w-[40%] rounded-full"></div></div></td>
+                        <td class="px-6 py-4"><span class="text-amber-500 font-bold uppercase text-[9px]">Arid Alert</span></td>
+                    </tr>
+                    <tr class="hover:bg-slate-800/30 transition">
+                        <td class="px-6 py-4 flex items-center gap-3">
+                            <span class="text-2xl">🥔</span>
+                            <div><div class="text-white font-bold">Potato</div><div class="text-slate-500 text-[10px]">Solanum tuberosum</div></div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-400">75% Hum / 65% Moist</td>
+                        <td class="px-6 py-4 text-emerald-400 font-mono" id="table-potato-live">-- / --</td>
+                        <td class="px-6 py-4"><div class="w-20 bg-slate-800 h-1.5 rounded-full"><div class="bg-emerald-500 h-full w-[72%] rounded-full"></div></div></td>
+                        <td class="px-6 py-4"><span class="text-emerald-500 font-bold uppercase text-[9px]">Stable</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </section>
+
+<footer class="py-12 bg-emerald-100/30 border-t border-emerald-200 text-center">
+    <p class="text-emerald-800 font-bold text-sm">© 2024 AptiCraft Geo-Intelligence Units</p>
+</footer>
 
 <script>
 require([
@@ -82,91 +187,111 @@ require([
 
     const center = { lat: 35.3186, lon: -87.7735 };
 
-    // Drone position state
+    // DUMMY DATA PACKET FOR RESEARCHERS
+    const dummyPackets = [
+        { humidity: 64, moisture: 42, dryness: 0.31, lat: 35.3186, lon: -87.7735 },
+        { humidity: 66, moisture: 41, dryness: 0.34, lat: 35.3187, lon: -87.7734 },
+        { humidity: 63, moisture: 44, dryness: 0.29, lat: 35.3188, lon: -87.7733 },
+        { humidity: 60, moisture: 39, dryness: 0.38, lat: 35.3189, lon: -87.7732 }
+    ];
+    let packetIdx = 0;
+
     let posX = center.lon;
     let posY = center.lat;
     let posZ = 1100;
-    let rotation = 0; // Initialize rotation angle
+    let rotation = 0;
 
-    // Speeds
     const speedX = 0.000012;
     const speedY = 0.000008;
-    const rotationSpeed = 0.5; // How fast the drone spins (degrees per frame)
+    const rotationSpeed = 0.5;
 
     const droneUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766547783114.glb";
 
-    const map = new Map({
-        basemap: "satellite",
-        ground: null
-    });
-
+    const map = new Map({ basemap: "satellite", ground: null });
     const view = new SceneView({
         container: "viewDiv",
         map,
         qualityProfile: "high",
-        camera: {
-            position: [posX, posY - 0.003, posZ + 800],
-            heading: 0,
-            tilt: 60
-        }
+        camera: { position: [posX, posY - 0.003, posZ + 800], heading: 0, tilt: 60 }
     });
 
     const gLayer = new GraphicsLayer();
     map.add(gLayer);
 
-    let droneGraphic = null;
-
-    function makeDronePoint(x, y, z) {
-        return new Point({
-            x, y, z,
-            spatialReference: SpatialReference.WGS84
-        });
-    }
-
-    function syncCameraWithDrone() {
-        if (view.interacting) return;
-        const cam = view.camera.clone();
-        cam.position.longitude += speedX;
-        cam.position.latitude += speedY;
-        view.camera = cam;
-    }
-
-    droneGraphic = new Graphic({
-        geometry: makeDronePoint(posX, posY, posZ),
+    let droneGraphic = new Graphic({
+        geometry: new Point({ x: posX, y: posY, z: posZ, spatialReference: SpatialReference.WGS84 }),
         symbol: {
             type: "point-3d",
             symbolLayers: [{
                 type: "object",
                 resource: { href: droneUrl },
                 height: 100,
-                anchor: "center",
-                heading: 0 // Initial heading
+                anchor: "center"
             }]
         }
     });
-
     gLayer.add(droneGraphic);
 
+    function updateResearchUI() {
+        const data = dummyPackets[packetIdx];
+        
+        // Update Chart Bars
+        const humContainer = document.getElementById('hum-chart-container');
+        humContainer.innerHTML = '';
+        for(let i=0; i<15; i++) {
+            const bar = document.createElement('div');
+            bar.className = `w-1 ${i > 10 ? 'bg-emerald-400' : 'bg-emerald-900/40'}`;
+            bar.style.height = `${Math.random() * 80 + 20}%`;
+            humContainer.appendChild(bar);
+        }
+
+        // Numerical Values
+        document.getElementById('live-hum-val').innerText = data.humidity + '%';
+        document.getElementById('live-moist-val').innerText = data.moisture + '%';
+        document.getElementById('live-dry-val').innerText = data.dryness;
+        document.getElementById('dry-progress').style.width = (data.dryness * 100) + '%';
+        document.getElementById('live-loc-tag').innerText = `LAT: ${posY.toFixed(5)} LON: ${posX.toFixed(5)}`;
+
+        // Table Data
+        document.getElementById('table-rice-live').innerText = `${data.humidity}% / ${data.moisture}%`;
+        document.getElementById('table-corn-live').innerText = `${(data.humidity * 0.8).toFixed(0)}% / ${(data.moisture * 0.9).toFixed(0)}%`;
+        document.getElementById('table-potato-live').innerText = `${(data.humidity * 1.1).toFixed(0)}% / ${(data.moisture * 1.05).toFixed(0)}%`;
+
+        packetIdx = (packetIdx + 1) % dummyPackets.length;
+    }
+
     function startAnimation() {
+        let frameCounter = 0;
         function frame() {
             if (!droneGraphic) return;
 
-            // 1. Move the drone forward
             posX += speedX;
             posY += speedY;
-            droneGraphic.geometry = makeDronePoint(posX, posY, posZ);
+            droneGraphic.geometry = new Point({ x: posX, y: posY, z: posZ, spatialReference: SpatialReference.WGS84 });
 
-            // 2. Rotate the drone slowly
             rotation += rotationSpeed; 
-            // We clone the symbol to trigger a visual update in the API
             const newSymbol = droneGraphic.symbol.clone();
             newSymbol.symbolLayers.getItemAt(0).heading = rotation % 360;
             droneGraphic.symbol = newSymbol;
 
-            // 3. Keep map moving with drone
-            syncCameraWithDrone();
+            if (!view.interacting) {
+                view.goTo({ target: droneGraphic.geometry, heading: 0, tilt: 60 }, { animate: false }).catch(() => {});
+            }
 
-            document.getElementById("alt-val").innerText = Math.round(posZ) + "m";
+            const altLabel = document.getElementById("alt-val");
+            if (altLabel) altLabel.innerText = Math.round(posZ) + "m";
+            
+            // Sync UI updates with animation loop (every 2 seconds)
+            if(frameCounter % 120 === 0) updateResearchUI();
+            
+            // Subtle moisture curve animation
+            const mCurve = document.getElementById('moisture-curve');
+            if(mCurve) {
+                const wave = 80 + Math.sin(frameCounter * 0.05) * 5;
+                mCurve.setAttribute('d', `M0 80 Q 50 ${wave}, 100 80 T 200 80`);
+            }
+
+            frameCounter++;
             requestAnimationFrame(frame);
         }
         requestAnimationFrame(frame);
@@ -174,9 +299,7 @@ require([
 
     view.when(function() {
         view.ui.remove("attribution");
-        view.goTo({ target: droneGraphic, tilt: 60 }, { animate: false }).then(() => {
-            startAnimation();
-        });
+        view.goTo({ target: droneGraphic, tilt: 60 }, { animate: false }).then(startAnimation);
     });
 });
 </script>
