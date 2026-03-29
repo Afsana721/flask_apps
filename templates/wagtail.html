@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wagtail Update_afsana</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    :root{
+      --cocoa:#8b5e3c; /* warm brown from palette */
+      --bg:#FEFEFA;
+      --surface:#F8FCFD;
+      --surface-2:#FBF8F2;
+      --line:#D8B24C;
+      --text:#043a37;
+      --muted:#5d6b78;
+      --sky:#dff4f8;
+      --sky-2:#eef9fc;
+      --mint:#eef7f2;
+      --lav:#f4effa;
+      --rose:#fbf0f4;
+      --sand:#faf4e8;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+    .shell{max-width:1440px;margin:0 auto;padding:32px}
+    .glass{background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border:1px solid rgba(216,178,76,.55);box-shadow:0 10px 30px rgba(125,156,181,.10)}
+    .panel{background:linear-gradient(180deg,rgba(125,211,230,.18),#ffffff);border:1px solid var(--line);border-radius:28px;box-shadow:0 14px 34px rgba(120,155,181,.08)}
+    /* slightly richer cocoa tint for main sections */
+    .feature{background:linear-gradient(180deg,rgba(125,211,230,.16),#ffffff);border:1px solid var(--line);border-radius:24px;padding:28px;transition:.25s;box-shadow:0 8px 24px rgba(120,155,181,.06)}
+    .navbtn{padding:10px 16px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#30087c;transition:.25s;background:transparent;border:none;cursor:pointer}
+    .navbtn.active,.navbtn:hover{background:#e5f5f3;color:#1242aa}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid var(--line);background:#fff;color:#374151}
+    .metric{padding:16px 18px;border-radius:18px;background:linear-gradient(180deg,rgba(125,211,230,.12),#ffffff);border:1px solid var(--line);box-shadow:0 6px 18px rgba(120,155,181,.06)}
+    .feature{background:linear-gradient(180deg,rgba(139,94,60,.10),#ffffff);border:1px solid var(--line);border-radius:24px;padding:28px;transition:.25s;box-shadow:0 8px 24px rgba(120,155,181,.06)}
+    .feature:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(120,155,181,.12)}
+    .editor-input,.editor-textarea,.searchbox{width:100%;border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px 16px;outline:none;box-shadow:0 4px 14px rgba(120,155,181,.04)}
+    .editor-textarea{min-height:340px;resize:vertical}
+    .editor-input:focus,.editor-textarea:focus,.searchbox:focus{border-color:#b8b3a7;box-shadow:0 0 0 4px rgba(20,184,166,.08)}
+    .action{padding:11px 14px;border-radius:14px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--text);cursor:pointer;box-shadow:0 4px 12px rgba(120,155,181,.05)}
+    .action.primary{background:linear-gradient(180deg,#7ec6d5,#6db7ca);color:#fff;border:1px solid #7eb9c7}
+    .action.secondary{background:linear-gradient(180deg,#faf4e8,#fffaf0);color:var(--text);border:1px solid var(--line)}
+    .source-card{border:1px solid var(--line);border-radius:20px;padding:18px;background:linear-gradient(180deg,#ffffff,var(--sky-2));box-shadow:0 8px 20px rgba(120,155,181,.06)}
+    .badge{font-size:10px;font-weight:700;padding:5px 8px;border-radius:999px;background:#f3f4f6;color:var(--text);border:1px solid var(--line)}
+    .hidden-view{display:none}
+    .hero-wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:stretch}
+    .hero-visual{position:relative;overflow:hidden;min-height:460px;border-radius:30px;background:linear-gradient(180deg,rgba(125,211,230,.22),#ffffff);border:1px solid var(--line);box-shadow:0 16px 36px rgba(120,155,181,.10)}
+    .hero-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.95) contrast(1.02)}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(240,251,253,.18),rgba(255,255,255,.62) 72%,rgba(255,255,255,.92))}
+    .hero-canvas{position:absolute;inset:0;pointer-events:none;opacity:1}
+    .hero-copy{position:absolute;left:28px;right:28px;bottom:24px;z-index:3}
+    .hero-kicker{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#50634b;margin-bottom:8px}
+    @keyframes shine{0%{background-position:0%}100%{background-position:200%}}
+    .hero-title{font-size:clamp(2.4rem,3vw,2.2rem);font-weight:800;line-height:1.02;letter-spacing:-.04em;margin:0 0 10px;color:var(--text)}
+    .soft-note{color:var(--muted)}
+    .section-gap{margin-top:38px}
+    
+    .soft-block-lav{background:linear-gradient(180deg,var(--lav),#ffffff)}
+    .soft-block-mint{background:linear-gradient(180deg,var(--mint),#ffffff)}
+    .soft-block-sand{background:linear-gradient(180deg,var(--sand),#ffffff)}
+    .icon{width:18px;height:18px;display:inline-block;vertical-align:middle}
+    .icon-lg{width:20px;height:20px;display:inline-block}
+    @media (max-width:1100px){.hero-wrap{grid-template-columns:1fr}.hero-visual{min-height:380px}}
+  </style>
+</head>
+<body>
+  <!-- main wrapper -->
+  <div class="shell">
+    <header class="glass rounded-[28px] px-6 py-4 mt-6 mb-10 sticky top-4 z-50">
+      <div class="flex items-center justify-between gap-4 flex-wrap ">
+        <div class="flex items-center gap-4">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqHgYXugaF4vlm-SCM2ta8cClriNYYoKhayA&s" style="height:98px;object-fit:contain;" />
+          <div>
+            <div class="text-4xl font-extrabold tracking-tight" 
+            style="background:linear-gradient(90deg,#073383,#17afc4,#3c0c8a);-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 12s linear infinite;
+            ">Wagtail AI Assistant</div>
+            <!-- <div class="text-sm text-slate-500">Proposal-driven dashboard preview</div> -->
+          </div>
+        </div>
+        <nav class="flex items-center gap-4 bg-white/70 rounded-full p-1 border border-white/90">
+          <button id="btn-home" class="navbtn active text-[18px] " onclick="switchTab('home')">Overview</button>
+          <button id="btn-editor" class="navbtn text-[18px] " onclick="switchTab('editor')">Editor</button>
+          <button id="btn-assistant" class="navbtn text-[18px] " onclick="switchTab('assistant')">AI_Panel</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- home section -->
+    <section id="view-home">
+      <div class="hero-wrap mb-10">
+        <div class="panel p-8 rounded-[30px] flex flex-col justify-center">
+          <div class="flex flex-wrap gap-2 mb-5">
+            <span class="chip">clear</span>
+            <span class="chip">smart</span>
+            <span class="chip">connected</span>
+          </div>
+
+          <h1 class="text-5xl lg:text-4xl font-extrabold tracking-tight leading-[1.05] mb-4">
+            Build better content<br>
+            <span class="text-slate-500">with clarity + intelligence</span>
+          </h1>
+
+          <p class="text-lg max-w-2xl leading-relaxed mb-4 text-slate-600">
+            A clean workspace where writing, AI validation, and research come together in one simple flow.
+          </p>
+
+          <div class="grid grid-cols-2 gap-3 mb-6 text-sm">
+            <div class="p-3 rounded-xl bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border">✔ Write & structure</div>
+            <div class="p-3 rounded-xl bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border">✔ AI improve</div>
+            <div class="p-3 rounded-xl bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border">✔ Validate content</div>
+            <div class="p-3 rounded-xl bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border">✔ Add research links</div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <button class="action primary" onclick="switchTab('editor')">Start writing</button>
+            <button class="action" onclick="switchTab('assistant')">Open AI panel</button>
+          </div>
+        </div>
+
+        <div class="hero-visual shadow-sm">
+          <img src="https://thumbs.dreamstime.com/b/vector-icon-hand-holding-pen-writing-dark-brown-textured-charcoal-sketch-linear-style-transparent-background-content-441176988.jpg" alt="Creative stages visual" />
+          <div class="hero-overlay"></div>
+          <div id="heroLight" class="hero-canvas"></div>
+
+          <div class="hero-copy">
+            <div class="hero-kicker">workflow</div>
+            <h2 class="hero-title">Write → Improve → Publish</h2>
+            <p class="text-sm soft-note">simple, guided content flow</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 section-gap">
+        <div class="feature">
+          <div class="w-11 h-11 rounded-2xl bg-[#eef9fc] flex items-center justify-center mb-4">
+            <svg class="icon-lg text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Editor workspace</h3>
+          <p class="text-slate-600">Draft content, upload media, and keep structure clean inside one focused writing area.</p>
+        </div>
+        <div class="feature">
+          <div class="w-11 h-11 rounded-2xl bg-[#f4effa] flex items-center justify-center mb-4">
+            <svg class="icon-lg text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v2H7a2 2 0 0 0-2 2v3a4 4 0 0 0 4 4h1v2a3 3 0 0 0 6 0v-2h1a4 4 0 0 0 4-4V9a2 2 0 0 0-2-2h-2V5a3 3 0 0 0-3-3z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">AI assistance panel</h3>
+          <p class="text-slate-600">Improve content, validate sections, generate summaries, and suggest accepted-ready wording.</p>
+        </div>
+        <div class="feature">
+          <div class="w-11 h-11 rounded-2xl bg-[#eef7f2] flex items-center justify-center mb-4">
+            <svg class="icon-lg text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Research grounding</h3>
+          <p class="text-slate-600">Search by prompt and surface related references, helpful links, and topic context for editors.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- editor section -->
+    <section id="view-editor" class="hidden-view">
+      <div class="mb-4">
+        <button class="action" onclick="switchTab('home')">&larr; Back to Overview</button>
+      </div>
+      <div class="grid xl:grid-cols-[280px_1fr_360px] gap-8">
+        <aside class="panel p-5">
+          <div class="text-sm font-bold uppercase tracking-[.18em] text-slate-400 mb-4">Content</div>
+          <div class="space-y-3">
+            <div class="p-4 rounded-2xl bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border border-slate-200">
+              <div class="font-semibold">Article draft</div>
+              <div class="text-sm text-slate-500">Climate and food systems</div>
+            </div>
+            <div class="p-4 rounded-2xl hover:bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border border-transparent hover:border-slate-200 transition">Research brief</div>
+            <div class="p-4 rounded-2xl hover:bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border border-transparent hover:border-slate-200 transition">Media assets</div>
+            <div class="p-4 rounded-2xl hover:bg-[linear-gradient(180deg,rgba(125,211,230,.12),#ffffff)] border border-transparent hover:border-slate-200 transition">Pending review</div>
+          </div>
+        </aside>
+
+        <main class="panel p-6">
+          <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+            <div>
+              <div class="text-sm text-slate-500">Editor workspace</div>
+              <h2 class="text-2xl font-bold">Create and structure high-quality content</h2>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button class="action">Upload image</button>
+              <button class="action">Add link</button>
+              <button class="action primary">Save draft</button>
+            </div>
+          </div>
+          <div class="space-y-4">
+            <input class="editor-input" value="How climate data helps local food systems" />
+            <textarea id="editorText" class="editor-textarea">Local food systems need clear, trusted, and understandable information. Editors often need help refining sentence quality, validating claims, and connecting content with relevant research.</textarea>
+          </div>
+        </main>
+
+        <aside class="panel p-5">
+          <div class="text-sm font-bold uppercase tracking-[.18em] text-slate-400 mb-4">Content Quality Insights</div>
+          <div class="space-y-3">
+            <div class="metric"><div class="text-sm text-slate-500">Readability</div><div class="font-bold text-lg">Strong</div></div>
+            <div class="metric"><div class="text-sm text-slate-500">Research links</div><div class="font-bold text-lg">3 suggested</div></div>
+            <div class="metric"><div class="text-sm text-slate-500">Acceptance status</div><div class="font-bold text-lg">Needs refinement</div></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+<!-- ai panel section -->
+<section id="view-assistant" class="hidden-view">
+      <div class="mb-4">
+        <button class="action" onclick="switchTab('home')">&larr; Back to Overview</button>
+      </div>
+
+      <div class="panel p-6 mb-6">
+        <div class="text-sm text-slate-500 mb-2">Real Data Pipeline</div>
+        <h2 class="text-2xl font-bold mb-4">How data flows</h2>
+        <div class="space-y-3 text-sm text-slate-600">
+          <div><strong>1.</strong> User writes in the editor or enters a prompt.</div>
+          <div><strong>2.</strong> Frontend sends the text to a Django API route such as <code>/api/ai</code>.</div>
+          <div><strong>3.</strong> Django validates the request and calls AI or search services.</div>
+          <div><strong>4.</strong> Response returns as JSON with content, validation, and sources.</div>
+          <div><strong>5.</strong> The UI updates output cards and source blocks automatically.</div>
+        </div>
+        <div class="grid md:grid-cols-4 gap-6 text-sm mt-6">
+          <div class="feature">Input<br><span class="text-slate-500">text or prompt</span></div>
+          <div class="feature">Django API<br><span class="text-slate-500">route + validation</span></div>
+          <div class="feature">AI / Search<br><span class="text-slate-500">LLM + sources</span></div>
+          <div class="feature">UI Output<br><span class="text-slate-500">results + links</span></div>
+        </div>
+      </div>
+
+      <div class="grid xl:grid-cols-[1fr_400px] gap-8">
+        <main class="panel p-6">
+          <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+            <div>
+              <div class="text-sm text-slate-500">AI assistance panel</div>
+              <h2 class="text-2xl font-bold">Connected AI + Data Pipeline</h2>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <input id="promptInput" class="searchbox" placeholder="Search or ask (connected to backend)" />
+          </div>
+
+          <div class="flex flex-wrap gap-2 mb-5">
+            <button class="action" onclick="runPipeline('improve')">Improve</button>
+            <button class="action" onclick="runPipeline('validate')">Validate</button>
+            <button class="action" onclick="runPipeline('search')">Search</button>
+          </div>
+
+          <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-4">
+            <div class="source-card">
+              <h3 class="font-bold mb-2">AI Output</h3>
+              <p id="acceptedOutput">Waiting for pipeline response...</p>
+            </div>
+            <div class="source-card">
+              <h3 class="font-bold mb-2">Validation</h3>
+              <ul id="validationList"></ul>
+            </div>
+          </div>
+        </main>
+
+        <aside class="panel p-5">
+          <div class="text-sm text-slate-500 mb-3">Sources (Real Data)</div>
+          <div id="researchLinks" class="space-y-3"></div>
+        </aside>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // hero animation three.js light effect
+    const heroMount = document.getElementById('heroLight');
+    let heroRenderer = null;
+    let glowMat1 = null;
+    let glowMat2 = null;
+    let orbMat = null;
+    let glow1 = null;
+    let glow2 = null;
+    let orb = null;
+    let heroCamera = null;
+    let heroScene = null;
+
+    if (window.THREE && heroMount) {
+      heroScene = new THREE.Scene();
+      heroCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+      heroCamera.position.z = 2;
+
+      heroRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      heroMount.appendChild(heroRenderer.domElement);
+
+      glowMat1 = new THREE.MeshBasicMaterial({ color: 0x63c3be, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending });
+      glowMat2 = new THREE.MeshBasicMaterial({ color: 0x566fdb, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending });
+      const glowGeo = new THREE.PlaneGeometry(1.2, 1.2);
+      glow1 = new THREE.Mesh(glowGeo, glowMat1);
+      glow2 = new THREE.Mesh(glowGeo, glowMat2);
+      heroScene.add(glow1, glow2);
+
+      const orbGeo = new THREE.SphereGeometry(0.42, 64, 64);
+      orbMat = new THREE.MeshPhysicalMaterial({
+        color: 0x7dd3fc,
+        transparent: true,
+        opacity: 0.28,
+        roughness: 0.2,
+        metalness: 0,
+        transmission: 0.4,
+        clearcoat: 1,
+        blending: THREE.AdditiveBlending
+      });
+      orb = new THREE.Mesh(orbGeo, orbMat);
+      heroScene.add(orb);
+    }
+
+    function resizeHero() {
+      if (!heroRenderer || !heroMount) return;
+      const w = heroMount.clientWidth || 1;
+      const h = heroMount.clientHeight || 1;
+      heroRenderer.setSize(w, h, false);
+    }
+
+    function animateHero(t) {
+      if (!heroRenderer || !glow1 || !glow2 || !orb) return;
+      const time = t * 0.001;
+      const stretch = 1 + Math.sin(time * 1.3) * 0.18;
+
+      glow1.scale.set(1.8 * stretch, 1.2 / stretch, 1);
+      glow2.scale.set(1.55 / stretch, 1.45 * stretch, 1);
+      orb.scale.set(1.05 * stretch, 0.86 / stretch, 1);
+
+      glow1.position.x = Math.sin(time * 0.55) * 0.22;
+      glow1.position.y = Math.cos(time * 0.7) * 0.16;
+      glow2.position.x = Math.cos(time * 0.65) * -0.24;
+      glow2.position.y = Math.sin(time * 0.8) * 0.18;
+      orb.position.x = Math.sin(time * 0.9) * 0.12;
+      orb.position.y = Math.cos(time * 0.75) * 0.1;
+
+      const hue1 = 0.50 + Math.sin(time * 0.45) * 0.06;
+      const hue2 = 0.62 + Math.cos(time * 0.5) * 0.05;
+      glowMat1.color.setHSL(hue1, 0.65, 0.62);
+      glowMat2.color.setHSL(hue2, 0.72, 0.62);
+      orbMat.color.setHSL(0.56 + Math.sin(time * 0.7) * 0.05, 0.8, 0.72);
+
+      glowMat1.opacity = 0.18 + (Math.sin(time * 1.1) + 1) * 0.06;
+      glowMat2.opacity = 0.14 + (Math.cos(time * 1.2) + 1) * 0.05;
+      orbMat.opacity = 0.18 + (Math.sin(time * 1.4) + 1) * 0.05;
+
+      heroRenderer.render(heroScene, heroCamera);
+      window.requestAnimationFrame(animateHero);
+    }
+
+    // change tab view overview / editor / ai panel
+    function switchTab(tab) {
+      ['home', 'editor', 'assistant'].forEach(function(v){
+        document.getElementById('view-' + v).classList.add('hidden-view');
+        document.getElementById('btn-' + v).classList.remove('active');
+      });
+      document.getElementById('view-' + tab).classList.remove('hidden-view');
+      document.getElementById('btn-' + tab).classList.add('active');
+      resizeHero();
+    }
+
+    // simulate backend flow ui -> server -> response
+    function runPipeline(mode) {
+      var prompt = document.getElementById('promptInput').value || mode;
+      var output = "Processed: " + prompt + "\n\nPipeline flow: UI -> Django API -> AI/Search -> JSON -> UI";
+      document.getElementById('acceptedOutput').innerText = output;
+      document.getElementById('validationList').innerHTML =
+        '<li>• checked by pipeline</li>' +
+        '<li>• validated structure</li>' +
+        '<li>• ready for UI rendering</li>';
+      document.getElementById('researchLinks').innerHTML =
+        '<div class="source-card"><div class="font-semibold">Source 1</div><div class="text-sm text-slate-500">Returned from search or API layer</div></div>' +
+        '<div class="source-card"><div class="font-semibold">Source 2</div><div class="text-sm text-slate-500">Reference or research match</div></div>';
+    }
+
+    // ai output demo no real api
+    function mockAI(mode) {
+      var prompt = document.getElementById('promptInput').value || mode;
+      var message = 'AI output for: ' + prompt + '\n\n' +
+        'This revised content is clearer, more structured, and better aligned with an accepted editorial style. It also signals where supporting links and context should be added.';
+      document.getElementById('acceptedOutput').innerText = message;
+      document.getElementById('validationList').innerHTML =
+        '<li>• checked structure against editorial flow</li>' +
+        '<li>• suggested one stronger supporting source</li>' +
+        '<li>• improved clarity for broader readers</li>';
+      document.getElementById('researchLinks').innerHTML =
+        '<div class="source-card"><div class="font-semibold">Prompt match: ' + mode + '</div><div class="text-sm text-slate-500">related topic and context link</div></div>' +
+        '<div class="source-card"><div class="font-semibold">Supporting source</div><div class="text-sm text-slate-500">trusted reference for this section</div></div>' +
+        '<div class="source-card"><div class="font-semibold">Audience adaptation</div><div class="text-sm text-slate-500">simplify or expand this topic by user level</div></div>';
+    }
+
+    // send ai result back to editor
+    function insertOutput() {
+      var text = document.getElementById('acceptedOutput').innerText;
+      switchTab('editor');
+      document.getElementById('editorText').value = text;
+    }
+
+    resizeHero();
+    window.addEventListener('resize', resizeHero);
+    if (heroRenderer) {
+      window.requestAnimationFrame(animateHero);
+    }
+  </script>
+  <!-- Chatbot Wagtail style -->
+  <div id="chatbot" class="fixed bottom-6 right-6 z-50">
+    <div id="chatWindow" class="hidden w-80 h-96 rounded-[24px] shadow-xl border flex flex-col overflow-hidden" style="background:linear-gradient(180deg,#f0fbfd,#ffffff); border-color:#D8B24C; box-shadow:0 18px 40px rgba(115,170,192,.20);">
+      <div class="p-3 text-[#0e5966] font-bold flex items-center justify-between" style="background:linear-gradient(180deg,#cfeff6,#eaf8fc); border-bottom:1px solid #D8B24C;">
+        <div>Wagtail Chat</div>
+        <button onclick="closeChat()" class="text-white text-lg leading-none">✕</button>
+      </div>
+
+      <div id="chatMessages" class="flex-1 p-3 text-sm overflow-y-auto" style="background:linear-gradient(180deg,#f7fdff,#ffffff);">
+        <div class="text-[#2e7f90]"><b>Wagtail:</b> Hi 👋 Need help creating content or FAQ?</div>
+        <div class="mt-3 space-y-2">
+          <button onclick="quickFAQ('content')" class="text-left w-full p-2 rounded-lg text-xs" style="background:linear-gradient(180deg,#e9f7fb,#fdfefe); border:1px solid #d6edf4;">FAQ: How to create content?</button>
+          <button onclick="quickFAQ('faq')" class="text-left w-full p-2 rounded-lg text-xs" style="background:linear-gradient(180deg,#e9f7fb,#fdfefe); border:1px solid #d6edf4;">FAQ: How to build FAQ section?</button>
+        </div>
+      </div>
+
+      <div class="p-2 flex gap-2 border-t" style="border-color:#D8B24C; background:#fcfeff;">
+        <input id="chatInput" class="flex-1 border rounded-xl px-3 py-2" placeholder="Ask..." />
+        <button onclick="sendMsg()" class="px-3 py-2 text-white rounded-xl" style="background:linear-gradient(180deg,#7ec6d5,#69b3c8);">Send</button>
+      </div>
+    </div>
+
+    <button onclick="toggleChat()" class="w-16 h-16 rounded-full shadow-lg overflow-hidden border-2 bg-white" style="border-color:#D8B24C; box-shadow:0 12px 30px rgba(115,170,192,.22);">
+      <img src="https://www.shutterstock.com/image-illustration/willy-wagtail-bird-illustration-on-260nw-2073430616.jpg" class="w-full h-full object-cover" />
+    </button>
+  </div>
+
+  <script>
+    // open close chatbot
+    function toggleChat(){
+      document.getElementById('chatWindow').classList.toggle('hidden');
+    }
+    function closeChat(){
+      document.getElementById('chatWindow').classList.add('hidden');
+    }
+    // user message + simple reply
+    function sendMsg(){
+      const input = document.getElementById('chatInput');
+      const box = document.getElementById('chatMessages');
+      if(!input.value) return;
+      const text = input.value.toLowerCase();
+      box.innerHTML += '<div class="mt-3"><b>You:</b> '+input.value+'</div>';
+
+      if(text.includes('content')){
+        box.innerHTML += '<div class="text-teal-600 mt-2"><b>Wagtail:</b> Thanks, I will be happy to help you. Here is the link of the apps where you get business related contents or images. You can manage them easily.</div>';
+      } else if(text.includes('faq')){
+        box.innerHTML += '<div class="text-teal-600 mt-2"><b>Wagtail:</b> Thanks, I will be happy to help you. I can help organize FAQ questions, answers, and business support content.</div>';
+      } else {
+        box.innerHTML += '<div class="text-teal-600 mt-2"><b>Wagtail:</b> Ask me about content creation or FAQ help.</div>';
+      }
+
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // quick faq buttons
+    function quickFAQ(type){
+      const box = document.getElementById('chatMessages');
+      if(type === 'content'){
+        box.innerHTML += '<div class="text-teal-600 mt-3"><b>FAQ:</b> How to create content?<br><b>Answer:</b> Start with topic, audience, short sections, images, and business links.</div>';
+      } else {
+        box.innerHTML += '<div class="text-teal-600 mt-3"><b>FAQ:</b> How to build FAQ section?<br><b>Answer:</b> Use short questions, clear answers, and group them by service or topic.</div>';
+      }
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
+</body>
+</html>
