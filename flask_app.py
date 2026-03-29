@@ -323,6 +323,11 @@ def ga4gh():
 @app.route('/wagtail')
 def wagtail():
     return render_template('wagtail.html')
+
+#DBpedia html 
+@app.route('dbpedia')
+def dbpedia():
+    return render_template('dbpedia.html')
     
 
 
