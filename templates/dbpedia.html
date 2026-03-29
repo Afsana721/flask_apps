@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DBpedia AI Tool_afsana</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="m-0 h-full overflow-hidden" style="font-family:'Noto Sans Bengali',sans-serif;background:radial-gradient(circle at center, #1aa6b8 0%, #0f6a7a 40%, #0b3c49 90%);">
+
+<div id="canvas-container" class="fixed inset-0 z-0 opacity-25"></div>
+
+<div class="relative z-10 h-screen flex flex-col items-center justify-center p-6">
+
+<!-- LOGO + TITLE  -->
+<div class="flex items-center mb-8 gap-3 ">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/DBpedia_logo.svg/960px-DBpedia_logo.svg.png" class="w-28 opacity-95" />
+  <div class="text-3xl font-bold text-white">DBpedia AI Extraction UI</div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="grid grid-cols-2 gap-10 w-[1000px] max-w-full mt-24">
+
+<!-- INPUT -->
+<div class="bg-white/10 backdrop-blur rounded-2xl p-6 flex flex-col shadow-2xl shadow-[#89CFF0]/50 border border-white/20">
+
+<div class="text-sm font-semibold text-white mb-2">Input Text</div>
+
+<textarea id="textInput" placeholder="Write text..."
+class="flex-1 rounded-xl p-3 bg-white/10 text-white text-sm outline-none"></textarea>
+
+<select id="inputLang" class="mt-2 p-2 rounded bg-[#B9D9EB] text-[#36454F]">
+<option value="en">English</option>
+<option value="bn">Bangla</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+</select>
+
+<button id="extractBtn" class="mt-3 bg-[#14b8a6] text-white py-3 rounded-full font-semibold">
+Extract + Convert
+</button>
+
+</div>
+
+<!-- OUTPUT -->
+<div class="bg-white/10 backdrop-blur rounded-2xl p-5 flex flex-col shadow-2xl shadow-[#89CFF0]/50 border border-white/20">
+
+<div class="text-sm font-semibold text-white mb-2">AI + Human Validation</div>
+
+<select id="outputLang" class="mb-2 p-2 rounded bg-[#B9D9EB] text-[#36454F]">
+<option value="en">English</option>
+<option value="bn">Bangla</option>
+<option value="es">Spanish</option>
+<option value="fr">French</option>
+</select>
+
+<div id="resultsList" class="flex-1 flex flex-col gap-3 overflow-auto"></div>
+
+<div class="flex gap-2 mt-3">
+<button onclick="saveData()" class="flex-1 bg-[#14b8a6] text-white py-2 rounded">Save</button>
+<button onclick="clearAll()" class="flex-1 bg-gray-500 text-white py-2 rounded">Clear</button>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+// THREE BACKGROUND orbit
+let scene,camera,renderer,nodes=[],lines=[];
+function initThree(){
+scene=new THREE.Scene();
+camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+camera.position.z=7;
+renderer=new THREE.WebGLRenderer({alpha:true});
+renderer.setSize(innerWidth,innerHeight);
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const geo=new THREE.SphereGeometry(0.03);
+
+// nodes & orbital params
+for(let i=0;i<70;i++){
+ let m=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:0xFFBF00}));
+ m.userData={
+   r: 4 + Math.random()*4,
+   speed: 0.003 + Math.random()*0.004,
+   angle: Math.random()*Math.PI*4,
+   y: (Math.random()-0.5)*4
+ };
+ scene.add(m);
+ nodes.push(m);
+}
+
+// dynamic lines
+const material=new THREE.LineBasicMaterial({color:0x89CFF0,opacity:0.85,transparent:true});
+for(let i=0;i<80;i++){
+ let a=nodes[Math.floor(Math.random()*nodes.length)];
+ let b=nodes[Math.floor(Math.random()*nodes.length)];
+ const geometry=new THREE.BufferGeometry().setFromPoints([a.position,b.position]);
+ const line=new THREE.Line(geometry,material);
+ line.userData={aIndex:nodes.indexOf(a), bIndex:nodes.indexOf(b)};
+ scene.add(line);
+ lines.push(line);
+}
+
+animate();
+}
+
+function animate(){
+requestAnimationFrame(animate);
+
+// orbit motion
+nodes.forEach(n=>{
+  n.userData.angle += n.userData.speed;
+  n.position.x = Math.cos(n.userData.angle)*n.userData.r;
+  n.position.z = Math.sin(n.userData.angle)*n.userData.r;
+  n.position.y = n.userData.y + Math.sin(n.userData.angle*2)*0.3;
+});
+
+// update lines to follow nodes
+lines.forEach(l=>{
+  const a=nodes[l.userData.aIndex];
+  const b=nodes[l.userData.bIndex];
+  l.geometry.setFromPoints([a.position,b.position]);
+});
+
+// slow scene rotation for depth
+scene.rotation.y += 0.0008;
+
+renderer.render(scene,camera);
+}
+
+// LOGIC of codes
+const input=document.getElementById('textInput');
+const list=document.getElementById('resultsList');
+const inputLang=document.getElementById('inputLang');
+const outputLang=document.getElementById('outputLang');
+
+let triples=[];
+
+function translate(text,from,to){ if(from===to) return text; return `[${to}] `+text; }
+
+function extract(){
+ let text=input.value.trim();
+ if(!text) return;
+ let words=text.split(' ');
+ triples=[];
+ for(let i=0;i<words.length-1;i+=2){
+  triples.push({s:words[i]||'Entity',p:'related_to',o:words[i+1]||'Concept',conf:(Math.random()*0.3+0.7).toFixed(2)});
+ }
+ let converted=translate(text,inputLang.value,outputLang.value);
+ render(converted);
+}
+
+document.getElementById('extractBtn').onclick=extract;
+outputLang.onchange=()=>{ if(input.value) extract(); }
+
+function deleteTriple(i){ triples.splice(i,1); render(); }
+function clearAll(){ triples=[]; list.innerHTML=''; }
+function saveData(){ alert('Saved '+triples.length+' triples'); }
+
+function render(context=''){
+ list.innerHTML='';
+ if(context){
+  const ctx=document.createElement('div');
+  ctx.className="bg-white/10 p-3 rounded-xl text-white text-sm";
+  ctx.innerText="Context: "+context;
+  list.appendChild(ctx);
+ }
+ triples.forEach((t,i)=>{
+  const card=document.createElement('div');
+  card.className="bg-[#14b8a6]/20 p-3 rounded-xl text-white text-sm";
+  card.innerHTML=`
+   <div class="flex justify-between mb-1">
+    <span>Confidence: ${t.conf}</span>
+    <button onclick="deleteTriple(${i})">✕</button>
+   </div>
+   <div class="flex gap-2">
+    <input value="${t.s}" class="bg-transparent w-1/3" onchange="triples[${i}].s=this.value"/>
+    →
+    <input value="${t.p}" class="bg-transparent w-1/3 text-center" onchange="triples[${i}].p=this.value"/>
+    →
+    <input value="${t.o}" class="bg-transparent w-1/3 text-right" onchange="triples[${i}].o=this.value"/>
+   </div>`;
+  list.appendChild(card);
+ });
+}
+
+window.onload=initThree;
+</script>
+
+</body>
+</html>
