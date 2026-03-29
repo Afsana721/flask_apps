@@ -309,7 +309,15 @@ def gallery():
 #ArcGis instance 
 @app.route('/arcGis')
 def arcGis():
-    return render_template('arcGis.html')
+    return render_template('arcGis.html') 
+    
+
+#GSOC_2026 
+
+#GA4GH html 
+@app.route('/ga4gh')
+def ga4gh():
+    return render_template('ga4gh.html')
 
 
 if __name__ == "__main__":
