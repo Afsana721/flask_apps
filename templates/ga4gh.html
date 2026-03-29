@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GA4GH RegBot_afsana | Compliance Assistant</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #f0f9ff;
+        color: #0f172a;
+    }
+    .hero-gradient {
+        background: linear-gradient(135deg, #0a2540 0%, #1a365d 50%, #2b6cb0 100%);
+    }
+    .hero-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hero-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    }
+    .glass-card {
+        background: #E5DCAE/10;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .accent-blue { color: #38bdf8; }
+</style>
+</head>
+
+<body>
+
+<!-- Background animation: dynamic data stream visualization -->
+<div id="bgCanvas" style="position:fixed; inset:0; z-index:0; pointer-events:none;"></div>
+
+<div style="position:relative; z-index:2;">
+
+<!-- HEADER -->
+<header class="bg-[#FFFFFF] border-b-4 border-[#1a365d] sticky top-0 z-[100] relative overflow-hidden">
+    <div id="headerStars" style="position:absolute; inset:0; pointer-events:none;"></div>
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-4">
+            <img src="https://acxngcvroo.cloudimg.io/v7/https://content.embl.org/sites/default/files/2021-10/GA4GH_2018_Roadmap_news500x375_0.jpg?w=1000&h=600" alt="GA4GH" 
+            style="height:105px; width:auto; display:block; ">
+        </div>
+        <nav class="hidden md:flex gap-8  text-[#070069] text-xl font-bold tracking-wide">
+            <a href="#" class="hover:text-sky-600">Standards</a>
+            <a href="#" class="hover:text-sky-600">Policy</a>
+            <a href="#" class="hover:text-sky-600">Security</a>
+        </nav>
+    </div>
+    <div style="position:absolute; bottom:0; left:0; width:100%; height:6px; background:linear-gradient(90deg,#e0f2fe,#bae6fd,#e0f2fe);"></div>
+</header>
+
+<!-- FULL WIDTH ANNOUNCEMENT BAR -->
+<section style="background:#e8ebec; border-bottom:4px solid #032f5f;">
+  <div class="max-w-7xl mx-auto px-8 py-8 flex justify-between items-center">
+    <div class="text-[#070069] font-semibold text-sm">
+      Open leadership opportunity: GA4GH Implementation Forum (GIF) Co-Lead
+    </div>
+    <button style="border:1px solid #daa516; padding:6px 16px; font-size:14px; color:#032c58; background:rgb(243, 238, 238);
+     border-radius:9999px; font-weight:600; transition:all 0.3s ease; ">
+      SEE MORE
+    </button>
+  </div>
+</section>
+
+<!-- HERO SECTION -->
+<section class="hero-gradient relative overflow-hidden" style="min-height: 600px;">
+    <div id="heroCanvasContainer" style="position: absolute; inset: 0;"></div>
+    
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center relative pointer-events-none py-20">
+        <div class="max-w-2xl pointer-events-auto">
+            <h1 class="text-5xl md:text-5xl font-extrabold text-white leading-none tracking-tighter">
+                The <span class="text-sky-400">Genomic</span> <br>Benefit Analysis
+            </h1>
+            <p class="text-xl text-sky-50/80 mt-8 max-w-lg leading-relaxed">
+                RAG-powered intelligence to navigate complex regulatory frameworks and detect compliance gaps automatically.
+            </p>
+            <div class="mt-10 flex flex-wrap gap-5">
+                <button class="hero-btn bg-sky-500 hover:bg-sky-400 text-sky-950 px-8 py-4 rounded-xl font-extrabold text-lg flex items-center gap-2">
+                    Start Flow 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+                <button onclick="document.getElementById('docSection').scrollIntoView({behavior:'smooth'})" class="hero-btn border-2 border-white/30 hover:border-white text-white px-8 py-4 rounded-xl font-extrabold text-lg">Documentation</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS/FEATURES -->
+<section class="max-w-7xl mx-auto px-6 -mt-12 relative z-10 grid md:grid-cols-3 gap-6 ">
+    <div class="glass-card p-8 rounded-2xl shadow-xl border-t-4 border-sky-500 shadow-md shadow-[#FBCA0B]/50">
+        <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center mb-4 text-sky-600 shadow-md shadow-[#38bdf8]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h3 class="text-xl font-extrabold text-sky-950">Problem Detection</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">Instantly identifies conflicting policies and regulatory friction points across jurisdictions.</p>
+    </div>
+
+    <div class="glass-card p-8 rounded-2xl shadow-xl border-t-4 border-sky-400 shadow-md shadow-[#FBCA0B]/50">
+        <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center mb-4 text-sky-600 shadow-md shadow-[#38bdf8]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        </div>
+        <h3 class="text-xl font-extrabold text-sky-950">RAG Solution</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">Utilizes Retrieval-Augmented Generation to provide cited, evidence-based compliance advice.</p>
+    </div>
+
+    <div class="glass-card p-8 rounded-2xl shadow-xl border-t-4 border-sky-500 shadow-md shadow-[#FBCA0B]/50">
+        <div class="w-12 h-12 bg-sky-100 rounded-lg flex items-center justify-center mb-4 text-sky-600 shadow-md shadow-[#38bdf8]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3 class="text-xl font-extrabold text-sky-950">Actionable Output</h3>
+        <p class="text-slate-600 mt-2 leading-relaxed">Detailed gap analysis reports ready for Institutional Review Boards and legal teams.</p>
+    </div>
+</section>
+
+<!-- STEP-BY-STEP FLOW -->
+<section class="max-w-7xl mx-auto px-6 py-20">
+    <div class="flex items-center gap-4 mb-10">
+        <h2 class="text-3xl font-extrabold text-sky-900">Intelligence Flow</h2>
+        <div class="h-1 flex-grow bg-sky-100 rounded"></div>
+    </div>
+    <div class="grid md:grid-cols-4 gap-8">
+        <div class="text-center group">
+            <div class="w-16 h-16 bg-[#ffffcc] border-2 border-[#D6AD5C] text-[#1202D1] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black group-hover:bg-[#AFD56E] group-hover:text-white transition-colors">1</div>
+            <h4 class="font-bold text-[#002FEC]">Ingest</h4>
+            <p class="text-xs text-slate-500 mt-1">Policy PDF Upload</p>
+        </div>
+        <div class="text-center group">
+            <div class="w-16 h-16  bg-[#ffffcc] border-2 border-[#D6AD5C] text-[#1202D1] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black group-hover:bg-[#AFD56E] group-hover:text-white transition-colors">2</div>
+            <h4 class="font-bold text-[#002FEC]">Vectorize</h4>
+            <p class="text-xs text-slate-500 mt-1">Embed Documents</p>
+        </div>
+        <div class="text-center group">
+            <div class="w-16 h-16 bg-[#ffffcc] border-2 border-[#D6AD5C] text-[#1202D1] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black group-hover:bg-[#AFD56E] group-hover:text-white transition-colors">3</div>
+            <h4 class="font-bold text-[#002FEC]">Compare</h4>
+            <p class="text-xs text-slate-500 mt-1">Cross-Standard Audit</p>
+        </div>
+        <div class="text-center group">
+            <div class="w-16 h-16 bg-[#ffffcc] border-2 border-[#D6AD5C] text-[#1202D1] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-black group-hover:bg-[#AFD56E] group-hover:text-white transition-colors">4</div>
+            <h4 class="font-bold text-[#002FEC]">Resolve</h4>
+            <p class="text-xs text-slate-500 mt-1">Gap Mitigation Report</p>
+        </div>
+    </div>
+</section>
+
+<!-- DOCUMENTATION -->
+<section id="docSection" class="max-w-7xl mx-auto px-6 pb-12">
+  <div class="glass-card p-8 rounded-xl">
+    <h3 class="text-xl font-extrabold text-[#002FEC] mb-3">Documentation</h3>
+    <p class="text-sm text-slate-600 leading-relaxed">
+      <strong>Features:</strong> Upload document → AI checks against GA4GH policies → returns gaps, suggestions, and cited references.
+      <br><br>
+      <strong>How it works:</strong> Text is chunked and embedded → vector search finds relevant policies → LLM generates grounded answers using retrieved data (RAG).
+    </p>
+  </div>
+</section>
+
+<!-- SIMPLE DEMO UPLOAD -->
+<section class="max-w-7xl mx-auto px-6 pb-16">
+  <div class="glass-card p-8 rounded-xl">
+    <h3 class="text-xl font-bold text-[#002FEC] mb-4">Demo: Upload Document</h3>
+    <input type="file" id="fileInput" style="margin-bottom:12px;" />
+    <button onclick="runDemo()" 
+    class="bg-[#F5ED78]/50 text-[#070069] text-lg font-bold px-1 py-1 hover:bg-[#AFD56E] rounded hover:text-[#108708] transition-colors">Run AI Check</button>
+    <div id="result" style="margin-top:16px; font-size:14px; color:#334155;"></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+function runDemo(){
+  document.getElementById('result').innerHTML = 
+  "✔ Compliance Gap Found<br>• Missing consent policy<br>• Data sharing restriction issue<br><br>✔ Suggestion:<br>Add GA4GH consent framework<br><br>✔ Reference:<br>GA4GH Policy Section 3.2";
+}
+</script>
+
+<script>
+window.onload = function() {
+    // --- Header animation: distributed orbit particles ---
+    const headerContainer = document.getElementById('headerStars');
+    const headerScene = new THREE.Scene();
+    const headerCamera = new THREE.PerspectiveCamera(75, headerContainer.clientWidth / headerContainer.clientHeight, 0.1, 1000);
+    const headerRenderer = new THREE.WebGLRenderer({ alpha:true, antialias:true });
+    headerRenderer.setSize(headerContainer.clientWidth, headerContainer.clientHeight);
+    headerContainer.appendChild(headerRenderer.domElement);
+
+    const headerCount = 460;
+    const headerPos = new Float32Array(headerCount * 3);
+    const headerVel = [];
+    for(let i=0; i<headerCount; i++) {
+        const i3 = i * 3;
+        headerPos[i3] = (Math.random() - 0.5) * 16;
+        headerPos[i3 + 1] = (Math.random() - 0.5) * 4.5;
+        headerPos[i3 + 2] = (Math.random() - 0.5) * 4;
+        headerVel.push({
+            x: (Math.random() - 0.5) * 0.004,
+            y: (Math.random() - 0.5) * 0.002,
+            z: (Math.random() - 0.5) * 0.001
+        });
+    }
+    const headerGeom = new THREE.BufferGeometry();
+    headerGeom.setAttribute('position', new THREE.BufferAttribute(headerPos, 3));
+
+    const headerMat = new THREE.PointsMaterial({ size: 0.06, color: 0x5384A5, transparent: true, opacity: 0.72 });
+    const headerPoints = new THREE.Points(headerGeom, headerMat);
+    headerScene.add(headerPoints);
+
+    const headerMatCyan = new THREE.PointsMaterial({ size: 0.07, color: 0xF6CB2E, transparent: true, opacity: 0.45 });
+    const headerPointsCyan = new THREE.Points(headerGeom, headerMatCyan);
+    headerScene.add(headerPointsCyan);
+
+    const orbitRings = [];
+    [0x38bdf8, 0x00ffff, 0xffffff].forEach((color, i) => {
+        const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(2.7 + i * 0.7, 0.01, 12, 120),
+            new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.18 })
+        );
+        ring.position.set((i - 1) * 2.3, 0, -1.2 + i * 0.2);
+        ring.rotation.x = Math.PI * (0.28 + i * 0.08);
+        ring.rotation.y = Math.PI * (0.2 + i * 0.15);
+        headerScene.add(ring);
+        orbitRings.push(ring);
+    });
+
+    headerCamera.position.z = 5;
+
+    // --- BACKGROUND PARTICLE STREAM ---
+    const bgContainer = document.getElementById('bgCanvas');
+    const bgScene = new THREE.Scene();
+    const bgCamera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const bgRenderer = new THREE.WebGLRenderer({alpha:true, antialias: true});
+    bgRenderer.setSize(window.innerWidth, window.innerHeight);
+    bgContainer.appendChild(bgRenderer.domElement);
+
+    const particlesCount = 2000;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i=0; i < particlesCount * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 15;
+    }
+    const particlesGeom = new THREE.BufferGeometry();
+    particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMat = new THREE.PointsMaterial({ size: 0.015, color: 0x38bdf8, transparent: true, opacity: 0.4 });
+    const particlesMesh = new THREE.Points(particlesGeom, particlesMat);
+    bgScene.add(particlesMesh);
+    bgCamera.position.z = 5;
+
+    // --- HERO SCENE (Interactive Globe with Data Flow) ---
+    const heroContainer = document.getElementById('heroCanvasContainer');
+    const heroScene = new THREE.Scene();
+    const heroCamera = new THREE.PerspectiveCamera(45, heroContainer.clientWidth / heroContainer.clientHeight, 0.1, 1000);
+    const heroRenderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    heroRenderer.setSize(heroContainer.clientWidth, heroContainer.clientHeight);
+    heroContainer.appendChild(heroRenderer.domElement);
+
+    const globeGroup = new THREE.Group();
+    heroScene.add(globeGroup);
+
+    // Globe
+    const globeGeom = new THREE.SphereGeometry(1.5, 64, 64);
+    const globeMat = new THREE.MeshPhongMaterial({ color: 0x1d4ed8, emissive: 0x082f49, shininess: 100 });
+    const globe = new THREE.Mesh(globeGeom, globeMat);
+    globeGroup.add(globe);
+
+    // Glow
+    const glowGeom = new THREE.SphereGeometry(1.6, 64, 64);
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.2, side: THREE.BackSide });
+    const glow = new THREE.Mesh(glowGeom, glowMat);
+    globeGroup.add(glow);
+
+    // Dynamic Data Flow Arcs
+    const dataArcs = [];
+    const lineColors = [0xffffff, 0xef4444, 0x84cc16, 0x38bdf8];
+    
+    for (let i = 0; i < 15; i++) {
+        const start = new THREE.Vector3().setFromSphericalCoords(1.52, Math.random() * Math.PI, Math.random() * Math.PI * 2);
+        const end = new THREE.Vector3().setFromSphericalCoords(1.52, Math.random() * Math.PI, Math.random() * Math.PI * 2);
+        
+        // Use high arc for better "flow" visualization
+        const mid = start.clone().lerp(end, 0.5).normalize().multiplyScalar(2.2);
+        const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+        
+        // Base Line (static background arc)
+        const points = curve.getPoints(50);
+        const arcGeom = new THREE.BufferGeometry().setFromPoints(points);
+        const arcMat = new THREE.LineBasicMaterial({ color: lineColors[i % lineColors.length], transparent: true, opacity: 0.2 });
+        const arcLine = new THREE.Line(arcGeom, arcMat);
+        globeGroup.add(arcLine);
+
+        // Data Head (moving sphere/particle)
+        const dotGeom = new THREE.SphereGeometry(0.025, 8, 8);
+        const dotMat = new THREE.MeshBasicMaterial({ color: lineColors[i % lineColors.length] });
+        const dataHead = new THREE.Mesh(dotGeom, dotMat);
+        
+        // Store metadata for animation
+        dataArcs.push({
+            curve: curve,
+            mesh: dataHead,
+            progress: Math.random(), // Start at random point
+            speed: 0.003 + Math.random() * 0.005
+        });
+        
+        globeGroup.add(dataHead);
+
+        // Endpoint static dots
+        const endDotGeom = new THREE.SphereGeometry(0.02, 6, 6);
+        const endDot1 = new THREE.Mesh(endDotGeom, new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.5}));
+        const endDot2 = new THREE.Mesh(endDotGeom, new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.5}));
+        endDot1.position.copy(start);
+        endDot2.position.copy(end);
+        globeGroup.add(endDot1, endDot2);
+    }
+
+    // Shell
+    const shellGeom = new THREE.SphereGeometry(1.55, 32, 32);
+    const shellMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.1 });
+    const shell = new THREE.Mesh(shellGeom, shellMat);
+    globeGroup.add(shell);
+
+    // Lights
+    const pLight = new THREE.PointLight(0x38bdf8, 5, 20);
+    pLight.position.set(2, 2, 2);
+    heroScene.add(pLight);
+    heroScene.add(new THREE.AmbientLight(0xffffff, 0.8));
+
+    heroCamera.position.z = 6;
+    globeGroup.position.set(3, 0, 0); 
+
+    let time = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        time += 0.01;
+
+        // Animate header
+        const attr = headerGeom.attributes.position;
+        for (let i = 0; i < headerCount; i++) {
+            const i3 = i * 3;
+            attr.array[i3] += headerVel[i].x;
+            attr.array[i3 + 1] += headerVel[i].y;
+            attr.array[i3 + 2] += headerVel[i].z;
+
+            if (attr.array[i3] > 8) attr.array[i3] = -8;
+            if (attr.array[i3] < -8) attr.array[i3] = 8;
+            if (attr.array[i3 + 1] > 2.8) attr.array[i3 + 1] = -2.8;
+            if (attr.array[i3 + 1] < -2.8) attr.array[i3 + 1] = 2.8;
+        }
+        attr.needsUpdate = true;
+        headerPoints.rotation.y += 0.0009;
+        headerPointsCyan.rotation.y -= 0.0007;
+        orbitRings.forEach((ring, idx) => {
+            ring.rotation.z += 0.0008 + idx * 0.00025;
+            ring.rotation.y += 0.0005;
+        });
+        headerRenderer.render(headerScene, headerCamera);
+
+        // Animate BG
+        particlesMesh.rotation.y += 0.0005;
+        bgRenderer.render(bgScene, bgCamera);
+
+        // Animate Globe rotation
+        globeGroup.rotation.y += 0.004;
+        
+        // Pulse glow
+        glow.scale.setScalar(1 + Math.sin(time) * 0.02);
+
+        // ANIMATE DATA INFO FLOW
+        dataArcs.forEach(arc => {
+            arc.progress += arc.speed;
+            if (arc.progress > 1) arc.progress = 0;
+            
+            // Get position on curve based on progress
+            const pos = arc.curve.getPoint(arc.progress);
+            arc.mesh.position.copy(pos);
+            
+            // Subtle flickering for "data packet" feel
+            arc.mesh.scale.setScalar(0.8 + Math.sin(time * 10) * 0.2);
+        });
+
+        heroRenderer.render(heroScene, heroCamera);
+    }
+    animate();
+
+    function handleResize() {
+        headerCamera.aspect = headerContainer.clientWidth / headerContainer.clientHeight;
+        headerCamera.updateProjectionMatrix();
+        headerRenderer.setSize(headerContainer.clientWidth, headerContainer.clientHeight);
+        bgCamera.aspect = window.innerWidth / window.innerHeight;
+        bgCamera.updateProjectionMatrix();
+        bgRenderer.setSize(window.innerWidth, window.innerHeight);
+        heroCamera.aspect = heroContainer.clientWidth / heroContainer.clientHeight;
+        heroCamera.updateProjectionMatrix();
+        heroRenderer.setSize(heroContainer.clientWidth, heroContainer.clientHeight);
+
+        if(window.innerWidth < 1024) {
+            globeGroup.position.set(0, -1.8, 0);
+            globeGroup.scale.set(0.6, 0.6, 0.6);
+        } else {
+            globeGroup.position.set(3, 0, 0);
+            globeGroup.scale.set(1, 1, 1);
+        }
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+};
+</script>
+
+</body>
+<!--CSS colors palette url - https://www.schemecolor.com/floating-ocean.php -->
+</html>
