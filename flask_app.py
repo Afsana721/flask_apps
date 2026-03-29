@@ -319,6 +319,12 @@ def arcGis():
 def ga4gh():
     return render_template('ga4gh.html')
 
+#Wagtail html 
+@app.route('/wagtail')
+def wagtail():
+    return render_template('wagtail.html')
+    
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
