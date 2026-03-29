@@ -325,7 +325,7 @@ def wagtail():
     return render_template('wagtail.html')
 
 #DBpedia html 
-@app.route('dbpedia')
+@app.route('/dbpedia')
 def dbpedia():
     return render_template('dbpedia.html')
     
