@@ -10,8 +10,8 @@
     <script src="https://js.arcgis.com/4.29/"></script>
     <style>
         .infographic-bg {
-            background-color: #1a1a1a;
-            border: 1px solid #333;
+            background-color: #353f32;
+            border: 2px solid #249c0c;
         }
 
         .text-neon-green {
@@ -70,282 +70,450 @@
     </style>
 </head>
 
-<body class="bg-[#B8FFB8]/70 text-slate-800 font-['Space_Grotesk'] scroll-smooth">
+<!--bg color will be change every 2s deep light and current color -->
 
-    <!-- ONLY HEADER - NO WRAPPERS -->
-    <header
-        class="relative w-full rounded-b-[30px] border-b-8 border-[#006400] bg-gradient-to-r from-green-400 via-emerald-200 to-lime-300 shadow-md sticky top-0 z-50 overflow-visible">
+<body class="bg-[#B8FFB8]/70 text-slate-800 font-['Space_Grotesk'] scroll-smooth animate-[bgpulse_5s_linear_infinite]">
+</body>
 
-        <!-- 4-COLOR LIGHT INSIDE HEADER -->
-        <div class="absolute inset-x-0 bottom-0 -z-80 h-40 rounded-b-[50px] animate-sun pointer-events-none"
-            style="background: linear-gradient(to bottom, #bdd4b0, #16c016, #abdaab, #FFD700, transparent);">
-        </div>
+<style>
+    @keyframes bgpulse {
+        0% {
+            background: #aee6ae;
+        }
 
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
-            <h1 class="text-5xl font-[#FFFF00]  tracking-tighter text-[#009000] drop-shadow-[2px_2px_0px_#8F9779]
+        /* current */
+        50% {
+            background: #a1bba1;
+        }
+
+        /* step 2 */
+        100% {
+            background: #94df94;
+        }
+
+        /* current */
+    }
+</style>
+
+<!-- ONLY HEADER - NO WRAPPERS -->
+<header
+    class="relative w-full rounded-b-[30px] border-b-8 border-[#006400] bg-gradient-to-r from-green-400 via-emerald-200 to-lime-300 shadow-md sticky top-0 z-50 overflow-visible">
+
+    <!-- 4-COLOR LIGHT INSIDE HEADER -->
+    <div class="absolute inset-x-0 bottom-0 -z-80 h-40 rounded-b-[50px] animate-sun pointer-events-none"
+        style="background: linear-gradient(to bottom, #bdd4b0, #16c016, #abdaab, #FFD700, transparent);">
+    </div>
+
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        <h1 class="text-5xl font-[#FFFF00]  tracking-tighter text-[#009000] drop-shadow-[2px_2px_0px_#8F9779]
             hover:drop-shadow-[2px_2px_0px_#F0E68C]">AptiCraft</h1>
-            <nav class="hidden md:flex space-x-8 text-[18px] font-semibold font-[#FFFF00]  tracking-tighter text-[#009000] drop-shadow-[1px_1px_0px_#8F9779]
+        <nav class="hidden md:flex space-x-8 text-[18px] font-semibold font-[#FFFF00]  tracking-tighter text-[#009000] drop-shadow-[1px_1px_0px_#8F9779]
             hover:drop-shadow-[1px_1px_0px_#F0E68C] uppercase">
-                <a href="#concept" class="hover:text-emerald-600 transition">Philosophy</a>
-                <a href="#map-hub" class="hover:text-emerald-600 transition">Live Map</a>
-                <a href="#analysis" class="hover:text-emerald-600 transition">Data Analysis</a>
-            </nav>
-        </div>
-    </header>
+            <a href="#concept" class="hover:text-emerald-600 transition">Philosophy</a>
+            <a href="#map-hub" class="hover:text-emerald-600 transition">Live Map</a>
+            <a href="#analysis" class="hover:text-emerald-600 transition">Data Analysis</a>
+        </nav>
+    </div>
+</header>
+<style>
+    @keyframes waveFlow {
+        0% {
+            background-position-x: 0;
+        }
+
+        100% {
+            background-position-x: 300px;
+        }
+    }
+</style>
+
+<div class="relative z-50 w-full p-2 rounded-t overflow-hidden" style="height:40px; background-repeat:repeat-x;
+     background:
+       repeating-radial-gradient(circle at 0 100%, rgba(233, 233, 219, 0.25) 0 9px, transparent 6px 12px),
+       linear-gradient(270deg, #c9bc09, #3f503e, #0b1801, #7adfda, #168b07);
+     background-size: 40px 20px, 300% 100%;
+     animation: rollFlow 6s linear infinite;
+     box-shadow: 0 -15px 20px rgba(82, 141, 6, 0.5);">
+</div>
+
+<style>
+    @keyframes rollFlow {
+        0% {
+            background-position: 0 0, 0% 0;
+        }
+
+        100% {
+            background-position: 80px 0, 100% 0;
+        }
+
+        /* rolling tiny curves + color flow */
+    }
+</style>
 
 
-    <section id="concept" class="max-w-7xl mx-auto px-6 py-12">
-        <div class="flex flex-col md:flex-row justify-between items-start gap-12 ml-24">
-            <div
-                class="px-6 py-4 max-w-5xl flex flex-col items-center shadow-lg shadow-[#138808] rounded-lg  bg-[#4CBB17]/20 ">
-                <div ">
+<section id="concept" class="max-w-7xl mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-start gap-12 ml-24">
+        <div
+            class="px-6 py-4 max-w-5xl flex flex-col items-center shadow-lg shadow-[#138808] rounded-lg  bg-[#4CBB17]/20 ">
+            <div ">
                     <h2 class=" font-[#FFD700] tracking-tighter text-[#009000] drop-shadow-[2px_2px_0px_#8FBC8B]
-                    text-3xl italic mb-4 hover:drop-shadow-[2px_2px_0px_#006400] transition">
-                    Primal Growth Protocol
-                    </h2>
-                    <!--imag looks its moving when mouse hovers over it -->
-                    <img src="https://www.food-safety.com/ext/resources/Images/2023/Dec_Jan/CS-1224-900-Img1.webp?t=1768859361"
-                        alt="Primal Growth"
-                        class="w-[350px] h-44 object-cover rounded-lg shadow-2xl shadow-[#66FF00] transition-transform duration-300 hover:scale-105 hover:shadow-[#D1E231]">
-                </div>
-                <p class="text-[#013220] font-200 text-lg leading-relaxed mt-2 drop-shadow-[1px_1px_0px_#138808]">
-                    AptiCraft defines <span class="text-[#004526] font-bold">Primal Growth
-                    </span> as the original biological baseline.</br> We utilize drone telemetry to bridge the delta
-                    between soil exhaustion and indigenous equilibrium.
-                    <span><a href="https://www.wri.org/food" target="_blank"
-                            class="text-emerald-600 hover:text-[#004526] ml-2">Learn More</a></span>
-                </p>
+                text-3xl italic mb-4 hover:drop-shadow-[2px_2px_0px_#006400] transition">
+                Primal Growth Protocol
+                </h2>
+                <!--imag looks its moving when mouse hovers over it -->
+                <img src="https://www.food-safety.com/ext/resources/Images/2023/Dec_Jan/CS-1224-900-Img1.webp?t=1768859361"
+                    alt="Primal Growth"
+                    class="w-[350px] h-44 object-cover rounded-lg shadow-2xl shadow-[#66FF00] transition-transform duration-300 hover:scale-105 hover:shadow-[#D1E231]">
             </div>
-            <div class="bg-emerald-100/50 border-l-4 border-emerald-500 p-6 rounded-r-lg">
-                <h3 class="text-2xl font-bold text-[#CD7F32] italic drop-shadow-[1px_1px_0px_#66FF00]">Earth First, Data
-                    Always.</h3>
-                <!-- Rounder image after below text related with Earth Eco system.-->
-                <div class="relative w-[300px] h-[300px] mx-auto mt-4 group">
-                    <style>
-                        @keyframes earth-glow {
+            <p class="text-[#013220] font-200 text-lg leading-relaxed mt-2 drop-shadow-[1px_1px_0px_#138808]">
+                AptiCraft defines <span class="text-[#004526] font-bold">Primal Growth
+                </span> as the original biological baseline.</br> We utilize drone telemetry to bridge the delta
+                between soil exhaustion and indigenous equilibrium.
+                <span><a href="https://www.wri.org/food" target="_blank"
+                        class="text-emerald-600 hover:text-[#004526] ml-2">Learn More</a></span>
+            </p>
+        </div>
+        <div class="bg-emerald-100/50 border-l-4 border-emerald-500 p-6 rounded-r-lg">
+            <h3 class="text-2xl font-bold text-[#CD7F32] italic drop-shadow-[1px_1px_0px_#66FF00]">Earth First, Data
+                Always.</h3>
+            <!-- Rounder image after below text related with Earth Eco system.-->
+            <div class="relative w-[300px] h-[300px] mx-auto mt-4 group">
+                <style>
+                    @keyframes earth-glow {
 
-                            0%,
-                            100% {
-                                filter: drop-shadow(2px 2px 10px #3fce07) brightness(1);
-                            }
-
-                            80% {
-                                filter: drop-shadow(2px 2px 30px #d1780a) brightness(1.2);
-                            }
+                        0%,
+                        100% {
+                            filter: drop-shadow(2px 2px 10px #3fce07) brightness(1);
                         }
-                    </style>
-                    <div class="relative w-full h-full rounded-full overflow-hidden shadow-[inset_-20px_-20px_50px_rgba(0,0,0,0.8),20px_20px_40px_rgba(0,0,0,0.4)] [animation:earth-glow_4s_ease-in-out_infinite]">
-                        <img src="https://t3.ftcdn.net/jpg/19/21/58/06/360_F_1921580638_ULu1O5ws5gRFwf2AbDXXKoYdRRIXHcnN.jpg"
-                            class="w-full h-full object-cover scale-100 transition-transform duration-500 group-hover:scale-105" alt="Earth">
-                        <div
-                            class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,220,0.4),transparent_20%)] pointer-events-none">
-                        </div>
-                        <div class="absolute inset-0 rounded-full border-[1px] border-white/20 pointer-events-none">
-                        </div>
+
+                        80% {
+                            filter: drop-shadow(2px 2px 30px #d1780a) brightness(1.2);
+                        }
+                    }
+                </style>
+                <div
+                    class="relative w-full h-full rounded-full overflow-hidden shadow-[inset_-20px_-20px_50px_rgba(0,0,0,0.8),20px_20px_40px_rgba(0,0,0,0.4)] [animation:earth-glow_4s_ease-in-out_infinite]">
+                    <img src="https://t3.ftcdn.net/jpg/19/21/58/06/360_F_1921580638_ULu1O5ws5gRFwf2AbDXXKoYdRRIXHcnN.jpg"
+                        class="w-full h-full object-cover scale-100 transition-transform duration-500 group-hover:scale-105"
+                        alt="Earth">
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,220,0.4),transparent_20%)] pointer-events-none">
+                    </div>
+                    <div class="absolute inset-0 rounded-full border-[1px] border-white/20 pointer-events-none">
                     </div>
                 </div>
             </div>
-    </section>
+        </div>
+</section>
 
-    <div id="map-hub" class="w-full border-y border-white/20 shadow-inner bg-white relative">
-        <div id="viewDiv" class="w-full h-[100vh] md:h-[100vh] bg-slate-200"></div>
+<div id="map-hub" class="w-full border-y border-white/20 shadow-inner bg-white relative">
+    <div id="viewDiv" class="w-full h-[150vh] md:h-[150vh] bg-slate-200"></div>
+
+    <div
+        class="absolute top-4 right-4 bg-white/20 p-4 rounded-xl border-2 border-white/30 shadow-2xl z-10 w-72 text-[#013220]">
+        <div class="flex items-center gap-2 mb-3">
+            <span class="relative flex h-2 w-2">
+                <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span class="text-xl font-bold uppercase tracking-widest text-emerald-400">Telemetry Active</span>
+        </div>
+
+        <div class="space-y-2 text-[12px] text-[#00FFFF] font-bold mb-4 border-b border-white/10 pb-3">
+            <div class="flex justify-between"><span>ALTITUDE</span> <span id="alt-val"
+                    class="text-emerald-400">0m</span></div>
+            <div class="flex justify-between"><span>GPS</span> <span id="gps-status"
+                    class="text-emerald-400">SYNCED</span></div>
+            <div class="flex justify-between"><span>MODE</span> <span class="text-emerald-400">ORBIT</span></div>
+        </div>
+
+        <div class="space-y-2">
+            <div class="text-[16px] text-[#00FFFF] uppercase font-bold tracking-tighter">Research Targets</div>
+            <div class="grid grid-cols-2 gap-2 text-[16px]">
+                <button onclick="tilechanges('rice','best')"
+                    class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌾 Rice
+                    Optimal</button>
+                <button onclick="tilechanges('rice','worst')"
+                    class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌾 Rice
+                    Stress</button>
+                <button onclick="tilechanges('wheat','best')"
+                    class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌿
+                    Wheat Optimal</button>
+                <button onclick="tilechanges('wheat','worst')"
+                    class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌿 Wheat
+                    Stress</button>
+                <button onclick="tilechanges('corn','best')"
+                    class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌽 Corn
+                    Optimal</button>
+                <button onclick="tilechanges('corn','worst')"
+                    class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌽 Corn
+                    Stress</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="analysis" class="max-w-[105rem] mx-auto px-6 py-16">
+    <div class="grid md:grid-cols-2 gap-10 mb-4">
+        <div
+            class="bg-gradient-to-br from-emerald-900/30 to-green-800/20 border-t-4 border-emerald-700 rounded-2xl p-4 shadow-2xl shadow-[#8A3324]">
+            <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Geo-Solid Stability</h3>
+            <img id="geo-img"
+                src="https://cdn.prod.website-files.com/5dd6d1a9ff1489248a26fa7d/64371b2f53c8ec4a6c37c94f_Untitled%20design%20(2).png"
+                class="w-full h-60 object-cover rounded-xl shadow-lg shadow-[#2d5a1b] transition-transform duration-500 hover:scale-105"
+                style="animation:imgZoom 10s ease-in-out infinite; border: 2px solid rgba(63,180,30,0.3);">
+            <p class="text-[#00401A] text-lg font-bold leading-relaxed mt-2">
+                Analyze structural terrain integrity using topographic variance. Identify soil density shifts via
+                thermal sync to restore geological pillars.
+            </p>
+        </div>
 
         <div
-            class="absolute top-4 right-4 bg-white/20 p-4 rounded-xl border-2 border-white/30 shadow-2xl z-10 w-72 text-[#013220]">
-            <div class="flex items-center gap-2 mb-3">
-                <span class="relative flex h-2 w-2">
-                    <span
-                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span class="text-xl font-bold uppercase tracking-widest text-emerald-400">Telemetry Active</span>
+            class="bg-gradient-to-br from-lime-900/30 to-emerald-700/20 border-t-4 border-lime-700 rounded-2xl p-4 shadow-2xl shadow-[#8A3324]">
+            <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight">Native Life Guard</h3>
+            <img id="native-img" src="https://www.tigersafari.net/wp-content/uploads/2024/10/Root-Bridge.jpg"
+                class="w-full h-60 object-cover rounded-xl shadow-lg shadow-[#2d5a1b] transition-transform duration-500 hover:scale-105"
+                style="animation:imgZoom 11s ease-in-out infinite; border: 2px solid rgba(63,180,30,0.3);">
+            <p class="text-[#00401A] text-lg font-bold leading-relaxed mt-2">
+                Environmental balancing ensures that crop improvement does not displace indigenous flora.
+            </p>
+        </div>
+
+        <script>
+            const imageSets = {
+                "geo-img": [
+                    "https://cdn.prod.website-files.com/5dd6d1a9ff1489248a26fa7d/64371b2f53c8ec4a6c37c94f_Untitled%20design%20(2).png",
+                    "https://img.freepik.com/free-photo/beautiful-plants-natural-environment_23-2151357860.jpg?w=740&q=80",
+                    "https://t4.ftcdn.net/jpg/18/29/87/55/360_F_1829875524_R7rQqLcMz9YACluNsrDGmGgS0ND9BHgD.jpg",
+                    "https://img.freepik.com/free-photo/3d-realistic-globe-with-musical-elements_23-2151500684.jpg?w=740&q=80"
+                ],
+                "native-img": [
+                    "https://www.tigersafari.net/wp-content/uploads/2024/10/Root-Bridge.jpg",
+                    "https://i.ytimg.com/vi/39ZVHTWH4Z0/hq720.jpg",
+                    "https://www.shutterstock.com/image-illustration/autonomous-agriculture-vehicle-drone-self-260nw-2430386627.jpg",
+                    "https://www.shutterstock.com/image-photo/plant-growth-agriculture-green-corn-260nw-2669302923.jpg"
+                ]
+            };
+
+            Object.entries(imageSets).forEach(([id, images]) => {
+                const img = document.getElementById(id);
+                if (!img) return;
+                let cur = 0;
+
+                setInterval(() => {
+                    img.style.transition = 'filter 1.5s ease, opacity 1.5s ease';
+                    img.style.filter = 'blur(6px) brightness(0.5)';
+                    img.style.opacity = '0.4';
+
+                    setTimeout(() => {
+                        cur = (cur + 1) % images.length;
+                        img.src = images[cur];
+                        img.style.transition = 'filter 1.5s ease, opacity 1.5s ease';
+                        img.style.filter = 'blur(0px) brightness(1)';
+                        img.style.opacity = '1';
+                    }, 1500);
+
+                }, 7000);
+            });
+        </script>
+    </div>
+
+    <div class="mt-12 bg-[#93C572] rounded-3xl p-8 shadow-2xl border border-emerald-900">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <div>
+                <h3 class="text-[#00401A] font-bold text-2xl uppercase tracking-widest"
+                    style=" text-shadow: #48e00c 1px 2px 2px; ">Research Comparison Matrix
+                </h3>
+                <p class="text-[#4D5D53] text-lg mt-1" style=" text-shadow: #d9db36 1px 1px 2px; ">Dynamic Weather-Crop
+                    Correlation & Drone Feedback</p>
+            </div>
+            <div class="text-right">
+                <span id="live-loc-tag"
+                    class="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-tighter">LAT
+                    0.00000 LON 0.00000</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div
+                class="infographic-bg p-4 rounded min-h-[220px] flex flex-col justify-center items-center relative group overflow-hidden">
+                <span class="absolute top-2 left-2 text-[8px] text-gray-400 uppercase">Growth Integrity Index</span>
+                <div class="relative w-32 h-32 flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="#334155"
+                            stroke-width="1" />
+                        <polygon id="hex-outline" points="50,5 95,25 95,75 50,95 5,75 5,25"
+                            fill="rgba(126, 217, 87, 0.05)" stroke="#7ED957" stroke-width="2"
+                            class="transition-all duration-700" />
+                        <text x="50" y="55" text-anchor="middle" fill="white" font-size="22" font-weight="bold"
+                            id="main-metric">--</text>
+                    </svg>
+                </div>
+                <div id="weather-effect-label" class="text-[9px] text-emerald-500 font-bold uppercase mt-2">
+                    Scanning...</div>
             </div>
 
-            <div class="space-y-2 text-[12px] text-[#00FFFF] font-bold mb-4 border-b border-white/10 pb-3">
-                <div class="flex justify-between"><span>ALTITUDE</span> <span id="alt-val"
-                        class="text-emerald-400">0m</span></div>
-                <div class="flex justify-between"><span>GPS</span> <span id="gps-status"
-                        class="text-emerald-400">SYNCED</span></div>
-                <div class="flex justify-between"><span>MODE</span> <span class="text-emerald-400">ORBIT</span></div>
+            <div
+                class="infographic-bg p-4 rounded w-full lg:w-[900px] min-h-[420px] lg:col-span-2 relative text-center mx-auto">
+                <span class="text-[18px] text-[#00FFFF]/80 font-bold uppercase shadow-lg shadow-[#F5F5F5]/30">Yield
+                    Variance - Current Location Drone Sweep</span>
+                <div class="mt-2 h-60">
+                    <svg viewBox="0 0 400 150" class="w-full h-full" id="trend-svg">
+                        <line x1="0" y1="130" x2="400" y2="130" stroke="#334155" stroke-width="1"
+                            stroke-dasharray="2,2" />
+                        <line x1="0" y1="80" x2="400" y2="80" stroke="#334155" stroke-width="1"
+                            stroke-dasharray="2,2" />
+                        <line x1="0" y1="30" x2="400" y2="30" stroke="#334155" stroke-width="1"
+                            stroke-dasharray="2,2" />
+                        <path id="rice-path" class="trend-path" d="" fill="none" stroke="#22c55e" stroke-width="1" />
+                        <path id="wheat-path" class="trend-path" d="" fill="none" stroke="#84cc16" stroke-width="1" />
+                        <path id="corn-path" class="trend-path" d="" fill="none" stroke="#eab308" stroke-width="1" />
+                        <path id="soy-path" class="trend-path" d="" fill="none" stroke="#3b82f6" stroke-width="1" />
+                    </svg>
+                </div>
+                <div class="flex gap-4 mt-2 justify-center">
+                    <div class="flex items-center gap-1 text-[14px] text-green-400">🌾 RICE</div>
+                    <div class="flex items-center gap-1 text-[14px] text-lime-400">🌿 WHEAT</div>
+                    <div class="flex items-center gap-1 text-[14px] text-yellow-400">🌽 CORN</div>
+                    <div class="flex items-center gap-1 text-[14px] text-blue-400">🫘 SOY</div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-[12px]">
+                    <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
+                        <div class="text-green-400 font-bold">🌾 Rice</div>
+                        <div id="rice-qty" class="text-white mt-1">-- t/ha</div>
+                        <div id="rice-delta" class="text-slate-400">Δ --%</div>
+                    </div>
+                    <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
+                        <div class="text-lime-400 font-bold">🌿 Wheat</div>
+                        <div id="wheat-qty" class="text-white mt-1">-- t/ha</div>
+                        <div id="wheat-delta" class="text-slate-400">Δ --%</div>
+                    </div>
+                    <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
+                        <div class="text-yellow-400 font-bold">🌽 Corn</div>
+                        <div id="corn-qty" class="text-white mt-1">-- t/ha</div>
+                        <div id="corn-delta" class="text-slate-400">Δ --%</div>
+                    </div>
+                    <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
+                        <div class="text-blue-400 font-bold">🫘 Soy</div>
+                        <div id="soy-qty" class="text-white mt-1">-- t/ha</div>
+                        <div id="soy-delta" class="text-slate-400">Δ --%</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="space-y-2">
-                <div class="text-[16px] text-[#00FFFF] uppercase font-bold tracking-tighter">Research Targets</div>
-                <div class="grid grid-cols-2 gap-2 text-[16px]">
-                    <button onclick="tilechanges('rice','best')"
-                        class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌾 Rice
-                        Optimal</button>
-                    <button onclick="tilechanges('rice','worst')"
-                        class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌾 Rice
-                        Stress</button>
-                    <button onclick="tilechanges('wheat','best')"
-                        class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌿
-                        Wheat Optimal</button>
-                    <button onclick="tilechanges('wheat','worst')"
-                        class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌿 Wheat
-                        Stress</button>
-                    <button onclick="tilechanges('corn','best')"
-                        class="bg-white/10 hover:bg-green-500/40 border border-white/15 transition rounded py-2">🌽 Corn
-                        Optimal</button>
-                    <button onclick="tilechanges('corn','worst')"
-                        class="bg-white/10 hover:bg-red-500/40 border border-white/15 transition rounded py-2">🌽 Corn
-                        Stress</button>
+            <div class="infographic-bg p-4 rounded min-h-[220px] flex flex-col items-center justify-center">
+                <span class="text-[8px] text-gray-400 uppercase self-start mb-2">Climate Resilience Radar</span>
+                <div class="w-32 h-32 relative">
+                    <svg viewBox="0 0 100 100" class="w-full h-full overflow-visible radar-glow">
+                        <circle cx="50" cy="50" r="45" fill="none" class="radar-line" />
+                        <circle cx="50" cy="50" r="30" fill="none" class="radar-line" />
+                        <circle cx="50" cy="50" r="15" fill="none" class="radar-line" />
+                        <path id="radar-shape" d="M50 50 L50 50 L50 50 L50 50 Z" fill="rgba(126, 217, 87, 0.2)"
+                            stroke="#7ED957" stroke-width="1.5" class="radar-poly" />
+                    </svg>
+                </div>
+                <div id="radar-pct-ok" class="text-neon-green text-xs font-bold mt-2">--% STABLE</div>
+            </div>
+
+            <div class="infographic-bg p-4 rounded min-h-[190px] lg:col-span-4 overflow-hidden">
+                <div class="flex items-center justify-between gap-3 mb-3">
+                    <span class="text-[12px] text-gray-200 uppercase">Environmental Telemetry Data Pipeline</span>
+                    <div id="telemetry-region-badge"
+                        class="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 italic">
+                        Initial Calibration...</div>
+                </div>
+                <div class="grid md:grid-cols-[220px_1fr] gap-4 items-start">
+                    <div class="bg-white/10 rounded-xl border border-slate-800 p-3">
+                        <div class="text-[10px] text-[#E3F988] uppercase mb-2">Stress Analysis Summary</div>
+                        <div id="telemetry-crop-summary" class="text-xs text-white leading-relaxed">
+                            Awaiting sensor synchronization from drone array.
+                        </div>
+                    </div>
+                    <div class="font-mono text-[10px] space-y-1 text-neon-green/80 h-24 overflow-hidden" id="log-feed">
+                        <div>[SYSTEM] STANDBY...</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</section>
+<!--research report of Nasa that discusses the impact of climate change on agricultural practices & how increasing risk of lives in earth -->
+<section class="max-w-7xl mx-auto ">
+    <div class="bg-[#F0FFF0]/20 border-l-4 border-emerald-900 p-1 rounded-r-lg shadow-2xl shadow-[#8A3324]">
+        <h3 class="text-2xl font-bold text-[#9D6342] italic drop-shadow-[1px_1px_0px_#654322] ml-4">NASA Research
+            Insight</h3>
+        <h4
+            class="text-[#8C4A2F] text-xl font-normalibold leading-relaxed mt-2 drop-shadow-[1px_1px_0px_#E4D6A7] mb-4 ml-4">
+            Conversion of Grassland to Cropland is Increasing Carbon Emissions.
+        </h4>
+        <img src="https://www.datocms-assets.com/135908/1746109073-afolu_figure_afolu-no-titles.png?auto=format,compress&w=1536&q=85&fp-x=0.5&fp-y=0.5"
+            class="w-full h-96 object-cover rounded-lg border-t-8 border-[#F8D296] shadow-2xl shadow-[#D26E25] transition-transform duration-500 hover:scale-105 hover:shadow-[#D1E231]"
+            alt="NASA Earth">
+        <!--add Nasa report content here with </br> and nice way.-->
+        <p
+            class="text-[#008000] text-2xl font-bold leading-relaxed mt-8 text-center tracking-wide drop-shadow-[2px_2px_0px_#E3F988]">
+            Global Population Growth & Impact on Agriculture
+        </p>
 
-    <section id="analysis" class="max-w-[105rem] mx-auto px-6 py-16">
-        <div class="grid md:grid-cols-2 gap-10">
-            <div class="bg-white border border-emerald-200 rounded-2xl p-8 shadow-sm">
-                <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight mb-4">Geo-Solid Stability</h3>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6">
-                    Analyze structural terrain integrity using topographic variance. Identify soil density shifts via
-                    thermal sync to restore geological pillars.
-                </p>
-            </div>
-            <div class="bg-white border border-emerald-200 rounded-2xl p-8 shadow-sm">
-                <h3 class="text-2xl font-bold text-emerald-800 uppercase tracking-tight mb-4">Native Life Guard</h3>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6">
-                    Environmental balancing ensures that crop improvement does not displace indigenous flora.
-                </p>
-            </div>
-        </div>
+        <p
+            class="text-[#00401A] text-lg text-base leading-relaxed mt-4 text-justify px-4 drop-shadow-[1px_1px_0px_#D1E231]">
+            The world’s population grew by 174% between 1950 and 2010—a nearly tripling of the number of people on the
+            planet. This increase has only heightened the demand for food, feed, and fiber.
 
-        <div class="mt-12 bg-[#0f172a] rounded-3xl p-8 shadow-2xl border border-emerald-900/50">
-            <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
-                <div>
-                    <h3 class="text-emerald-400 font-bold text-xl uppercase tracking-widest">Research Comparison Matrix
-                    </h3>
-                    <p class="text-slate-500 text-xs mt-1">Dynamic Weather-Crop Correlation & Drone Feedback</p>
-                </div>
-                <div class="text-right">
-                    <span id="live-loc-tag"
-                        class="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-tighter">LAT
-                        0.00000 LON 0.00000</span>
-                </div>
-            </div>
+            While much of the required yield is being produced on smaller-than-expected cultivated land areas through
+            the
+            development of agricultural technologies, there is still a need for additional agricultural land. This
+            demand
+            has been met through significant conversion of non-agricultural lands into croplands, particularly natural
+            grasslands.
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div
-                    class="infographic-bg p-4 rounded min-h-[220px] flex flex-col justify-center items-center relative group overflow-hidden">
-                    <span class="absolute top-2 left-2 text-[8px] text-gray-400 uppercase">Growth Integrity Index</span>
-                    <div class="relative w-32 h-32 flex items-center justify-center">
-                        <svg viewBox="0 0 100 100" class="w-full h-full">
-                            <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="#334155"
-                                stroke-width="1" />
-                            <polygon id="hex-outline" points="50,5 95,25 95,75 50,95 5,75 5,25"
-                                fill="rgba(126, 217, 87, 0.05)" stroke="#7ED957" stroke-width="2"
-                                class="transition-all duration-700" />
-                            <text x="50" y="55" text-anchor="middle" fill="white" font-size="22" font-weight="bold"
-                                id="main-metric">--</text>
-                        </svg>
-                    </div>
-                    <div id="weather-effect-label" class="text-[9px] text-emerald-500 font-bold uppercase mt-2">
-                        Scanning...</div>
-                </div>
+            Originally comprising more than 25% of the earth’s land surface, global grasslands are much less widespread
+            today.
+            More than 50% of temperate and 16% of tropical grasslands have been lost through conversion to agricultural
+            or
+            industrial uses.
 
-                <div
-                    class="infographic-bg p-4 rounded w-full lg:w-[900px] min-h-[420px] lg:col-span-2 relative text-center mx-auto">
-                    <span class="text-[18px] text-[#00FFFF]/80 font-bold uppercase shadow-lg shadow-[#F5F5F5]/30">Yield
-                        Variance - Current Location Drone Sweep</span>
-                    <div class="mt-2 h-60">
-                        <svg viewBox="0 0 400 150" class="w-full h-full" id="trend-svg">
-                            <line x1="0" y1="130" x2="400" y2="130" stroke="#334155" stroke-width="1"
-                                stroke-dasharray="2,2" />
-                            <line x1="0" y1="80" x2="400" y2="80" stroke="#334155" stroke-width="1"
-                                stroke-dasharray="2,2" />
-                            <line x1="0" y1="30" x2="400" y2="30" stroke="#334155" stroke-width="1"
-                                stroke-dasharray="2,2" />
-                            <path id="rice-path" class="trend-path" d="" fill="none" stroke="#22c55e"
-                                stroke-width="1" />
-                            <path id="wheat-path" class="trend-path" d="" fill="none" stroke="#84cc16"
-                                stroke-width="1" />
-                            <path id="corn-path" class="trend-path" d="" fill="none" stroke="#eab308"
-                                stroke-width="1" />
-                            <path id="soy-path" class="trend-path" d="" fill="none" stroke="#3b82f6" stroke-width="1" />
-                        </svg>
-                    </div>
-                    <div class="flex gap-4 mt-2 justify-center">
-                        <div class="flex items-center gap-1 text-[14px] text-green-400">🌾 RICE</div>
-                        <div class="flex items-center gap-1 text-[14px] text-lime-400">🌿 WHEAT</div>
-                        <div class="flex items-center gap-1 text-[14px] text-yellow-400">🌽 CORN</div>
-                        <div class="flex items-center gap-1 text-[14px] text-blue-400">🫘 SOY</div>
-                    </div>
-                    <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-[12px]">
-                        <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
-                            <div class="text-green-400 font-bold">🌾 Rice</div>
-                            <div id="rice-qty" class="text-white mt-1">-- t/ha</div>
-                            <div id="rice-delta" class="text-slate-400">Δ --%</div>
-                        </div>
-                        <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
-                            <div class="text-lime-400 font-bold">🌿 Wheat</div>
-                            <div id="wheat-qty" class="text-white mt-1">-- t/ha</div>
-                            <div id="wheat-delta" class="text-slate-400">Δ --%</div>
-                        </div>
-                        <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
-                            <div class="text-yellow-400 font-bold">🌽 Corn</div>
-                            <div id="corn-qty" class="text-white mt-1">-- t/ha</div>
-                            <div id="corn-delta" class="text-slate-400">Δ --%</div>
-                        </div>
-                        <div class="bg-slate-900/70 rounded p-2 border border-slate-700">
-                            <div class="text-blue-400 font-bold">🫘 Soy</div>
-                            <div id="soy-qty" class="text-white mt-1">-- t/ha</div>
-                            <div id="soy-delta" class="text-slate-400">Δ --%</div>
-                        </div>
-                    </div>
-                </div>
+            These conversions can have severe consequences, including habitat loss for native species, reduced flood
+            mitigation,
+            and increased carbon emissions. Grasslands act as natural carbon sinks, capturing atmospheric carbon and
+            storing it
+            in soil. However, converting them into croplands turns them into carbon emitters, especially with poor
+            management
+            practices.
+        </p>
 
-                <div class="infographic-bg p-4 rounded min-h-[220px] flex flex-col items-center justify-center">
-                    <span class="text-[8px] text-gray-400 uppercase self-start mb-2">Climate Resilience Radar</span>
-                    <div class="w-32 h-32 relative">
-                        <svg viewBox="0 0 100 100" class="w-full h-full overflow-visible radar-glow">
-                            <circle cx="50" cy="50" r="45" fill="none" class="radar-line" />
-                            <circle cx="50" cy="50" r="30" fill="none" class="radar-line" />
-                            <circle cx="50" cy="50" r="15" fill="none" class="radar-line" />
-                            <path id="radar-shape" d="M50 50 L50 50 L50 50 L50 50 Z" fill="rgba(126, 217, 87, 0.2)"
-                                stroke="#7ED957" stroke-width="1.5" class="radar-poly" />
-                        </svg>
-                    </div>
-                    <div id="radar-pct-ok" class="text-neon-green text-xs font-bold mt-2">--% STABLE</div>
-                </div>
+        <p class="mt-4 text-center">
+            <span class="text-[#8C4A2F] font-medium text-xl drop-shadow-[1px_1px_0px_#F8D296]">
+                This conversion of grasslands to croplands is a significant contributor to global carbon emissions.
+            </span>
+        </p>
 
-                <div class="infographic-bg p-4 rounded min-h-[190px] lg:col-span-4 overflow-hidden">
-                    <div class="flex items-center justify-between gap-3 mb-3">
-                        <span class="text-[12px] text-gray-200 uppercase">Environmental Telemetry Data Pipeline</span>
-                        <div id="telemetry-region-badge"
-                            class="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 italic">
-                            Initial Calibration...</div>
-                    </div>
-                    <div class="grid md:grid-cols-[220px_1fr] gap-4 items-start">
-                        <div class="bg-white/10 rounded-xl border border-slate-800 p-3">
-                            <div class="text-[10px] text-[#E3F988] uppercase mb-2">Stress Analysis Summary</div>
-                            <div id="telemetry-crop-summary" class="text-xs text-white leading-relaxed">
-                                Awaiting sensor synchronization from drone array.
-                            </div>
-                        </div>
-                        <div class="font-mono text-[10px] space-y-1 text-neon-green/80 h-24 overflow-hidden"
-                            id="log-feed">
-                            <div>[SYSTEM] STANDBY...</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <p class="text-center mt-2">
+            <a href="https://www.nasaharvest.org/news/conversion-of-grassland-to-cropland-is-increasing-carbon-emissions"
+                target="_blank" class="text-[#D26E25] underline hover:text-[#414712]">
+                Read More
+            </a>
+        </p>
+    </div>
+</section>
 <!--div for footer shadow from top with nice green color & sunlight with brightness with golden color using tailwind so it feels sunlight comes & down by css
     & make div top line some ripples-->
 <!--div for footer shadow from top with nice green color & sunlight with brightness with golden color using tailwind so it feels sunlight comes & down by css
     & make div top line some ripples-->
 <style>
-  @keyframes waveFlow {
-    0% { background-position-x: 0; }
-    100% { background-position-x: 300px; }
-  }
+    @keyframes waveFlow {
+        0% {
+            background-position-x: 0;
+        }
+
+        100% {
+            background-position-x: 300px;
+        }
+    }
 </style>
 
-<div class="mt-[200px] relative z-50 w-full p-2 rounded-t overflow-hidden"
-     style="height:20px;
+<div class="mt-[200px] relative z-50 w-full p-2 rounded-t overflow-hidden" style="height:20px;
      background:
        repeating-radial-gradient(circle at 0 100%, #9c7f53 0 18px, transparent 15px 20px),
        linear-gradient(to right, #44160d, #44d437, #73ca2c, #e4ce0a);
@@ -353,519 +521,845 @@
      animation: waveFlow 15s linear infinite;
      box-shadow: 0 -15px 20px rgba(212, 76, 13, 0.5);">
 </div>
-
 <!-- Footer with sprouting animation -->
 <footer class="footer-wrap relative overflow-hidden" style=" z-index: -50; 
 background-image: radial-gradient(circle farthest-corner at center, rgba(209, 158, 133, 1) 10%, 
     rgba(181, 132, 108, 1) 20%, rgba(153, 106, 83, 1) 35%, rgba(126, 82, 60, 1) 45%, rgba(100, 59, 38, 1) 
     55%, rgba(74, 37, 17, 1) 65%, rgba(50, 16, 0, 1) 80%, rgba(25, 0, 1, 1) 90%, rgba(0, 0, 0, 1) 100%);">
-  <style>
-    .footer-wrap {
-      position: relative;
-      height: 350px;
-      width: 100%;
-      overflow: hidden;
-      box-shadow: 
-        inset 0 60px 80px -20px rgba(0,0,0,1),
-        inset 0 -30px 60px rgba(0,0,0,0.8);
-      border-top: 6px solid #2a150a;
-    }
+    <style>
+        .footer-wrap {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow:
+                inset 0 60px 80px -20px rgba(0, 0, 0, 1),
+                inset 0 -30px 60px rgba(0, 0, 0, 0.8);
+            border-top: 6px solid #2a150a;
+        }
 
-    .footer-wrap::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 40px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
-      z-index: 60;
-      pointer-events: none;
-    }
+        .footer-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 60;
+            pointer-events: none;
+        }
 
-    .soil {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(74, 37, 17, 0.2), rgba(20, 10, 5, 0.4)), 
-        url('https://thumbs.dreamstime.com/b/country-dirt-road-texture-land-crop-farm-field-texture-dirt-rocks-background-brown-dead-unworked-land-field-dirt-texture-115495115.jpg');
-      background-size: cover;
-      background-position: center;
-      mix-blend-mode: multiply;
-      animation: soilBreathing 4s infinite alternate ease-in-out;
-      z-index: 1;
-    }
+        .soil {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(74, 37, 17, 0.2), rgba(20, 10, 5, 0.4)),
+                url('https://thumbs.dreamstime.com/b/country-dirt-road-texture-land-crop-farm-field-texture-dirt-rocks-background-brown-dead-unworked-land-field-dirt-texture-115495115.jpg');
+            background-size: cover;
+            background-position: center;
+            mix-blend-mode: multiply;
+            animation: soilBreathing 4s infinite alternate ease-in-out;
+            z-index: 1;
+        }
 
-    .water-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
-    }
+        .water-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
 
-    .puddle-shine {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      background: #dfd446;
-      border-radius: 50%;
-      box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.9), 
-                  0 0 25px 6px rgba(255, 255, 255, 0.3);
-      animation: waterSparkle 2s infinite ease-in-out;
-    }
+        .puddle-shine {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: #dfd446;
+            border-radius: 50%;
+            box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.9),
+                0 0 25px 6px rgba(255, 255, 255, 0.3);
+            animation: waterSparkle 2s infinite ease-in-out;
+        }
 
-    .puddle-shine::after, .puddle-shine::before {
-      content: '';
-      position: absolute;
-      top: 10%;
-      left: 10%;
-      background: white;
-      transform-origin: center;
-      animation: spinShine 5s infinite linear;
-    }
+        .puddle-shine::after,
+        .puddle-shine::before {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            background: white;
+            transform-origin: center;
+            animation: spinShine 5s infinite linear;
+        }
 
-    .puddle-shine::after { width: 1px; height: 1px; margin-left: -6px; }
-    .puddle-shine::before { width: 1px; height: 1px; margin-top: -6px; }
+        .puddle-shine::after {
+            width: 1px;
+            height: 1px;
+            margin-left: -6px;
+        }
 
-    @keyframes waterSparkle {
-      0%, 100% { transform: scale(0.5); opacity: 0.6; }
-      50% { transform: scale(1.1); opacity: 1; }
-    }
+        .puddle-shine::before {
+            width: 1px;
+            height: 1px;
+            margin-top: -6px;
+        }
 
-    @keyframes spinShine {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
+        @keyframes waterSparkle {
 
-    .wet-reflection {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06) 0%, transparent 85%);
-      mix-blend-mode: overlay;
-      pointer-events: none;
-      z-index: 3;
-    }
+            0%,
+            100% {
+                transform: scale(0.5);
+                opacity: 0.6;
+            }
 
-    .water-sheen {
-      position: absolute;
-      width: 200%;
-      height: 100%;
-      background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 150px,
-        rgba(255, 255, 255, 0.03) 160px,
-        transparent 170px
-      );
-      animation: sheenMove 12s infinite linear;
-      opacity: 0.5;
-    }
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
 
-    @keyframes sheenMove { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
+        @keyframes spinShine {
+            from {
+                transform: rotate(0deg);
+            }
 
-    .rain-container {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 15;
-    }
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .rain-drop {
-      position: absolute;
-      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.6));
-      width: 1.5px; 
-      height: 45px;
-      top: -60px;
-      animation: rainFall linear infinite;
-    }
+        .wet-reflection {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.06) 0%, transparent 85%);
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 3;
+        }
 
-    @keyframes rainFall {
-      0% { transform: translateY(0) translateX(0); opacity: 0; }
-      10% { opacity: 0.7; }
-      90% { opacity: 0.7; }
-      100% { transform: translateY(400px) translateX(15px); opacity: 0; }
-    }
+        .water-sheen {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 150px,
+                    rgba(255, 255, 255, 0.03) 160px,
+                    transparent 170px);
+            animation: sheenMove 12s infinite linear;
+            opacity: 0.5;
+        }
 
-    .splash {
-      position: absolute;
-      width: 6px;
-      height: 3px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.25);
-      transform: scale(0);
-      animation: splashAnim 2.5s infinite ease-out;
-    }
+        @keyframes sheenMove {
+            from {
+                transform: translateX(-50%);
+            }
 
-    @keyframes splashAnim {
-      0% { transform: scale(0); opacity: 0; }
-      20% { transform: scale(1); opacity: 0.4; }
-      100% { transform: scale(3); opacity: 0; }
-    }
+            to {
+                transform: translateX(0%);
+            }
+        }
 
-    @keyframes soilBreathing { 0% { opacity: 0.5; } 100% { opacity: 0.8; } }
+        .rain-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 15;
+        }
 
-    @keyframes lifeCycle {
-      0% { transform: translateY(30px) scale(0); opacity: 0; }
-      15% { opacity: 1; }
-      45% { transform: translateY(0) scale(1); opacity: 1; }
-      85% { opacity: 1; }
-      100% { transform: translateY(-25px) scale(1.05); opacity: 0; }
-    }
+        .rain-drop {
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.6));
+            width: 1.5px;
+            height: 45px;
+            top: -60px;
+            animation: rainFall linear infinite;
+        }
 
-    @keyframes leafOpen {
-      0%, 50% { transform: scale(0) rotate(-20deg); }
-      70%, 100% { transform: scale(1) rotate(0deg); }
-    }
+        @keyframes rainFall {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
 
-    @keyframes horizonTremor {
-      0%, 100% { transform: translate(0, 0); }
-      33% { transform: translate(1px, -0.5px); }
-      66% { transform: translate(-0.5px, 0.5px); }
-    }
+            10% {
+                opacity: 0.7;
+            }
 
-    .sprout-container {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: lifeCycle 12s infinite ease-in-out;
-      transform-origin: bottom;
-      z-index: 10;
-    }
+            90% {
+                opacity: 0.7;
+            }
 
-    .horizon-dot { animation: horizonTremor 8s infinite ease-in-out; }
-    .stem { width: 2px; background: linear-gradient(to top, #2eb605, #93c704); border-radius: 2px; }
-    .seed-base { width: 10px; height: 14px; background: #e6e3d2; border-radius: 40%; box-shadow: 0 0 12px rgba(57, 255, 20, 0.4); }
-    .leaf-pair { display: flex; gap: 2px; margin-bottom: -4px; animation: leafOpen 12s infinite; }
-    .leaf-pair div { width: 8px; height: 6px; background: #2eb605; border-radius: 40% 80% 0 50%; }
+            100% {
+                transform: translateY(400px) translateX(15px);
+                opacity: 0;
+            }
+        }
 
-    .brand-text { 
-      font-family: serif; color: #013220; font-size: 2.2rem; 
-      font-style: italic; font-weight: bold;
-      letter-spacing: normal; filter: drop-shadow(0 0 10px rgb(219, 192, 11)); 
-    }
+        .splash {
+            position: absolute;
+            width: 6px;
+            height: 3px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transform: scale(0);
+            animation: splashAnim 2.5s infinite ease-out;
+        }
 
-    .nav-links {
-      display: flex; gap: 20px; justify-content: center;
-      color: #013220; font-size: 1.4rem; margin-top: 10px;
-      font-weight: bold;
-      font-family: sans-serif; opacity: 40;
-    }
-    .nav-links a { transition: opacity 0.3s; cursor: pointer; text-decoration: none; color: inherit; }
-    .nav-links a:hover { opacity: 0.6; }
-  </style>
+        @keyframes splashAnim {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
 
-  <div class="soil"></div>
-  
-  <div class="water-layer">
-    <div class="puddle-shine" style="top: 72%; left: 12%;"></div>
-    <div class="puddle-shine" style="top: 62%; left: 52%; animation-delay: 1s;"></div>
-    <div class="puddle-shine" style="top: 78%; left: 30%; animation-delay: 2s;"></div>
-    <div class="puddle-shine" style="top: 54%; left: 82%; animation-delay: 0.5s;"></div>
-    <div class="puddle-shine" style="top: 88%; left: 8%; animation-delay: 1.5s;"></div>
-    <div class="puddle-shine" style="top: 65%; left: 70%; animation-delay: 1.2s;"></div>
-    <div class="puddle-shine" style="top: 45%; left: 25%; animation-delay: 0.7s;"></div>
-    <div class="puddle-shine" style="top: 80%; left: 90%; animation-delay: 1.8s;"></div>
-    <div class="puddle-shine" style="top: 55%; left: 15%; animation-delay: 2.2s;"></div>
-    <div class="puddle-shine" style="top: 92%; left: 60%; animation-delay: 0.3s;"></div>
-  </div>
+            20% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
 
-  <div class="wet-reflection">
-    <div class="water-sheen"></div>
-  </div>
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
 
-  <div class="rain-container">
-    <div class="rain-drop" style="left: 5%; animation-duration: 0.8s;"></div>
-    <div class="rain-drop" style="left: 15%; animation-duration: 0.7s; animation-delay: 0.2s;"></div>
-    <div class="rain-drop" style="left: 25%; animation-duration: 0.9s;"></div>
-    <div class="rain-drop" style="left: 35%; animation-duration: 0.85s; animation-delay: 0.4s;"></div>
-    <div class="rain-drop" style="left: 45%; animation-duration: 0.75s; animation-delay: 0.1s;"></div>
-    <div class="rain-drop" style="left: 55%; animation-duration: 1.0s;"></div>
-    <div class="rain-drop" style="left: 65%; animation-duration: 0.8s; animation-delay: 0.3s;"></div>
-    <div class="rain-drop" style="left: 75%; animation-duration: 0.9s; animation-delay: 0.5s;"></div>
-    <div class="rain-drop" style="left: 85%; animation-duration: 0.9s;"></div>
-    <div class="rain-drop" style="left: 95%; animation-duration: 0.85s; animation-delay: 0.2s;"></div>
-    
-    <div class="splash" style="bottom: 20%; left: 10%; animation-delay: 0.2s;"></div>
-    <div class="splash" style="bottom: 15%; left: 30%; animation-delay: 0.5s;"></div>
-    <div class="splash" style="bottom: 25%; left: 50%; animation-delay: 0.1s;"></div>
-    <div class="splash" style="bottom: 18%; left: 70%; animation-delay: 0.7s;"></div>
-    <div class="splash" style="bottom: 10%; left: 90%; animation-delay: 0.8s;"></div>
-  </div>
+        @keyframes soilBreathing {
+            0% {
+                opacity: 0.5;
+            }
 
-  <div class="absolute inset-0 z-10">
-    <!-- INFINITE HORIZON SPREAD -->
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:1%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:5%; scale:0.05; opacity:0.15;"><div class="stem h-[4px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:10%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:15%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:20%; scale:0.05; opacity:0.18;"><div class="stem h-[14px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:25%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:30%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:35%; scale:0.05; opacity:0.15;"><div class="stem h-[14px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:40%; scale:0.04; opacity:0.19;"><div class="stem h-[8px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:45%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:50%; scale:0.05; opacity:0.15;"><div class="stem h-[4px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:55%; scale:0.04; opacity:0.15;"><div class="stem h-[9px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:60%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:65%; scale:0.05; opacity:0.15;"><div class="stem h-[14px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:70%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:75%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:80%; scale:0.05; opacity:0.15;"><div class="stem h-[4px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:85%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:89%; left:90%; scale:0.06; opacity:0.2;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[5px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:88%; left:95%; scale:0.05; opacity:0.15;"><div class="stem h-[4px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container horizon-dot" style="bottom:87%; left:99%; scale:0.04; opacity:0.1;"><div class="stem h-[3px]"></div><div class="seed-base"></div></div>
+            100% {
+                opacity: 0.8;
+            }
+        }
 
-    <!-- UPPER MID FIELD -->
-    <div class="sprout-container" style="bottom:70%; left:3%; scale:0.12; opacity:0.3;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[8px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:72%; left:12%; scale:0.15; opacity:0.35;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[10px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:68%; left:22%; scale:0.13; opacity:0.3;"><div class="stem h-[9px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:71%; left:33%; scale:0.16; opacity:0.35;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[11px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:69%; left:44%; scale:0.14; opacity:0.3;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[10px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:73%; left:55%; scale:0.12; opacity:0.35;"><div class="stem h-[9px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:70%; left:66%; scale:0.55; opacity:0.35;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[10px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:72%; left:77%; scale:0.14; opacity:0.3;"><div class="stem h-[10px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:68%; left:88%; scale:0.16; opacity:0.35;"><div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div><div class="stem h-[11px]"></div><div class="seed-base"></div></div>
-    <div class="sprout-container" style="bottom:71%; left:97%; scale:0.13; opacity:0.3;"><div class="stem h-[9px]"></div><div class="seed-base"></div></div>
+        @keyframes lifeCycle {
+            0% {
+                transform: translateY(30px) scale(0);
+                opacity: 0;
+            }
 
-    <!-- LOWER MID FIELD -->
-    <div class="sprout-container" style="bottom:45%; left:8%; animation-delay: 2s; scale: 0.5;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[25px]"></div><div class="seed-base"></div>
+            15% {
+                opacity: 1;
+            }
+
+            45% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-25px) scale(1.05);
+                opacity: 0;
+            }
+        }
+
+        @keyframes leafOpen {
+
+            0%,
+            50% {
+                transform: scale(0) rotate(-20deg);
+            }
+
+            70%,
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes horizonTremor {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            33% {
+                transform: translate(1px, -0.5px);
+            }
+
+            66% {
+                transform: translate(-0.5px, 0.5px);
+            }
+        }
+
+        .sprout-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: lifeCycle 12s infinite ease-in-out;
+            transform-origin: bottom;
+            z-index: 10;
+        }
+
+        .horizon-dot {
+            animation: horizonTremor 8s infinite ease-in-out;
+        }
+
+        .stem {
+            width: 2px;
+            background: linear-gradient(to top, #2eb605, #93c704);
+            border-radius: 2px;
+        }
+
+        .seed-base {
+            width: 10px;
+            height: 14px;
+            background: #e6e3d2;
+            border-radius: 40%;
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
+        }
+
+        .leaf-pair {
+            display: flex;
+            gap: 2px;
+            margin-bottom: -4px;
+            animation: leafOpen 12s infinite;
+        }
+
+        .leaf-pair div {
+            width: 8px;
+            height: 6px;
+            background: #2eb605;
+            border-radius: 40% 80% 0 50%;
+        }
+
+        .brand-text {
+            font-family: serif;
+            color: #013220;
+            font-size: 2.2rem;
+            font-style: italic;
+            font-weight: bold;
+            letter-spacing: normal;
+            filter: drop-shadow(0 0 10px rgb(219, 192, 11));
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            color: #013220;
+            font-size: 1.4rem;
+            margin-top: 10px;
+            font-weight: bold;
+            font-family: sans-serif;
+            opacity: 40;
+        }
+
+        .nav-links a {
+            transition: opacity 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+    </style>
+
+    <div class="soil"></div>
+
+    <div class="water-layer">
+        <div class="puddle-shine" style="top: 72%; left: 12%;"></div>
+        <div class="puddle-shine" style="top: 62%; left: 52%; animation-delay: 1s;"></div>
+        <div class="puddle-shine" style="top: 78%; left: 30%; animation-delay: 2s;"></div>
+        <div class="puddle-shine" style="top: 54%; left: 82%; animation-delay: 0.5s;"></div>
+        <div class="puddle-shine" style="top: 88%; left: 8%; animation-delay: 1.5s;"></div>
+        <div class="puddle-shine" style="top: 65%; left: 70%; animation-delay: 1.2s;"></div>
+        <div class="puddle-shine" style="top: 45%; left: 25%; animation-delay: 0.7s;"></div>
+        <div class="puddle-shine" style="top: 80%; left: 90%; animation-delay: 1.8s;"></div>
+        <div class="puddle-shine" style="top: 55%; left: 15%; animation-delay: 2.2s;"></div>
+        <div class="puddle-shine" style="top: 92%; left: 60%; animation-delay: 0.3s;"></div>
     </div>
-    <div class="sprout-container" style="bottom:48%; left:28%; animation-delay: 4.5s; scale: 0.45; opacity: 0.7;">
-        <div class="stem h-[20px]"></div><div class="seed-base"></div>
-    </div>
-    <div class="sprout-container" style="bottom:42%; left:48%; animation-delay: 7s; scale: 0.55;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[30px]"></div><div class="seed-base"></div>
-    </div>
-    <div class="sprout-container" style="bottom:46%; left:68%; animation-delay: 1.5s; scale: 0.45; opacity: 0.7;">
-        <div class="stem h-[22px]"></div><div class="seed-base"></div>
-    </div>
-    <div class="sprout-container" style="bottom:40%; left:88%; animation-delay: 3.2s; scale: 0.55;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[28px]"></div><div class="seed-base"></div>
+
+    <div class="wet-reflection">
+        <div class="water-sheen"></div>
     </div>
 
-    <!-- FOREGROUND ACTIVE LAYER -->
-    <div class="sprout-container" style="bottom:8%; left:10%; animation-delay: 0s;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[50px]"></div>
-        <div class="relative"><span class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span><div class="seed-base"></div></div>
-    </div>
-    <div class="sprout-container" style="bottom:12%; left:35%; animation-delay: 4s; scale: 1.1;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[55px]"></div>
-        <div class="relative"><span class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span><div class="seed-base"></div></div>
-    </div>
-    <div class="sprout-container" style="bottom:6%; left:65%; animation-delay: 2s;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[42px]"></div>
-        <div class="relative"><span class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span><div class="seed-base"></div></div>
-    </div>
-    <div class="sprout-container" style="bottom:10%; left:90%; animation-delay: 6s; scale: 1.05;">
-        <div class="leaf-pair"><div></div><div style="transform: scaleX(-1)"></div></div>
-        <div class="stem h-[48px]"></div>
-        <div class="relative"><span class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span><div class="seed-base"></div></div>
-    </div>
-  </div>
+    <div class="rain-container">
+        <div class="rain-drop" style="left: 5%; animation-duration: 0.8s;"></div>
+        <div class="rain-drop" style="left: 15%; animation-duration: 0.7s; animation-delay: 0.2s;"></div>
+        <div class="rain-drop" style="left: 25%; animation-duration: 0.9s;"></div>
+        <div class="rain-drop" style="left: 35%; animation-duration: 0.85s; animation-delay: 0.4s;"></div>
+        <div class="rain-drop" style="left: 45%; animation-duration: 0.75s; animation-delay: 0.1s;"></div>
+        <div class="rain-drop" style="left: 55%; animation-duration: 1.0s;"></div>
+        <div class="rain-drop" style="left: 65%; animation-duration: 0.8s; animation-delay: 0.3s;"></div>
+        <div class="rain-drop" style="left: 75%; animation-duration: 0.9s; animation-delay: 0.5s;"></div>
+        <div class="rain-drop" style="left: 85%; animation-duration: 0.9s;"></div>
+        <div class="rain-drop" style="left: 95%; animation-duration: 0.85s; animation-delay: 0.2s;"></div>
 
-  <div class="absolute bottom-12 w-full text-center text-[#138808] z-[70] pointer-events-none">
-    <h2 class="brand-text">AptiCraft</h2>
-    <div class="nav-links pointer-events-auto">
-      <a href="https://github.com/Afsana721/flask_apps" target="_blank">GitHub</a>
-      <a href="https://flask-apps-e45a.onrender.com/" target="_blank">Portfolio</a>
-      <a href="https://www.linkedin.com/in/afsanausa/" target="_blank">LinkedIn</a>
-      <a href="https://www.roboticsplatforms.com/" target="_blank">OpenQQuantify</a>
+        <div class="splash" style="bottom: 20%; left: 10%; animation-delay: 0.2s;"></div>
+        <div class="splash" style="bottom: 15%; left: 30%; animation-delay: 0.5s;"></div>
+        <div class="splash" style="bottom: 25%; left: 50%; animation-delay: 0.1s;"></div>
+        <div class="splash" style="bottom: 18%; left: 70%; animation-delay: 0.7s;"></div>
+        <div class="splash" style="bottom: 10%; left: 90%; animation-delay: 0.8s;"></div>
     </div>
-</div>
+
+    <div class="absolute inset-0 z-10">
+        <!-- INFINITE HORIZON SPREAD -->
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:1%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:5%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[4px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:10%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:15%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:20%; scale:0.05; opacity:0.18;">
+            <div class="stem h-[14px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:25%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:30%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:35%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[14px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:40%; scale:0.04; opacity:0.19;">
+            <div class="stem h-[8px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:45%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:50%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[4px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:55%; scale:0.04; opacity:0.15;">
+            <div class="stem h-[9px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:60%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:65%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[14px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:70%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:75%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:80%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[4px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:85%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:89%; left:90%; scale:0.06; opacity:0.2;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[5px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:88%; left:95%; scale:0.05; opacity:0.15;">
+            <div class="stem h-[4px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container horizon-dot" style="bottom:87%; left:99%; scale:0.04; opacity:0.1;">
+            <div class="stem h-[3px]"></div>
+            <div class="seed-base"></div>
+        </div>
+
+        <!-- UPPER MID FIELD -->
+        <div class="sprout-container" style="bottom:70%; left:3%; scale:0.12; opacity:0.3;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[8px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:72%; left:12%; scale:0.15; opacity:0.35;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[10px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:68%; left:22%; scale:0.13; opacity:0.3;">
+            <div class="stem h-[9px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:71%; left:33%; scale:0.16; opacity:0.35;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[11px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:69%; left:44%; scale:0.14; opacity:0.3;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[10px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:73%; left:55%; scale:0.12; opacity:0.35;">
+            <div class="stem h-[9px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:70%; left:66%; scale:0.55; opacity:0.35;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[10px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:72%; left:77%; scale:0.14; opacity:0.3;">
+            <div class="stem h-[10px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:68%; left:88%; scale:0.16; opacity:0.35;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[11px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:71%; left:97%; scale:0.13; opacity:0.3;">
+            <div class="stem h-[9px]"></div>
+            <div class="seed-base"></div>
+        </div>
+
+        <!-- LOWER MID FIELD -->
+        <div class="sprout-container" style="bottom:45%; left:8%; animation-delay: 2s; scale: 0.5;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[25px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:48%; left:28%; animation-delay: 4.5s; scale: 0.45; opacity: 0.7;">
+            <div class="stem h-[20px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:42%; left:48%; animation-delay: 7s; scale: 0.55;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[30px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:46%; left:68%; animation-delay: 1.5s; scale: 0.45; opacity: 0.7;">
+            <div class="stem h-[22px]"></div>
+            <div class="seed-base"></div>
+        </div>
+        <div class="sprout-container" style="bottom:40%; left:88%; animation-delay: 3.2s; scale: 0.55;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[28px]"></div>
+            <div class="seed-base"></div>
+        </div>
+
+        <!-- FOREGROUND ACTIVE LAYER -->
+        <div class="sprout-container" style="bottom:8%; left:10%; animation-delay: 0s;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[50px]"></div>
+            <div class="relative"><span
+                    class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span>
+                <div class="seed-base"></div>
+            </div>
+        </div>
+        <div class="sprout-container" style="bottom:12%; left:35%; animation-delay: 4s; scale: 1.1;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[55px]"></div>
+            <div class="relative"><span
+                    class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span>
+                <div class="seed-base"></div>
+            </div>
+        </div>
+        <div class="sprout-container" style="bottom:6%; left:65%; animation-delay: 2s;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[42px]"></div>
+            <div class="relative"><span
+                    class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span>
+                <div class="seed-base"></div>
+            </div>
+        </div>
+        <div class="sprout-container" style="bottom:10%; left:90%; animation-delay: 6s; scale: 1.05;">
+            <div class="leaf-pair">
+                <div></div>
+                <div style="transform: scaleX(-1)"></div>
+            </div>
+            <div class="stem h-[48px]"></div>
+            <div class="relative"><span
+                    class="absolute inset-0 rounded-full bg-green-400 opacity-40 animate-ping"></span>
+                <div class="seed-base"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-12 w-full text-center text-[#138808] z-[70] pointer-events-none">
+        <h2 class="brand-text">AptiCraft</h2>
+        <div class="nav-links pointer-events-auto">
+            <a href="https://github.com/Afsana721/flask_apps" target="_blank">GitHub</a>
+            <a href="https://flask-apps-e45a.onrender.com/" target="_blank">Portfolio</a>
+            <a href="https://www.linkedin.com/in/afsanausa/" target="_blank">LinkedIn</a>
+            <a href="https://www.roboticsplatforms.com/" target="_blank">OpenQQuantify</a>
+        </div>
+    </div>
 </footer>
-    <script>
-        require([
-            "esri/config",
-            "esri/Map",
-            "esri/views/SceneView",
-            "esri/Graphic",
-            "esri/layers/GraphicsLayer",
-            "esri/geometry/Point"
-        ], function (esriConfig, Map, SceneView, Graphic, GraphicsLayer, Point) {
+<script>
+    require([
+        "esri/config",
+        "esri/Map",
+        "esri/views/SceneView",
+        "esri/Graphic",
+        "esri/layers/GraphicsLayer",
+        "esri/geometry/Point"
+    ], function (esriConfig, Map, SceneView, Graphic, GraphicsLayer, Point) {
 
-            const cropApi = "AAPTaJhcuzO8Cgaqiqfh5IBLLBA..ZW8TgCCJOFRc3R9sdt2ZEHEMrgneg0oyCh65NqIOTdAVMaPuo-JIclCDxgSZ-T43uaZKpqB0QJ1WFuxDMJt7OLxhzmG7PCb0qi_fylGwuzPNAMP8PAUTxL6f1tmlKaivpXq59QB1rg-l0dnVsTCl9zFSEh0UP8oBPhvNIK8_kNy1tDu2rgfWuuvtADQUke1qIXmPp6nsfCyW8luW95XEynBlvtYlqQRwd7zOGK3xkITfKPw2CpVNKqoJwq6rSKeSnhN7TA..AT1_X1hUW6q4";
-            esriConfig.apiKey = cropApi;
+        const cropApi = "AAPTaJhcuzO8Cgaqiqfh5IBLLBA..ZW8TgCCJOFRc3R9sdt2ZEHEMrgneg0oyCh65NqIOTdAVMaPuo-JIclCDxgSZ-T43uaZKpqB0QJ1WFuxDMJt7OLxhzmG7PCb0qi_fylGwuzPNAMP8PAUTxL6f1tmlKaivpXq59QB1rg-l0dnVsTCl9zFSEh0UP8oBPhvNIK8_kNy1tDu2rgfWuuvtADQUke1qIXmPp6nsfCyW8luW95XEynBlvtYlqQRwd7zOGK3xkITfKPw2CpVNKqoJwq6rSKeSnhN7TA..AT1_X1hUW6q4";
+        esriConfig.apiKey = cropApi;
 
-            const droneUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766547783114.glb";
+        const droneUrl = "https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/model-1766547783114.glb";
 
-            const locationMetadata = {
-                'rice_best': { weather: "Optimal Humidity", growth: 92, radar: [40, 45, 42, 38], trends: { w: [120, 100, 110, 80, 90, 60], c: [130, 120, 125, 110, 115, 100], s: [100, 90, 95, 70, 80, 60] }, summary: "Delta moisture is at peak efficiency. Growth integrity remains uninhibited." },
-                'rice_worst': { weather: "Drought Stress", growth: 42, radar: [15, 20, 18, 12], trends: { w: [130, 135, 140, 130, 145, 140], c: [140, 142, 145, 140, 148, 145], s: [120, 125, 130, 120, 135, 130] }, summary: "Critical soil dehydration detected. Thermal sensors indicating root-level stress." },
-                'wheat_best': { weather: "Temperate/Clear", growth: 88, radar: [35, 40, 38, 42], trends: { w: [100, 80, 90, 50, 60, 30], c: [110, 100, 105, 80, 90, 70], s: [90, 70, 80, 40, 50, 20] }, summary: "UV index is balanced. Indigenous mineral baseline recovered by 12%." },
-                'wheat_worst': { weather: "Heat Exhaustion", growth: 56, radar: [25, 15, 22, 18], trends: { w: [120, 125, 130, 120, 140, 135], c: [130, 135, 140, 130, 145, 140], s: [110, 115, 120, 110, 130, 125] }, summary: "Surface temperatures exceeding tolerance. Primal growth protocol compromised." },
-                'corn_best': { weather: "High Fertility", growth: 96, radar: [45, 45, 44, 45], trends: { w: [90, 70, 80, 40, 50, 20], c: [100, 80, 90, 30, 40, 10], s: [80, 60, 70, 30, 40, 10] }, summary: "Nitrogen cycles stabilized. Drone sweeping confirms uniform canopy density." },
-                'corn_worst': { weather: "Flash Flood Saturation", growth: 38, radar: [10, 12, 8, 14], trends: { w: [140, 145, 140, 148, 142, 150], c: [145, 150, 145, 152, 148, 155], s: [135, 140, 135, 142, 138, 145] }, summary: "Root hypoxia imminent. Excessive moisture causing soil erosion at 0.5cm/hr." }
-            };
+        const locationMetadata = {
+            'rice_best': { weather: "Optimal Humidity", growth: 92, radar: [40, 45, 42, 38], trends: { w: [120, 100, 110, 80, 90, 60], c: [130, 120, 125, 110, 115, 100], s: [100, 90, 95, 70, 80, 60] }, summary: "Delta moisture is at peak efficiency. Growth integrity remains uninhibited." },
+            'rice_worst': { weather: "Drought Stress", growth: 42, radar: [15, 20, 18, 12], trends: { w: [130, 135, 140, 130, 145, 140], c: [140, 142, 145, 140, 148, 145], s: [120, 125, 130, 120, 135, 130] }, summary: "Critical soil dehydration detected. Thermal sensors indicating root-level stress." },
+            'wheat_best': { weather: "Temperate/Clear", growth: 88, radar: [35, 40, 38, 42], trends: { w: [100, 80, 90, 50, 60, 30], c: [110, 100, 105, 80, 90, 70], s: [90, 70, 80, 40, 50, 20] }, summary: "UV index is balanced. Indigenous mineral baseline recovered by 12%." },
+            'wheat_worst': { weather: "Heat Exhaustion", growth: 56, radar: [25, 15, 22, 18], trends: { w: [120, 125, 130, 120, 140, 135], c: [130, 135, 140, 130, 145, 140], s: [110, 115, 120, 110, 130, 125] }, summary: "Surface temperatures exceeding tolerance. Primal growth protocol compromised." },
+            'corn_best': { weather: "High Fertility", growth: 96, radar: [45, 45, 44, 45], trends: { w: [90, 70, 80, 40, 50, 20], c: [100, 80, 90, 30, 40, 10], s: [80, 60, 70, 30, 40, 10] }, summary: "Nitrogen cycles stabilized. Drone sweeping confirms uniform canopy density." },
+            'corn_worst': { weather: "Flash Flood Saturation", growth: 38, radar: [10, 12, 8, 14], trends: { w: [140, 145, 140, 148, 142, 150], c: [145, 150, 145, 152, 148, 155], s: [135, 140, 135, 142, 138, 145] }, summary: "Root hypoxia imminent. Excessive moisture causing soil erosion at 0.5cm/hr." }
+        };
 
-            const cropRegions = {
-                rice: { best: [{ name: "Arkansas Delta", lat: 34.799, lon: -91.199, key: 'rice_best' }], worst: [{ name: "South Texas Drought Zone", lat: 26.2034, lon: -98.2300, key: 'rice_worst' }] },
-                wheat: { best: [{ name: "Kansas Wheat Belt", lat: 39.0119, lon: -98.4842, key: 'wheat_best' }], worst: [{ name: "West Texas Dryland", lat: 33.5779, lon: -101.8552, key: 'wheat_worst' }] },
-                corn: { best: [{ name: "Iowa Corn Belt", lat: 42.0329, lon: -93.5815, key: 'corn_best' }], worst: [{ name: "South Texas Heat Zone", lat: 27.8006, lon: -97.3964, key: 'corn_worst' }] }
-            };
+        const cropRegions = {
+            rice: { best: [{ name: "Arkansas Delta", lat: 34.799, lon: -91.199, key: 'rice_best' }], worst: [{ name: "South Texas Drought Zone", lat: 26.2034, lon: -98.2300, key: 'rice_worst' }] },
+            wheat: { best: [{ name: "Kansas Wheat Belt", lat: 39.0119, lon: -98.4842, key: 'wheat_best' }], worst: [{ name: "West Texas Dryland", lat: 33.5779, lon: -101.8552, key: 'wheat_worst' }] },
+            corn: { best: [{ name: "Iowa Corn Belt", lat: 42.0329, lon: -93.5815, key: 'corn_best' }], worst: [{ name: "South Texas Heat Zone", lat: 27.8006, lon: -97.3964, key: 'corn_worst' }] }
+        };
 
-            const center = { lat: 34.799, lon: -91.199 };
-            let posX = center.lon; let posY = center.lat; let baseX = posX; let baseY = posY;
-            let posZ = 650; let isTransitioning = false; let viewHeading = 0;
+        const center = { lat: 36.799, lon: -92.199 };
+        let posX = center.lon; let posY = center.lat; let baseX = posX; let baseY = posY;
+        let posZ = 1000; let isTransitioning = false; let viewHeading = 0;
 
-            const map = new Map({ basemap: "satellite", ground: "world-elevation" });
-            const view = new SceneView({
-                container: "viewDiv",
-                map: map,
-                qualityProfile: "high",
-                camera: { position: [posX, posY - 0.005, posZ + 1200], heading: 0, tilt: 45 }
-            });
-
-            const gLayer = new GraphicsLayer({ elevationInfo: { mode: "absolute-height" } });
-            map.add(gLayer);
-
-            const droneGraphic = new Graphic({
-                geometry: new Point({ longitude: posX, latitude: posY, z: posZ }),
-                symbol: { type: "point-3d", symbolLayers: [{ type: "object", resource: { href: droneUrl }, height: 450, heading: 0 }] }
-            });
-            gLayer.add(droneGraphic);
-
-            const beamGroups = [];
-            const beamColors = ["#7ED957", "#00FFFF", "#7ED957", "#00FFFF"];
-
-            for (let b = 0; b < 4; b++) {
-                const graphics = [];
-                for (let j = 0; j < 20; j++) {
-                    const g = new Graphic({
-                        geometry: new Point({ longitude: posX, latitude: posY, z: posZ }),
-                        symbol: {
-                            type: "point-3d",
-                            symbolLayers: [{
-                                type: "icon",
-                                resource: { primitive: "circle" },
-                                material: { color: beamColors[b] },
-                                size: 4,
-                                outline: { color: "rgba(255,255,255,0.5)", size: 0.5 }
-                            }]
-                        }
-                    });
-                    graphics.push(g);
-                    gLayer.add(g);
-                }
-                beamGroups.push(graphics);
-            }
-
-            function generatePathData(points) {
-                let d = "M10 " + points[0];
-                const step = 380 / (points.length - 1);
-                for (let i = 1; i < points.length; i++) { d += ` L${10 + i * step} ${points[i]}`; }
-                return d;
-            }
-
-            function syncResearchMatrix(key) {
-                const meta = locationMetadata[key];
-                if (!meta) return;
-                document.getElementById("main-metric").textContent = meta.growth;
-                document.getElementById("weather-effect-label").textContent = `${meta.weather} • ${meta.growth > 70 ? 'Healthy' : 'Risk'}`;
-                document.getElementById("hex-outline").style.stroke = meta.growth > 70 ? "#7ED957" : (meta.growth > 50 ? "#FACC15" : "#EF4444");
-                document.getElementById('rice-path').setAttribute('d', generatePathData(meta.trends.w));
-                document.getElementById('wheat-path').setAttribute('d', generatePathData(meta.trends.w));
-                document.getElementById('corn-path').setAttribute('d', generatePathData(meta.trends.c));
-                document.getElementById('soy-path').setAttribute('d', generatePathData(meta.trends.s));
-                document.getElementById('rice-qty').textContent = (18 - (Math.max(...meta.trends.w) / 10)).toFixed(1) + " t/ha";
-                document.getElementById('wheat-qty').textContent = (16 - (Math.max(...meta.trends.w) / 11)).toFixed(1) + " t/ha";
-                document.getElementById('corn-qty').textContent = (20 - (Math.max(...meta.trends.c) / 10)).toFixed(1) + " t/ha";
-                document.getElementById('soy-qty').textContent = (14 - (Math.max(...meta.trends.s) / 11)).toFixed(1) + " t/ha";
-                const r = meta.radar;
-                document.getElementById('radar-shape').setAttribute('d', `M50 ${50 - r[0]} L${50 + r[1]} 50 L50 ${50 + r[2]} L${50 - r[3]} 50 Z`);
-                document.getElementById('radar-pct-ok').textContent = meta.growth + "% STABLE";
-                document.getElementById("telemetry-crop-summary").textContent = meta.summary;
-            }
-
-            window.tilechanges = function (crop, type) {
-                const region = cropRegions[crop][type][0];
-                if (!region) return;
-                isTransitioning = true;
-                baseX = region.lon; baseY = region.lat;
-                document.getElementById("telemetry-region-badge").textContent = `🌱 ${crop.toUpperCase()} • ${type.toUpperCase()}`;
-                view.goTo({ center: [region.lon, region.lat], zoom: 13, tilt: 60, heading: viewHeading }, { duration: 3000 }).then(() => {
-                    isTransitioning = false;
-                    syncResearchMatrix(region.key);
-                });
-            };
-
-            function updateInfographics(frame) {
-                if (frame % 20 === 0) {
-                    document.getElementById('live-loc-tag').innerText = `LAT ${posY.toFixed(5)} LON ${posX.toFixed(5)}`;
-                    document.getElementById('alt-val').innerText = Math.round(posZ + Math.sin(frame * 0.02) * 3) + "m";
-                }
-            }
-
-            function animate() {
-                let frameCounter = 0;
-                function step() {
-                    frameCounter++;
-                    if (!isTransitioning) {
-                        // Drone local physics
-                        const droneOrbitalSpeed = frameCounter * 0.0035;
-                        const droneOrbitalRadius = 0.00045;
-
-                        // Position calculation for drone flight path
-                        posX = baseX + Math.cos(droneOrbitalSpeed) * droneOrbitalRadius;
-                        posY = baseY + Math.sin(droneOrbitalSpeed) * droneOrbitalRadius;
-                        const currentZ = posZ + (Math.sin(frameCounter * 0.02) * 5);
-
-                        // Update drone position
-                        droneGraphic.geometry = new Point({ longitude: posX, latitude: posY, z: currentZ });
-
-                        // DRONE ROTATION: Make the drone move 'rounded' by spinning on its center
-                        const droneLayer = droneGraphic.symbol.symbolLayers.getItemAt(0);
-                        // Rotate based on its flight path + constant spinning to look active
-                        const flightHeading = (270 - (droneOrbitalSpeed * 180 / Math.PI)) % 360;
-                        droneLayer.heading = flightHeading + (Math.sin(frameCounter * 0.05) * 5); // Added a slight 'wobble' to its rotation
-
-                        // SCANNER: 4 pillars orbiting the center of the drone
-                        const scanSpin = frameCounter * 0.08; // How fast beams orbit the drone center
-                        const scanGap = 0.00007; // Distance from center
-
-                        beamGroups.forEach((group, b) => {
-                            const beamAngle = scanSpin + (b * Math.PI / 2);
-                            const bX = posX + Math.cos(beamAngle) * scanGap;
-                            const bY = posY + Math.sin(beamAngle) * scanGap;
-
-                            group.forEach((p, i) => {
-                                const progress = i / (group.length - 1);
-                                const pZ = currentZ - (progress * 700);
-                                p.geometry = new Point({ longitude: bX, latitude: bY, z: pZ });
-
-                                // Laser light pulse logic
-                                const pLayer = p.symbol.symbolLayers.getItemAt(0);
-                                const lightOscillation = (Math.sin(frameCounter * 0.15 + (progress * 4)) + 1) / 2;
-                                pLayer.size = 2 + (lightOscillation * 5);
-                                pLayer.material.color.a = 0.1 + (lightOscillation * 0.7);
-                            });
-                        });
-
-                        viewHeading += 0.035;
-                        view.camera.heading = viewHeading % 360;
-                    }
-                    updateInfographics(frameCounter);
-                    requestAnimationFrame(step);
-                }
-                step();
-            }
-
-            view.when(() => { animate(); syncResearchMatrix('rice_best'); });
+        const map = new Map({ basemap: "satellite", ground: "world-elevation" });
+        const view = new SceneView({
+            container: "viewDiv",
+            map: map,
+            qualityProfile: "high",
+            camera: { position: [posX, posY - 0.007, posZ + 1000], heading: 0, tilt: 45 }
         });
 
-        /* Drone animation update:
-           The drone now moves in a 'rounded' fashion around its flight path center.
-           Light pillars orbit the drone's center axis while pulsing to simulate data collection.
-           Added sine-based rotation wobble for more realistic mechanical behavior.
-        */
-    </script>
-</body>
+        const gLayer = new GraphicsLayer({ elevationInfo: { mode: "absolute-height" } });
+        map.add(gLayer);
 
+        const droneGraphic = new Graphic({
+            elevationInfo: { mode: "absolute-height" },
+            geometry: new Point({ longitude: posX, latitude: posY, z: posZ }),
+            symbol: { type: "point-3d", symbolLayers: [{ type: "object", resource: { href: droneUrl }, height: 420, heading: 180 }] }
+        });
+        // moved add into view.when for proper initial render
+
+
+        const beamGroups = [];
+        const beamColors = ["#7ED957", "#00FFFF", "#7ED957", "#00FFFF"];
+
+        for (let b = 0; b < 4; b++) {
+            const graphics = [];
+            for (let j = 0; j < 20; j++) {
+                const g = new Graphic({
+                    geometry: new Point({ longitude: posX, latitude: posY, z: posZ }),
+                    symbol: {
+                        type: "point-3d",
+                        symbolLayers: [{
+                            type: "icon",
+                            resource: { primitive: "circle" },
+                            material: { color: beamColors[b] },
+                            size: 4,
+                            outline: { color: "rgba(255,255,255,0.5)", size: 0.5 }
+                        }]
+                    }
+                });
+                graphics.push(g);
+                gLayer.add(g);
+            }
+            beamGroups.push(graphics);
+        }
+
+        function generatePathData(points) {
+            let d = "M10 " + points[0];
+            const step = 380 / (points.length - 1);
+            for (let i = 1; i < points.length; i++) { d += ` L${10 + i * step} ${points[i]}`; }
+            return d;
+        }
+
+        function syncResearchMatrix(key) {
+            const meta = locationMetadata[key];
+            if (!meta) return;
+            document.getElementById("main-metric").textContent = meta.growth;
+            document.getElementById("weather-effect-label").textContent = `${meta.weather} • ${meta.growth > 70 ? 'Healthy' : 'Risk'}`;
+            document.getElementById("hex-outline").style.stroke = meta.growth > 70 ? "#7ED957" : (meta.growth > 50 ? "#FACC15" : "#EF4444");
+            document.getElementById('rice-path').setAttribute('d', generatePathData(meta.trends.w));
+            document.getElementById('wheat-path').setAttribute('d', generatePathData(meta.trends.w));
+            document.getElementById('corn-path').setAttribute('d', generatePathData(meta.trends.c));
+            document.getElementById('soy-path').setAttribute('d', generatePathData(meta.trends.s));
+            document.getElementById('rice-qty').textContent = (18 - (Math.max(...meta.trends.w) / 10)).toFixed(1) + " t/ha";
+            document.getElementById('wheat-qty').textContent = (16 - (Math.max(...meta.trends.w) / 11)).toFixed(1) + " t/ha";
+            document.getElementById('corn-qty').textContent = (20 - (Math.max(...meta.trends.c) / 10)).toFixed(1) + " t/ha";
+            document.getElementById('soy-qty').textContent = (14 - (Math.max(...meta.trends.s) / 11)).toFixed(1) + " t/ha";
+            const r = meta.radar;
+            document.getElementById('radar-shape').setAttribute('d', `M50 ${50 - r[0]} L${50 + r[1]} 50 L50 ${50 + r[2]} L${50 - r[3]} 50 Z`);
+            document.getElementById('radar-pct-ok').textContent = meta.growth + "% STABLE";
+            document.getElementById("telemetry-crop-summary").textContent = meta.summary;
+        }
+
+        window.tilechanges = function (crop, type) {
+            const region = cropRegions[crop][type][0];
+            if (!region) return;
+            isTransitioning = true;
+            baseX = region.lon; baseY = region.lat;
+            posX = baseX; posY = baseY; // FIX: reset drone to new tile center
+            document.getElementById("telemetry-region-badge").textContent = `🌱 ${crop.toUpperCase()} • ${type.toUpperCase()}`;
+            view.goTo({ center: [region.lon, region.lat], zoom: 15, tilt: 55, heading: viewHeading }, { duration: 3000 }).then(() => {
+                isTransitioning = false;
+                syncResearchMatrix(region.key);
+            });
+        };
+
+        function updateInfographics(frame) {
+            if (frame % 20 === 0) {
+                document.getElementById('live-loc-tag').innerText = `LAT ${posY.toFixed(5)} LON ${posX.toFixed(5)}`;
+                document.getElementById('alt-val').innerText = Math.round(posZ + Math.sin(frame * 0.02) * 3) + "m";
+            }
+        }
+
+        function animate() {
+            let frameCounter = 0;
+            function step() {
+                frameCounter++;
+                if (!isTransitioning) {
+                    // Drone local physics
+                    const droneOrbitalSpeed = frameCounter * 0.0035;
+                    const droneOrbitalRadius = 0.00045;
+
+                    // Position calculation for drone flight path
+                    posX = baseX + Math.cos(droneOrbitalSpeed) * droneOrbitalRadius;
+                    posY = baseY + Math.sin(droneOrbitalSpeed) * droneOrbitalRadius;
+                    const currentZ = posZ + (Math.sin(frameCounter * 0.02) * 5);
+
+                    // Update drone position
+                    droneGraphic.geometry = new Point({ longitude: posX, latitude: posY, z: currentZ });
+
+                    // DRONE ROTATION (fixed like google animate): reassign each frame
+                    const flightHeading = (270 - (droneOrbitalSpeed * 180 / Math.PI)) % 360;
+                    if (frameCounter > 45) droneGraphic.symbol = droneGraphic.symbol.clone(); const layer = droneGraphic.symbol.symbolLayers.getItemAt(0);
+                    layer.heading = (flightHeading + frameCounter) % 360;
+
+                    // SCANNER: 4 pillars orbiting the center of the drone
+                    const scanSpin = frameCounter * 0.08; // How fast beams orbit the drone center
+                    const scanGap = 0.00007; // Distance from center
+
+                    beamGroups.forEach((group, b) => {
+                        const beamAngle = scanSpin + (b * Math.PI / 2);
+                        const bX = posX + Math.cos(beamAngle) * scanGap;
+                        const bY = posY + Math.sin(beamAngle) * scanGap;
+
+                        group.forEach((p, i) => {
+                            const progress = i / (group.length - 1);
+                            const pZ = currentZ - (progress * 700);
+                            p.geometry = new Point({ longitude: bX, latitude: bY, z: pZ });
+
+                            // Laser light pulse logic
+                            const pLayer = p.symbol.symbolLayers.getItemAt(0);
+                            const lightOscillation = (Math.sin(frameCounter * 0.15 + (progress * 4)) + 1) / 2;
+                            pLayer.size = 2 + (lightOscillation * 5);
+                            pLayer.material.color.a = 0.1 + (lightOscillation * 0.7);
+                        });
+                    });
+
+                    viewHeading += 0.035;
+                    view.camera.heading = viewHeading % 360;
+                }
+                updateInfographics(frameCounter);
+                requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        view.when(() => {
+            view.whenLayerView(gLayer).then(() => gLayer.add(droneGraphic)); // FIX: add after view ready so GLB loads on first render
+            syncResearchMatrix('rice_best');
+            view.goTo({ center: [baseX, baseY], zoom: 15, tilt: 55, heading: viewHeading }, { duration: 0 }).then(() => {
+                view.whenLayerView(gLayer).then(() => animate()); // FIX: ensure layer ready before animation
+            });
+        });
+    });
+
+    /* Drone animation update:
+       The drone now moves in a 'rounded' fashion around its flight path center.
+       Light pillars orbit the drone's center axis while pulsing to simulate data collection.
+       Added sine-based rotation wobble for more realistic mechanical behavior.
+    */
+</script>
+</body>
 </html>
