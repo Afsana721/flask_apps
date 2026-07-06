@@ -277,9 +277,9 @@ def git_github():
 def Luc8k():
     return render_template('Luc8k.html')
 
-@app.route('/calendar')
-def calendar():
-    return render_template('calendar.html')
+#@app.route('/calendar')
+#def calendar():
+    #return render_template('calendar.html')
 
 
 @app.route('/meshes')
@@ -565,10 +565,15 @@ def hosting(section_id):
     )
 
 
-@app.route('/')
-def home():
+@app.route('/aptiCare')
+def aptiCare():
     llm_text = request.args.get('llm_response')
-    return render_template('index.html', title_name='AptiCares Home', imageData=data["imgData"], llm_response=llm_text)
+    return render_template(
+        'aptiCare.html',
+        title_name='AptiCares Home',
+        imageData=data["imgData"],
+        llm_response=llm_text
+    )
 
 @app.route('/imgData')
 def imgData():
