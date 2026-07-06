@@ -1,0 +1,221 @@
+<style>
+  footer {
+    background-image: url("https://elements-resized.envatousercontent.com/elements-preview-images/a6e5eab6-9408-4b25-8520-0bc4806a7e79?w=632&cf_fit=scale-down&q=85&format=auto&s=274e32a877b83cee1a91a48e0333b496c62e838bc59d560a6d0856cb08151ca3");
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  #footerTop {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    border-radius: 5px;
+    box-shadow: 0 0 30px #d81919, 4px 5px 60px #f5f104, 0 2px 90px #d31a45, inset 8px 0 20px rgba(243, 239, 9, 0.8);
+  }
+
+#connectBox {
+  width: 100%;
+  height: auto;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  z-index: 50;
+  
+  /* Clean, high-contrast white text against the dark gold background */
+  color: #8a8787;
+  
+  /* Subtle, elegant text pop without muddy shadows */
+  text-shadow: 2px 3px 4px #000000;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(85, 29, 3, 0.6);
+  border-top: 1px solid rgba(185, 64, 8, 0.6);
+  display: inline-block;
+  padding-bottom: 4px;
+
+  /* Sleek, soft dark overlay blend instead of harsh multi-colored shadows */
+  background: rgba(19, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(238, 61, 16, 0.877);
+}
+
+
+  #footBox {
+    flex: 0 0 600px;
+    height: 340px;
+    position: relative;
+    z-index: 50;
+  }
+
+  #footImg {
+    background-color: rgba(241, 241, 28, 0.5);
+    width: 500px;
+    height: 320px;
+    object-fit: cover;
+    display: block;
+    mix-blend-mode: multiply;
+  }
+
+  #footText {
+    position: absolute;
+    top: 0;
+    left: 10px;
+    color: rgb(255, 10, 10);
+    font-weight: 900;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    z-index: 60;
+    -webkit-text-stroke: 1.4px #572218;
+    text-shadow: 1px 1px 1px rgb(39, 34, 32);
+    animation: infoGlow 1s infinite alternate;
+  }
+
+  @keyframes infoGlow {
+    from {
+      text-shadow: 2px 4px 6px #8bebc3;
+    }
+    to {
+      text-shadow: 0 2px 10px rgb(243, 240, 73);
+    }
+  }
+
+  #initiativeBox {
+    flex: 1;
+    z-index: 50;
+    color: #e41111;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    box-shadow: #855c03 0px 0px 20px 10px;
+    text-shadow: 1px 2px 2px hsl(60, 13%, 9%);
+   
+  }
+
+  #initiativeBox h1 {
+  font-weight: 600;
+  color:#e90a0a;
+  font-family:Arial, Helvetica, sans-serif;
+  z-index: 60;
+  text-shadow: 1px 3px 4px #000000;
+
+  }
+
+  #initiativeBox p {
+    line-height: 1.4;
+    box-shadow: #e78e07 0px 0px 20px 10px;
+    border-radius: 25px;
+    border: 2px solid hsl(39, 88%, 27%);
+  }
+
+.footer-edge-glow {
+  height: 15px; /* Slightly taller for higher visual impact */
+  width: 100%;
+  position: relative;
+  border-radius: 5px;
+  border: 2px solid hwb(19 3% 10%);
+  z-index: 50;
+  /* Replaced muted background colors with high-saturation neon neon shades */
+  background: linear-gradient(to right, #5c3e22, hsl(59, 28%, 64%), #533b3b, #5d5f3d, #723939);
+  background-size: 200% 100%;
+  overflow: hidden;
+  /* Added a massive glowing backdrop filter to create a flashlight aura effect */
+  box-shadow: 0 0 35px rgba(231, 126, 6, 0.8), 0 0 70px rgba(65, 80, 47, 0.6);
+  animation: colorShift 12s linear infinite;
+}
+
+@keyframes colorShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Intense flashing sweep running left-to-right */
+.footer-edge-glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  /* Pure brilliant white laser beam center */
+  background: linear-gradient(to right, transparent 20%, rgb(80, 12, 12) 50%, transparent 80%);
+  mix-blend-mode: overlay;
+  /* Faster animation for high-energy blinking style */
+  animation: sweepRight 24s cubic-bezier(0.8, 0, 0.9, 1) infinite;
+}
+
+/* Intense gold/neon sweep running right-to-left */
+.footer-edge-glow::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  height: 100%;
+  /* Blazing hot yellow-gold laser beam center */
+  background: linear-gradient(to left, transparent 20%, rgb(165, 127, 4) 50%, transparent 80%);
+  mix-blend-mode: color-dodge;
+  /* Asymmetric faster timing to create wild overlapping flash patterns */
+  animation: sweepLeft 18s cubic-bezier(0.8, 0, 0.8, 1) infinite;
+}
+
+@keyframes sweepRight {
+  0% { left: -180%; }
+  100% { left: 180%; }
+}
+
+@keyframes sweepLeft {
+  0% { right: -180%; }
+  100% { right: 180%; }
+}
+</style>
+
+<div class="footer-edge-glow" class=" mt-44"></div>
+
+<footer class="foot">
+  <div id="footerTop" class="border-b-2 border-yellow-600">
+  <div id="footBox" class="mt-32" style="mix-blend-mode: multiply">
+    <h2 id="footText" class="-mt-24 ml-44 text-4xl">Cells</h2>
+    <img
+      id="footImg"
+      src="https://lh3.googleusercontent.com/proxy/XDTKXgPsxhFKpRKG1nsDt7QHvQkpuW00aGWO_tUgpvd9c8L9-chqAh1XRK9dSeO1is_eK9Z4vO5LwYWORrzbafbY-X27wghMZylQIQXYat8b9s6VvPoun7UIjRg6BKG10u_jljOOWqYi9OHZPqs"
+      alt="Doctor Image" />
+  </div>
+  <div id="initiativeBox" class="z-50 mt-2">
+    <h1 class=" text-3xl mt-2 text-center ml-4">Initiative</h1>
+   <p class="text-xl mt-6" style="text-align: justify; font-family: Garamond, Georgia, 'Times New Roman', serif; 
+   color: #161614; text-shadow: 1px 1px 3px rgba(236, 235, 157, 0.95); line-height: 1.75; font-weight: 600; 
+   max-width: 900px; margin: 0 auto; padding: 0 15px;"> 
+   As I transition my career towards becoming a web developer, I am committed to exploring the underlying concepts that 
+   ensure a clear understanding of both front-end and back-end development. My focus is on enhancing my CSS skills to 
+   improve user interface design, ensuring that the applications I develop align with user perspectives and needs. I aim 
+   to create seamless interactions that guide users effectively through the portal, highlighting what they can accomplish 
+   and how to get started. In this endeavor, I am integrating advanced CSS techniques and leveraging Jinja for efficient 
+   server-side data management and browser delivery. My current project involves developing a telemedicine portal that 
+   not only serves patients but also facilitates global collaboration among researchers and contributors. This platform 
+   will enable the sharing of treatment histories and innovative ideas, bridging modern medical practices with historical 
+   health insights to advance the field of medicine. </p>
+  </div>
+  </div>
+
+  <!-- here my connect site email linkedIn github -->
+  <div id="connectBox" class="flex-col item-center mt-10 mb-20 text-2xl">
+    <div class="flex flex-row justify-center items-center gap-9 ">
+        <a href="https://flask-apps-e45a.onrender.com/" target="_blank">Portfolio_WebSite</a>
+        <a href="https://www.linkedin.com/in/afsanausa/" target="_blank">LinkedIn</a>
+        <a href="https://www.openqquantify.com/" target="_blank">Working Site</a>
+        <a href="https://github.com/Afsana721/flask_apps" target="_blank">GitHub</a>
+    </div>
+  </div>
+</footer>
