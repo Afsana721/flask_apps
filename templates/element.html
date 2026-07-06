@@ -1,0 +1,2398 @@
+{% macro doctype() %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> {{ title_name }} _afsana</title>
+    {% endmacro %}
+    {% macro load_assets() %}
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.144.0/three.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.144.0/examples/js/controls/OrbitControls.js"></script> -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght=0,400;1,400&display=swap"
+        rel="stylesheet">
+
+    {% endmacro %}
+
+    <!-- All modular Jinja CSS blocks -->
+    {% macro body_bg_style() %}
+    body {
+    position: relative;
+    }
+
+    body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+    url("https://static.vecteezy.com/system/resources/thumbnails/072/519/411/small/vibrant-expression-of-light-emanating-from-a-human-figure-with-arms-outstretched-symbolizing-energy-and-vitality-in-a-dark-background-setting-photo.jpeg");
+    background-size: 150%; mix-blend-mode: multiply;
+    animation: slowPan 160s ease-in-out infinite; z-index: -10;
+    }
+    @keyframes slowPan {
+    0% { background-position: 0% 0%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 0%; }
+    }
+    body::after {
+    content: ''; position: fixed; inset: 0;
+    background:
+    repeating-linear-gradient(20deg, #e2d305 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(75deg, #ffcf40 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(140deg, #ebddbb 0 1px, transparent 1px 60px),
+    linear-gradient(hsl(54, 74%, 70%), #e7e545, #dfb3b3);
+    background-size: 320px 320px, 300px 300px, 340px 340px, cover;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-position: center, center, center, center;
+    animation: lineMove 12s linear infinite; opacity: 0.6; z-index: -8;
+    }
+    @keyframes lineMove {
+    0% { background-position: 20% 30%, 70% 60%, 40% 80%, center; }
+    33% { background-position: 50% 40%, 60% 70%, 30% 60%, center; }
+    66% { background-position: 30% 70%, 40% 50%, 70% 30%, center; }
+    100% { background-position: 20% 30%, 70% 60%, 40% 80%, center; }
+    }
+    {% endmacro %}
+
+    {% macro header_style() %}
+    /* Custom styling for status-options and dropdown items */
+    .status-option {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    }
+    .status-option:hover {
+    color: #fbbf24;
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+    }
+    #ddList::-webkit-scrollbar {
+    width: 4px;
+    }
+    #ddList::-webkit-scrollbar-track {
+    background: transparent;
+    }
+    #ddList::-webkit-scrollbar-thumb {
+    background: rgba(251, 191, 36, 0.4);
+    border-radius: 4px;
+    }
+    #assistant {
+    mix-blend-mode: multiply;
+    }
+    {% endmacro %}
+
+    {% macro open_body() %}
+
+</head>
+
+<!-- <body class="text-slate-100 min-h-screen flex flex-col "> -->
+{% endmacro %}
+<!--jinja macros pick only header section -->
+{% macro header_section() %}
+<!-- TOP BAR CONTAINER (Keeps Emergency clean on the right without overlapping AptiCare) -->
+<div id="top-bar" class="w-full max-w-7xl mx-auto flex justify-between items-center mb-4 mt-12">
+    <!-- Added inline styles for the glowing backing that respects transparency -->
+    <div id="emergency-banner" 
+        class="flex flex-wrap items-center gap-2 text-xl md:text-2xl font-bold rounded-lg border-b-4 z-50 "
+        style="font-family:cursive; color:#ff0011; text-shadow: 2px 2px 4px #e4b2b2, 0 0 10px #ff0011; 
+            border-color: hsl(54, 100%, 50%); background: radial-gradient(circle, rgba(240, 237, 54, 0.15) 0%, rgba(213, 236, 229, 0.4) 60%, rgba(207, 193, 59, 0) 100%);">
+        <span style="animation: pulse 1.5s infinite;" class="inline-block shrink-0">
+            <img src="https://img1.picmix.com/output/stamp/thumb/6/9/5/1/1101596_0f857.gif" alt="call"
+                class="w-16 h-16 shrink-0"
+                style="filter: drop-shadow(0 0 8px #e6dc5e) drop-shadow(0 0 16px #e4c4c4); animation: callGlow 1.5s ease-in-out infinite alternate;">
+        </span>
+
+        <style>
+            @keyframes callGlow {
+                from {
+                    filter: drop-shadow(0 2px 4px #ecd609);
+                    transform: scale(1);
+                }
+
+                to {
+                    filter: drop-shadow(0 2px 14px #c71313) brightness(1.2);
+                    transform: scale(1.03);
+                }
+            }
+
+            @keyframes textPulse {
+                0% {
+                    text-shadow: 2px 2px 4px #caf1e9, 0 0 10px #5f0208;
+                }
+
+                50% {
+                    text-shadow: 2px 2px 4px #ace67d, 0 0 20px #610209, 1pt 1px 5px #f0ed36;
+                }
+
+                100% {
+                    text-shadow: 2px 2px 4px #e2e97c, 0 0 10px #530107;
+                }
+            }
+
+            .glow-text {
+                animation: textPulse 2s infinite ease-in-out;
+            }
+
+            .link-hover:hover {
+                color: #160101 !important;
+                text-shadow: 1px 2px 2px #d14817 !important;
+                transition: all 0.3s ease;
+            }
+        </style>
+        <span class="glow-text">24/7 Call:</span>
+            <a id="emergency-phone" class="link-hover" href="tel:5555555555"
+                style="color:#8a0a0a; transition: all 0.3s ease;">555-555-5555</a>
+        <span class="glow-text text-2xl">|</span>
+        <a id="emergency-triage" class="link-hover" href="/triage" target="_blank" class="text-3xl" style="color:#d80606; 
+        text-shadow: 1px 2px 2px #1f1b1b, 1px 2px 4px #e4e58a; transition: all 0.3s ease;">Triage</a>
+    </div>
+    <!-- TeleHealth Badge -->
+    <div id="hero-badge" class="w-full ml-20 mt-4">
+        <p id="badge-subtitle" class="text-3xl ml-24 uppercase tracking-widest font-bold  mb-4" 
+            style="color:hsl(0, 91%, 42%); text-shadow: 2px 4px 5px #050505, 2px 4px 3px #dfdf30; 
+                    font-family: 'Cinzel', serif;
+                    text-decoration: underline; text-decoration-color: #c96305;
+                    text-shadow: 2px 3px 4px #20100c, 1px 2px 2px #e0e00b ; text-underline-offset: 10px; 
+                    text-decoration-thickness: 3px;">Seamless Care</p>
+        <h2 id="badge-title" class="text-5xl font-extrabold font-serif text-#8a4c0e  tracking-wide"
+            style="color:#65000B; text-shadow: 2px 4px 5px #df0d0d, 1px 1px 2px #f0f009;">
+            TeleHealth Platform
+        </h2>
+    </div>
+</div>
+<!-- motto text -->
+        <div id="doctor-motto" class="text-center mt-16 mb-6">
+            <p id="mottoLoop" class="leading-relaxed " 
+            style="letter-spacing:0.3px; font-size:32px; font-weight:600;  font-family:'Poppins','Segoe UI',sans-serif;">
+        </p>
+        </div>
+        <style>
+        #mottoLoop span {
+            display: inline-block;
+            transition: color 0.6s ease, text-shadow 0.6s ease;
+        }
+
+        .motto-run {
+            animation: mottoFadeIn 0.6s ease forwards;
+        }
+
+        @keyframes mottoFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        </style>
+        <!--motto text script -->
+        <script>
+            const motoHolder = document.getElementById('doctor-motto');
+            const mottoLoop = document.getElementById('mottoLoop');
+
+            const motos = [
+                '🌍Make health services affordable for everyone.',
+                '💁Your health journey deserves clarity and compassion.',
+                '🏃‍♂️‍➡️Modern care with a human touch for every family.',
+                '🏃‍♂️‍➡️Accessible wellness solutions built around real needs.'
+            ];
+
+            // deeper, richer, more saturated — cuts through a gold background instead of blending
+            const mottoColors = [
+                { color: '#c1121f', shadow: '0 1px 2px #ffffff, 0 2px 0 #7a0d14, 0 3px 6px rgba(0,0,0,0.5)' },
+                { color: '#ffb700', shadow: '0 1px 2px #fff6d9, 0 2px 0 #8a5c00, 0 3px 6px rgba(0,0,0,0.5)' },
+                { color: '#0b6e4f', shadow: '0 1px 2px #ffffff, 0 2px 0 #063d2b, 0 3px 6px rgba(0,0,0,0.5)' },
+                { color: '#7209b7', shadow: '0 1px 2px #f0d9ff, 0 2px 0 #3d044f, 0 3px 6px rgba(0,0,0,0.5)' },
+                { color: '#023e8a', shadow: '0 1px 2px #d9ecff, 0 2px 0 #011f45, 0 3px 6px rgba(0,0,0,0.5)' }
+            ];
+
+            let currentIndex = 0;
+            let colorIntervals = [];
+
+            function applyColor(span, index) {
+                span.style.color = mottoColors[index].color;
+                span.style.textShadow = mottoColors[index].shadow;
+            }
+
+            function startColorCycle() {
+                colorIntervals.forEach(clearInterval);
+                colorIntervals = [];
+
+                const spans = mottoLoop.querySelectorAll('span');
+                spans.forEach((span, i) => {
+                    let colorIndex = i % mottoColors.length;
+                    applyColor(span, colorIndex);
+
+                    const id = setInterval(() => {
+                        colorIndex = (colorIndex + 1) % mottoColors.length;
+                        applyColor(span, colorIndex);
+                    }, 2000 + i * 200);
+
+                    colorIntervals.push(id);
+                });
+            }
+
+            function showMotto() {
+                mottoLoop.classList.remove('motto-run');
+                void mottoLoop.offsetWidth;
+
+                const words = motos[currentIndex].split(' ');
+                mottoLoop.innerHTML = words.map(word => `<span>${word}</span>`).join(' ');
+
+                mottoLoop.classList.add('motto-run');
+                startColorCycle();
+            }
+
+            showMotto();
+
+            setInterval(() => {
+                currentIndex++;
+                if (currentIndex >= motos.length) currentIndex = 0;
+                showMotto();
+            }, 3000);
+        </script>
+<!--end motto text -->
+
+
+<!-- MAIN HEADER & NAVIGATION -->
+<header class="w-full mx-auto flex flex-col gap-2">
+    <div class="mr-8 flex flex-col lg:flex-row items-center justify-between gap-3 mt-0">
+        <!-- Logo -->
+        <div id="header-img" class="flex items-center mb-24 ml-4">
+            <img id="logo-graphic"
+                src="https://png.pngtree.com/png-vector/20241119/ourlarge/pngtree-health-care-vector-png-image_14502367.png"
+                alt="tech_logo" class="w-24 h-24 -mt-2 object-contain "
+                style="filter: brightness(2.2) contrast(1.25); mix-blend-mode:multiply;"><!-- fixed: brightness-220 invalid tailwind class -->
+            <h1 id="brand-title" class="-ml-4 text-5xl font-extrabold text-transparent bg-clip-text 
+                bg-gradient-to-r from-yellow-500 via-amber-300 to-red-700"
+                style="font-family: 'Cinzel', serif; filter: drop-shadow(3px 4px 2px #4b0202) drop-shadow(11px 20px 30px #160000) drop-shadow(1px 11px 12px #eeea06b3);">
+                AptiCare
+            </h1>
+        </div>
+        <!-- Doctor / Patient Toggle -->
+        <!-- Doctor / Patient Toggle -->
+        <section id="status-section" class="mr-6 relative flex flex-wrap items-start gap-4">
+            <div class=" relative inline-block overflow-visible">
+                <a id="dreg"
+                    class="inline-flex items-center whitespace-nowrap rounded-lg border border-yellow-900 
+                        bg-gradient-to-r from-yellow-500 to-amber-800 hover:from-yellow-900 hover:to-amber-800 transition-colors shadow-md p-2"
+                    style="font-size:16px; color:#240505; text-shadow:1px 1px 1px #770b06; font-weight:bold; font-family:Arial, Helvetica, sans-serif;">
+                    <span style="text-size-adjust: calc();">👨‍⚕️</span>Doctor Register
+                </a>
+
+                <section id="doctor-panel"
+                    class="hidden absolute top-full left-0 mt-1 z-50 rounded-xl border border-black/20 shadow-2xl p-3"
+                    style="background: linear-gradient(135deg, #e0d970 0%, #df7a7a 100%); width:800px; height:auto;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-8 min-w-0">
+                            <div class=" leading-none shrink-0" style="font-size: 84px;">👨‍⚕️</div>
+                            <div class="min-w-0" style="color: #130401;">
+                                <p class="text-lg font-bold ">Dr. Sarah Mitchell</p>
+                                <p class="text-lg">Senior Cardiologist</p>
+                                <p class="text-lg">Heart Specialist</p>
+                            </div>
+                        </div>
+                        <div
+                            class="mr-24 rounded-full bg-emerald-100 text-[10px] font-bold tracking-wide text-emerald-700 p-1">
+                            Status:<span class="ml-2"
+                                style="color: #077c11; text-shadow: 1px 2px 2px #d2e00d;">Online</span>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-sm text-black">Professional doctor currently listed for specialist
+                        consultation and
+                        patient support.</p>
+                    <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-black">
+                        <span>🏥City General Hospital,Texas. USA.</span>
+                        <span>⌚9AM To 5PM. 24/7 </span>
+                        <span>💯12 Years Experience</span>
+                    </div>
+                    <div class="mt-3 flex justify-center">
+                        <img src="https://support.biodigital.com/hc/article_attachments/17867255287575" alt="img"
+                            class="w-96 h-44 shrink-0 border-b-4 border-red-300" style="mix-blend-mode: multiply;">
+                    </div>
+                    <div class="h-12 ml-4 border-t border-black/10 pt-2">
+                        <p class="text-xl font-semibold text-amber-800 cursor-pointer hover:text-amber-950"
+                            style="text-shadow:0px 1px 1px #ce0808;">Register
+                            Here.<span class="w-24 h-24">✍</span></p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="relative inline-block overflow-visible">
+                <a id="dlog" class="inline-flex items-center whitespace-nowrap rounded-lg border border-yellow-900 
+                         bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-200 hover:to-amber-400 transition-colors 
+                         shadow-md p-2" style="font-size:17px; color:#000000; text-shadow:1px 1px 1px #972f06;">
+                    🌏Doctors Login
+                </a>
+
+
+                <section id="dlog-panel"
+                    class="hidden absolute top-full left-0 mt-1 z-50 rounded-xl border border-black/20 shadow-2xl p-3"
+                    style="background: linear-gradient(135deg, #e0d970 0%, #df7a7a 100%); width:520px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-2 min-w-0">
+                            <div class="text-3xl leading-none shrink-0">👨‍⚕️</div>
+                            <img src="https://assets-v2.lottiefiles.com/a/e358f70c-9af8-11ee-9b9f-0f920fbfab72/PEheHDhxwn.gif"
+                                alt="img" class="w-84 h-44 shrink-0 -mt-12 -ml-8">
+                            <div class="min-w-44 ml-4 mt-4 text-xl font-bold text-gray-800">
+                                <h2 class="">Doctor Login</h2>
+                                <p class="text-sm text-gray-900">City General Hospital</p>
+                                <p class="text-sm text-gray-900">Available: 9AM – 5PM</p>
+                            </div>
+                        </div>
+                        <div
+                            class="rounded-full bg-emerald-100 text-xl font-bold tracking-wide text-emerald-700 p-1 mr-24">
+                            Status:<span class="ml-2" style="color: #077c11; text-shadow: 1px 2px 2px #d2e00d;">
+                                Online</span>
+                        </div>
+                    </div>
+
+                    <p class="mt-2 ml-4 text-sm text-gray-500">Demo login panel for portfolio presentation only.</p>
+
+                    <div class="mt-3 ml-4 mb-4 border-t border-black/10 pt-2">
+                        <p class="text-sm font-semibold text-amber-800 cursor-pointer hover:text-amber-950">Login
+                            Here →</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="relative inline-block overflow-visible">
+                <a id="preg" class="inline-flex items-center whitespace-nowrap rounded-lg border border-yellow-900 
+                        bg-gradient-to-r from-yellow-500 to-amber-800 hover:from-yellow-900 hover:to-amber-800 transition-colors shadow-md p-2"
+                    style="font-size:16px; color:#240505; text-shadow:1px 1px 1px #770b06; font-weight:bold; font-family:Arial, Helvetica, sans-serif;">
+                    <span style="text-size-adjust: calc();">🙋🏻‍♂️</span>Patient Register
+                </a>
+
+                <section id="patient-panel"
+                    class="hidden absolute top-full left-0 mt-1 z-50 rounded-xl border border-black/20 shadow-2xl p-3"
+                    style="background: linear-gradient(135deg, #e0d970 0%, #df7a7a 100%); width:650px; height:auto;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="text-3xl leading-none shrink-0">🙋🏻‍♂️</div>
+                            <img src="https://media.tenor.com/ulqh2r_HSXMAAAAM/anatomy-chart.gif" alt="img"
+                                class="w-52 h-52 shrink-0 object-cover object-top" style="mix-blend-mode:multiply;">
+                            <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-black">
+                                <p class="text-sm font-semibold text-gray-900">John Patient</p>
+                                <p class="text-sm text-gray-900">Registered Patient</p>
+                                <p class="text-sm text-gray-900">General Care</p>
+                            </div>
+                        </div>
+                        <div
+                            class="mr-24 rounded-full bg-emerald-100 text-[10px] font-bold tracking-wide text-emerald-700 p-1">
+                            Status:<span class="ml-2"
+                                style="color: #077c11; text-shadow: 1px 2px 2px #d2e00d;">Online</span>
+                        </div>
+                    </div>
+
+
+                    <p class="mt-2 text-sm text-gray-700">Registered patient profile shown here only for UI demo and
+                        skill
+                        presentation.</p>
+                    <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-600">
+                        <span>City General Hospital</span>
+                        <span>Last Visit: 2 days ago</span>
+                        <span>3 Active Prescriptions</span>
+                    </div>
+
+                    <div class="mt-3 border-t border-black/10 pt-2">
+                        <p class="text-sm font-semibold text-blue-800 cursor-pointer hover:text-blue-950">Register
+                            Here ✍</p>
+                    </div>
+                </section>
+            </div>
+
+            <div class="relative inline-block overflow-visible">
+                <a id="plog" class="inline-flex items-center whitespace-nowrap rounded-lg border border-yellow-900 
+                             bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-200 hover:to-amber-400 transition-colors 
+                             shadow-md p-2" style="font-size:16px; color:#000000; text-shadow:1px 1px 1px #972f06;">
+                    🩹Patient Login
+                </a>
+                <section id="plog-panel"
+                    class="hidden absolute top-full left-0 mt-1 z-50 rounded-xl border border-black/20 shadow-2xl p-3"
+                    style="background: linear-gradient(135deg, #e0d970 0%, #df7a7a 100%); width:520px;">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <div class="text-3xl leading-none shrink-0">🙋🏻‍♂️</div>
+                            <img src="https://media.tenor.com/ulqh2r_HSXMAAAAM/anatomy-chart.gif" alt="img"
+                                class="w-84 h-44 shrink-0 mt-4-ml-8 shrink-0 object-cover object-top"
+                                style="mix-blend-mode:multiply;">
+                            <div class="min-w-0">
+                                <h2 class="text-sm font-bold text-gray-900">Patient Login</h2>
+                                <p class="text-sm text-gray-900">City General Hospital</p>
+                                <p class="text-sm text-gray-900">Last Visit: 2 days ago</p>
+                            </div>
+                        </div>
+                        <div class="-mt-4  rounded-full  text-xl font-bold tracking-wide text-emerald-700 p-3 mr-12">
+                            Status:<span class="ml-2" style="color: #077c11; text-shadow: 1px 2px 2px #d2e00d;">
+                                Online</span>
+                        </div>
+                    </div>
+
+                    <p class="mt-2 text-sm text-gray-500">Demo patient login panel for UI showcase only.</p>
+
+                    <div class="mt-3 border-t border-black pt-2">
+                        <p class="ml-4 text-sm font-semibold text-blue-800 cursor-pointer hover:text-blue-950">Login
+                            Here
+                            →</p>
+                    </div>
+                </section>
+            </div>
+
+            <script>
+                const statusSection = document.getElementById('status-section');
+                const buttons = [
+                    { btn: document.getElementById('dreg'), panel: document.getElementById('doctor-panel') },
+                    { btn: document.getElementById('preg'), panel: document.getElementById('patient-panel') },
+                    { btn: document.getElementById('dlog'), panel: document.getElementById('dlog-panel') },
+                    { btn: document.getElementById('plog'), panel: document.getElementById('plog-panel') },
+                ];
+
+                let activeIndex = -1;
+
+                function hideAllPanels() {
+                    buttons.forEach(({ panel }) => panel.classList.add('hidden'));
+                }
+
+                function closeAll() {
+                    hideAllPanels();
+                    activeIndex = -1;
+                }
+
+                window.closeStatusPanels = function () {
+                    closeAll();
+                };
+
+                buttons.forEach(({ btn, panel }, i) => {
+                    btn.addEventListener('mouseenter', () => {
+                        if (window.closeHostDropdown) window.closeHostDropdown();
+                        if (window.closeServicesDropdown) window.closeServicesDropdown();
+                        if (activeIndex === -1) {
+                            hideAllPanels();
+                            panel.classList.remove('hidden');
+                        }
+                    });
+
+                    btn.addEventListener('mouseleave', () => {
+                        setTimeout(() => {
+                            if (activeIndex === -1 && !btn.matches(':hover') && !panel.matches(':hover')) {
+                                panel.classList.add('hidden');
+                            }
+                        }, 80);
+                    });
+
+                    panel.addEventListener('mouseleave', () => {
+                        if (activeIndex === -1) {
+                            panel.classList.add('hidden');
+                        }
+                    });
+
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+
+                        if (activeIndex === i) {
+                            closeAll();
+                            return;
+                        }
+
+                        hideAllPanels();
+                        panel.classList.remove('hidden');
+                        activeIndex = i;
+                    });
+
+                    panel.addEventListener('click', (e) => e.stopPropagation());
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!statusSection.contains(e.target)) {
+                        closeAll();
+                    }
+                });
+            </script>
+        </section>
+        <!--end of doctor & patient -->
+        <!-- Nav Actions -->
+        <nav id="nav-actions" class="relative z-[200] flex flex-nowrap items-center justify-start gap-3"
+            style="font-family: Verdana, Geneva, Tahoma, sans-serif;">
+            <!--Doctors, Researches & Contributor List-->
+            <div id="host-list" class="order-2 relative flex-none" style="font-family: 'Cinzel', serif;">
+                <div id="host" class="flex items-center justify-between gap-3 p-2 border border-yellow-900 rounded-lg cursor-pointer 
+                        min-w-[120px] whitespace-nowrap bg-gradient-to-r from-yellow-500 to-amber-800 hover:from-yellow-900 
+                        hover:to-amber-800 transition-colors shadow-md">
+                    <span id="hList"
+                        style="color:#990000; text-shadow:1px 2px 3px #141301, 1px 1px 2px #e2f027; font-size:18px; font-weight:700;">
+                        📝HOST LIST
+                    </span>
+                    <span id="hostArrow" class="text-amber-400 text-lg transition-transform duration-300">
+                        ▼
+                    </span>
+                </div>
+                <div id="hostListMenu" class="absolute mt-4 right-1 rounded-2xl border border-yellow-900 
+                      shadow-2xl z-50 hidden" style="width: 640px; max-height: 520px; overflow-y: auto; 
+                      background:linear-gradient(135deg, #eceb87 0%, #7c443c 100%);">
+                    <!-- static clickable menu items -->
+                    <div class="space-y-3 p-2 " style="font-family: 'Trebuchet MS', Verdana, sans-serif;">
+                        <div class="rounded-xl border border-black/10 bg-white/35 shadow-sm p-2">
+                            <a href="#" id="contributorsItem" class="flex items-center gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-lg font-bold tracking-wide text-[#3b120d] leading-tight">
+                                        Contributors</p>
+                                    <p class="text-xs font-medium text-slate-700 mt-1 text-left">Team members,
+                                        developers, and
+                                        active contributors. Contributors supply ecosystem feedback, open-source
+                                        documentation, and code fixes.Developers
+                                        construct, test, and maintain the central core codebase.Team members manage
+                                        daily operations, track tasks,
+                                        and align workflows.</p>
+                                </div>
+                                <img src="https://miro.medium.com/v2/resize:fit:740/1*s8lRZbivxvo1YARgAfR9gQ.gif"
+                                    alt="contributors" class="shrink-0 rounded-lg border border-black/80"
+                                    style="width:200px; height:140px;">
+                            </a>
+                            <!-- JS will push contributors data here -->
+                            <div id="contributorsData" class=" rounded-lg bg-white/25"></div>
+                        </div>
+
+                        <div class="rounded-xl border border-black/10 bg-white/35 shadow-sm p-2">
+                            <a href="#" id="doctorsItem" class="flex items-center gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-lg font-bold tracking-wide text-[#3b120d] leading-tight">Doctors
+                                    </p>
+                                    <p class="text-xs font-medium text-slate-700 mt-1 text-left">Clinical experts,
+                                        specialists, and active physicians. Clinical experts volunteer essential
+                                        medical knowledge to optimize application logic.
+                                        Specialists donate advanced clinical insights to support complex backend
+                                        tasks.Active physicians answers patient
+                                        calls, message inquiries, and provide free support.</p>
+                                </div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/9/99/Doctor_with_Patient_GIF_Animation_Loop.gif"
+                                    alt="contributors" class="shrink-0 rounded-lg border border-black/80"
+                                    style="width:200px; height:140px;">
+                            </a>
+                            <!-- JS will push doctors data here -->
+                            <div id="doctorsData" class="rounded-lg bg-white/25"></div>
+                        </div>
+
+                        <div class="rounded-xl border border-black/10 bg-white/35 shadow-sm p-2">
+                            <a href="#" id="researchItem" class="flex items-center">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-lg font-bold tracking-wide text-[#3b120d] leading-tight">Research
+                                    </p>
+                                    <p class="text-xs font-medium text-slate-700 mt-1 text-left">Research labs,
+                                        centers, and
+                                        current study sources. Research labs supply advanced infrastructure to
+                                        optimize app technology.Research centers drive
+                                        digital innovation using specialized scientific teams.Study sources deliver
+                                        real-time data to validate software
+                                        insights.</p>
+                                </div>
+                                <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTI3dHVpYWE4b3BlcWd3bjdmNnp0bmhjanNpMG84cjF0MTdsend4YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/t3uesJEO4V0qbBhVfD/giphy.gif"
+                                    alt="contributors" class="shrink-0 rounded-lg border border-black/80"
+                                    style="width:200px; height:140px; mix-blend-mode:multiply; ">
+                            </a>
+                            <!-- JS will push research data here -->
+                            <div id="researchData" class="rounded-lg bg-white/25"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End of List-->
+            <script>
+                const hostButton = document.getElementById('host');
+                const hostList = document.getElementById('host-list');
+                const hostListMenu = document.getElementById('hostListMenu');
+                const hostArrow = document.getElementById('hostArrow');
+
+                const contributorsItem = document.getElementById('contributorsItem');
+                const doctorsItem = document.getElementById('doctorsItem');
+                const researchItem = document.getElementById('researchItem');
+
+                const contributorsData = document.getElementById('contributorsData');
+                const doctorsData = document.getElementById('doctorsData');
+                const researchData = document.getElementById('researchData');
+
+                let activeSection = '';
+                let hostPinned = false;
+                let hostStream = null;
+
+                function openHostMenu() {
+                    hostListMenu.classList.remove('hidden');
+                    hostArrow.classList.add('rotate-180');
+                }
+
+                function closeHostMenu() {
+                    hostListMenu.classList.add('hidden');
+                    hostArrow.classList.remove('rotate-180');
+                }
+
+                function closeHostStream() {
+                    if (hostStream) {
+                        hostStream.close();
+                        hostStream = null;
+                    }
+                }
+
+                function closeAllHostSections() {
+                    contributorsData.innerHTML = '';
+                    doctorsData.innerHTML = '';
+                    researchData.innerHTML = '';
+                }
+
+                window.closeHostDropdown = function () {
+                    hostPinned = false;
+                    activeSection = '';
+                    closeHostStream();
+                    closeAllHostSections();
+                    closeHostMenu();
+                };
+
+                function getSectionTarget(sectionName) {
+                    if (sectionName === 'contributors') {
+                        return contributorsData;
+                    }
+                    if (sectionName === 'doctors') {
+                        return doctorsData;
+                    }
+                    if (sectionName === 'research') {
+                        return researchData;
+                    }
+                    return null;
+                }
+
+                function buildHostCards(items) {
+                    if (!items || !items.length) {
+                        return '<p class="text-xs text-slate-700">No data found.</p>';
+                    }
+
+                    return items.map((item) => {
+                        const lineOne = item.role || '';
+                        const lineTwo = item.affiliation || item.study || '';
+                        const lineThree = item.updated || '';
+
+                        return `
+                <div class="mb-2 rounded-lg border border-black/10 bg-white/35 p-2 text-sm text-slate-900">
+                    <p class="font-semibold text-[#3b120d]">${item.name || ''}</p>
+                    ${lineOne ? `<p class="text-xs text-slate-700 mt-1">${lineOne}</p>` : ''}
+                    ${lineTwo ? `<p class="text-xs text-slate-600 mt-1">${lineTwo}</p>` : ''}
+                    ${lineThree ? `<p class="text-[11px] text-slate-500 mt-1">${lineThree}</p>` : ''}
+                </div>
+            `;
+                    }).join('');
+                }
+
+                function openHostSection(sectionName) {
+                    const targetBox = getSectionTarget(sectionName);
+                    if (!targetBox) {
+                        return;
+                    }
+
+                    closeHostStream();
+                    closeAllHostSections();
+                    activeSection = sectionName;
+                    targetBox.innerHTML = `<p class="text-xs text-slate-700">Loading ${sectionName}...</p>`;
+
+                    hostStream = new EventSource(`/hosting/${encodeURIComponent(sectionName)}`);
+
+                    hostStream.onmessage = (event) => {
+                        try {
+                            const payload = JSON.parse(event.data || '{}');
+
+                            // ignore old stream data if user already switched section
+                            if (payload.section !== activeSection) {
+                                return;
+                            }
+
+                            // time sent from Flask with this SSE message
+                            const sentAt = payload.sent_at || '';
+
+                            // show time first, then cards under it
+                            targetBox.innerHTML = `<p class="text-[11px] text-slate-500 mb-2">Updated: ${sentAt}</p>` + buildHostCards(payload.items || []);
+                        } catch (error) {
+                            targetBox.innerHTML = `<p class="text-xs text-red-700">${sectionName} data failed.</p>`;
+                        }
+                    };
+
+                    hostStream.onerror = () => {
+                        closeHostStream();
+
+                        if (activeSection === sectionName) {
+                            targetBox.innerHTML = `<p class="text-xs text-red-700">${sectionName} data failed.</p>`;
+                        }
+                    };
+                }
+
+                function toggleHostSection(sectionName) {
+                    if (activeSection === sectionName) {
+                        activeSection = '';
+                        closeHostStream();
+                        closeAllHostSections();
+                        return;
+                    }
+
+                    openHostSection(sectionName);
+                }
+
+                hostList.addEventListener('mouseenter', () => {
+                    if (window.closeStatusPanels) window.closeStatusPanels();
+                    if (window.closeServicesDropdown) window.closeServicesDropdown();
+                    openHostMenu();
+                });
+
+                hostList.addEventListener('mouseleave', () => {
+                    if (!hostPinned) {
+                        closeHostMenu();
+                    }
+                });
+
+                hostButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    hostPinned = !hostPinned;
+
+                    if (hostPinned) {
+                        openHostMenu();
+                    } else {
+                        closeHostMenu();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!hostList.contains(e.target)) {
+                        hostPinned = false;
+                        closeHostMenu();
+                    }
+                });
+
+                contributorsItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleHostSection('contributors');
+                });
+
+                doctorsItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleHostSection('doctors');
+                });
+
+                researchItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleHostSection('research');
+                });
+            </script>
+
+
+            <!--End of List-->
+            <!-- Services Dropdown -->
+            <div id="dd" class=" order-1 relative flex-none" style="font-family: 'Cinzel', serif; ">
+                <div id="ddBtn" class="flex items-center justify-between gap-3 p-2 border border-yellow-900 rounded-lg 
+                cursor-pointer min-w-[350px] whitespace-nowrap bg-gradient-to-r 
+                from-yellow-500 to-amber-800 hover:from-yellow-900 hover:to-amber-800 transition-colors shadow-md">
+                    <!-- fixed: min-width-[180px] invalid tailwind → min-w-[120px] -->
+                    <span id="ddLabel" class="bg"
+                        style="color:#990000; text-shadow:1px 2px 3px #141301, 1px 1px 2px #e2f027; font-size:22px; font-weight:700;">
+                        ⚕️Services
+                    </span>
+                    <span id="servicesArrow" class="text-amber-400 text-lg transition-transform duration-300">▼</span>
+                </div>
+                <!-- Dropdown List -->
+                <div id="ddList" class="hidden absolute top-full right-0 mt-6 -mr-24 h-auto overflow-y-auto rounded-xl 
+                    border-t-4 border-orange-600 p-2 z-50 shadow-2xl flex flex-col gap-1"
+                    style="width:600px; background: linear-gradient(135deg, #ece7a1 0%, #e44747 100%);">
+
+                    <a href="/urgent" target="_blank"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://assets-v2.lottiefiles.com/a/beef743c-32e0-11f0-8cb8-0fd28ab3e9c4/QcrnzDsznG.gif"
+                            alt="urgent" class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col">
+                            <span class="text-slate-200 text-xl font-bold">Urgent Care</span>
+                            <p class="text-sm text-slate-300 leading-tight">Quick urgent support with nearby clinic
+                                connection.</p>
+                        </div>
+                    </a>
+
+                    <a href="/general_care" target="_blank"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://i.pinimg.com/originals/be/ed/29/beed2992cbb81ca9adac47d97cd59c9a.gif" alt="md"
+                            class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">General Care</span>
+                            <p class="text-sm text-slate-300 leading-tight">Routine checkups and primary healthcare
+                                support.</p>
+                        </div>
+                    </a>
+
+                    <a href="/cardio"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://medisimaging.com/wp-content/uploads/2022/05/beating-heart-reduced2-1.gif"
+                            alt="cardiology" class="w-44 h-44 object-contain rounded mix-blend-screen">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">Cardiology</span>
+                            <p class="text-sm text-slate-300 leading-tight">Heart-related diagnosis and monitoring.
+                            </p>
+                        </div>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://www.biotopics.co.uk/humans/inhexh.gif" alt="respiratory"
+                            class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">Respiratory</span>
+                            <p class="text-sm text-slate-300 leading-tight">Lung and breathing care support.</p>
+                        </div>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://i.makeagif.com/media/5-28-2016/Q7AiJf.gif" alt="diabetes"
+                            class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">Diabetes</span>
+                            <p class="text-sm text-slate-300 leading-tight">Blood sugar monitoring and care.</p>
+                        </div>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://cdn.dribbble.com/userupload/15050691/file/original-8cb84590793f18a18a148826868edfc6.gif"
+                            alt="mental health" class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">Mental Health</span>
+                            <p class="text-sm text-slate-300 leading-tight">Emotional and psychological support.</p>
+                        </div>
+                    </a>
+
+                    <a href="#"
+                        class="flex items-start gap-3 p-2 rounded-lg hover:bg-yellow-500/10 transition-all group">
+                        <img src="https://png.pngtree.com/png-vector/20250113/ourmid/pngtree-a-friendly-pediatrician-in-clinic-png-image_15166649.png"
+                            alt="pediatrics" class="w-44 h-44 object-contain rounded">
+                        <div class="flex flex-col font-bold">
+                            <span class="text-slate-200 text-xl">Pediatrics</span>
+                            <p class="text-sm text-slate-300 leading-tight">Child healthcare services.</p>
+                        </div>
+                    </a>
+                </div>
+
+                <script>
+                    const dd = document.getElementById('dd');
+                    const list = document.getElementById('ddList');
+                    const btn = document.getElementById('ddBtn');
+                    let locked = false;
+
+                    window.closeServicesDropdown = function () {
+                        locked = false;
+                        list.classList.add('hidden');
+                    };
+                    dd.addEventListener('mouseenter', () => {
+                        if (window.closeStatusPanels) window.closeStatusPanels();
+                        if (window.closeHostDropdown) window.closeHostDropdown();
+                        if (!locked) list.classList.remove('hidden');
+                    });
+                    dd.addEventListener('mouseleave', () => { if (!locked) list.classList.add('hidden'); });
+                    btn.addEventListener('click', (e) => { e.stopPropagation(); locked = !locked; list.classList.toggle('hidden'); });
+                    list.addEventListener('mouseenter', () => { list.classList.remove('hidden'); });
+                    document.addEventListener('click', () => { locked = false; list.classList.add('hidden'); });
+                </script>
+            </div>
+        </nav>
+</header>
+{% endmacro %}
+
+<!-- MAIN BODY SECTION -->
+{% macro main_first() %}
+<!-- TeleHealth Badge -->
+<!-- <div id="hero-badge" class="w-full text-center">
+        <p id="badge-subtitle" class="text-3xl uppercase tracking-widest font-bold  mb-4" style="color:hsl(0, 48%, 74%); text-shadow:2px 2px 2px lab(44.82% 69.78 57.35), 2px 2px 3px #dfdf30; 
+                    font-family: 'Cinzel', serif;
+                    text-decoration: underline; text-decoration-color: #520808; 
+                    text-shadow: 2px 2px 2px #cf2807, 1px 2px 2px #131312 ; text-underline-offset: 4px; 
+                    text-decoration-thickness: 2px;">Seamless Care</p>
+        <h2 id="badge-title" class="text-5xl font-extrabold font-serif text-#8a4c0e  tracking-wide"
+            style="color:#65000B; text-shadow: 2px 4px 5px #df0d0d, 1px 1px 2px #f0f009;">
+            TeleHealth Platform
+        </h2>
+    </div> -->
+{% endmacro %}
+
+{% macro doctor_gif() %}
+<!--Host list code sendbox -->
+<!-- Small visual teaching box for Host List SSE flow -->
+<section id="sse-flow-mini" class="w-5/3 h-80 mr-auto -ml-4 rounded-2xl overflow:visible;"
+        style="background: rgba(240, 181, 157, 0.45), linear-gradient(135deg, #d6cf6c 0%, #ec8f8f 100%);
+               backdrop-filter: blur(6px);
+               -webkit-backdrop-filter: blur(6px);
+               border: 1.5px solid #131212;
+               box-shadow: 0 10px 30px rgba(218, 17, 17, 0.4), 0 0 0 1px rgba(255,255,255,0.03);
+               color: #e4e4ec;
+               font-family: 'Fira Code', 'Consolas', monospace;">
+
+        <!-- Fake window titlebar -->
+        <div class="flex items-center gap-2 px-4 py-2"
+            style="background:rgba(211, 164, 164, 0.35); border-bottom:1.5px solid #f00d0d;">
+            <span class="w-3 h-3 rounded-full" style="background:#ff5f56;"></span>
+            <span class="w-3 h-3 rounded-full" style="background:#ffbd2e;"></span>
+            <span class="w-3 h-3 rounded-full" style="background:#27c93f;"></span>
+            <span class="ml-12 text-lg " style="color:#e6b413; text-shadow: 0px 1px 1px #000000; font-weight:bold;
+                font-family:Arial, Helvetica, sans-serif;">sse-flow.live.js</span>
+        </div>
+        <div class="p-4">
+            <h3 class="mb-1 text-2xl font-bold tracking-wide"
+                style="color:#180101; text-shadow:0 1px 1px rgba(230, 9, 9, 0.6); font-family:Arial, Helvetica, sans-serif;">
+                SSE PIPE &amp; Data Flow 🛢️
+            </h3>
+            <p class="mt-1 text-base" style="color:#020e0f; text-shadow:0 1px 2px rgba(0,0,0,0.4);">
+                Small live path view for Host List dynamic data.
+            </p>
+
+            <!-- Status line: short text about what step is running now -->
+            <div id="sseFlowStatus" class="mt-2 text-xl font-semibold"
+                style="color:#ebdd13; text-shadow: 0 1px 2px rgba(0,0,0,0.6);">
+                Waiting for HostList item click...</div>
+
+            <!-- Code line: shows the raw code/object name of the current step -->
+            <pre id="sseFlowCode" class="mt-3 overflow-x-auto rounded-xl p-3 text-[12px] leading-5"
+                style="background:rgba(236, 245, 244, 0.35); border:1px solid rgba(129, 14, 14, 0.12); color:#000000;
+                       box-shadow: inset 0 1px 4px rgba(202, 34, 34, 0.5);">const hostButton = document.getElementById('host')</pre>
+
+            <!-- Flow boxes: one box per main step -->
+            <div class="mt-6 flex flex-wrap items-center gap-2 text-xs font-semibold"
+                style="color:#fcfcfc;">
+                <div id="flow-browser" class="rounded-lg px-2 py-1 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">Browser Click</div>
+                <span class="text-base font-bold" style="color:#ff8a5b;">→</span>
+                <div id="flow-js" class="rounded-lg px-3 py-2 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">JS EventSource</div>
+                <span class="text-base font-bold" style="color:#ff8a5b;">→</span>
+                <div id="flow-route" class="rounded-lg px-3 py-2 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">/hosting/&lt;id&gt;</div>
+                <span class="text-base font-bold" style="color:#ff8a5b;">→</span>
+                <div id="flow-flask" class="rounded-lg px-3 py-2 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">Flask SSE</div>
+                <span class="text-base font-bold" style="color:#ff8a5b;">→</span>
+                <div id="flow-api" class="rounded-lg px-3 py-2 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">API Data</div>
+                <span class="text-base font-bold" style="color:#ff8a5b;">→</span>
+                <div id="flow-ui" class="rounded-lg px-3 py-2 transition-all duration-300"
+                    style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18);">Host List UI</div>
+            </div>
+        </div>
+    </section>
+
+    <!--this secton on right to cover the gaps when no SSE data Host list opened so just a humana neural system -->
+    <section class="-mt-4 ml-16 mb-20 rounded-3xl overflow-hidden" style="width:34%; margin-left:66.5%; margin-top:-22rem; mix-blend-mode: multiply; ">
+        <img src="https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyMDcyd3NsNndndG50dG9vNzdzaGV6YzY1ZTlreTBveXpmN3B3MjI3NCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/26ybwJTvGyUPKF7Mc/200.gif" alt="neural system" class="w-full h-full object-cover opacity-70"
+        style="mix-blend-mode: multiply; width:500px; height:300px; border-radius: 1.8rem; box-shadow: 0 10px 30px rgba(223, 6, 6, 0.4), 0 0 0 1px rgba(218, 240, 18, 0.03);">
+    </section>
+
+
+
+<style>
+#sse-flow-mini .ring-2.ring-emerald-600 {
+    box-shadow: 0 0 0 2px #6ceee3, 0 0 14px rgba(94,230,161,0.5) !important;
+}
+#sse-flow-mini .bg-emerald-100 {
+    background: rgba(218, 245, 231, 0.18) !important;
+    color: #13eaf1 !important;
+    border-color: #e65e5e !important;
+}
+#sse-flow-mini .scale-105 {
+    transform: scale(1.05);
+}
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // get the 2 text areas that will show step text + raw code line
+        const sseFlowStatus = document.getElementById('sseFlowStatus');
+        const sseFlowCode = document.getElementById('sseFlowCode');
+
+        // store all flow boxes in one object so one function can control them
+        const flowSteps = {
+            browser: document.getElementById('flow-browser'),
+            js: document.getElementById('flow-js'),
+            route: document.getElementById('flow-route'),
+            flask: document.getElementById('flow-flask'),
+            api: document.getElementById('flow-api'),
+            ui: document.getElementById('flow-ui')
+        };
+
+        // remove highlight from every flow box
+        function resetFlowBoxes() {
+            Object.values(flowSteps).forEach((box) => {
+                if (!box) return;
+                box.classList.remove('ring-2', 'ring-emerald-600', 'bg-emerald-100', 'scale-105');
+                box.classList.add('bg-white/60');
+            });
+        }
+
+        // highlight one flow box and show the matching text + code line
+        function highlightFlowStep(key, text, codeText = '') {
+            resetFlowBoxes();
+            const box = flowSteps[key];
+            if (!box) return;
+
+            box.classList.remove('bg-white/60');
+            box.classList.add('ring-2', 'ring-emerald-600', 'bg-emerald-100', 'scale-105');
+
+            if (sseFlowStatus && text) {
+                sseFlowStatus.textContent = text;
+            }
+
+            if (sseFlowCode && codeText) {
+                sseFlowCode.textContent = codeText;
+            }
+        }
+
+        // play one full left-to-right SSE story for the clicked section name
+        function playSseFlow(sectionName) {
+            const label = sectionName || 'section';
+
+            // step 1: browser/user click
+            highlightFlowStep(
+                'browser',
+                `Browser detected click for ${label}`,
+                `const sectionName = '${label}'`
+            );
+
+            // step 2: JS creates EventSource
+            setTimeout(() => {
+                highlightFlowStep(
+                    'js',
+                    `JavaScript opened EventSource for ${label}`,
+                    `hostStream = new EventSource(\`/hosting/${label}\`)`
+                );
+            }, 350);
+
+            // step 3: route path is requested
+            setTimeout(() => {
+                highlightFlowStep(
+                    'route',
+                    `GET /hosting/${label} sent to server`,
+                    `@app.route('/hosting/<section_id>')
+def hosting(section_id):`
+                );
+            }, 700);
+
+            // step 4: Flask chooses the matching payload block
+            setTimeout(() => {
+                highlightFlowStep(
+                    'flask',
+                    `Flask SSE route started stream for ${label}`,
+                    `if section_id == '${label}':
+                         payload = { 'section': '${label}', 'items': host_data['${label}'] }`
+                );
+            }, 1050);
+
+            // step 5: server gets / filters API data
+            setTimeout(() => {
+                highlightFlowStep(
+                    'api',
+                    'Server prepared and filtered API data',
+                    `response = requests.get(api_url, params=params)
+                        host_data = get_host_data()`
+                );
+            }, 1400);
+
+            // step 6: JS updates the UI target box
+            setTimeout(() => {
+                highlightFlowStep(
+                    'ui',
+                    'JS received SSE data and updated Host List UI',
+                    `targetBox.innerHTML = buildHostCards(payload.items || [])`
+                );
+            }, 1750);
+        }
+
+        // expose these functions to window so your real Host List script can call them
+        // use: window.playSseFlow('contributors') inside openHostSection(sectionName)
+        // use: window.resetFlowBoxes() inside hostButton click if you want to reset the mini box
+        window.playSseFlow = playSseFlow;
+        window.resetFlowBoxes = resetFlowBoxes;
+
+        // helper to connect one clicked element with one section name
+        function bindFlowTrigger(elementId, sectionName) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            element.addEventListener('click', () => {
+                playSseFlow(sectionName);
+            });
+        }
+
+        // when the Host List main button opens, reset the visual flow helper
+        const hostButton = document.getElementById('host');
+        if (hostButton) {
+            hostButton.addEventListener('click', () => {
+                resetFlowBoxes();
+
+                if (sseFlowStatus) {
+                    sseFlowStatus.textContent = 'Host List opened. Click Contributors, Doctors, or Research.';
+                }
+
+                if (sseFlowCode) {
+                    sseFlowCode.textContent = "const hostButton = document.getElementById('host')";
+                }
+            });
+        }
+
+        // direct binding for each Host item click
+        bindFlowTrigger('contributorsItem', 'contributors');
+        bindFlowTrigger('doctorsItem', 'doctors');
+        bindFlowTrigger('researchItem', 'research');
+    });
+</script>
+<!--End code send box for Host list with script to display code on ui-->
+<!-- Symmetrical GIF Gallery Section (Side-by-Side: Doctor then Chamber) -->
+<div id="media-gallery" class="w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center justify-start">
+        <!-- Left: Doctor GIF (First) -->
+        <div id="gallery-left" class="w-full flex justify-start">
+            <div class="w-full relative">
+                <img src="https://cdn.pixabay.com/animation/2022/08/15/08/47/08-47-44-137_512.gif"
+                    alt="Doctor Animation"
+                    class="object-contain p-2 mr-auto transform hover:scale-[1.02] transition-transform duration-300 filter brightness-110"
+                    style="height: 500px; margin-left: 2px;">
+                {{ caller() }}
+            </div>
+        </div>
+
+        <!-- Right: Chamber GIF (Second - Fully Transparent/No Background) -->
+        <div id="gallery-right" class="w-100%  flex flex-col items-center">
+            <div class="w-full p-1 overflow-hidden " style="box-shadow: inset 0 0 25px  hsl(0, 79%, 45%), inset 1px 4px 5px 10px #e0f808; 
+                mix-blend-mode: multiply; perspective: 600px; transform-style: preserve-3d; border: 2px solid #6d5757;
+                border-radius:2px; background: linear-gradient(195deg, #ebe77c 100%, #da8e8e 100%);">
+                <img src="https://cdn.dribbble.com/userupload/31530762/file/original-9f590dc75e71399f43494aedd3e8e69c.gif"
+                    alt="Doctor Chamber" class="w-full h-96 object-cover rounded-md"
+                    style="transform: translateZ(-180px) scale(1); display: block;">
+            </div>
+            <p id="gallery-right-title" class="mt-4 tracking-wide"
+                style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; 
+            color:#7a0d0d; font-size:30px; font-weight: 800; letter-spacing: 1.1px;
+            text-shadow: 0 1px 0 #ffe066, 0 2px 3px rgba(230,10,10,0.5), 0 0 18px rgba(17, 17, 17, 0.6);
+            text-decoration: underline; text-decoration-color: #520505; text-decoration-thickness: 3px; text-underline-offset: 8px;">
+                Clinical Chambers & Care
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endmacro %}
+<!--Meet Your Virtual Health section-->
+<!--Chatbot section for doctors & patients-->
+{% macro meet_virtual() %}
+<section id="chatbot" class="w-full p-2 rounded-3xl  z-10" style=" border: 2px solid #b90b0b;
+        font-family:'Cormorant Garamond',serif; 
+        box-shadow: 14px 14px 50px #ebec95; backdrop-filter: blur(2px);">
+    <h2 class="text-center mb-12 text-4xl font-extrabold font-serif  drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+        style="text-shadow: 1px 2px 2px #eccd6d; color: #000000">Meet Your Virtual Health Assistant</h2>
+    <p class="text-lg text-center mb-6 text-[#b31c08]" style="text-shadow: 1px 1px 3px rgba(37, 2, 2, 0.5);">
+        Our AI-powered virtual health assistant is here to help you with your healthcare needs. Whether you have
+        questions about symptoms, need help scheduling an appointment, or want to learn more about our services,
+        our
+        assistant is available 24/7 to provide support and guidance. Experience personalized care and get the
+        answers
+        you need with just a few clicks.
+    </p>
+    <!--first item will be a gif human skeleton then below div all. all should be vertically one left chatbot right.
+                add a gif first item then next dev for chatbot but as a reception - first write with a pen emoji then voice record emoi
+                then reception which is ai gemini api but image will be a assistant emoji or gif image. with nice color and nice contrast css -->
+    <div class="flex items-center justify-between">
+        <!-- LEFT: BIG SKELETON -->
+        <div class=" flex justify-left ml-14 -mt-20 rounded-xl "
+            style="box-shadow: 0 4px 6px rgba(219, 5, 5, 0.1, #e6d706); ">
+            <img src="https://kinetikoshealth.com/wp-content/uploads/2025/11/body2-unscreen.gif" alt="img"
+                class="mb-24 w-96 h-96 " style="width: 580px; height: 680px; ">
+        </div>
+
+        <!-- RIGHT: RECEPTION STYLE (VERTICAL) -->
+        <div class="w-3/4 flex flex-col gap-2 -ml-44 rounded-xl border-t-2 border-[#FFD700] ">
+
+            <!-- ASSISTANT HEADER -->
+            <div id="assistant" class="ml-8 flex items-center gap-4">
+                <div>
+                    <p class="text-2xl font-extrabold font-serif text-[#660000] drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+                        style="text-shadow: 1px 1px 0px #FFBF00, 2px 2px 0px hsl(0, 0%, 0%), 1px 2px 2px #161611, 4px 6px 12px rgba(14, 7, 7, 0.45); 
+                    color: #940505">AI Reception</p>
+                    <p class="text-lg text-semibold" style="text-shadow: 0px 1px 0px #e6e20f; color: #000000">How
+                        can I assist you?</p>
+                </div>
+                <img src="https://media4.giphy.com/media/v1.Y2lkPTZjMDliOTUyajkzMmFsbmVoMnBoaXMxc3lhZ2o5cnY1eWkwZmdwZmc4NGw2OGtwOSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/EAkvNkimgOxvIryUzE/source.gif" 
+                class="-ml-14 w-32 h-32 "
+                    style="mix-blend-mode: multiply; ">
+            </div>
+
+            <!-- ACTION CARDS (NOT BUTTONS) -->
+            <div class="flex flex-col gap-4">
+
+                <div id="penBtn" class="flex items-center gap-4 p-4 rounded-xl cursor-pointer"
+                    style="background:rgba(36, 29, 29, 0.08);">
+                    <span class="text-3xl">🖊️</span>
+                    <span class="text-black">Write your concern</span>
+                </div>
+
+                <div id="voiceBtn" class="flex items-center gap-4 p-4 rounded-xl cursor-pointer"
+                    style="background:rgba(255,255,255,0.08);">
+                    <span class="text-3xl">🎤</span>
+                    <span class="text-black">Speak to assistant</span>
+                </div>
+
+            </div>
+
+            <!-- HIDDEN INPUT AREA wrapped by div and add close button on that div -->
+            <div id="message-form" class="hidden mt-2" style="position:relative;">
+                <div class="relative  rounded-2xl  text-left p-6 shadow-lg"
+                    style="background:transparent; border:2px solid rgba(184, 145, 17, 0.65); min-height:280px; ">
+
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-3"
+                            style="background:transparent; border:2px solid rgba(184, 145, 17, 0.65);">
+                            <span class="text-3xl">🖊️</span>
+                            <p class="text-[#893F45] text-2xl font-semibold" style="text-shadow: 1px 2px 2px #0c0f01;">
+                                Write your message</p>
+                        </div>
+                        <button id="closeForm"
+                            class="text-lg font-bold text-[#893F45] hover:text-black cursor-pointer">✖️</button>
+                    </div>
+                    <!--add a div to manage speaker hide container & submit button with close buttxon-->
+
+                    <form id="writeForm" class="flex flex-col gap-4 h-full">
+                        <textarea id="message-input" placeholder="Start writing here..."
+                            class="w-full rounded-xl p-5 text-[#F5F5DC] resize-none"
+                            style="min-height:140px; background:transparent; 
+                                    border:2px solid rgba(184, 145, 17, 0.65); outline:none; color: #3D0C02"></textarea>
+
+                        <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Action_Potential.gif"
+                                    class="mx-auto w-full h-32"> -->
+                        <div class="flex items-center justify-between pt-2">
+                            <button type="button" id="writeImgBtn" class="px-4 py-2 rounded-xl"
+                                style=" color:#8B5E3C; border:1px solid rgba(212,175,55,0.4);">
+                                🖼️ Add Image
+                            </button>
+                            <button type="button" id="writeSubmitBtn" class="px-4 py-2 rounded-xl"
+                                style="background:rgba(220, 221, 157, 0.95); color:#d45f05; border:1px solid rgba(212,175,55,0.4);">
+                                Send message
+                            </button>
+                        </div>
+
+                        <input type="file" id="writeImageUpload" accept="image/*" class="hidden">
+                    </form>
+                    <div id="responseArea" class="hidden mt-4 p-4 rounded-xl"
+                        style="background:rgba(223, 226, 6, 0.45); min-height:80px; border:1px solid rgba(212,175,55,0.25);">
+                    </div>
+                </div>
+            </div>
+
+            <!-- VOICE FORM (separate div, SAME POSITION, do not touch writing) -->
+            <div id="voice-form" class="hidden mt-2" style="position:relative;">
+                <!-- human: separate voice form with own controls -->
+                <div class="relative rounded-2xl  text-center"
+                    style="border:1px solid rgba(255,192,203,0.6); box-shadow:0 14px 34px rgba(255,182,193,0.35);">
+                    z <div class="flex items-center justify-between mb-4 text-left">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.squarespace-cdn.com/content/v1/5ca0f5cb523958b54d169ea3/1567163144538-1P9KLNHCQ416GDEU8F2T/mic.gif"
+                                class="w-14 h-14">
+                            <p class="text-[#b76e79] text-xl font-semibold">Speak to assistant</p>
+                        </div>
+                        <button id="closeVoiceForm"
+                            class="text-lg font-bold text-[#893F45] hover:text-black cursor-pointer">✖️</button>
+                    </div>
+
+                    <div class="mb-4">
+                        <!-- mic display -->
+                        <img src="https://images.squarespace-cdn.com/content/v1/5ca0f5cb523958b54d169ea3/1567163144538-1P9KLNHCQ416GDEU8F2T/mic.gif"
+                            class="mx-auto w-20 h-20">
+                        <p id="voiceStatus" class="mt-4 text-2xl font-semibold" style="color:#1a0507;">Tap ON to
+                            speak</p>
+
+                        <!-- human: ON / OFF controls -->
+                        <div class="flex justify-center gap-6 mt-4 text-sm text-[#1a0507]">
+                            <button id="micOn" class="px-4 py-2 rounded-xl" style="background:#ffe6d5;">🔴
+                                ON</button>
+                            <button id="micOff" class="px-4 py-2 rounded-xl" style="background:#f5c6cb;">⚪
+                                OFF</button>
+                        </div>
+
+                        <p class="mt-2 text-sm" style="color:#dae90f; font-family:Verdana, Geneva, Tahoma, sans-serif">
+                            Use 'ON' to
+                            start • 'OFF' to stop</p>
+                    </div>
+
+                    <form id="voiceOnlyForm" class="flex flex-col gap-4 h-full">
+                        <textarea id="voice-message-input" placeholder="Voice text will appear here..."
+                            class="w-full rounded-xl p-5 text-[#5C4033] resize-none"
+                            style="min-height:120px; background:rgba(255,255,255,0.35); border:1px solid rgba(255,192,203,0.35); outline:none; "></textarea>
+
+                        <div class="flex items-center justify-between pt-2">
+                            <button type="button" id="voiceImgBtn" class="px-4 py-2 rounded-xl"
+                                style="background:rgba(240, 210, 207, 0.95); color:#220404; border:1px solid rgba(212,175,55,0.4);">
+                                🖼️ Add Image
+                            </button>
+                            <button type="button" id="voiceSubmitBtn" class="px-4 py-2 rounded-xl"
+                                style="background:rgba(238, 201, 199, 0.95); color:#220404; border:1px solid rgba(219, 216, 10, 0.4);">
+                                Send voice
+                            </button>
+                        </div>
+
+                        <input type="file" id="voiceImageUpload" accept="image/*" class="hidden">
+                    </form>
+                </div>
+            </div>
+
+            <!-- Channel container (shows patient sends + doctor reply + status) -->
+            <div id="channelContainer" class="mt-3 p-4 rounded-xl"
+                style="background:rgba(184, 187, 146, 0.45); min-height:140px; border:1px solid rgba(212,175,55,0.25); overflow-y:auto;">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    // Patient intake channel (write + voice + images) without changing your existing IDs.
+    (function () {
+        const INTAKE_ROUTE = "/patient-intake";
+        const MAX_IMAGES = 2;
+
+        const $ = (id) => document.getElementById(id);
+
+        const penBtn = $("penBtn");
+        const voiceBtn = $("voiceBtn");
+        const closeForm = $("closeForm");
+        const closeVoiceForm = $("closeVoiceForm");
+
+        const messageFormWrap = $("message-form");
+        const voiceFormWrap = $("voice-form");
+
+        const messageInput = $("message-input");
+        const voiceMessageInput = $("voice-message-input");
+
+        const writeImgBtn = $("writeImgBtn");
+        const voiceImgBtn = $("voiceImgBtn");
+
+        const writeSubmitBtn = $("writeSubmitBtn");
+        const voiceSubmitBtn = $("voiceSubmitBtn");
+
+        const writeImageUpload = $("writeImageUpload");
+        const voiceImageUpload = $("voiceImageUpload");
+
+        const micOn = $("micOn");
+        const micOff = $("micOff");
+        const voiceStatus = $("voiceStatus");
+
+        const channel = $("channelContainer");
+        if (!channel) return;
+
+        let writeImages = []; // base64
+        let voiceImages = []; // base64
+
+        function showWrite() {
+            if (messageFormWrap) messageFormWrap.classList.remove("hidden");
+            if (voiceFormWrap) voiceFormWrap.classList.add("hidden");
+            renderDraft("message");
+        }
+
+        function showVoice() {
+            if (voiceFormWrap) voiceFormWrap.classList.remove("hidden");
+            if (messageFormWrap) messageFormWrap.classList.add("hidden");
+            renderDraft("voice");
+        }
+
+        function closeAll() {
+            if (voiceFormWrap) voiceFormWrap.classList.add("hidden");
+            if (messageFormWrap) messageFormWrap.classList.add("hidden");
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function esc(s) {
+            return String(s || "").replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;' }[c]));
+        }
+
+        function draftId(type) {
+            return type === "voice" ? "draft-voice" : "draft-message";
+        }
+
+        function getDraftState(type) {
+            if (type === "voice") {
+                return { text: (voiceMessageInput?.value || "").trim(), images: voiceImages };
+            }
+            return { text: (messageInput?.value || "").trim(), images: writeImages };
+        }
+
+        function renderDraft(type) {
+            const id = draftId(type);
+            const state = getDraftState(type);
+
+            let draft = document.getElementById(id);
+            if (!draft) {
+                draft = document.createElement("div");
+                draft.id = id;
+                draft.style.cssText = "padding:10px; border-radius:12px; background:rgba(255,255,255,0.55); margin-bottom:10px; border:1px dashed rgba(212,175,55,0.55);";
+                channel.prepend(draft);
+            }
+
+            const count = (state.images || []).length;
+            const addDisabled = count >= MAX_IMAGES ? "opacity:0.5; pointer-events:none;" : "";
+
+            const imagesHtml = (state.images || []).map((src, i) => {
+                return `
+        <div style="display:inline-block; position:relative; margin-right:8px; margin-top:8px;">
+          <img src="${src}" style="width:120px; height:90px; object-fit:cover; border-radius:10px; display:block;">
+          <button data-action="remove-one" data-type="${type}" data-index="${i}"
+            style="position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; border:0; background:#b31c08; color:white; font-weight:700; cursor:pointer;">×</button>
+        </div>`;
+            }).join("");
+
+            draft.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <p style="margin:0; font-weight:800; color:#5C4033;">Draft (${type})</p>
+          <p style="margin:6px 0 0 0; color:#310311;">${state.text ? esc(state.text) : "(no text yet)"}</p>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+          <button data-action="add-image" data-type="${type}" style="padding:6px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.6); background:rgba(255,236,214,0.95); cursor:pointer; ${addDisabled}">
+            Add (${count}/${MAX_IMAGES})
+          </button>
+          <button data-action="remove-all" data-type="${type}" style="padding:6px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.6); background:rgba(255,255,255,0.7); cursor:pointer;">Remove all</button>
+          <button data-action="send-draft" data-type="${type}" style="padding:6px 12px; border-radius:10px; border:1px solid rgba(179,28,8,0.65); background:rgba(255,236,214,0.95); cursor:pointer; font-weight:800; color:#b31c08;">Send</button>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        ${imagesHtml || "<span style='font-size:12px;color:#6b4008;'>No images yet.</span>"}
+      </div>
+
+      <p style="margin:10px 0 0 0; font-size:12px; color:#6b4008;">Click × to remove • Add again to replace • Max ${MAX_IMAGES} images</p>
+    `;
+        }
+
+        function appendSentCard({ id, type, text, images }) {
+            const card = document.createElement("div");
+            card.id = id;
+            card.style.cssText = "padding:10px; border-radius:12px; background:rgba(255,255,255,0.55); margin-top:10px; border:1px solid rgba(212,175,55,0.35);";
+
+            const imagesCount = (images || []).length;
+
+            const imagesHtml = (images || []).map((src) => `
+      <img src="${src}" style="width:120px; height:90px; object-fit:cover; border-radius:10px; display:inline-block; margin-right:8px; margin-top:8px;">
+    `).join("");
+
+            const attachmentsHtml = `
+      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        ${imagesCount ? `<button data-action=\"toggle-att\" data-target=\"att-${id}\" style=\"padding:6px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.6); background:rgba(255,255,255,0.7); cursor:pointer;\">📁 Attachments (${imagesCount})</button>` : ""}
+        <button data-action="toggle-contact" data-target="contact-${id}" style="padding:6px 10px; border-radius:10px; border:1px solid rgba(179,28,8,0.45); background:rgba(255,236,214,0.95); cursor:pointer; font-weight:700; color:#b31c08;">📄 Contact file</button>
+      </div>
+      ${imagesCount ? `<div id=\"att-${id}\" style=\"display:none; margin-top:8px;\">${imagesHtml}</div>` : ""}
+
+      <div id="contact-${id}" style="display:none; margin-top:10px; padding:10px; border-radius:12px; background:rgba(255,255,255,0.55); border:1px dashed rgba(179,28,8,0.35);">
+        <p style="margin:0; font-weight:800; color:#5C4033;">Private contact (demo)</p>
+        <p style="margin:6px 0 10px 0; font-size:12px; color:#6b4008;">Add email/phone here. (In a real app, user re-verifies before opening.)</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <input data-role="email" placeholder="Email" style="flex:1; min-width:220px; padding:8px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.35); background:rgba(255,255,255,0.7); outline:none;">
+          <input data-role="phone" placeholder="Phone" style="flex:1; min-width:160px; padding:8px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.35); background:rgba(255,255,255,0.7); outline:none;">
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button data-action="save-contact" data-card="${id}" style="padding:6px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.6); background:rgba(255,255,255,0.75); cursor:pointer; font-weight:800; color:#6b4008;">Save</button>
+          <button data-action="toggle-contact" data-target="contact-${id}" style="padding:6px 10px; border-radius:10px; border:1px solid rgba(212,175,55,0.35); background:rgba(255,255,255,0.55); cursor:pointer;">Close</button>
+          <span data-role="contactSaved" style="margin-left:auto; font-size:12px; color:#6b4008;"></span>
+        </div>
+      </div>
+    `;
+
+            card.innerHTML = `
+      <p style="margin:0; font-weight:800; color:#5C4033;">Patient ${type}</p>
+      <p style="margin:6px 0 0 0; color:#310311;">${text ? esc(text) : "(no text)"}</p>
+      ${attachmentsHtml}
+
+      <p data-role="status-ai" style="margin:10px 0 0 0; font-size:12px; color:#6b4008;">Status: AI pending</p>
+      <div style="margin-top:10px; padding:10px; border-radius:12px; background:rgba(255,255,255,0.58); border:1px solid rgba(212,175,55,0.25);">
+        <p style="margin:0; font-weight:800; color:#893F45;">Health AI Reply</p>
+        <p data-role="ai-reply" style="margin:6px 0 0 0; color:#310311;">(pending)</p>
+        <p style="margin:10px 0 0 0; font-size:12px; color:#6b4008;">Wait for human doctor reply.</p>
+      </div>
+
+      <p data-role="status-doc" style="margin:10px 0 0 0; font-size:12px; color:#6b4008;">Status: Waiting for doctor</p>
+      <div style="margin-top:10px; padding:10px; border-radius:12px; background:rgba(255,236,214,0.75);">
+        <p style="margin:0; font-weight:800; color:#893F45;">Doctor Reply</p>
+        <p data-role="doc-reply" style="margin:6px 0 0 0; color:#310311;">(pending)</p>
+      </div>
+    `;
+
+            // restore saved contact (demo)
+            try {
+                const saved = JSON.parse(localStorage.getItem(`contact_${id}`) || "null");
+                if (saved) {
+                    const box = card.querySelector(`#contact-${id}`);
+                    if (box) {
+                        const email = box.querySelector('[data-role="email"]');
+                        const phone = box.querySelector('[data-role="phone"]');
+                        const savedLbl = box.querySelector('[data-role="contactSaved"]');
+                        if (email) email.value = saved.email || "";
+                        if (phone) phone.value = saved.phone || "";
+                        if (savedLbl) savedLbl.textContent = "Saved";
+                    }
+                }
+            } catch (e) { }
+
+            channel.appendChild(card);
+            return card;
+        }
+
+        function setCardAiReply(cardId, aiText) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            const aiEl = card.querySelector('[data-role="ai-reply"]');
+            const statusAi = card.querySelector('[data-role="status-ai"]');
+            if (aiEl) aiEl.textContent = aiText || "Received.";
+            if (statusAi) statusAi.textContent = "Status: AI replied";
+        }
+
+        function setCardDoctorReply(cardId, docText) {
+            // one-time "Seen" icon animation style
+            if (!document.getElementById("seenAnimStyle")) {
+                const style = document.createElement("style");
+                style.id = "seenAnimStyle";
+                style.textContent = `
+        @-webkit-keyframes seenPulse {
+          0%,100% { -webkit-transform: translateY(0) scale(1); transform: translateY(0) scale(1); opacity:.85; }
+          50%     { -webkit-transform: translateY(-2px) scale(1.12); transform: translateY(-2px) scale(1.12); opacity:1; }
+        }
+        @keyframes seenPulse {
+          0%,100% { -webkit-transform: translateY(0) scale(1); transform: translateY(0) scale(1); opacity:.85; }
+          50%     { -webkit-transform: translateY(-2px) scale(2); transform: translateY(-2px) scale(1.12); opacity:1; }
+        }
+        .seenPulse { display:inline-block; -webkit-animation: seenPulse 12s ease-in-out infinite; animation: seenPulse 12s ease-in-out infinite; }
+      `;
+                document.head.appendChild(style);
+            }
+
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            const docEl = card.querySelector('[data-role="doc-reply"]');
+            const statusDoc = card.querySelector('[data-role="status-doc"]');
+            if (docEl) docEl.textContent = docText || "Received.";
+            if (statusDoc) statusDoc.innerHTML = '<span class="seenPulse">👁️ Seen</span> • Doctor replied';
+        }
+
+        function scheduleDoctorReply(cardId, ticketId) {
+            setTimeout(async () => {
+                // send saved contact if any (demo)
+                let contact = null;
+                try { contact = JSON.parse(localStorage.getItem(`contact_${cardId}`) || "null"); } catch (e) { }
+
+                try {
+                    const res = await fetch("/patient-followup", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ ticket_id: ticketId || cardId, contact })
+                    });
+                    const data = await res.json();
+                    setCardDoctorReply(cardId, data.doctor_reply || data.reply || "Doctor will respond soon.");
+                } catch (e) {
+                    setCardDoctorReply(cardId, "Doctor reply simulated (server route not ready).");
+                }
+            }, 30000);
+        }
+
+        function clearDraft(type) {
+            if (type === "voice") {
+                voiceImages = [];
+                if (voiceMessageInput) voiceMessageInput.value = "";
+                if (voiceImageUpload) voiceImageUpload.value = "";
+                const d = document.getElementById(draftId("voice"));
+                if (d) d.remove();
+                return;
+            }
+
+            writeImages = [];
+            if (messageInput) messageInput.value = "";
+            if (writeImageUpload) writeImageUpload.value = "";
+            const d = document.getElementById(draftId("message"));
+            if (d) d.remove();
+        }
+
+        async function sendIntake(type) {
+            const state = getDraftState(type);
+            if (!state.text && (!state.images || state.images.length === 0)) {
+                renderDraft(type);
+                return;
+            }
+
+            const itemId = `${type}-${Date.now()}`;
+            appendSentCard({ id: itemId, type, text: state.text, images: state.images });
+
+            // clear draft only (not the sent card)
+            clearDraft(type);
+            closeAll();
+
+            try {
+                const res = await fetch(INTAKE_ROUTE, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ type, message: state.text, images: state.images })
+                });
+                const data = await res.json();
+                const aiText = data.ai_reply || data.reply || "Received.";
+                setCardAiReply(itemId, aiText);
+                scheduleDoctorReply(itemId, data.ticket_id);
+            } catch (e) {
+                // If server route is not ready / network fails, show it in AI reply area (doctor reply stays pending)
+                setCardAiReply(itemId, "Route not ready yet.");
+                const card = document.getElementById(itemId);
+                const statusAi = card?.querySelector('[data-role="status-ai"]');
+                if (statusAi) statusAi.textContent = "Status: AI error";
+            }
+        }
+
+        // UI wiring
+        if (penBtn) penBtn.addEventListener("click", showWrite);
+        if (voiceBtn) voiceBtn.addEventListener("click", showVoice);
+        if (closeForm) closeForm.addEventListener("click", closeAll);
+        if (closeVoiceForm) closeVoiceForm.addEventListener("click", closeAll);
+
+        if (writeImgBtn && writeImageUpload) writeImgBtn.addEventListener("click", () => writeImageUpload.click());
+        if (voiceImgBtn && voiceImageUpload) voiceImgBtn.addEventListener("click", () => voiceImageUpload.click());
+
+        if (writeSubmitBtn) writeSubmitBtn.addEventListener("click", () => sendIntake("message"));
+        if (voiceSubmitBtn) voiceSubmitBtn.addEventListener("click", () => sendIntake("voice"));
+
+        // File input change → add to draft images (max)
+        if (writeImageUpload) {
+            writeImageUpload.addEventListener("change", async () => {
+                // add selected image to the draft (max 2) and re-render the draft UI
+                const file = writeImageUpload.files?.[0] || null;
+                const b64 = await fileToBase64(file);
+                // allow selecting the same file again later
+                writeImageUpload.value = "";
+
+                if (!b64) return;
+                if (writeImages.length < MAX_IMAGES) writeImages.push(b64);
+                renderDraft("message");
+            });
+        }
+
+        if (voiceImageUpload) {
+            voiceImageUpload.addEventListener("change", async () => {
+                // add selected image to the voice draft (max 2) and re-render the draft UI
+                const file = voiceImageUpload.files?.[0] || null;
+                const b64 = await fileToBase64(file);
+                // allow selecting the same file again later
+                voiceImageUpload.value = "";
+
+                if (!b64) return;
+                if (voiceImages.length < MAX_IMAGES) voiceImages.push(b64);
+                renderDraft("voice");
+            });
+        }
+
+        // Draft updates on typing
+        if (messageInput) messageInput.addEventListener("input", () => renderDraft("message"));
+        if (voiceMessageInput) voiceMessageInput.addEventListener("input", () => renderDraft("voice"));
+
+        // Draft buttons (Remove / Add / remove one)
+        channel.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+
+            const action = btn.getAttribute("data-action");
+            if (!action) return;
+
+            // sent-card attachments toggle
+            if (action === "toggle-att") {
+                const targetId = btn.getAttribute("data-target");
+                const box = document.getElementById(targetId);
+                if (box) box.style.display = (box.style.display === "none" || box.style.display === "") ? "block" : "none";
+                return;
+            }
+
+            if (action === "toggle-contact") {
+                const targetId = btn.getAttribute("data-target");
+                const box = document.getElementById(targetId);
+                if (box) box.style.display = (box.style.display === "none" || box.style.display === "") ? "block" : "none";
+                return;
+            }
+
+            if (action === "save-contact") {
+                const cardId = btn.getAttribute("data-card");
+                const card = document.getElementById(cardId);
+                if (!card) return;
+                const box = card.querySelector(`#contact-${cardId}`);
+                if (!box) return;
+                const email = box.querySelector('[data-role="email"]')?.value || "";
+                const phone = box.querySelector('[data-role="phone"]')?.value || "";
+                try { localStorage.setItem(`contact_${cardId}`, JSON.stringify({ email, phone })); } catch (e) { }
+                const savedLbl = box.querySelector('[data-role="contactSaved"]');
+                if (savedLbl) savedLbl.textContent = "Saved";
+                return;
+            }
+
+            const type = btn.getAttribute("data-type");
+            if (!type) return;
+
+            if (action === "send-draft") {
+                sendIntake(type);
+                return;
+            }
+
+            if (action === "add-image") {
+                if (type === "voice") voiceImageUpload?.click();
+                else writeImageUpload?.click();
+                return;
+            }
+
+            if (action === "remove-all") {
+                if (type === "voice") voiceImages = [];
+                else writeImages = [];
+                if (type === "voice") { if (voiceImageUpload) voiceImageUpload.value = ""; }
+                else { if (writeImageUpload) writeImageUpload.value = ""; }
+                renderDraft(type);
+                return;
+            }
+
+            if (action === "remove-one") {
+                const idx = Number(btn.getAttribute("data-index"));
+                const arr = (type === "voice") ? voiceImages : writeImages;
+                if (!Number.isNaN(idx) && idx >= 0 && idx < arr.length) arr.splice(idx, 1);
+                renderDraft(type);
+                return;
+            }
+        });
+
+        // Voice to text (no auto-send; user can edit then click Send voice)
+        let recognition = null;
+        let listening = false;
+
+        function buildRecognition() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) {
+                if (voiceStatus) voiceStatus.textContent = "Voice not supported";
+                return null;
+            }
+
+            const rec = new SR();
+            rec.lang = "en-US";
+            rec.interimResults = false;
+            rec.continuous = false;
+
+            rec.onstart = () => {
+                listening = true;
+                if (voiceStatus) voiceStatus.textContent = "Listening...";
+            };
+
+            rec.onresult = (e) => {
+                const text = e.results?.[0]?.[0]?.transcript || "";
+                if (voiceMessageInput) voiceMessageInput.value = text;
+                if (voiceStatus) voiceStatus.textContent = "Voice converted to text";
+                renderDraft("voice");
+            };
+
+            rec.onend = () => {
+                listening = false;
+                if (voiceStatus) voiceStatus.textContent = "Tap ON to speak";
+            };
+
+            rec.onerror = () => {
+                listening = false;
+                if (voiceStatus) voiceStatus.textContent = "Voice error";
+            };
+
+            return rec;
+        }
+
+        if (micOn) {
+            micOn.addEventListener("click", () => {
+                if (listening) return;
+                recognition = buildRecognition();
+                if (recognition) recognition.start();
+            });
+        }
+
+        if (micOff) {
+            micOff.addEventListener("click", () => {
+                if (recognition && listening) recognition.stop();
+            });
+        }
+    })();
+</script>
+{% endmacro %}
+
+<!--Gen engneering sect-->
+<!--Gen engneering sect-->
+{% macro gen_engin() %}
+<section id="genatic_engineering" class="mt-24 w-full p-2 rounded-3xl  z-10" style="border: 2px solid #be0f0f; font-family:'Cormorant Garamond',serif; color:#79190c;
+            box-shadow: 14px 14px 50px #ebec95; backdrop-filter: blur(2px);">
+    <div class="w-full flex-col justify-between">
+        <h2 class="text-center mt-6 mb-12 text-4xl font-extrabold font-serif text-[#660000] drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+            style="text-shadow:1px 3px 4px #000000, 1px 2px 3px hsl(56, 91%, 45%), 1px 2px 2px #17cc3f, 4px 6px 12px rgba(218, 231, 30, 0.45); 
+                color: #db0d0d;">
+            What is Gene to DNA ?</h2>
+        <p class="item-center text-xl" style="color:#000000; text-shadow: 2px 3px 4px #e9ec0e, 0px 2px 1px #b31c08;">
+            Genes are segments of DNA that give your body the instructions for a specific characteristic (trait) or
+            process.
+            DNA is the molecules that make up those instructions. It’s packaged into your cells in chromosomes.
+            If DNA is like a library and your chromosomes are books, your genes are like specific chapters in those
+            books that describe
+            you and how your body works.</br>
+            When you hear something like “it’s in your genes,” most people think of having your mom’s smile or your
+            dad’s eyes. But genes
+            have many jobs beyond just the traits you can see. Your genes also give instructions for how your
+            various
+            body parts
+            work and interact with each other. For example, genes write instructions not just for your hair color,
+            eye
+            color and
+            height, but also how your muscles help you move and how your immune system responds to germs.
+            <a href="https://my.clevelandclinic.org/health/body/gene" target="_blank"
+                class="text-xl text-[#8B0000] underline">more inside</a>
+        </p>
+        <div class="relative w-full flex items-center justify-between gap-2 mt-6">
+            <img src="https://www.vervetx.com/sites/default/files/inline-images/v4-mutated-transparent.gif"
+                alt="Genetic engineering" class="w-full h-96 ml-9"
+                style=" color: rgb(36, 8, 8);  border-radius: 15px; box-shadow: 0 1px 2px rgb(216, 240, 237), 0 0 10px #e4e70d;">
+            <img src="https://miro.medium.com/0*ENexY6UrqCvyyCCE.gif" alt="Genetic engineering" class="w-64 h-96  ml-9 "
+                style=" mix-blend-mode: multiply; ">
+        </div>
+    </div>
+    <!--create a LLM data section where display some ability that comes from server side LLM with text & images. -->
+    <section id="gene" class="w-full h-auto rounded-xl mt-12 p-6" style="background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(212, 23, 23, 0.45); box-shadow: 0 4px 15px rgba(218, 165, 32, 0.15);
+            backdrop-filter: blur(2px);">
+        <h1 class="text-center text-3xl font-bold mb-6" style="color: #462c2c; text-shadow: 1px 2px 2px #1a221f;">
+            Gene Analysis
+        </h1>
+        <p class="text-center mb-6 text-xl" style="color: #13100a; text-shadow: 0px 1px 1px #cf0808;">
+            Genome editing is a method for making specific changes to the DNA of a cell or organism. It can be used
+            to add, remove or alter DNA in the genome. Human genome editing technologies can be used on somatic
+            cells (non-heritable), germline cells (not for reproduction) and germline cells (for reproduction).
+        </p>
+        <!-- <div class="w-full mb-6 relative" id="iframeWrap">
+              <iframe id="360" src="https://momento360.com/e/u/b06e3cbf334c4b9bacf4ec362a347af7?utm_campaign=embed&utm_source=other&utm_medium=embed&heading=0&pitch=0&field-of-view=75&size=medium&display-plan=true"
+                  class="w-full border-2 border-white/10" style=" height: 500px; border-radius: 15px;   mix-blend-mode: multiply;" frameborder="0"
+                  allowfullscreen></iframe>
+           <!-- Your updated element with an ID and inline hover triggers -->
+        <div id="rotate-dna-btn" class="absolute top-3 right-8 text-black text-lg font-bold mt-44 mr-6"
+            style="color:#c91306; text-shadow: 1px 2px 2px hsl(60, 19%, 40%), 0px 2px 1px #e9e50a; cursor: pointer; animation: var(--blink-trigger, none) 0.5s infinite;"
+            onmouseenter="this.style.setProperty('--blink-trigger', 'inline-blink')"
+            onmouseleave="this.style.setProperty('--blink-trigger', 'none')">
+            Rotate DNA
+        </div>
+
+        <!-- Keyframe definition placed directly below the element -->
+        <style>
+            @keyframes inline-blink {
+                50% {
+                    opacity: 0;
+                }
+            }
+        </style>
+        </div>
+        <form id="geneForm" onsubmit="return false;" class="w-full flex flex-col md:flex-row gap-4 mb-6">
+            <input type="text" name="prompt" placeholder="Ask about genes, DNA, or chromosomes..." required
+                class="flex-1 p-3 rounded-lg text-white bg-transparent border placeholder-gray-400 focus:outline-none focus:ring-1"
+                style="border-color: rgba(22, 19, 11, 0.35); ">
+            <button type="button" id="geneBtn" class="rounded-lg font-bold transition-all duration-200 hover:opacity-90"
+                style=" color:#8f1b06; font-size:22px; font-family:cursive; box-shadow: 4px 6px 8px #d37373, 4px 5px 5px #d8d50c;
+                text-shadow: 1px 2px 2px #000000, 2px 3px 3px #d9e716;  ">
+                Analyze
+            </button>
+        </form>
+        <hr class="mb-6" style="border-color: rgba(255, 192, 203, 0.15);">
+        <ul id="geneResponse" class="response-text text-black text-lg leading-relaxed mb-4 min-h-[100px] space-y-3">
+        </ul>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+
+                const geneForm = document.getElementById('geneForm');
+                const geneResponse = document.getElementById('geneResponse');
+                const geneBtn = document.getElementById('geneBtn');
+
+                if (geneBtn && geneForm && geneResponse) {
+                    geneBtn.addEventListener('click', async function () {
+                        const prompt = geneForm.querySelector('input[name="prompt"]').value.trim();
+                        if (!prompt) {
+                            geneResponse.innerHTML = '<p class="text-red-400">Enter a question.</p>';
+                            return;
+                        }
+                        geneResponse.innerHTML = '<p class="text-yellow-400 italic">Analyzing...</p>';
+
+                        try {
+                            const res = await fetch('/gene-llm', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: prompt })
+                            });
+
+                            if (!res.ok) {
+                                geneResponse.innerHTML = '<p class="text-red-400">Server error.</p>';
+                                return;
+                            }
+
+                            const data = await res.json();
+                            console.log('API response:', data);
+                            if (data && data.reply) {
+                                geneResponse.innerHTML += `<li><strong>Q:</strong> ${prompt}</li>`;
+                                geneResponse.innerHTML += `<li><strong>A:</strong> ${data.reply}</li>`;
+                            } else {
+                                geneResponse.innerHTML = '<li class="text-red-400">No response from API.</li>';
+                            }
+                        } catch (err) {
+                            geneResponse.innerHTML = '<p class="text-red-400">Network error.</p>';
+                        }
+                    });
+                }
+
+            });
+        </script>
+    </section>
+    <!--new child section for neo4j LLM -->
+    <section id="neo4j_LLM" class="w-full mt-16">
+        <div class="w-full max-w-4xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-4 text-[#8f1b06]">Neo4j LLM Interaction</h2>
+
+            <form id="neoForm" onsubmit="return false;" class="flex flex-col md:flex-row gap-4 mb-6">
+                <input type="text" name="neo_prompt" placeholder="Ask something stored in Neo4j..."
+                    class="flex-1 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-1 text-black"
+                    required>
+                <button type="button" id="neoBtn"
+                    class="px-6 py-3 rounded-lg font-semibold border border-[#8f1b06] text-[#8f1b06] hover:opacity-80 transition">
+                    Query
+                </button>
+            </form>
+
+            <div id="neoResponse" class="text-black text-lg min-h-[80px] space-y-2"></div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const neoForm = document.getElementById('neoForm');
+                    const neoBtn = document.getElementById('neoBtn');
+                    const neoResponse = document.getElementById('neoResponse');
+
+                    if (neoBtn && neoForm && neoResponse) {
+                        neoBtn.addEventListener('click', async function () {
+                            const prompt = neoForm.querySelector('input[name="neo_prompt"]').value.trim();
+                            if (!prompt) {
+                                neoResponse.innerHTML = '<p class="text-red-500">Enter a question.</p>';
+                                return;
+                            }
+
+                            neoResponse.innerHTML = '<p class="text-yellow-500 italic">Searching Neo4j...</p>';
+
+                            try {
+                                const res = await fetch('/chroma-llm', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ message: prompt })
+                                });
+
+                                const data = await res.json();
+
+                                if (res.ok && data.reply) {
+                                    neoResponse.innerHTML = `<p><strong>Q:</strong> ${prompt}</p><p><strong>A:</strong> ${data.reply}</p>`;
+                                } else {
+                                    neoResponse.innerHTML = '<p class="text-red-500">No response.</p>';
+                                }
+                            } catch (err) {
+                                neoResponse.innerHTML = '<p class="text-red-500">Network error.</p>';
+                            }
+                        });
+                    }
+                });
+            </script>
+        </div>
+    </section>
+</section>
+{% endmacro %}
+
+<!--body intelligence center section & script -->
+{% macro body_Intelligence() %}
+<section id="health-monitor" class="mt-16 w-full mx-auto p-6 rounded-3xl z-10" style="border: 3px solid rgba(235, 25, 10, 0.25); font-family:'Cormorant Garamond',serif; color:#310311;
+        mix-blend-mode: multiply; box-shadow: 14px 14px 50px #ebec95; backdrop-filter: blur(2px);">
+    <h2 class="text-center mt-6 mb-12 text-4xl font-extrabold font-serif text-[#660000] drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+        style="text-shadow: 1px 1px 0px #FFBF00, 2px 2px 0px hsl(0, 0%, 0%), 1px 2px 2px #161611, 4px 6px 12px rgba(14, 7, 7, 0.45); color: #940505">
+        Body Intelligence Center</h2>
+    <p class="text-xl text-center mb-20" style="color:#c20606; font-size:larger;">Click any organ to get AI-powered
+        medical insights</p>
+    <!-- Top Row: 6 GIFs (3x2 grid to stay on top of the content below) -->
+    <div class="grid grid-cols-6 gap-4 mt-8 mb-8" style="mix-blend-mode: multiply;">
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Brain</h1>
+            <img id="brain" onclick="showOrgan('Brain')"
+                src="https://verizon.com/about/sites/default/files/2020-07/brain-gif-3.gif"
+                class="w-44 h-44 rounded-lg border-t-4 border-yellow-600 cursor-pointer" onclick="showOrgan('Brain')"
+                style="mix-blend-mode: multiply;">
+        </div>
+
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Heart</h1>
+            <img id="heart" onclick="showOrgan('Heart')"
+                src="https://media.tenor.com/2NKgQ0tSurwAAAAM/whatsaap-hearts.gif"
+                class="w-44 h-44  rounded-lg border-t-4 border-yellow-600 cursor-pointer"
+                style="mix-blend-mode: multiply;">
+        </div>
+
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Lungs</h1>
+            <img id="lungs" onclick="showOrgan('Lungs')" src="https://media1.tenor.com/m/ZQmNJxJzKo8AAAAd/biologi.gif"
+                class="w-44 h-44 object-cover rounded-lg border-t-4 border-yellow-600 cursor-pointer"
+                onclick="showOrgan('Lungs')" style="mix-blend-mode: multiply;">
+        </div>
+
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Liver</h1>
+            <img id="liver" onclick="showOrgan('Liver')" src="https://i.makeagif.com/media/8-01-2016/sCb1SN.gif"
+                class="w-44 h-44  rounded-lg border-t-4 border-yellow-600 cursor-pointer" onclick="showOrgan('Liver')"
+                style="mix-blend-mode: multiply;">
+        </div>
+
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Kidney</h1>
+            <img id="kidney" onclick="showOrgan('Kidneys')"
+                src="https://www.healurheart.com/images/Kidney%20Gif%20_3_.gif"
+                class="w-44 h-44  rounded-lg border-t-4 border-yellow-600 cursor-pointer" onclick="showOrgan('Kidneys')"
+                style="mix-blend-mode: multiply;">
+        </div>
+
+        <div class="flex flex-col items-center">
+            <h1 class="text-center mb-2" style="color:#8B0000; font-size:larger; font-weight:bold;">Stomach</h1>
+            <img id="stomach" onclick="showOrgan('Stomach')" src="https://media.tenor.com/JEnHcXbt62UAAAAM/gi.gif"
+                class="w-44 h-44  rounded-lg border-t-4 border-yellow-600 cursor-pointer" onclick="showOrgan('Stomach')"
+                style="mix-blend-mode: multiply;">
+        </div>
+    </div>
+
+    <!--create a div id is organ info from left to right but its a container where array of organs info comes 
+                from js script but one at a time from the option. that means click recognize target element and then 
+                that info is displayed from js array based on id. div will be nice and professional text google font and
+                ambushing font so it visuable clearly for readable. nice color and use z index so background transparent
+                not effect the text -->
+    <div id="organInfo" class="mt-4 ml-6 mr-6 mb-12 rounded-xl p-4 border-t-2 border-yellow-200 z-10 "
+        style=" font-family:'Cormorant Garamond',serif; color:#310311; position:relative;">
+        <p class="text-lg font-semibold text-center" id="organ-title">click top organ to view details</p>
+    </div>
+    <div class="flex items-start justify-between gap-6">
+        <!-- LEFT: body gif + hotspots -->
+        <div class="relative w-96 flex-shrink-0 " style="mix-blend-mode: multiply;">
+            <img id="intelligence" src="https://upload.wikimedia.org/wikipedia/commons/c/cd/Vein_art_rotating.gif"
+                class="w-96 h-96 rounded-lg shadow-lg" style="mix-blend-mode: multiply;">
+
+            <div class="absolute w-8 h-8 rounded-full border-4 border-purple-400 animate-ping cursor-pointer"
+                style="top:8%; left:44%;" onclick="showOrgan('Brain')"></div>
+            <div class="absolute w-8 h-8 rounded-full border-4 border-red-500 animate-ping cursor-pointer"
+                style="top:32%; left:38%; animation-delay:0.3s;" onclick="showOrgan('Heart')"></div>
+            <div class="absolute w-8 h-8 rounded-full border-4 border-blue-400 animate-ping cursor-pointer"
+                style="top:30%; left:54%; animation-delay:0.6s;" onclick="showOrgan('Lungs')"></div>
+            <div class="absolute w-8 h-8 rounded-full border-4 border-yellow-500 animate-ping cursor-pointer"
+                style="top:48%; left:55%; animation-delay:0.9s;" onclick="showOrgan('Liver')"></div>
+            <div class="absolute w-8 h-8 rounded-full border-4 border-green-500 animate-ping cursor-pointer"
+                style="top:58%; left:40%; animation-delay:1.2s;" onclick="showOrgan('Kidneys')"></div>
+        </div>
+
+        <!-- RIGHT: AI info panel (LLM) -->
+        <!--Groq ai chat for above related q/a so use id on div and remove p -->
+        <div class="flex-1 rounded-2xl p-6 mt-6"
+            style="background:rgba(255,252,245,0.08); border:1px solid rgba(235,219,7,0.2); backdrop-filter:blur(8px); height: 384px; overflow-y: auto;">
+            <h2 class="text-5xl mt-6 mb-12 text-4xl font-extrabold font-serif text-[#000000] drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+                style="text-shadow: 1px 1px 0px hsl(61, 100%, 50%), 2px 2px 0px hsl(0, 90%, 46%), 1px 2px 2px #161611, 4px 6px 12px rgba(14, 7, 7, 0.45); 
+                    color: #140101">System Ready</h2>
+            <p class=" text-center mt-6 mb-12 text-4xl font-extrabold font-serif text-[#660000]
+                    drop-shadow-[0_1px_1px_rgba(74,51,4,0.6)] tracking-wide"
+                style="text-shadow: 1px 1px 0px #FFBF00, 2px 2px 0px hsl(0, 0%, 0%), 1px 2px 2px #161611, 4px 6px 12px rgba(14, 7, 7, 0.45); color: #940505">
+                Ask to Expart...</p>
+            <div class="text-base leading-relaxed" style="color:#52041b;" id="organ-info">
+
+                <!-- AI header -->
+                <div class="flex items-center gap-2 mb-3 pb-2" style="border-bottom:1px solid rgba(197,88,10,0.15);">
+                    <div
+                        style="width:32px; height:32px; border-radius:50%; background:rgba(225, 240, 13, 0.15); border:1px solid rgba(197,88,10,0.3); display:flex; align-items:center; justify-content:center; font-size:14px;">
+                        ⚕</div>
+                    <div>
+                        <p class="text-2xl font-bold" style="color:#f1130c; font-family:'Cormorant Garamond',serif;
+                                text-shadow: 1px 1px 2px #000000, 1px 1px 2px #d9e716;">
+                            AI
+                            Diagnostic</p>
+                        <p class="text-lg" style="color:rgba(73, 44, 3, 0.7); font-family:monospace;">powered by
+                            Groq</p>
+                    </div>
+                </div>
+
+                <!-- chat history bubbles appear here -->
+                <div id="gchat" class="flex flex-col gap-3 mb-3" style="max-height:200px; overflow-y:auto;">
+                </div>
+
+                <!-- FAQ quick buttons -->
+                <div class="flex flex-col gap-2 mb-3" style="position:relative; z-index:10;">
+                    <h1 class="text-2xl ml-4" style="color:#eb9d0b; text-shadow: 0px 1px 2px #e91111;">FAQ</h1>
+                    <button onclick="askGroq('What are the most common heart diseases and their symptoms?')"
+                        class="text-left text-xl px-3 py-2 rounded-xl transition duration-300"
+                        style="border:3px solid #723f05; color:hsl(13, 88%, 3%); font-family:'Cormorant Garamond',serif;">
+                        What are common heart diseases?
+                    </button>
+                    <button onclick="askGroq('How do the lungs exchange oxygen and carbon dioxide?')"
+                        class="text-left text-xl px-3 py-2 rounded-xl transition duration-300"
+                        style="border:3px solid #723f05; color:#002029; font-family:'Cormorant Garamond',serif;">
+                        How do lungs exchange oxygen?
+                    </button>
+                    <button onclick="askGroq('What causes kidney stones and how are they treated?')"
+                        class="text-left text-xl px-3 py-2 rounded-xl transition duration-300"
+                        style=" border:3px solid #293802; color:#003e1f; font-family:'Cormorant Garamond',serif;">
+                        What causes kidney stones?
+                    </button>
+                </div>
+
+                <!-- input box -->
+                <div class="flex gap-2" style="position:relative; z-index:10; ">
+                    <input id="groq-input" type="text" placeholder="Ask about organs, symptoms, treatments..."
+                        class="flex-1 p-2 rounded-xl text-lg outline-none"
+                        style="background:rgba(255,250,240,0.15); border:3px solid #b40f0f; color:#000000; font-family:'Cormorant Garamond',serif;"
+                        onkeydown="if(event.key==='Enter') askGroq(this.value)" />
+                    <button onclick="askGroq(document.getElementById('groq-input').value)"
+                        class="px-4 py-2 rounded-xl text-sm font-bold transition duration-300"
+                        style="background:rgba(197,88,10,0.2); border:1px solid rgba(197,88,10,0.4); color:#c5580a; font-family:'Cormorant Garamond',serif;">
+                        Ask
+                    </button>
+                </div>
+
+            </div>
+
+</section>
+<style>
+    @keyframes vbar {
+
+        0%,
+        100% {
+            height: 40%;
+        }
+
+        50% {
+            height: 85%;
+        }
+    }
+</style>
+<script>
+    //Body Intelligence Center
+    // 1. Main info container where organ details appear
+    const infodiv = document.getElementById('organInfo');
+
+    // 2. Keep the default starting content so we can restore it later
+    const defaultInfoHTML = infodiv.innerHTML;
+
+    const heart = document.getElementById('heart');
+    const brain = document.getElementById('brain');
+    const lungs = document.getElementById('lungs');
+    const liver = document.getElementById('liver');
+    const kidney = document.getElementById('kidney');
+    const stomach = document.getElementById('stomach');
+
+    const dataInfo = [
+        { title: 'Heart', task: 'Human Systemic Circulation Engine', details: 'Pumps oxygenated blood through the body. Conditions: coronary artery disease, heart failure, arrhythmia. Risks: high cholesterol, obesity, stress.' },
+        { title: 'Brain', task: 'Human Central Processing Unit', details: 'Manages thoughts, memory and all biological systems. Conditions: stroke, migraine, Alzheimers. Risks: hypertension, diabetes, smoking.' },
+        { title: 'Lungs', task: 'Human Respiratory Gas Exchange', details: 'Pulls oxygen in and exhales CO2. Conditions: asthma, COPD, pneumonia. Risks: smoking, air pollution, infections.' },
+        { title: 'Liver', task: 'Human Metabolic & Detox Plant', details: 'Filters toxins and produces bile. Conditions: fatty liver, hepatitis, cirrhosis. Risks: alcohol, obesity, viral infections.' },
+        { title: 'Kidney', task: 'Humana Renal Filtration System', details: 'Filters blood waste and regulates fluids. Conditions: kidney stones, CKD, infections. Risks: diabetes, hypertension, dehydration.' },
+        { title: 'Stomach', task: 'Humana Primary Digestive Processor', details: 'Breaks down food using acids and enzymes. Conditions: gastritis, ulcers, GERD. Risks: stress, poor diet, H.pylori.' }
+    ];
+
+    const organs = [heart, brain, lungs, liver, kidney, stomach];
+
+    // 3. If an item is clicked, keep it open even after mouse leaves
+    let pinnedIndex = null;
+
+    // 4. Restore the default info panel text
+    function resetInfo() {
+        infodiv.innerHTML = defaultInfoHTML;
+    }
+
+    // 5. Click behavior:
+    // - first click on an organ = keep it open
+    // - click the same organ again = close it
+    // - click another organ = switch to that one
+    function toggleOrganInfo(index) {
+        if (pinnedIndex === index) {
+            pinnedIndex = null;
+            resetInfo();
+            return;
+        }
+
+        pinnedIndex = index;
+        setInfo(index);
+    }
+
+    // 6. Hover only previews when nothing is pinned
+    organs.forEach((el, i) => {
+        if (!el) return;
+
+        // Show temporary preview on hover only when nothing is clicked open
+        el.addEventListener('mouseenter', () => {
+            if (pinnedIndex === null) setInfo(i);
+        });
+
+        // Remove temporary preview on mouse away only when nothing is clicked open
+        el.addEventListener('mouseleave', () => {
+            if (pinnedIndex === null) resetInfo();
+        });
+
+        // Click toggles open/close for the same organ and switches for another organ
+        el.addEventListener('click', () => {
+            toggleOrganInfo(i);
+        });
+    });
+
+    function setInfo(index) {
+        const data = dataInfo[index];
+
+        // clear and rebuild inside existing organInfo div only
+        infodiv.innerHTML = '';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = 'Close';
+        closeBtn.className = 'absolute top-2 right-4 text-sm font-bold';
+        closeBtn.style.cssText = 'color:#8B5E3C; cursor:pointer;';
+
+        // Close button removes pinned state and brings back default text
+        closeBtn.onclick = () => {
+            pinnedIndex = null;
+            resetInfo();
+        };
+
+        const title = document.createElement('h3');
+        title.textContent = data.title;
+        title.className = 'text-3xl font-bold text-center w-full mb-1';
+        title.style.cssText = 'font-family:"Cormorant Garamond",serif; color:#c5580a;';
+
+        const task = document.createElement('h4');
+        task.textContent = data.task;
+        task.className = 'text-2xl italic font-semibold text-center text[#3D0C02] w-full mb-2';
+        task.style.cssText = 'font-family:"Cormorant Garamond",serif; ';
+
+        const details = document.createElement('p');
+        details.textContent = data.details;
+        details.className = 'text-2xl text-center leading-relaxed w-full';
+        details.style.cssText = 'font-family:"Cormorant Garamond",serif; color:#3D2B1F;';
+
+        // make infodiv relative so close button positions correctly
+        infodiv.style.position = 'relative';
+        infodiv.style.alignItems = 'flex-start';
+
+        infodiv.appendChild(closeBtn);
+        infodiv.appendChild(title);
+        infodiv.appendChild(task);
+        infodiv.appendChild(details);
+    }
+
+    //Body Intelligence Center script start here 
+
+    // create a anync function to send user asking message input to flask and get Groq ai reply. So it needs to wait.
+    // async function to send user message to flask and get groq ai reply
+    async function askGroq(message) {
+        // stop if message is empty
+        if (!message || !message.trim()) return;
+
+        // grab the chat history div where bubbles appear
+        const gchat = document.getElementById('gchat');
+
+        // grab the input box to clear it after sending
+        const input = document.getElementById('groq-input');
+
+        // create user bubble and add to right side with person emoji
+        const userBubble = document.createElement('div');
+        userBubble.className = 'flex justify-end items-end gap-2';
+        userBubble.innerHTML = `
+                <div style="background:rgba(197,88,10,0.12); border:1px solid rgba(197,88,10,0.2); 
+                            border-radius:12px 12px 2px 12px; padding:8px 12px; max-width:75%;">
+                    <p style="margin:0; font-size:24px; color:#880d1e; 
+                            font-family:'Cormorant Garamond',serif;">${message}</p>
+                </div>
+                <span style="font-size:14px;">👤</span>
+            `;
+        gchat.appendChild(userBubble);
+
+        // clear the input box after message is sent
+        input.value = '';
+
+        // scroll chat to bottom so latest message is visible
+        gchat.scrollTop = gchat.scrollHeight;
+
+        try {
+            // send message to flask /gChat route as json post request
+            const res = await fetch('/groq', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+
+            // parse the json response from flask
+            const data = await res.json();
+
+            // create ai reply bubble on left side with medical emoji
+            const aiBubble = document.createElement('div');
+            aiBubble.className = 'flex justify-start items-end gap-2';
+            aiBubble.innerHTML = `
+                    <span style="font-size:14px;">⚕</span>
+                    <div style="background:rgba(255,250,240,0.15); border:1px solid rgba(235,219,7,0.15); 
+                                border-radius:12px 12px 12px 2px; padding:8px 12px; max-width:75%;">
+                        <p style="margin:0; font-size:20px; color:#880d1e; 
+                                font-family:'Cormorant Garamond',serif;">${data.reply}</p>
+                    </div>
+                `;
+            gchat.appendChild(aiBubble);
+
+            // keep only 10 exchanges (20 bubbles max) - remove oldest if exceeded
+            while (gchat.children.length > 20) {
+                gchat.removeChild(gchat.firstChild);
+            }
+
+            // scroll to bottom again after ai reply appears
+            gchat.scrollTop = gchat.scrollHeight;
+
+        } catch (error) {
+            // show error bubble if server is not responding
+            const errBubble = document.createElement('div');
+            errBubble.innerHTML = `
+                    <p style="font-size:12px; color:red; font-family:'Cormorant Garamond',serif;">
+                        Error: server not responding
+                    </p>`;
+            gchat.appendChild(errBubble);
+        }
+    }
+</script>
+{% endmacro %}
+
+<!-- Interactive Logic (Dropdown toggling) -->
+
+{% macro services_script() %}
+// Dropdown toggle logic
+const ddBtn = document.getElementById('ddBtn');
+const ddList = document.getElementById('ddList');
+const ddArrow = document.getElementById('ddArrow');
+
+ddBtn.addEventListener('click', (e) => {
+e.stopPropagation();
+const isOpen = ddList.classList.contains('hidden');
+if (isOpen) {
+ddList.classList.remove('hidden');
+ddArrow.style.transform = 'rotate(180deg)';
+} else {
+ddList.classList.add('hidden');
+ddArrow.style.transform = 'rotate(0deg)';
+}
+});
+
+<!-- document.addEventListener('click', () => {
+        ddList.classList.add('hidden');
+        ddArrow.style.transform = 'rotate(0deg)';
+        }); -->
+
+{% endmacro %}
+
+{% macro close_body() %}
+</body>
+
+</html>
+{% endmacro %}
