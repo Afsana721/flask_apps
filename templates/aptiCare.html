@@ -1,0 +1,366 @@
+
+ {% from 'element.html' import doctype %}
+{{ doctype() }}
+
+    <title> {{ title_name }} _afsana</title>
+   <!-- google font & tailwind link here -->
+{% from 'element.html' import load_assets %}
+{{ load_assets() }}
+
+<style>
+   body {
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("https://static.vecteezy.com/system/resources/thumbnails/072/519/411/small/vibrant-expression-of-light-emanating-from-a-human-figure-with-arms-outstretched-symbolizing-energy-and-vitality-in-a-dark-background-setting-photo.jpeg");
+            background-size: 150%;
+            mix-blend-mode: multiply;
+            animation: slowPan 160s ease-in-out infinite;
+            z-index: -10;
+        }
+
+        @keyframes slowPan {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            25% {
+                background-position: 50% 100%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            75% {
+                background-position: 50% 0%;
+            }
+
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        /* body::after { content:''; position:fixed; inset:0; background: linear-gradient(#d2e9d5, #ebe704, #da0707); opacity:0.4; z-index:-5; }
+         */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            /* center-only sprinkle (not full page) */
+            background:
+            repeating-linear-gradient(20deg, #6e6868 0 1px, transparent 1px 50px),
+            repeating-linear-gradient(75deg, #696323 0 1px, transparent 1px 50px),
+            repeating-linear-gradient(140deg, #dfd0ac 0 1px, transparent 1px 60px),
+            linear-gradient(hwb(59 2% 5%), #ecd506, #d9db3e, #a38282, #d6a7e9, #e9e633, #a88484);
+            background-size: 320px 320px, 300px 300px, 340px 340px, cover;
+            background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+            background-position: center, center, center, center;
+            animation: lineMove 12s linear infinite;
+            opacity: 0.6;
+            z-index: -8;
+        }
+
+        @keyframes lineMove {
+            0% {
+                background-position: 20% 30%, 70% 60%, 40% 80%, center;
+            }
+
+            33% {
+                background-position: 50% 40%, 60% 70%, 30% 60%, center;
+            }
+
+            66% {
+                background-position: 30% 70%, 40% 50%, 70% 30%, center;
+            }
+
+            100% {
+                background-position: 20% 30%, 70% 60%, 40% 80%, center;
+            }
+        }
+
+
+     #coming-soon-overlay {
+         animation: delayShowText 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+         opacity: 0;
+     }
+
+     #coming-soon-text {
+         animation: wiggleFloat 5.5s ease-in-out infinite;
+         display: inline-block;
+     }
+
+     .custom-slide {
+         position: absolute;
+         inset: 0;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         gap: 1.5rem;
+         transition: all 700ms ease-in-out;
+         width: 100%;
+     }
+     .slide-image-container {
+         width: 100%;
+         height: 500px;
+         overflow: hidden;
+         border-radius: 1rem;
+     }
+     .slide-image {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+     }
+    .footer-edge-glow {
+    height: 90px;
+    width: 100%;
+    position: relative;
+    z-index: 50;
+    background: linear-gradient(135deg, rgba(255, 133, 161, 0.95), rgba(240, 50, 50, 1), rgb(207, 161, 7), rgba(255, 179, 191, 0.9));
+    box-shadow: 0 0 30px #e49696, 4px 5px 60px #f5f104, 0 2px 90px #d31a45, inset 8px 0 20px rgba(243, 239, 9, 0.8);
+    animation: edgeMove 10s ease-in-out infinite;
+    }
+
+
+    @keyframes edgeMove{
+        0%,20%, 40%, 50%, 100%{transform:translateY(20px);}
+        50%{transform:translateY(-0.2px);}
+    }
+
+    #doc_text {
+        animation: moveText 6s ease-in-out infinite;
+    }
+
+    @keyframes moveText {
+        0%, 20%, 40%, 100% { transform: translateX(10px); }
+        20% { transform: translateX(-2px); }
+    }
+
+</style>
+<!-- </head> -->
+<body>
+    {% from 'element.html' import header_section %}
+    {{ header_section() }}
+    
+    <main class="w-full max-w-7xl mx-auto mt-12 flex flex-col gap-10 items-center">
+         {# {% from 'element.html' import main_first %}
+        {{ main_first() }} #}
+    
+
+
+    {% from 'element.html' import doctor_gif %}
+    {% call doctor_gif() %}
+        <div class="coming-soon-overlay absolute inset-0 flex items-right justify-center bg-black/40 rounded-2xl pointer-events-none">
+            <span id="doc_text" class="ml-72 mb-12 text-xl font-bold  drop-shadow-lg" 
+                  style="color:#d60c0c; font-family: 'Caveat', 'Comic Sans MS', cursive; text-shadow: 2px 2px 8px #070000; ">
+                On the way ...
+            </span>
+        </div>
+    {% endcall %}
+
+       <!-- part of why apticare how to help around the world on health services, add slider image who shows one by one image aout services -->
+         <section id="activities" class="w-full py-2 bg-transparent select-none ">
+            <!-- Inner wrapper with changed ID to avoid duplication -->
+            <div id="apticares-activities-slider" class="w-full flex flex-col items-center bg-transparent">
+                
+                <!-- Clean Header with no custom style tags -->
+              <h2 class="mt-6 mb-6 text-5xl font-extrabold font-serif tracking-wide" 
+                style="color:#af1212; background: linear-gradient(90deg, #b11111, #0d0e0e, #5b5c37); 
+                filter: drop-shadow(0px 1px 0px rgba(228, 228, 133, 0.6)); 
+                animation: textShine 6s ease infinite alternate; background-clip: text; -webkit-background-clip: text; 
+                color: transparent; -webkit-text-fill-color: transparent;"> 
+                Why Choose AptiCares? 
+            </h2>
+            <style>
+            @keyframes textShine {
+                0% { filter: brightness(1) drop-shadow(0px 1px 2px rgba(228, 161, 27, 0.6)); }
+                100% { filter: brightness(1) drop-shadow(0px 2px 6px #631717); }
+            }
+            </style>
+
+                <!--some text why Choose Apticare but inline style and nice font and color and all. -->
+                <div style="margin-bottom: 20px; font-family: 'Inter', sans-serif; font-weight: 500; font-size: 1.20rem; line-height: 1.75rem; color: #000000;
+                    text-shadow:0px 2px 2px #e2eb6c ,  0.5px 0.5px 0.5px #ca0808;; width:100%; display:flex; align-items:flex-start; justify-content:flex-start; ">
+                    <!-- <h3>We are here to learn more and assist you all</h3> -->
+                    <img id="gifs" src="https://cdn.pixabay.com/animation/2022/08/06/11/57/11-57-43-584_512.gif" alt="AptiCares icon" class="w-72 h-72 -mt-32 -mr-20" 
+                        style=" mix-blend-mode:multiply; opacity:9px;">
+                    <span id="preface" style="display:block; flex:1; text-align:left;">AptiCares is revolutionizing healthcare delivery with a secure, 
+                    AI-powered platform that connects patients, doctors, researchers, and institutions. 
+                    Our innovative solutions enable seamless teleconsultations, intelligent clinical workflows, compliant biomedical data 
+                    access, and unified hospital networks. Experience the future of healthcare with AptiCares.</span>
+                </div>
+ 
+                <!-- Compact Slider Viewport: Adjusted heights to safely accommodate the larger 500px image + text -->
+                <div id="slider-viewport" class="relative z-50 w-full bg-transparent" 
+                style="position: relative; width: 100%; min-height: 780px; height: auto; mix-blend-mode: multiply; ">
+                    {% for item in imageData %}
+                    <div class="custom-slide">
+                        <div class="slide-image-container bg-transparent" style="border-top: 6px solid #160a06; box-shadow: 0 25px 50px -12px #e7da1d;">
+                            <img src="{{ item.image }}" alt="{{ item.name }}" class="slide-image" style=" mix-blend-mode: multiply; opacity:0.9; ">
+                        </div>
+
+                      <div class="w-full text-center bg-transparent">
+                        <span class="uppercase font-extrabold tracking-widest block mb-2" 
+                            style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; 
+                            color:#e60a0a; font-size:22px; letter-spacing: 3px; text-shadow: 1px 1px 3px #000000;">{{ item.name }}</span>
+                        <h4 class="font-bold mb-3" 
+                            style="font-family:'Georgia', 'Gill Sans', serif; 
+                                color:hsl(32, 88%, 50%); font-size:24px; letter-spacing: 0.2px; text-shadow: 1px 2px 1px #b80f0f;">{{ item.title }}</h4>
+                        <p class="max-w-2xl mx-auto" 
+                            style="font-family:'Gill Sans', Calibri, 'Trebuchet MS', sans-serif; 
+                            color:#000000; font-size:22px; line-height:1.8; font-weight:500; text-shadow: 1px 1px 2px #e6d70a;">{{ item.des }}</p>
+                    </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="flex justify-center gap-2 mt-6 bg-transparent">
+                {% for item in imageData %}
+                <button data-slide="{{ loop.index0 }}" class="slider-bullet w-2.5 h-2.5 rounded-full bg-slate-300 transition-all duration-300"></button>
+                {% endfor %}
+                </div>
+            </div>
+    </section>
+
+    {% from "element.html" import meet_virtual %} 
+
+    {{ meet_virtual() }}
+
+    {% from "element.html" import  gen_engin %}
+    {{ gen_engin() }}
+
+    {%  from "element.html" import body_Intelligence %}
+    {{ body_Intelligence() }}
+
+    </main>
+
+    <div class="footer-edge-glow relative mt-44 "></div>
+    {% include "footer.html" %}
+
+    <script>
+    //nav service dropdown script.
+        const ddBtn = document.getElementById('ddBtn');
+        const ddList = document.getElementById('ddList');
+        const ddArrow = document.getElementById('ddArrow');
+
+        ddBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = ddList.classList.contains('hidden');
+            if (isOpen) {
+                ddList.classList.remove('hidden');
+                ddArrow.style.transform = 'rotate(180deg)';
+            } else {
+                ddList.classList.add('hidden');
+                ddArrow.style.transform = 'rotate(0deg)';
+            }
+        });
+
+        document.addEventListener('click', () => {
+            ddList.classList.add('hidden');
+            ddArrow.style.transform = 'rotate(0deg)';
+        });
+
+    //activities section script
+        let slideIndex = 0;
+        let slideTimer;
+        const allSlides = document.querySelectorAll('.custom-slide');
+        const allBullets = document.querySelectorAll('.slider-bullet');
+        const viewportContainer = document.getElementById('slider-viewport');
+
+        allBullets.forEach((bullet, index) => {
+            bullet.addEventListener('click', () => changeToSlide(index));
+        });
+
+        // Render visibility and spacing securely using direct JS properties as fallbacks
+        function renderSlider() {
+            if (!allSlides.length) return;
+            allSlides.forEach((slide, index) => {
+                if (index === slideIndex) {
+                    slide.style.opacity = "1";
+                    slide.style.transform = "scale(1)";
+                    slide.style.pointerEvents = "auto";
+                    slide.style.visibility = "visible";
+                } else {
+                    slide.style.opacity = "0";
+                    slide.style.transform = "scale(0.95)";
+                    slide.style.pointerEvents = "none";
+                    slide.style.visibility = "hidden";
+                }
+            });
+
+            allBullets.forEach((bullet, index) => {
+                if (index === slideIndex) {
+                    bullet.classList.replace('bg-slate-300', 'bg-amber-500');
+                    bullet.classList.add('w-5');
+                } else {
+                    bullet.classList.replace('bg-amber-500', 'bg-slate-300');
+                    bullet.classList.remove('w-5');
+                }
+            });
+        }
+
+        // Move to the next slide in sequence
+        function triggerNextSlide() {
+            if (!allSlides.length) return;
+            slideIndex = (slideIndex + 1) % allSlides.length;
+            renderSlider();
+        }
+
+        // Direct navigation via dots
+        function changeToSlide(targetIndex) {
+            slideIndex = targetIndex;
+            renderSlider();
+        }
+
+        // Start the automated cycling loop
+        function startAutoPlay() {
+            stopAutoPlay();
+            slideTimer = setInterval(triggerNextSlide, 3500);
+        }
+
+        // Stop the cycling loop on hover
+        function stopAutoPlay() {
+            if (slideTimer) {
+                clearInterval(slideTimer);
+                slideTimer = null;
+            }
+        }
+
+        if (viewportContainer && allSlides.length > 0) {
+            // Attach mouse listeners to handle hover-to-pause
+            viewportContainer.addEventListener('mouseenter', stopAutoPlay);
+            viewportContainer.addEventListener('mouseleave', startAutoPlay);
+
+            // Mobile touch swipe gestures
+            let touchStart = 0;
+            let touchEnd = 0;
+            
+            viewportContainer.addEventListener('touchstart', (e) => {
+                touchStart = e.changedTouches[0].screenX;
+                stopAutoPlay();
+            }, { passive: true });
+
+            viewportContainer.addEventListener('touchend', (e) => {
+                touchEnd = e.changedTouches[0].screenX;
+                detectSwipe();
+                startAutoPlay();
+            }, { passive: true });
+
+            function detectSwipe() {
+                if (touchStart - touchEnd > 50) {
+                    triggerNextSlide();
+                } else if (touchEnd - touchStart > 50) {
+                    slideIndex = (slideIndex - 1 + allSlides.length) % allSlides.length;
+                    renderSlider();
+                }
+            }
+
+            // Initial launch setups
+            renderSlider();
+            startAutoPlay();
+        }
+        
+    </script>
