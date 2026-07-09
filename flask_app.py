@@ -331,226 +331,125 @@ def dbpedia():
 
 
 #Adding here app.py full with all routs and def with all data for apticare apps 
-from flask import Flask, render_template, request, redirect, jsonify, json, Response, stream_with_context
-import time
-import os
-import requests
-from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-from groq import Groq
-# removed huggingface dependency
 
+from flask import Flask, render_template, request, jsonify, Response, stream_with_context
+import os
+import json
+import time
 from datetime import datetime
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+APTICARE_DATA_FILE = os.path.join(BASE_DIR, "static", "aptiCareData.json")
+APTICARE_RESPONSES_FILE = os.path.join(BASE_DIR, "static", "aptiCareResponses.json")
 
-load_dotenv()
-groq_api_key = os.getenv("GROQ_API_KEY")
 
-app = Flask(__name__)
+def load_json_file(file_path, fallback_data):
+    try:
+        with open(file_path, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except Exception:
+        return fallback_data
 
-# global store for Chroma
-chroma_db = None
 
-# helper: ingest once if not exists
-# ingest data once and create vector index (with logs)
-# def ingest_url_if_needed(url):
-#     global chroma_db
-#     try:
-#         print("[INGEST] Fetching data...")
-#         headers = {'User-Agent': 'Mozilla/5.0'}
-#         response = requests.get(url, headers=headers, timeout=10)
-#         soup = BeautifulSoup(response.text, 'html.parser')
-#         text = soup.get_text(separator=' ', strip=True)
+def get_aptiCare_data():
+    fallback_data = {
+        "imgData": [
+            {
+                "id": "img1",
+                "name": "For Patients",
+                "title": "On-Demand Teleconsultation",
+                "des": "On-demand teleconsultation provides an immediate, secure link between remote patients and specialized physicians.",
+                "image": "https://anthem-blog-media.s3.us-west-1.amazonaws.com/wp-content/uploads/2020/11/10202642/BLG-ALL-0095-20-Blog-Article-Images-for-2020-Oct_Telehealth-2.gif"
+            },
+            {
+                "id": "img2",
+                "name": "For Doctors",
+                "title": "Next-Gen Digital Chambers",
+                "des": "The next-generation digital medical chamber is a compact, autonomous healthcare hub that uses AI and biometric sensors.",
+                "image": "https://optimoz.com/wp-content/uploads/2024/12/Harnessing-Artificial-Intelligence-to-Revolutionize-Healthcare.gif"
+            },
+            {
+                "id": "img3",
+                "name": "For Researchers",
+                "title": "Anonymized Clinical Cohorts",
+                "des": "Anonymized clinical cohorts aggregate de-identified patient data to enable large-scale medical research without compromising privacy.",
+                "image": "https://i.makeagif.com/media/6-30-2020/WxMaqz.gif"
+            },
+            {
+                "id": "img4",
+                "name": "For Institutions",
+                "title": "Decentralized Hospital Networks",
+                "des": "Decentralized hospital networks distribute authority and data across multiple independent nodes for faster local decisions.",
+                "image": "https://i.giphy.com/l1J9CXWtcXqkfRN60.gif"
+            },
+            {
+                "id": "img5",
+                "name": "Ancient Care",
+                "title": "Ancient Medical Techniques",
+                "des": "Ancient medical techniques use time-tested, nature-based practices like herbalism and acupuncture to treat ailments.",
+                "image": "https://cdn.egyptatours.com/wp-content/uploads/2024/12/Ancient-Egyptian-Medicine-Powerful-Secrets-of-Healing-and-Science-Featured-Image-EgyptaTours.webp"
+            }
+        ],
+        "hostData": {
+            "contributors": [
+                {
+                    "name": "AptiCare Core Team",
+                    "role": "Contributor",
+                    "study": "UI and portal development",
+                    "updated": "07:30 PM, 09 July, 2026 CDT"
+                }
+            ],
+            "doctors": [
+                {
+                    "name": "Dr. Sarah Mitchell",
+                    "role": "Cardiologist",
+                    "affiliation": "City General Hospital, Texas",
+                    "updated": "07:30 PM, 09 July, 2026 CDT"
+                }
+            ],
+            "research": [
+                {
+                    "name": "AptiCare Research Lab",
+                    "role": "Research Center",
+                    "affiliation": "Biomedical Innovation Group",
+                    "updated": "07:30 PM, 09 July, 2026 CDT"
+                }
+            ]
+        }
+    }
+    return load_json_file(APTICARE_DATA_FILE, fallback_data)
 
-#         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-#         docs = [Document(page_content=chunk) for chunk in splitter.split_text(text)]
 
-#         embeddings = FakeEmbeddings(size=384)
-#         chroma_db = Chroma.from_documents(docs, embeddings)
-#         print("Saved vectors:", len(chroma_db._collection.get()['ids']))
+def get_aptiCare_responses():
+    fallback_data = {
+        "patient_intake": "Thanks. Your intake was received successfully.",
+        "patient_followup": "Doctor reviewed your submission. We will contact you soon.",
+        "groq": "Demo reply from local static file.",
+        "gene_llm": "Gene panel demo reply from local static file."
+    }
+    return load_json_file(APTICARE_RESPONSES_FILE, fallback_data)
 
-#         print("[INGEST] Chroma vector ready")
-#     except Exception as e:
-#         print(f"[INGEST ERROR]: {str(e)}")
-#         chroma_db = []  # fallback store
 
-data = {
-    "imgData": [
-        {"id": "img1", "name": "For Patients", "title": "On-Demand Teleconsultation", "des": "On-demand teleconsultation provides an immediate, secure link between remote patients and specialized physicians through high-definition video interfaces.", "image": "https://anthem-blog-media.s3.us-west-1.amazonaws.com/wp-content/uploads/2020/11/10202642/BLG-ALL-0095-20-Blog-Article-Images-for-2020-Oct_Telehealth-2.gif"},
-        {"id": "img2", "name": "For Doctors", "title": "Next-Gen Digital Chambers", "des": "The next-generation digital medical chamber is a compact, autonomous healthcare hub that uses AI and biometric sensors.", "image": "https://optimoz.com/wp-content/uploads/2024/12/Harnessing-Artificial-Intelligence-to-Revolutionize-Healthcare.gif"},
-        {"id": "img3", "name": "For Researchers", "title": "Anonymized Clinical Cohorts", "des": "Anonymized clinical cohorts aggregate de-identified patient data to enable large-scale medical research without compromising individual privacy.", "image": "https://i.makeagif.com/media/6-30-2020/WxMaqz.gif"},
-        {"id": "img4", "name": "For Institutions", "title": "Decentralized Hospital Networks", "des": "Decentralized hospital networks distribute authority and data across multiple independent nodes, enabling faster local decision-making.", "image": "https://i.giphy.com/l1J9CXWtcXqkfRN60.gif"},
-        {"id": "img5", "name": "Ancient Care", "title": "Ancient Medical Techniques", "des": "Ancient medical techniques use time-tested, nature-based practices like herbalism and acupuncture to treat ailments.", "image": "https://cdn.egyptatours.com/wp-content/uploads/2024/12/Ancient-Egyptian-Medicine-Powerful-Secrets-of-Healing-and-Science-Featured-Image-EgyptaTours.webp"}
-    ]
-}
+def top_five(items):
+    return (items or [])[:5]
 
 
 @app.route('/hosting/<section_id>')
 def hosting(section_id):
-    # route path sends clicked section id into hosting function
     section_id = (section_id or '').strip().lower()
-
-    def unique_top_five(items):
-        seen = set()
-        result = []
-
-        for item in items:
-            name = (item.get("name") or "").strip()
-            if not name:
-                continue
-
-            key = name.lower()
-            if key in seen:
-                continue
-
-            seen.add(key)
-            result.append(item)
-
-            if len(result) == 5:
-                break
-
-        return result
-
-    def get_host_data():
-        api_url = "https://clinicaltrials.gov/api/v2/studies"
-
-        params = {
-            "query.locn": "United States",
-            "pageSize": 100,
-            "format": "json",
-        }
-
-        response = requests.get(api_url, params=params, timeout=20)
-        response.raise_for_status()
-
-        payload_json = response.json()
-        studies = payload_json.get("studies", [])
-
-        contributors = []
-        doctors = []
-        research = []
-
-        for study in studies:
-            protocol = study.get("protocolSection", {})
-            identification = protocol.get("identificationModule", {})
-            status_module = protocol.get("statusModule", {})
-            sponsor_module = protocol.get("sponsorCollaboratorsModule", {})
-            contacts_module = protocol.get("contactsLocationsModule", {})
-
-            title = (
-                identification.get("briefTitle")
-                or identification.get("officialTitle")
-                or "Untitled Study"
-            )
-
-            updated = (
-                status_module.get("lastUpdatePostDateStruct", {})
-                or {}
-            ).get("date", "")
-
-            if updated and not str(updated).startswith("2026"):
-                continue
-
-            lead_sponsor = sponsor_module.get("leadSponsor", {}) or {}
-            lead_name = (lead_sponsor.get("name") or "").strip()
-
-            if lead_name:
-                contributors.append({
-                    "name": lead_name,
-                    "role": "Lead Sponsor",
-                    "study": title,
-                    "updated": updated,
-                })
-
-                lead_low = lead_name.lower()
-                if any(word in lead_low for word in ["research", "center", "centre", "institute", "university", "lab"]):
-                    research.append({
-                        "name": lead_name,
-                        "role": "Research Organization",
-                        "study": title,
-                        "updated": updated,
-                    })
-
-            for collaborator in sponsor_module.get("collaborators", []) or []:
-                collab_name = (collaborator.get("name") or "").strip()
-
-                if not collab_name:
-                    continue
-
-                contributors.append({
-                    "name": collab_name,
-                    "role": "Collaborator",
-                    "study": title,
-                    "updated": updated,
-                })
-
-            for official in contacts_module.get("overallOfficials", []) or []:
-                official_name = (official.get("name") or "").strip()
-                official_role = (official.get("role") or "").strip()
-                official_affiliation = (official.get("affiliation") or "").strip()
-
-                if not official_name:
-                    continue
-
-                role_low = official_role.lower()
-
-                if "investigator" in role_low or "physician" in role_low or "doctor" in role_low:
-                    doctors.append({
-                        "name": official_name,
-                        "role": official_role or "Doctor",
-                        "affiliation": official_affiliation,
-                        "study": title,
-                        "updated": updated,
-                    })
-                else:
-                    research.append({
-                        "name": official_name,
-                        "role": official_role or "Researcher",
-                        "affiliation": official_affiliation,
-                        "study": title,
-                        "updated": updated,
-                    })
-
-        return {
-            "contributors": unique_top_five(contributors),
-            "doctors": unique_top_five(doctors),
-            "research": unique_top_five(research),
-        }
 
     @stream_with_context
     def event_stream():
         for _ in range(5):
-            host_data = get_host_data()
-            # server timestamp for this SSE response
+            apticare_data = get_aptiCare_data()
+            host_data = apticare_data.get("hostData", {})
             sent_at = datetime.now().strftime("%I:%M %p, %d %B, %Y CDT")
-            if section_id == 'contributors':
-                payload = {
-                    "section": "contributors",
-                    # send current server time with contributors data
-                    "sent_at": sent_at,
-                    "items": host_data["contributors"],
-                }
-            elif section_id == 'doctors':
-                payload = {
-                    "section": "doctors",
-                    # send current server time with doctors data
-                    "sent_at": sent_at,
-                    "items": host_data["doctors"],
-                }
-            elif section_id == 'research':
-                payload = {
-                    "section": "research",
-                    # send current server time with research data
-                    "sent_at": sent_at,
-                    "items": host_data["research"],
-                }
-            else:
-                payload = {
-                    "section": section_id,
-                    # send current server time even if no items found
-                    "sent_at": sent_at,
-                    "items": [],
-                }
+
+            payload = {
+                "section": section_id,
+                "sent_at": sent_at,
+                "items": top_five(host_data.get(section_id, []))
+            }
 
             yield f"data: {json.dumps(payload)}\n\n"
             time.sleep(300)
@@ -560,89 +459,64 @@ def hosting(section_id):
         mimetype='text/event-stream',
         headers={
             'Cache-Control': 'no-cache',
-            'X-Accel-Buffering': 'no',
-        },
+            'X-Accel-Buffering': 'no'
+        }
     )
 
 
 @app.route('/aptiCare')
 def aptiCare():
     llm_text = request.args.get('llm_response')
+    apticare_data = get_aptiCare_data()
     return render_template(
         'aptiCare.html',
         title_name='AptiCares Home',
-        imageData=data["imgData"],
+        imageData=apticare_data.get("imgData", []),
         llm_response=llm_text
     )
 
+
 @app.route('/imgData')
 def imgData():
-    return render_template("index.html", title_name="AptiCares Home", imageData=data["imgData"])
+    apticare_data = get_aptiCare_data()
+    return jsonify(apticare_data.get("imgData", []))
+
 
 @app.route('/patient-intake', methods=['POST'])
 def patient_intake():
-    client = Groq(api_key=groq_api_key)
-    req = request.get_json(force=True)
-    msg = (req.get('message') or '').strip()
-    completion = client.chat.completions.create(model="llama-3.1-8b-instant", messages=[{"role": "system", "content": "You are a medical assistant."}, {"role": "user", "content": msg}])
-    return jsonify({'ai_reply': completion.choices[0].message.content})
+    responses = get_aptiCare_responses()
+    reply_text = responses.get("patient_intake", "Thanks. Your intake was received successfully.")
+    return jsonify({'ai_reply': reply_text})
+
 
 @app.route('/patient-followup', methods=['POST'])
 def patient_followup():
+    responses = get_aptiCare_responses()
     req = request.get_json(force=True) or {}
     contact = req.get('contact') or {}
     email = (contact.get('email') or '').strip()
     phone = (contact.get('phone') or '').strip()
-    note = f"Thanks. We will contact you at {email or phone}." if (email or phone) else "Please share your email or phone."
-    return jsonify({'doctor_reply': f"Doctor reviewed your submission. {note}"})
+
+    base_reply = responses.get("patient_followup", "Doctor reviewed your submission. We will contact you soon.")
+    if email or phone:
+        base_reply = f"{base_reply} Contact: {email or phone}"
+
+    return jsonify({'doctor_reply': base_reply})
+
 
 @app.route('/groq', methods=['POST'])
 def groq():
-    try:
-        client = Groq(api_key=groq_api_key)
-        data = request.get_json(force=True) or {}
-        msg = (data.get('message') or '').strip()
-
-        if not msg:
-            return jsonify({'reply': 'Empty message'})
-
-        completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {"role": "system", "content": "Reply in max 5 lines only. Keep answer short and direct."},
-                {"role": "user", "content": msg}
-            ]
-        )
-
-        return jsonify({'reply': completion.choices[0].message.content})
-
-    except Exception as e:
-        return jsonify({'reply': f'Error: {str(e)}'})
+    responses = get_aptiCare_responses()
+    reply_text = responses.get("groq", "Demo reply from local static file.")
+    return jsonify({'reply': reply_text})
 
 
 @app.route('/gene-llm', methods=['POST'])
 def gene_llm():
-    try:
-        client = Groq(api_key=groq_api_key)
-        data = request.get_json(force=True) or {}
-        msg = (data.get('message') or '').strip()
+    responses = get_aptiCare_responses()
+    reply_text = responses.get("gene_llm", "Gene panel demo reply from local static file.")
+    return jsonify({'reply': reply_text})
 
-        if not msg:
-            return jsonify({'reply': 'Empty message'})
-
-        completion = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {"role": "system", "content": "Reply in max 5 lines only. Keep answer short and direct."},
-                {"role": "user", "content": msg}
-            ]
-        )
-
-        return jsonify({'reply': completion.choices[0].message.content})
-
-    except Exception as e:
-        return jsonify({'reply': f'Error: {str(e)}'})
-   
 
 
 
