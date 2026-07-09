@@ -1,0 +1,65 @@
+{
+  "imgData": [
+    {
+      "id": "img1",
+      "name": "For Patients",
+      "title": "On-Demand Teleconsultation",
+      "des": "On-demand teleconsultation provides an immediate, secure link between remote patients and specialized physicians.",
+      "image": "https://anthem-blog-media.s3.us-west-1.amazonaws.com/wp-content/uploads/2020/11/10202642/BLG-ALL-0095-20-Blog-Article-Images-for-2020-Oct_Telehealth-2.gif"
+    },
+    {
+      "id": "img2",
+      "name": "For Doctors",
+      "title": "Next-Gen Digital Chambers",
+      "des": "The next-generation digital medical chamber is a compact, autonomous healthcare hub that uses AI and biometric sensors.",
+      "image": "https://optimoz.com/wp-content/uploads/2024/12/Harnessing-Artificial-Intelligence-to-Revolutionize-Healthcare.gif"
+    },
+    {
+      "id": "img3",
+      "name": "For Researchers",
+      "title": "Anonymized Clinical Cohorts",
+      "des": "Anonymized clinical cohorts aggregate de-identified patient data to enable large-scale medical research without compromising privacy.",
+      "image": "https://i.makeagif.com/media/6-30-2020/WxMaqz.gif"
+    },
+    {
+      "id": "img4",
+      "name": "For Institutions",
+      "title": "Decentralized Hospital Networks",
+      "des": "Decentralized hospital networks distribute authority and data across multiple independent nodes for faster local decisions.",
+      "image": "https://i.giphy.com/l1J9CXWtcXqkfRN60.gif"
+    },
+    {
+      "id": "img5",
+      "name": "Ancient Care",
+      "title": "Ancient Medical Techniques",
+      "des": "Ancient medical techniques use time-tested, nature-based practices like herbalism and acupuncture to treat ailments.",
+      "image": "https://cdn.egyptatours.com/wp-content/uploads/2024/12/Ancient-Egyptian-Medicine-Powerful-Secrets-of-Healing-and-Science-Featured-Image-EgyptaTours.webp"
+    }
+  ],
+  "hostData": {
+    "contributors": [
+      {
+        "name": "AptiCare Core Team",
+        "role": "Contributor",
+        "study": "UI and portal development",
+        "updated": "07:30 PM, 09 July, 2026 CDT"
+      }
+    ],
+    "doctors": [
+      {
+        "name": "Dr. Sarah Mitchell",
+        "role": "Cardiologist",
+        "affiliation": "City General Hospital, Texas",
+        "updated": "07:30 PM, 09 July, 2026 CDT"
+      }
+    ],
+    "research": [
+      {
+        "name": "AptiCare Research Lab",
+        "role": "Research Center",
+        "affiliation": "Biomedical Innovation Group",
+        "updated": "07:30 PM, 09 July, 2026 CDT"
+      }
+    ]
+  }
+}
