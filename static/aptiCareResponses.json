@@ -1,0 +1,6 @@
+{
+  "patient_intake": "Thanks. Your intake was received successfully. A summary of your symptoms, preferred appointment time, and contact details has been recorded. A doctor or care coordinator will review it and guide you on the next step.",
+  "patient_followup": "Doctor reviewed your submission. Based on the current details, the case can move to follow-up consultation, test recommendation, or direct specialist referral. We will contact you soon with the next update.",
+  "groq": "AptiCare demo response: this platform connects patients, doctors, researchers, and institutions through one digital portal. It can show intake summaries, support messages, follow-up guidance, and role-based healthcare information in a clear way.",
+  "gene_llm": "Gene panel demo reply: the uploaded gene-related information can be organized into a readable summary with possible markers, observations, and next-step notes. This is only a showcase response and not a final medical diagnosis."
+}
