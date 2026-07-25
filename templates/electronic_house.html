@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>electric house — afsana</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.167.1/build/three.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/068/273/543/small/abstract-motion-of-curve-lines-light-shiny-glow-effect-illustration-design-bright-gold-wave-wavy-line-pattern-element-graphic-design-for-technology-banner-template-wallpaper-background-vector.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      overflow-x: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(230, 23, 12, 0.34) 0%, transparent 22%),
+        radial-gradient(circle, rgba(147, 12, 165, 0.22) 0%, transparent 18%),
+        radial-gradient(circle, rgba(204, 201, 16, 0.28) 0%, transparent 19%),
+        radial-gradient(circle, rgba(13, 201, 185, 0.14) 0%, transparent 16%),
+        radial-gradient(circle, rgba(192, 60, 8, 0.12) 0%, transparent 15%),
+        linear-gradient(90deg, transparent 0 47%, rgba(255, 215, 0, 0.58) 49%, transparent 51%),
+        linear-gradient(120deg, transparent 0 46%, rgba(120, 220, 255, 0.28) 48%, transparent 50%);
+      background-repeat: no-repeat;
+      background-size: 42% 42%, 32% 32%, 34% 34%, 24% 24%, 22% 22%, 16% 9%, 16% 9%;
+      background-position: 12% 18%, 28% 62%, 78% 18%, 62% 74%, 84% 48%, 10% 26%, 32% 60%;
+      mix-blend-mode: screen;
+      clip-path: polygon(20% 18%, 28% 14%, 34% 20%, 40% 16%, 46% 22%, 54% 18%, 60% 24%, 68% 20%, 74% 28%, 80% 24%, 84% 100%, 18% 100%, 18% 24%);
+      opacity: 0.9;
+      animation: afterGlowMove 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes afterGlowMove {
+      0% {
+        background-position: 12% 18%, 28% 62%, 78% 18%, 62% 74%, 84% 48%, 10% 26%, 32% 60%;
+      }
+
+      100% {
+        background-position: 16% 24%, 24% 58%, 82% 22%, 58% 70%, 88% 44%, 12% 24%, 30% 62%;
+      }
+    }
+
+    header {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      min-height: 100vh;
+      padding: 14px 28px 34px;
+    }
+
+    nav {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr) minmax(0, 1fr) auto;
+      grid-template-areas:
+        "spacer pill pill btn"
+        "left left right right";
+      align-items: start;
+      gap: 18px 24px;
+      min-height: calc(100vh - 48px);
+    }
+
+    .nav-spacer {
+      grid-area: spacer;
+      width: 190px;
+      height: 1px;
+    }
+
+    .top-pill {
+      grid-area: pill;
+      justify-self: center;
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .top-pill span {
+      color: #f6cd53;
+    }
+
+    .top-btn {
+      grid-area: btn;
+      justify-self: end;
+      padding: 16px 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .left {
+      grid-area: left;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      align-self: center;
+      padding-top: 18px;
+    }
+
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid #FFD700;
+      background: transparent;
+      color: #FFA500;
+      text-shadow: 1px 2px 2px #E4D00A;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(52px, 7vw, 112px);
+      line-height: 0.92;
+      letter-spacing: -0.06em;
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    h1 span {
+      display: block;
+      color: #f5ca49;
+      font-weight: 500;
+    }
+
+    .desc {
+      margin: 24px 0 0;
+      max-width: 760px;
+      color: #e9e1c8;
+      text-shadow: 2px 3px 4px hsl(64, 100%, 50%);
+      font-size: clamp(14px, 1.35vw, 17px);
+      line-height: 1.58;
+      font-weight: 500;
+      font-size: 18px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 190px;
+      margin-left: clamp(-150px, -12vw, -88px);
+    }
+
+    .cta,
+    .cta-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: transparent;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .cta {
+      background: linear-gradient(135deg, #f5d463 0%, #f2c84a 55%, #ffe489 100%);
+      color: #17130a;
+      border-color: rgba(20, 19, 15, 0.3);
+      box-shadow: 0 14px 34px rgba(245, 200, 74, 0.12);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+      margin-left: clamp(-150px, -12vw, -88px);
+      max-width: 760px;
+    }
+
+    .card {
+      width: auto;
+      flex: 1 1 170px;
+      min-height: 120px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: transparent;
+      padding: 16px 16px 14px;
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+
+    }
+
+    .card span {
+      display: block;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .cards .card:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .right {
+      grid-area: right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      min-height: 620px;
+      align-self: center;
+      padding-top: 18px;
+    }
+
+    .hero-house {
+      width: min(100%, 720px);
+      height: auto;
+      object-fit: contain;
+      display: block;
+      background: transparent;
+      filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.28));
+      mix-blend-mode: screen;
+    }
+
+    #lightHouse {
+      display: block;
+      width: 100%;
+      max-width: none;
+      min-height: 100vh;
+      padding: 6px 0 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .light-house-stage {
+      position: relative;
+      width: calc(100vw - 12px);
+      max-width: none;
+      height: min(88vh, 960px);
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .light-house-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .spark-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .spark-point {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: var(--spark-color);
+      z-index: 3;
+      opacity: 0.98;
+      mix-blend-mode: screen;
+      box-shadow:
+        0 0 calc(var(--glow-size) * 0.45) var(--spark-color),
+        0 0 calc(var(--glow-size) * 0.95) var(--spark-color),
+        0 0 calc(var(--glow-size) * 1.7) var(--spark-color);
+      animation: sparkPulse 2.2s ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .spark-ray {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: calc(var(--glow-size) * 0.21);
+      transform-origin: center top;
+      background: linear-gradient(to bottom, var(--spark-color), transparent);
+      opacity: 0.88;
+      border-radius: 999px;
+      mix-blend-mode: screen;
+    }
+
+    .spark-ray.r1 {
+      transform: translate(-50%, -100%) rotate(0deg);
+    }
+
+    .spark-ray.r2 {
+      transform: translate(-50%, -100%) rotate(90deg);
+    }
+
+    .spark-ray.r3 {
+      transform: translate(-50%, -100%) rotate(45deg);
+    }
+
+    .spark-ray.r4 {
+      transform: translate(-50%, -100%) rotate(-45deg);
+    }
+
+    @keyframes sparkPulse {
+
+      0%,
+      100% {
+        opacity: 0.46;
+        transform: translate(-50%, -50%) scale(0.95);
+      }
+
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.18);
+      }
+    }
+
+    @media (max-width: 900px) {
+      header {
+        padding: 12px 14px 22px;
+      }
+
+      nav {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+        grid-template-areas:
+          "pill pill btn"
+          "left right right";
+        gap: 14px 14px;
+        min-height: auto;
+      }
+
+      .nav-spacer {
+        display: none;
+      }
+
+      .top-pill {
+        font-size: 12px;
+        padding: 10px 12px;
+        text-align: center;
+      }
+
+      .top-btn {
+        padding: 12px 16px;
+        font-size: 12px;
+      }
+
+      .mini-pill {
+        font-size: 12px;
+        padding: 10px 14px;
+      }
+
+      h1 {
+        font-size: clamp(58px, 6.4vw, 74px);
+      }
+
+      .actions {
+        gap: 10px;
+        margin-left: 0;
+      }
+
+      .cta,
+      .cta-ghost {
+        padding: 12px 15px;
+        font-size: 13px;
+      }
+
+      .cards {
+        gap: 10px;
+        margin-left: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .card {
+        min-height: 92px;
+        padding: 12px;
+      }
+
+      .card strong {
+        font-size: 13px;
+      }
+
+      .card span {
+        font-size: 12px;
+      }
+
+      .right {
+        min-height: 0;
+        padding-top: 10px;
+      }
+
+      .hero-house {
+        width: min(100%, 430px);
+      }
+    }
+
+    @media (max-width: 560px) {
+      header {
+        padding: 14px 16px 22px;
+      }
+
+      .top-pill,
+      .top-btn,
+      .mini-pill,
+      .cta,
+      .cta-ghost {
+        font-size: 12px;
+      }
+
+      .card {
+        width: 100%;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .cards .card:last-child {
+        grid-column: auto;
+      }
+
+      nav {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "pill"
+          "btn"
+          "left"
+          "right";
+        justify-items: center;
+      }
+
+      .top-btn {
+        justify-self: center;
+      }
+
+      .right {
+        width: 100%;
+      }
+
+      .hero-house {
+        width: min(100%, 360px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="heroSection">
+    <nav>
+      <div class="nav-spacer"></div>
+      <div class="top-pill"><span>BrickWire House</span> &nbsp; interactive STEM kit • lights • switches • circuits
+      </div>
+      <button class="top-btn" id="toggleBtn">Switch to device view</button>
+
+      <section class="left ml-2">
+        <div class="mini-pill text-xl mb-20"><i class="ti ti-bolt"></i> Build • Wire • Learn</div>
+        <div class="title-row ml-0" style="display:flex; align-items:flex-start; gap:0; width:100%;">
+          <div class="flex flex-col gap-6 ml-4"
+            style="flex:0 0 auto; margin:0; padding:0; position:relative; z-index:199; transform:perspective(1000px) translateZ(180px); filter:drop-shadow(-15px 25px 15px rgba(0,0,0,0.8));">
+            <img class="left-character"
+              src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Electro.png"
+              alt="Electro character" style="width:auto; height:420px; margin:0; margin-right:6px; display:block; object-fit:contain; flex-shrink:0;
+                    filter: drop-shadow(0px 0px 4px rgba(241, 243, 122, 0.65));">
+          </div>
+
+          <div style="flex:1 1 auto; min-width:0; margin:0; padding:0;">
+            <h1 class="text-5xl" style="text-shadow: 2px 4px 4px hsl(51, 96%, 47%);">Build your own
+              <span class="ml-10" style="text-shadow: 4px 4px 3px hsl(0, 88%, 47%);">electronic house</span>
+            </h1>
+
+            <p class="desc">
+              A more distinctive hero: product-first, premium, and interactive.<br>
+              Show the house as the visual stage, then layer a strong headline, one<br>
+              clear action, and small learning cards instead of a regular flat banner.
+            </p>
+
+            <div class="actions" style="margin-top:248px;">
+              <a href="#exploreSection" class="cta"><i class="ti ti-link"></i> Explore the kit</a>
+              <a href="#" class="cta-ghost"><i class="ti ti-player-play"></i> Watch how it works</a>
+            </div>
+
+            <div class="cards">
+              <div class="card">
+                <a href="#realComponentsSection"
+                  style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:inherit; font-weight:700;"><span
+                    style="display:inline-flex; flex-direction:column; gap:3px; width:14px;"><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span></span>Real
+                  components</a>
+                <span>LEDs, wires, switches, power, and build parts.</span>
+              </div>
+
+              <div class="card">
+                <a href="#handsOnLearningSection"
+                  style="display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:inherit; font-weight:700;"><span
+                    style="display:inline-flex; flex-direction:column; gap:3px; width:14px;"><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span><span
+                      style="display:block; width:14px; height:2px; border-radius:999px; background:currentColor;"></span></span>Hands-on
+                  learning</a>
+                <span>Polarity, circuits, lighting paths, and sensors.</span>
+              </div>
+
+              <div class="card">
+                <strong>Not a regular toy</strong>
+                <span>An interactive platform with engineering value.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="right mb-40" style="mix-blend-mode: multiply; filter: drop-shadow(1px 2px 1px #aaecd3);">
+        <img class="hero-house" id="heroHouseImage"
+          src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/elec5.png"
+          alt="Electronic house visual" style="width: 880px; height:auto;">
+      </section>
+    </nav>
+  </header>
+  <section id="lightHouse">
+    <div class="flex flex-row items-center justify-center gap-8 p-12">
+      <!-- Sensor Node (Left of the image) -->
+      <div id="sensorSidebar"
+        class="card p-6 flex flex-col items-center justify-center gap-4 border border-white/10 rounded-3xl bg-black/40 backdrop-blur-sm">
+        <strong class="text-xs text-slate-400 uppercase tracking-widest text-center">Environment Sensor</strong>
+        <div id="lightSensorGauge" class="relative w-32 h-32 flex items-center justify-center">
+          <svg class="w-full h-full -rotate-90">
+            <circle cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8" fill="transparent"
+              class="text-slate-800" />
+            <circle id="lightSensorProgress" cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8"
+              fill="transparent" stroke-dasharray="339" stroke-dashoffset="339"
+              class="text-emerald-400 transition-all duration-[200ms]" />
+          </svg>
+          <span id="lightSensorValue" class="absolute text-2xl font-bold">0%</span>
+        </div>
+        <p class="text-xs text-emerald-400/80 text-center italic">Calibrating light levels...</p>
+        <div class="mt-2 text-[10px] text-slate-300 text-center max-w-[140px] leading-relaxed">
+          Monitors ambient light to automatically adjust the house's internal illumination.
+        </div>
+
+        <!-- Manual Controls -->
+        <div class="grid grid-cols-3 gap-2 mt-4 w-full">
+          <button onclick="setManualBrightness(1.5)"
+            class="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-800 border border-slate-600 hover:bg-slate-700 transition">
+            <span class="text-xs font-bold text-white">Full</span>
+            <span class="text-[8px] text-slate-400">Max</span>
+          </button>
+          <button onclick="setManualBrightness(1.0)"
+            class="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-800 border border-slate-600 hover:bg-slate-700 transition">
+            <span class="text-xs font-bold text-white">Med</span>
+            <span class="text-[8px] text-slate-400">Mid</span>
+          </button>
+          <button onclick="setManualBrightness(0.5)"
+            class="flex flex-col items-center justify-center p-2 rounded-lg bg-slate-800 border border-slate-600 hover:bg-slate-700 transition">
+            <span class="text-xs font-bold text-white">Off</span>
+            <span class="text-[8px] text-slate-400">Min</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- House Stage (Right of the sensor) -->
+      <div class="light-house-stage" id="houseStage" style="margin: 0;">
+        <img id="housePhoto" class="light-house-photo"
+          src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/brick.png"
+          alt="Brick electronic house device view">
+        <div class="spark-layer" id="sparkLayer"></div>
+      </div>
+    </div>
+  </section>
+  <!--new section-->
+  <section id="exploreSection" class="w-full px-4 md:px-8 lg:px-12 py-14 md:py-20"
+    style="position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+      <div id="exploreGlowA"
+        style="position:absolute; width:340px; height:340px; left:4%; top:8%; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.28) 0%, rgba(255,210,74,.12) 38%, rgba(255,210,74,0) 72%); filter:blur(12px);">
+      </div>
+      <div id="exploreGlowB"
+        style="position:absolute; width:300px; height:300px; right:6%; top:22%; border-radius:999px; background:radial-gradient(circle, rgba(120,220,255,.22) 0%, rgba(120,220,255,.10) 38%, rgba(120,220,255,0) 72%); filter:blur(12px);">
+      </div>
+      <div id="exploreGlowC"
+        style="position:absolute; width:240px; height:240px; left:32%; bottom:2%; border-radius:999px; background:radial-gradient(circle, rgba(255,80,40,.16) 0%, rgba(255,80,40,.08) 35%, rgba(255,80,40,0) 72%); filter:blur(14px);">
+      </div>
+    </div>
+
+    <div class="max-w-[1500px] mx-auto" style="position:relative; z-index:1;">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8 md:mb-10">
+        <div>
+          <div
+            class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.2em]"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); color:#f5d463; backdrop-filter:blur(6px);">
+            <i class="ti ti-bolt"></i> Explore the kit
+          </div>
+
+          <h2 class="mt-4 text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.95] tracking-[-0.05em] text-white"
+            style="text-shadow:2px 4px 18px rgba(255,210,74,.18);">
+            See how kids build the house
+            <span class="block text-[#7fd3ff]">and connect real power parts</span>
+          </h2>
+        </div>
+
+        <p class="max-w-2xl text-sm md:text-base leading-7" style="color:rgba(255,255,255,.76);">
+          This section shows the build flow with brick parts, wiring, LEDs, and power connections so visitors quickly
+          understand how the learning happens.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-[1.28fr_.72fr] gap-6 lg:gap-8 items-stretch">
+        <div class="rounded-[28px] p-4 md:p-5 lg:p-6"
+          style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(8,12,18,.62), rgba(7,10,16,.36)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.24);">
+          <div
+            style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(135deg, rgba(255,210,74,.08), transparent 36%, rgba(127,211,255,.06) 72%, transparent 100%);">
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4" style="position:relative; z-index:1;">
+            <div>
+              <div class="text-white text-lg md:text-xl font-semibold">Build flow and wiring view</div>
+              <div class="text-xs md:text-sm mt-1" style="color:rgba(255,255,255,.62);">Kids assemble the house, place
+                components, and connect the power path.</div>
+            </div>
+
+            <button id="exploreSwitchBtn" class="rounded-full px-4 py-2 text-xs md:text-sm font-semibold transition"
+              style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:#fff;">
+              Switch view
+            </button>
+          </div>
+
+          <div id="exploreVisualStage" class="rounded-[24px]"
+            style="position:relative; overflow:hidden; min-height:420px; background:rgba(255,255,255,.02);">
+            <img id="exploreMainImage"
+              src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Explore.png"
+              alt="Kids building electronic brick house" class="w-full h-full object-cover"
+              style="display:block; min-height:320px; max-height:820px;">
+
+            <div id="exploreSparkLayer" style="position:absolute; inset:0; pointer-events:none;"></div>
+
+            <div
+              style="position:absolute; inset:auto 0 0 0; padding:18px 18px 16px; background:linear-gradient(to top, rgba(5,8,12,.88), rgba(5,8,12,.16), transparent);">
+              <div class="flex flex-wrap gap-2">
+                <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                  style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">brick house
+                  parts</span>
+                <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                  style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">LED wiring</span>
+                <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                  style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">power
+                  connection</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6">
+          <div class="rounded-[28px] p-4 md:p-5 lg:p-6"
+            style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(8,12,18,.58), rgba(7,10,16,.34)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+            <div class="mb-4">
+              <div class="text-white text-lg md:text-xl font-semibold">Connection moment</div>
+              <div class="text-xs md:text-sm mt-1" style="color:rgba(255,255,255,.62);">Power modules, wires, and guided
+                assembly in one view.</div>
+            </div>
+
+            <div class="rounded-[24px]" style="position:relative; overflow:hidden; min-height:300px;">
+              <img id="exploreSideImage"
+                src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Explore3.png"
+                alt="Kids exploring power connections" class="w-full h-full object-cover"
+                style="display:block; min-height:260px; max-height:500px;">
+
+              <div id="exploreBlueGlow"
+                style="position:absolute; right:10%; top:10%; width:120px; height:120px; border-radius:999px; background:radial-gradient(circle, rgba(127,211,255,.24) 0%, rgba(127,211,255,.08) 45%, rgba(127,211,255,0) 74%); filter:blur(8px); pointer-events:none;">
+              </div>
+              <div id="exploreGoldGlow"
+                style="position:absolute; left:8%; bottom:8%; width:120px; height:120px; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.26) 0%, rgba(255,210,74,.08) 45%, rgba(255,210,74,0) 74%); filter:blur(8px); pointer-events:none;">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:gap-5">
+            <div class="rounded-[24px] p-4 md:p-5"
+              style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+              <div class="text-sm md:text-base font-semibold text-white">LEDs & switches</div>
+              <div class="mt-2 text-xs md:text-sm leading-6" style="color:rgba(255,255,255,.68);">Show how lights
+                respond when connections are completed and switches control the path.</div>
+            </div>
+
+            <div class="rounded-[24px] p-4 md:p-5"
+              style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+              <div class="text-sm md:text-base font-semibold text-white">Power & wiring</div>
+              <div class="mt-2 text-xs md:text-sm leading-6" style="color:rgba(255,255,255,.68);">Highlight the simple
+                power flow from source to wire to LED inside the brick house setup.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    const exploreMainImage = document.getElementById('exploreMainImage');
+    const exploreSideImage = document.getElementById('exploreSideImage');
+    const exploreSwitchBtn = document.getElementById('exploreSwitchBtn');
+    const exploreSparkLayer = document.getElementById('exploreSparkLayer');
+    const exploreGlowA = document.getElementById('exploreGlowA');
+    const exploreGlowB = document.getElementById('exploreGlowB');
+    const exploreGlowC = document.getElementById('exploreGlowC');
+    const exploreBlueGlow = document.getElementById('exploreBlueGlow');
+    const exploreGoldGlow = document.getElementById('exploreGoldGlow');
+
+    const exploreConventionalFrames = [
+      'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Explore.png',
+      'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/kids.png'
+    ];
+
+    const exploreConventionalLights = [
+      { x: 18, y: 24, size: 118, color: 'rgba(255,210,74,0.95)', colorSoft: 'rgba(255,210,74,0.34)', colorFade: 'rgba(255,210,74,0.12)', blur: 16, delay: 0 },
+      { x: 36, y: 34, size: 132, color: 'rgba(127,211,255,0.92)', colorSoft: 'rgba(127,211,255,0.30)', colorFade: 'rgba(127,211,255,0.10)', blur: 20, delay: 180 },
+      { x: 54, y: 42, size: 104, color: 'rgba(255,210,74,0.92)', colorSoft: 'rgba(255,210,74,0.28)', colorFade: 'rgba(255,210,74,0.10)', blur: 14, delay: 260 },
+      { x: 72, y: 29, size: 140, color: 'rgba(127,211,255,0.90)', colorSoft: 'rgba(127,211,255,0.28)', colorFade: 'rgba(127,211,255,0.08)', blur: 20, delay: 120 },
+      { x: 82, y: 58, size: 124, color: 'rgba(255,210,74,0.88)', colorSoft: 'rgba(255,210,74,0.28)', colorFade: 'rgba(255,210,74,0.08)', blur: 16, delay: 320 },
+      { x: 28, y: 70, size: 146, color: 'rgba(127,211,255,0.86)', colorSoft: 'rgba(127,211,255,0.24)', colorFade: 'rgba(127,211,255,0.08)', blur: 20, delay: 90 },
+      { x: 58, y: 74, size: 138, color: 'rgba(255,210,74,0.88)', colorSoft: 'rgba(255,210,74,0.28)', colorFade: 'rgba(255,210,74,0.08)', blur: 18, delay: 230 }
+    ];
+
+    let exploreConventionalIndex = 0;
+    let exploreConventionalTimer = null;
+
+    function exploreConventionalGlow(el, xMove, yMove, time) {
+      if (!el) return;
+
+      el.animate(
+        [
+          { transform: 'translate3d(0px, 0px, 0px) scale(1)', opacity: 0.72 },
+          { transform: `translate3d(${xMove}px, ${yMove}px, 0px) scale(1.12)`, opacity: 1 },
+          { transform: 'translate3d(0px, 0px, 0px) scale(1)', opacity: 0.78 }
+        ],
+        {
+          duration: time,
+          iterations: Infinity,
+          direction: 'alternate',
+          easing: 'ease-in-out'
+        }
+      );
+    }
+
+    function exploreConventionalBuildLights() {
+      if (!exploreSparkLayer) return;
+
+      exploreSparkLayer.innerHTML = '';
+
+      exploreConventionalLights.forEach((item) => {
+        const light = document.createElement('div');
+        light.style.position = 'absolute';
+        light.style.left = `${item.x}%`;
+        light.style.top = `${item.y}%`;
+        light.style.width = `${item.size}px`;
+        light.style.height = `${item.size}px`;
+        light.style.transform = 'translate(-50%, -50%)';
+        light.style.borderRadius = '999px';
+        light.style.pointerEvents = 'none';
+        light.style.mixBlendMode = 'screen';
+        light.style.background = `radial-gradient(circle, ${item.color} 0%, ${item.colorSoft} 32%, ${item.colorFade} 54%, rgba(255,255,255,0) 74%)`;
+        light.style.filter = `blur(${item.blur}px)`;
+        light.style.opacity = '0.84';
+
+        light.animate(
+          [
+            { transform: 'translate(-50%, -50%) scale(.92)', opacity: 0.62 },
+            { transform: 'translate(-50%, -50%) scale(1.18)', opacity: 1 },
+            { transform: 'translate(-50%, -50%) scale(.96)', opacity: 0.74 }
+          ],
+          {
+            duration: 2400,
+            delay: item.delay,
+            iterations: Infinity,
+            direction: 'alternate',
+            easing: 'ease-in-out'
+          }
+        );
+
+        const spark = document.createElement('div');
+        spark.style.position = 'absolute';
+        spark.style.left = `${item.x}%`;
+        spark.style.top = `${item.y}%`;
+        spark.style.width = '10px';
+        spark.style.height = '10px';
+        spark.style.transform = 'translate(-50%, -50%)';
+        spark.style.borderRadius = '999px';
+        spark.style.background = item.color;
+        spark.style.boxShadow = `0 0 12px ${item.color}, 0 0 30px ${item.color}`;
+        spark.style.mixBlendMode = 'screen';
+
+        spark.animate(
+          [
+            { opacity: 0.55, transform: 'translate(-50%, -50%) scale(.8)' },
+            { opacity: 1, transform: 'translate(-50%, -50%) scale(1.45)' },
+            { opacity: 0.68, transform: 'translate(-50%, -50%) scale(.95)' }
+          ],
+          {
+            duration: 1600,
+            delay: item.delay,
+            iterations: Infinity,
+            direction: 'alternate',
+            easing: 'ease-in-out'
+          }
+        );
+
+        exploreSparkLayer.appendChild(light);
+        exploreSparkLayer.appendChild(spark);
+      });
+    }
+
+    function exploreConventionalSwapFrame() {
+      exploreConventionalIndex = exploreConventionalIndex === 0 ? 1 : 0;
+      const nextFrame = exploreConventionalFrames[exploreConventionalIndex];
+
+      if (exploreMainImage) {
+        exploreMainImage.src = nextFrame;
+      }
+
+      if (exploreSideImage) {
+        exploreSideImage.src = exploreConventionalFrames[exploreConventionalIndex === 0 ? 1 : 0];
+      }
+    }
+
+    function exploreConventionalStart() {
+      exploreConventionalBuildLights();
+      exploreConventionalGlow(exploreGlowA, 26, 16, 5400);
+      exploreConventionalGlow(exploreGlowB, -24, 18, 6200);
+      exploreConventionalGlow(exploreGlowC, 14, -18, 5800);
+      exploreConventionalGlow(exploreBlueGlow, -18, 12, 4200);
+      exploreConventionalGlow(exploreGoldGlow, 18, -10, 3900);
+
+      if (exploreConventionalTimer) clearInterval(exploreConventionalTimer);
+      exploreConventionalTimer = setInterval(exploreConventionalSwapFrame, 4200);
+    }
+
+    if (exploreSwitchBtn) {
+      exploreSwitchBtn.addEventListener('click', exploreConventionalSwapFrame);
+    }
+
+    exploreConventionalStart();
+  </script>
+
+  <!--Close New section-->
+  <!-- Real Component section -->
+  <section id="realComponentsSection" class="w-full px-4 md:px-8 lg:px-12 py-14 md:py-20"
+    style="position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+      <div
+        style="position:absolute; width:320px; height:320px; left:2%; top:6%; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.20) 0%, rgba(255,210,74,.08) 42%, rgba(255,210,74,0) 74%); filter:blur(16px);">
+      </div>
+
+      <div
+        style="position:absolute; width:280px; height:280px; right:4%; top:18%; border-radius:999px; background:radial-gradient(circle, rgba(127,211,255,.18) 0%, rgba(127,211,255,.08) 42%, rgba(127,211,255,0) 74%); filter:blur(16px);">
+      </div>
+
+      <div
+        style="position:absolute; width:220px; height:220px; left:34%; bottom:0%; border-radius:999px; background:radial-gradient(circle, rgba(255,120,60,.14) 0%, rgba(255,120,60,.06) 38%, rgba(255,120,60,0) 72%); filter:blur(16px);">
+      </div>
+    </div>
+
+    <div class="max-w-[1500px] mx-auto" style="position:relative; z-index:1;">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-8 md:mb-10">
+        <div>
+          <div
+            class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.18em]"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#f4d15b;">
+            <i class="ti ti-tool"></i> Real components
+          </div>
+
+          <h2 class="mt-4 text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.96] tracking-[-0.04em] text-white">
+            LEDs, wires, switches,
+            <span class="block text-[#7fd3ff]">power, and build parts</span>
+          </h2>
+        </div>
+
+        <p class="max-w-2xl text-sm md:text-base leading-7" style="color:rgba(255,255,255,.74);">
+          Show the real parts kids use to build the Electronic House and learn how power moves through each connection.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-[1fr_1.05fr] gap-6 lg:gap-8 items-stretch">
+
+        <!-- Left video -->
+        <div class="rounded-[28px] p-4 md:p-5 lg:p-6"
+          style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(8,12,18,.58), rgba(7,10,16,.34)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <div>
+              <div class="text-white text-lg md:text-xl font-semibold">Kids guide</div>
+            </div>
+
+            <div class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] md:text-xs font-semibold"
+              style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#7fd3ff;">
+              <span
+                style="width:8px; height:8px; border-radius:999px; background:#7fd3ff; box-shadow:0 0 10px #7fd3ff;"></span>
+              step by step
+            </div>
+          </div>
+
+          <div style="position:relative; width:100%; height:100%; min-height:520px; overflow:hidden; border-radius:22px; 
+            z-index:2;">
+            <div style="position:absolute; width:260px; height:260px; left:-40px; top:18%; z-index:0; 
+          border-radius:999px; pointer-events:none; background:radial-gradient(circle,
+           rgba(255,210,74,.24) 0%, rgba(255,210,74,.08) 42%, rgba(255,210,74,0) 72%); filter:blur(22px);">
+            </div>
+
+            <div style="position:absolute; width:240px; height:240px; right:-35px; bottom:8%; z-index:0; 
+          border-radius:999px; pointer-events:none; background:radial-gradient(circle,
+           rgba(222, 238, 6, 0.22) 0%, rgba(127,211,255,.08) 42%, rgba(127,211,255,0) 72%); 
+           filter:blur(22px);"></div>
+
+            <video controls playsinline preload="metadata" style="position:relative; z-index:2; display:block; width:100%; height:800px; object-fit:cover; 
+            border-radius:22px; box-shadow:0 18px 5px rgba(233, 218, 5, 0.42), 0 0 28px rgba(238, 61, 7, 0.1);">
+              <source src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/brick.mp4"
+                type="video/mp4">
+            </video>
+          </div>
+        </div>
+
+        <!-- Right side -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-5">
+          <div class="rounded-[24px] p-5 md:p-6"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+            <div class="mb-3 inline-flex items-center justify-center rounded-full"
+              style="width:48px; height:48px; background:rgba(255,210,74,.12); color:#ffd24a;">
+              <i class="ti ti-bulb text-xl"></i>
+            </div>
+
+            <div class="text-white text-lg font-semibold">LEDs</div>
+
+            <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">
+              Small lights that help kids see how a circuit turns power into light.
+            </div>
+          </div>
+
+          <div class="rounded-[24px] p-5 md:p-6"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+            <div class="mb-3 inline-flex items-center justify-center rounded-full"
+              style="width:48px; height:48px; background:rgba(127,211,255,.12); color:#7fd3ff;">
+              <i class="ti ti-route text-xl"></i>
+            </div>
+
+            <div class="text-white text-lg font-semibold">Wires</div>
+
+            <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">
+              Wires carry the electricity from the power source to each connected part.
+            </div>
+          </div>
+
+          <div class="rounded-[24px] p-5 md:p-6"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+            <div class="mb-3 inline-flex items-center justify-center rounded-full"
+              style="width:48px; height:48px; background:rgba(255,210,74,.12); color:#ffd24a;">
+              <i class="ti ti-toggle-left text-xl"></i>
+            </div>
+
+            <div class="text-white text-lg font-semibold">Switches</div>
+
+            <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">
+              Kids control the flow of power and learn how opening and closing a path works.
+            </div>
+          </div>
+
+          <div class="rounded-[24px] p-5 md:p-6"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(10,14,20,.42); backdrop-filter:blur(8px);">
+            <div class="mb-3 inline-flex items-center justify-center rounded-full"
+              style="width:48px; height:48px; background:rgba(127,211,255,.12); color:#7fd3ff;">
+              <i class="ti ti-battery-3 text-xl"></i>
+            </div>
+
+            <div class="text-white text-lg font-semibold">Power</div>
+
+            <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">
+              Battery or power modules give energy to the full build and make the system work.
+            </div>
+          </div>
+
+          <div class="rounded-[24px] p-5 md:p-6 sm:col-span-2"
+            style="border:1px solid rgba(255,255,255,.12); background:linear-gradient(135deg, rgba(255,210,74,.08), rgba(127,211,255,.06)); backdrop-filter:blur(8px);">
+            <div class="mb-3 inline-flex items-center justify-center rounded-full"
+              style="width:48px; height:48px; background:rgba(255,255,255,.08); color:#ffffff;">
+              <i class="ti ti-tool text-xl"></i>
+            </div>
+
+            <div class="text-white text-lg font-semibold">Build parts</div>
+
+            <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.72);">
+              Brick pieces, connectors, and support parts help kids build the house structure and place the electronics
+              correctly.
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">
+                house bricks
+              </span>
+
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">
+                connectors
+              </span>
+
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">
+                tool steps
+              </span>
+
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">
+                power links
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <!--Close Real Component section-->
+
+  <!--Hands-on learning seciton -->
+  <section id="handsOnLearningSection" class="w-full px-4 md:px-8 lg:px-12 py-14 md:py-20"
+    style="position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; pointer-events:none; z-index:0;">
+      <div
+        style="position:absolute; width:320px; height:320px; left:4%; top:6%; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.20) 0%, rgba(255,210,74,.08) 42%, rgba(255,210,74,0) 74%); filter:blur(16px);">
+      </div>
+      <div
+        style="position:absolute; width:280px; height:280px; right:4%; top:16%; border-radius:999px; background:radial-gradient(circle, rgba(127,211,255,.18) 0%, rgba(127,211,255,.08) 42%, rgba(127,211,255,0) 74%); filter:blur(16px);">
+      </div>
+    </div>
+
+    <div class="max-w-[1500px] mx-auto" style="position:relative; z-index:1;">
+      <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-8 md:mb-10">
+        <div>
+          <div
+            class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.18em]"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#7fd3ff;">
+            <i class="ti ti-bolt"></i> Hands-on learning
+          </div>
+          <h2 class="mt-4 text-4xl md:text-5xl lg:text-6xl font-semibold leading-[0.96] tracking-[-0.04em] text-white">
+            Learn by building,
+            <span class="block text-[#ffd24a]">testing, and seeing power move</span>
+          </h2>
+        </div>
+
+        <p class="max-w-2xl text-sm md:text-base leading-7" style="color:rgba(255,255,255,.74);">
+          Kids do not just watch. They connect parts, test paths, flip switches, and discover how circuits work through
+          real hands-on steps.
+        </p>
+      </div>
+
+      <div class="rounded-[28px] p-3 md:p-4 mb-6 md:mb-8"
+        style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(135deg, rgba(255,210,74,.08), rgba(127,211,255,.06)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+        <div
+          style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg, rgba(255,210,74,.08), transparent 35%, transparent 65%, rgba(127,211,255,.08));">
+        </div>
+        <div class="rounded-[24px]" style="position:relative; overflow:hidden; min-height:250px;">
+          <img src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/learning.png"
+            alt="Kids learning image" class="w-full h-full" style="display:block; min-height:250px; max-height:740px;">
+          <div
+            style="position:absolute; inset:0; background:linear-gradient(90deg, rgba(6,10,16,.62) 0%, rgba(6,10,16,.18) 36%, rgba(6,10,16,.18) 64%, rgba(6,10,16,.62) 100%);">
+          </div>
+          <div
+            style="position:absolute; left:18px; right:18px; bottom:18px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;">
+            <div class="flex flex-wrap gap-2">
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">build</span>
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">connect</span>
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">test</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-[1.08fr_.92fr] gap-6 lg:gap-8 items-stretch">
+        <div class="rounded-[28px] p-5 md:p-6 lg:p-7"
+          style="border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(8,12,18,.58), rgba(7,10,16,.34)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+            <div class="rounded-[24px] p-5"
+              style="border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03);">
+              <div class="mb-3 inline-flex items-center justify-center rounded-full"
+                style="width:48px; height:48px; background:rgba(255,210,74,.12); color:#ffd24a;">
+                <i class="ti ti-current-location text-xl"></i>
+              </div>
+              <div class="text-white text-lg font-semibold">Polarity</div>
+              <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">Understand positive and negative
+                sides, and why correct direction matters for working connections.</div>
+            </div>
+
+            <div class="rounded-[24px] p-5"
+              style="border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03);">
+              <div class="mb-3 inline-flex items-center justify-center rounded-full"
+                style="width:48px; height:48px; background:rgba(127,211,255,.12); color:#7fd3ff;">
+                <i class="ti ti-git-branch text-xl"></i>
+              </div>
+              <div class="text-white text-lg font-semibold">Circuits</div>
+              <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">Build complete paths and see how
+                electricity flows only when the circuit is connected the right way.</div>
+            </div>
+
+            <div class="rounded-[24px] p-5"
+              style="border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03);">
+              <div class="mb-3 inline-flex items-center justify-center rounded-full"
+                style="width:48px; height:48px; background:rgba(255,210,74,.12); color:#ffd24a;">
+                <i class="ti ti-bulb text-xl"></i>
+              </div>
+              <div class="text-white text-lg font-semibold">Lighting paths</div>
+              <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">Trace the power path from source
+                to wire to LED and watch the house light up in real time.</div>
+            </div>
+
+            <div class="rounded-[24px] p-5"
+              style="border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03);">
+              <div class="mb-3 inline-flex items-center justify-center rounded-full"
+                style="width:48px; height:48px; background:rgba(127,211,255,.12); color:#7fd3ff;">
+                <i class="ti ti-radar-2 text-xl"></i>
+              </div>
+              <div class="text-white text-lg font-semibold">Sensors</div>
+              <div class="mt-2 text-sm leading-6" style="color:rgba(255,255,255,.68);">Explore how extra parts can
+                detect changes and trigger actions inside the electronic house setup.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-[28px] p-5 md:p-6 lg:p-7"
+          style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(135deg, rgba(255,210,74,.08), rgba(127,211,255,.06)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+          <div
+            style="position:absolute; right:-30px; top:-30px; width:150px; height:150px; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.16) 0%, rgba(255,210,74,0) 70%);">
+          </div>
+          <div
+            style="position:absolute; left:-20px; bottom:-20px; width:140px; height:140px; border-radius:999px; background:radial-gradient(circle, rgba(127,211,255,.14) 0%, rgba(127,211,255,0) 70%);">
+          </div>
+
+          <div style="position:relative; z-index:1;">
+            <div class="text-white text-2xl md:text-3xl font-semibold leading-tight">What kids do in this section</div>
+            <div class="mt-3 text-sm md:text-base leading-7" style="color:rgba(255,255,255,.72);">
+              Instead of reading only, they plug in parts, test power, fix mistakes, and understand why each connection
+              changes the result.
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 gap-3">
+              <div class="rounded-[18px] px-4 py-4 flex items-start gap-3"
+                style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);">
+                <span
+                  style="min-width:34px; height:34px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(255,210,74,.14); color:#ffd24a; font-weight:700;">1</span>
+                <div>
+                  <div class="text-white font-semibold">Connect</div>
+                  <div class="text-sm leading-6" style="color:rgba(255,255,255,.66);">Join wires, switches, and LED
+                    parts to build a working path.</div>
+                </div>
+              </div>
+
+              <div class="rounded-[18px] px-4 py-4 flex items-start gap-3"
+                style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);">
+                <span
+                  style="min-width:34px; height:34px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(127,211,255,.14); color:#7fd3ff; font-weight:700;">2</span>
+                <div>
+                  <div class="text-white font-semibold">Test</div>
+                  <div class="text-sm leading-6" style="color:rgba(255,255,255,.66);">Flip the switch and check whether
+                    the light turns on or the setup needs fixing.</div>
+                </div>
+              </div>
+
+              <div class="rounded-[18px] px-4 py-4 flex items-start gap-3"
+                style="background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);">
+                <span
+                  style="min-width:34px; height:34px; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:rgba(255,210,74,.14); color:#ffd24a; font-weight:700;">3</span>
+                <div>
+                  <div class="text-white font-semibold">Discover</div>
+                  <div class="text-sm leading-6" style="color:rgba(255,255,255,.66);">See how polarity, path changes,
+                    and sensor actions affect the final result.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">real electricity
+                basics</span>
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">problem solving</span>
+              <span class="rounded-full px-3 py-2 text-[11px] md:text-xs font-medium"
+                style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);">hands-on STEM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--Close Hands-on learning seciton -->
+  <script>
+    const lightSensorProgress = document.getElementById('lightSensorProgress');
+    const lightSensorValue = document.getElementById('lightSensorValue');
+    const lightHouseStage = document.getElementById('houseStage');
+    let isManualMode = false;
+    let manualTimer = null;
+
+    function updateLightGauge(percentage, override = false) {
+      const circumference = 339;
+      const offset = circumference - (percentage / 100) * circumference;
+      lightSensorProgress.style.strokeDashoffset = offset;
+      lightSensorValue.innerText = `${Math.round(percentage)}%`;
+
+      const brightness = 0.5 + (percentage / 100);
+      lightHouseStage.style.filter = `brightness(${brightness})`;
+      lightHouseStage.style.transition = 'filter 0.5s ease-in-out';
+    }
+
+    function setManualBrightness(level) {
+      isManualMode = true;
+      // Map 0.5, 1.0, 1.5 to 0%, 50%, 100%
+      const percent = (level - 0.5) * 100;
+      updateLightGauge(percent);
+
+      // Resume auto after 5 seconds
+      if (manualTimer) clearTimeout(manualTimer);
+      manualTimer = setTimeout(() => { isManualMode = false; }, 5000);
+    }
+
+    let lightLevel = 0;
+    let increasing = true;
+
+    function runSensorProcess() {
+      if (isManualMode) return;
+      if (increasing) {
+        lightLevel += 0.2;
+        if (lightLevel >= 100) increasing = false;
+      } else {
+        lightLevel -= 0.2;
+        if (lightLevel <= 0) increasing = true;
+      }
+      updateLightGauge(lightLevel);
+    }
+
+    setInterval(runSensorProcess, 200);
+
+    const rightImageLightPoints = [
+      { id: "LED_1", type: "light_point", description: "Top-center light on the roof ridge", coords: { x: 0.49, y: 0.08 } },
+      { id: "LED_2", type: "light_point", description: "Left-most light on the top roof section", coords: { x: 0.17, y: 0.28 } },
+      { id: "LED_3", type: "light_point", description: "Right-most light on the top roof section", coords: { x: 0.69, y: 0.28 } },
+      { id: "LED_4", type: "light_point", description: "Left-side prominent wall light (yellow)", coords: { x: 0.19, y: 0.41 } },
+      { id: "LED_5", type: "light_point", description: "Central vertical array, third point up (blue)", coords: { x: 0.35, y: 0.49 } },
+      { id: "LED_6", type: "light_point", description: "Right-side vertical array, second point up (yellow/green)", coords: { x: 0.74, y: 0.54 } },
+      { id: "LED_7", type: "light_point", description: "Light on the central lower desk", coords: { x: 0.47, y: 0.69 } },
+      { id: "functional_light_1", type: "functional", description: "Bedroom ceiling light", coords: { x: 0.62, y: 0.19 } },
+      { id: "functional_light_2", type: "functional", description: "Bedroom table lamp", coords: { x: 0.54, y: 0.35 } }
+    ];
+
+    // Get the right section and right image
+    const rightSection = document.querySelector('.right');
+    const rightImage = document.getElementById('heroHouseImage');
+
+    // Make the right section the positioning parent
+    if (rightSection) {
+      rightSection.style.position = 'relative';
+    }
+
+    // Add styles for the light overlay and the dots
+    const rightLightStyle = document.createElement('style');
+    rightLightStyle.textContent = `
+      .right-light-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 4;
+      }
+      .right-light-dot {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        border-radius: 999px;
+        opacity: 0.98;
+        animation: rightLightPulse 1.8s ease-in-out infinite;
+      }
+      .right-light-dot.gold {
+        background: #FFD86B;
+        box-shadow: 0 0 8px #FFD86B, 0 0 18px rgba(255, 216, 107, 0.85), 0 0 28px rgba(255, 216, 107, 0.45);
+      }
+      .right-light-dot.blue {
+        background: #8FE8FF;
+        box-shadow: 0 0 8px #8FE8FF, 0 0 18px rgba(143, 232, 255, 0.85), 0 0 28px rgba(143, 232, 255, 0.45);
+      }
+      @keyframes rightLightPulse {
+        0%, 100% {
+          opacity: 0.85;
+          transform: translate(-50%, -50%) scale(2);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1.42);
+        }
+      }
+    `;
+    document.head.appendChild(rightLightStyle);
+
+    // Create one overlay layer over the right image
+    const rightLightOverlay = document.createElement('div');
+    rightLightOverlay.className = 'right-light-overlay';
+    if (rightSection) {
+      rightSection.appendChild(rightLightOverlay);
+    }
+
+    // Use golden and light blue auto lighting
+    const blueIds = new Set(['LED_2', 'LED_5', 'LED_7', 'functional_light_2']);
+
+    // Build the dots from your JSON points
+    rightImageLightPoints.forEach((light, index) => {
+      const dot = document.createElement('span');
+      const toneClass = blueIds.has(light.id) ? 'blue' : 'gold';
+      const dotSize = light.type === 'functional' ? 10 : 8;
+
+      dot.className = `right-light-dot ${toneClass}`;
+      dot.title = light.description;
+      dot.style.left = `${light.coords.x * 100}%`;
+      dot.style.top = `${light.coords.y * 100}%`;
+      dot.style.width = `${dotSize}px`;
+      dot.style.height = `${dotSize}px`;
+      dot.style.animationDelay = `${index * 0.22}s`;
+
+      rightLightOverlay.appendChild(dot);
+    });
+
+    // Keep the light overlay connected to the responsive image size
+    function placeRightImageLights() {
+      if (!rightSection || !rightImage) return;
+
+      const sectionRect = rightSection.getBoundingClientRect();
+      const imageRect = rightImage.getBoundingClientRect();
+
+      rightLightOverlay.style.left = `${imageRect.left - sectionRect.left}px`;
+      rightLightOverlay.style.top = `${imageRect.top - sectionRect.top}px`;
+      rightLightOverlay.style.width = `${imageRect.width}px`;
+      rightLightOverlay.style.height = `${imageRect.height}px`;
+    }
+
+    // Auto place on load and resize
+    if (rightImage && rightImage.complete) {
+      placeRightImageLights();
+    }
+    if (rightImage) {
+      rightImage.addEventListener('load', placeRightImageLights);
+    }
+    window.addEventListener('load', placeRightImageLights);
+    window.addEventListener('resize', placeRightImageLights);
+
+    // LightHouse section image source
+    const IMG_TWO = 'https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/brick.png';
+
+    // LightHouse spark coordinates from your JSON
+    const sparkData = {
+      imageWidth: 1448,
+      imageHeight: 1086,
+      lights: [
+        { id: "top_left_room_bulb", x: 590, y: 330, color: "#FFD700", glow: 24 },
+        { id: "top_right_room_bulb", x: 835, y: 345, color: "#0FFFFF", glow: 24 },
+        { id: "ground_floor_bulb", x: 744, y: 548, color: "#FF0800", glow: 22 },
+        { id: "left_blue_room_glow", x: 515, y: 552, color: "#0FFFFF", glow: 28 },
+        { id: "side_board_green_led", x: 1007, y: 558, color: "#66FF00", glow: 20 },
+        { id: "bottom_board_green", x: 485, y: 889, color: "#66FF00", glow: 18 },
+        { id: "bottom_demo_bulb", x: 962, y: 914, color: "#FFD700", glow: 20 },
+        { id: "battery_box_orange", x: 1280, y: 875, color: "#FF0800", glow: 18 },
+        { id: "blueprint_green_1", x: 1200, y: 106, color: "#66FF00", glow: 16 },
+        { id: "blueprint_green_2", x: 1268, y: 167, color: "#66FF00", glow: 15 },
+        { id: "blueprint_green_3", x: 1178, y: 205, color: "#66FF00", glow: 15 },
+        { id: "blueprint_green_4", x: 1140, y: 248, color: "#66FF00", glow: 15 },
+        { id: "blueprint_gold_1", x: 1341, y: 210, color: "#FFD700", glow: 16 },
+        { id: "blueprint_gold_2", x: 1307, y: 255, color: "#FFD700", glow: 16 },
+        { id: "blueprint_gold_3", x: 1190, y: 356, color: "#FFD700", glow: 17 },
+        { id: "blueprint_gold_4", x: 1248, y: 318, color: "#FFD700", glow: 15 },
+        { id: "blueprint_gold_5", x: 1288, y: 371, color: "#FFD700", glow: 15 },
+        { id: "blueprint_gold_6", x: 1152, y: 408, color: "#FF0800", glow: 15 },
+        { id: "blueprint_gold_7", x: 1210, y: 535, color: "#0FFFFF", glow: 16 }
+      ]
+    };
+
+    const lightHouseSection = document.getElementById('lightHouse');
+    const housePhoto = document.getElementById('housePhoto');
+    const houseStage = document.getElementById('houseStage');
+    const sparkLayer = document.getElementById('sparkLayer');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const heroSection = document.getElementById('heroSection');
+    const pointEls = {};
+
+    // Build spark points once
+    sparkData.lights.forEach((light, index) => {
+      const point = document.createElement('div');
+      const isTiny = light.id.startsWith('blueprint_');
+
+      point.className = 'spark-point';
+      point.id = light.id;
+      point.style.width = isTiny ? '8px' : '12px';
+      point.style.height = isTiny ? '8px' : '12px';
+      point.style.setProperty('--spark-color', light.color);
+      point.style.setProperty('--glow-size', isTiny ? `${light.glow * 1.4}px` : `${light.glow * 2.4}px`);
+      point.style.setProperty('--delay', `${(index * 0.13) % 1.6}s`);
+
+      for (let i = 1; i <= 4; i += 1) {
+        const ray = document.createElement('span');
+        ray.className = `spark-ray r${i}`;
+        point.appendChild(ray);
+      }
+
+      sparkLayer.appendChild(point);
+      pointEls[light.id] = point;
+    });
+
+    // Find actual rendered image box inside the stage
+    function getRenderedImageBox(img) {
+      const cw = houseStage.clientWidth;
+      const ch = houseStage.clientHeight;
+      const iw = img.naturalWidth || sparkData.imageWidth;
+      const ih = img.naturalHeight || sparkData.imageHeight;
+      const fitMode = getComputedStyle(img).objectFit;
+
+      const scale = fitMode === 'contain'
+        ? Math.min(cw / iw, ch / ih)
+        : Math.max(cw / iw, ch / ih);
+
+      const renderW = iw * scale;
+      const renderH = ih * scale;
+      const offsetX = (cw - renderW) / 2;
+      const offsetY = (ch - renderH) / 2;
+
+      return { offsetX, offsetY, renderW, renderH };
+    }
+
+    // Position all spark points over the actual image area
+    function positionSparks() {
+      if (!housePhoto || !housePhoto.naturalWidth) return;
+      const box = getRenderedImageBox(housePhoto);
+
+      sparkData.lights.forEach((light) => {
+        const point = pointEls[light.id];
+        const left = box.offsetX + (light.x / sparkData.imageWidth) * box.renderW;
+        const top = box.offsetY + (light.y / sparkData.imageHeight) * box.renderH;
+        point.style.left = `${left}px`;
+        point.style.top = `${top}px`;
+      });
+    }
+
+    // Reposition after the image is ready
+    function refreshAfterImageReady() {
+      if (housePhoto.complete && housePhoto.naturalWidth) {
+        requestAnimationFrame(positionSparks);
+        setTimeout(positionSparks, 80);
+        setTimeout(positionSparks, 260);
+      } else {
+        housePhoto.addEventListener('load', () => {
+          requestAnimationFrame(positionSparks);
+          setTimeout(positionSparks, 80);
+          setTimeout(positionSparks, 260);
+        }, { once: true });
+      }
+    }
+
+    // Scroll to the LightHouse full section from the existing button
+    toggleBtn.addEventListener('click', () => {
+      housePhoto.src = IMG_TWO;
+      refreshAfterImageReady();
+      setTimeout(positionSparks, 50);
+      setTimeout(positionSparks, 400);
+      lightHouseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Keep spark positions responsive
+    window.addEventListener('load', refreshAfterImageReady);
+    window.addEventListener('resize', positionSparks);
+
+    // Run once immediately too so the LightHouse lights appear without waiting
+    refreshAfterImageReady();
+    setTimeout(positionSparks, 120);
+    setTimeout(positionSparks, 420);
+  </script>
+</body>
+
+</html>
