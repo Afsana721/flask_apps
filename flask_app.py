@@ -273,9 +273,9 @@ def three():
 def git_github():
     return render_template('git_github.html')
 
-@app.route('/Luc8k')
-def Luc8k():
-    return render_template('Luc8k.html')
+@app.route('/electronic_house')
+def electronic_house():
+    return render_template('electronic_house.html')
 
 #@app.route('/calendar')
 #def calendar():
