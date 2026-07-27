@@ -170,12 +170,12 @@
     .desc {
       margin: 24px 0 0;
       max-width: 760px;
-      color: #e9e1c8;
-      text-shadow: 2px 3px 4px hsl(64, 100%, 50%);
+      color: #d6b6ae;
+      text-shadow: 1px 2px 1px hsl(8, 10%, 58%);
       font-size: clamp(14px, 1.35vw, 17px);
       line-height: 1.58;
       font-weight: 500;
-      font-size: 18px;
+      font-size: 19px;
     }
 
     .actions {
@@ -190,23 +190,21 @@
     .cta-ghost {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 14px;
       padding: 18px 24px;
       border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      background: transparent;
-      font-size: 16px;
+      border: 1px solid rgba(229, 233, 6, 0.14);
+      border-color: rgba(20, 19, 15, 0.3);
+      background: linear-gradient(135deg, #f1ee0c 0%, #f2c84a 55%, #f5d109 100%);
+      box-shadow: 0 14px 34px rgba(245, 200, 74, 0.12);
+      font-size: 20px;
       font-weight: 800;
       text-decoration: none;
-      color: #fff;
+      color: #17130a;
+      text-shadow: 0px 1px 1px #f1f38e;
     }
 
-    .cta {
-      background: linear-gradient(135deg, #f5d463 0%, #f2c84a 55%, #ffe489 100%);
-      color: #17130a;
-      border-color: rgba(20, 19, 15, 0.3);
-      box-shadow: 0 14px 34px rgba(245, 200, 74, 0.12);
-    }
+
 
     .cards {
       display: grid;
@@ -448,9 +446,7 @@
 
       .top-pill,
       .top-btn,
-      .mini-pill,
-      .cta,
-      .cta-ghost {
+      .mini-pill {
         font-size: 12px;
       }
 
@@ -507,23 +503,23 @@
             <img class="left-character"
               src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/Electro.png"
               alt="Electro character" style="width:auto; height:420px; margin:0; margin-right:6px; display:block; object-fit:contain; flex-shrink:0;
-                    filter: drop-shadow(0px 0px 4px rgba(241, 243, 122, 0.65));">
+                    filter: drop-shadow(-2px 0px 06px #f57c00) drop-shadow(0px 2px 2px #f1ef71);">
           </div>
 
-          <div style="flex:1 1 auto; min-width:0; margin:0; padding:0;">
+          <div style="flex:1 1 auto; min-width:0; margin-top:80px; padding:0; filter: drop-shadow(0px 0px 01px #ece90d); ">
             <h1 class="text-5xl" style="text-shadow: 2px 4px 4px hsl(51, 96%, 47%);">Build your own
               <span class="ml-10" style="text-shadow: 4px 4px 3px hsl(0, 88%, 47%);">electronic house</span>
             </h1>
-
             <p class="desc">
               A more distinctive hero: product-first, premium, and interactive.<br>
-              Show the house as the visual stage, then layer a strong headline, one<br>
+              Show the house as the visual stage, then layer a strong headline,<br> one
               clear action, and small learning cards instead of a regular flat banner.
             </p>
-
-            <div class="actions" style="margin-top:98px;">
-              <a href="#exploreSection" class="cta"><i class="ti ti-link"></i> Explore the kit</a>
-              <a href="#" class="cta-ghost"><i class="ti ti-player-play"></i> Watch how it works</a>
+            <div class="actions" style="margin-top:110px;">
+              <a href="#exploreSection" class="cta"><i class="ti ti-link" style="font-size:larger; color:#000000; 
+                font-weight:bold;"></i> Explore the kit</a>
+              <a href="#videos" class="cta-ghost"><i class="ti ti-player-play" style="font-size:larger; color:#000000; 
+                font-weight:bold;"></i> Watch how it works</a>
             </div>
 
             <div class="cards">
@@ -558,7 +554,7 @@
         </div>
       </section>
 
-      <section class="right mb-40" style="mix-blend-mode: multiply; filter: drop-shadow(1px 2px 1px #aaecd3);">
+      <section class="right mb-40" style="mix-blend-mode: multiply; filter: drop-shadow(1px -1px 1px #FFD700);">
         <img class="hero-house" id="heroHouseImage"
           src="https://raw.githubusercontent.com/Afsana721/PortfolioProjects/main/elec5.png"
           alt="Electronic house visual" style="width: 880px; height:auto;">
@@ -620,7 +616,9 @@
     style="position:relative; overflow:hidden;">
     <div style="position:absolute; inset:0; pointer-events:none; z-index:0;">
       <div id="exploreGlowA"
-        style="position:absolute; width:340px; height:340px; left:4%; top:8%; border-radius:999px; background:radial-gradient(circle, rgba(255,210,74,.28) 0%, rgba(255,210,74,.12) 38%, rgba(255,210,74,0) 72%); filter:blur(12px);">
+        style="position:absolute; width:340px; height:340px; left:4%; top:8%; border-radius:999px; 
+          background:radial-gradient(circle, rgba(255,210,74,.28) 0%, rgba(255,210,74,.12) 38%, 
+            rgba(255,210,74,0) 72%); filter:blur(12px);">
       </div>
       <div id="exploreGlowB"
         style="position:absolute; width:300px; height:300px; right:6%; top:22%; border-radius:999px; background:radial-gradient(circle, rgba(120,220,255,.22) 0%, rgba(120,220,255,.10) 38%, rgba(120,220,255,0) 72%); filter:blur(12px);">
@@ -634,8 +632,10 @@
       <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8 md:mb-10">
         <div>
           <div
-            class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm font-semibold uppercase tracking-[0.2em]"
-            style="border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); color:#f5d463; backdrop-filter:blur(6px);">
+            class="inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs md:text-sm 
+            font-semibold uppercase tracking-[0.2em]"
+            style="border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); color:#f5d463; 
+            backdrop-filter:blur(6px);">
             <i class="ti ti-bolt"></i> Explore the kit
           </div>
 
@@ -923,18 +923,17 @@
           Show the real parts kids use to build the Electronic House and learn how power moves through each connection.
         </p>
       </div>
-
       <div class="grid grid-cols-1 xl:grid-cols-[1fr_1.05fr] gap-6 lg:gap-8 items-stretch">
-
         <!-- Left video -->
         <div class="rounded-[28px] p-4 md:p-5 lg:p-6"
-          style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:linear-gradient(180deg, rgba(8,12,18,.58), rgba(7,10,16,.34)); backdrop-filter:blur(10px); box-shadow:0 16px 50px rgba(0,0,0,.22);">
+          style="position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.12); 
+          background:linear-gradient(180deg, rgba(8,12,18,.58), rgba(7,10,16,.34)); backdrop-filter:blur(10px); 
+          box-shadow:0 16px 50px rgba(0,0,0,.22);">
 
           <div class="flex items-center justify-between gap-3 mb-4">
-            <div>
+            <div id="videos">
               <div class="text-white text-lg md:text-xl font-semibold">Kids guide</div>
             </div>
-
             <div class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[11px] md:text-xs font-semibold"
               style="border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#7fd3ff;">
               <span
@@ -942,7 +941,6 @@
               step by step
             </div>
           </div>
-
           <div style="position:relative; width:100%; height:100%; min-height:520px; overflow:hidden; border-radius:22px; 
             z-index:2;">
             <div style="position:absolute; width:260px; height:260px; left:-40px; top:18%; z-index:0; 
@@ -1521,5 +1519,4 @@
     setTimeout(positionSparks, 420);
   </script>
 </body>
-
 </html>
